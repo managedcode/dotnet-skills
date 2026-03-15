@@ -239,6 +239,121 @@ For a safe preview:
 python3 scripts/upstream_watch.py --dry-run
 ```
 
+### Which File Do I Edit?
+
+Do not edit [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json) directly.
+That file is generated from the fragments in [`.github/upstream-watch.d/`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.d).
+
+Why the folder ends with `.d`:
+
+- `.d` is a common config convention meaning "directory of drop-in fragments"
+- each file in that directory contributes part of the generated watch config
+- the goal is to keep watches split by vendor or domain instead of storing everything in one huge JSON file
+
+Use this rule:
+
+- `10-microsoft-releases.json` for Microsoft or official .NET GitHub release feeds
+- `20-managedcode-releases.json` for ManagedCode repositories
+- `30-docs.json` for official documentation pages
+- `40-<vendor>.json` for any other vendor or project family
+
+If a vendor does not fit an existing file, create a new fragment such as `40-myvendor.json` instead of bloating another file.
+
+### What Happens After I Add A Watch?
+
+```mermaid
+flowchart LR
+  A["Add a watch entry in .github/upstream-watch.d/*.json"] --> B["Run scripts/generate_upstream_watch.py"]
+  B --> C["Run scripts/upstream_watch.py --sync-state-only once"]
+  C --> D["Commit the fragment, generated config, and state baseline"]
+  D --> E["Scheduled upstream-watch.yml checks sources every day"]
+  E --> F["If a release or doc page changes, automation opens or updates an issue"]
+  F --> G["Update the linked dotnet-* skills and docs"]
+```
+
+### GitHub Release Watch Example
+
+Use `kind: "github_release"` when you want automation to watch GitHub releases for a repository:
+
+```json
+{
+  "id": "myvendor-myproject-release",
+  "kind": "github_release",
+  "name": "MyVendor MyProject release",
+  "owner": "myvendor",
+  "repo": "MyProject",
+  "notes": "Review MyProject guidance when a new release changes APIs, runtime requirements, or recommended integration patterns.",
+  "skills": [
+    "dotnet-myproject"
+  ]
+}
+```
+
+Add `match_tag_regex` when the repo publishes multiple streams and you only want the .NET-facing tags:
+
+```json
+{
+  "id": "myvendor-myproject-release",
+  "kind": "github_release",
+  "name": "MyVendor MyProject release",
+  "owner": "myvendor",
+  "repo": "MyProject",
+  "match_tag_regex": "^dotnet-",
+  "notes": "Review the .NET integration skill when the .NET release stream changes.",
+  "skills": [
+    "dotnet-myproject"
+  ]
+}
+```
+
+### Documentation Watch Example
+
+Use `kind: "http_document"` when you want automation to watch a stable documentation page:
+
+```json
+{
+  "id": "myproject-docs",
+  "kind": "http_document",
+  "name": "MyProject documentation",
+  "url": "https://learn.microsoft.com/example/myproject/overview",
+  "notes": "Review the MyProject skill when the official overview page changes.",
+  "skills": [
+    "dotnet-myproject"
+  ]
+}
+```
+
+### Required Fields
+
+Every watch entry should make these points clear:
+
+- `id`: stable unique identifier used by automation and issue tracking
+- `kind`: `github_release` or `http_document`
+- `name`: human-readable source name
+- source coordinates:
+  - `owner` and `repo` for `github_release`
+  - `url` for `http_document`
+- `notes`: why a change matters
+- `skills`: which `dotnet-*` skills should be reviewed
+
+### Commands To Run After Editing Watches
+
+After editing [`.github/upstream-watch.d/`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.d):
+
+```bash
+python3 scripts/generate_upstream_watch.py
+python3 scripts/generate_upstream_watch.py --check
+python3 scripts/upstream_watch.py --sync-state-only
+python3 scripts/upstream_watch.py --dry-run
+```
+
+What each command is for:
+
+- `generate_upstream_watch.py`: rebuilds [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json) from fragments
+- `--check`: verifies the generated file is in sync
+- `--sync-state-only`: records the current upstream values as the new baseline without opening issues
+- `--dry-run`: shows what the watcher would do before CI runs it for real
+
 ## Before Opening A PR
 
 Run the relevant checks:
