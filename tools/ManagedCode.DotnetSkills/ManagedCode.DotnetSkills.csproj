@@ -47,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NuGet.Versioning" Version="7.3.0" />
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
   </ItemGroup>
 

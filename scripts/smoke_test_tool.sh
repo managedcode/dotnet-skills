@@ -32,6 +32,10 @@ dotnet tool install \
   --add-source "$package_source"
 
 export PATH="$tool_path:$PATH"
+export DOTNET_SKILLS_SKIP_UPDATE_CHECK=1
+
+dotnet skills version --no-check > "$skills_path/version.txt"
+grep -q "dotnet-skills" "$skills_path/version.txt"
 
 dotnet skills list --target "$skills_path" > "$skills_path/list.txt"
 grep -q "dotnet-aspire" "$skills_path/list.txt"

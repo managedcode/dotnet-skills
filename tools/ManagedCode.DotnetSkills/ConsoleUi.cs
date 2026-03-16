@@ -196,6 +196,39 @@ internal static class ConsoleUi
         AnsiConsole.Write(new Panel(grid).Header("Synced catalog").Expand());
     }
 
+    public static void RenderVersionSummary(string currentVersion, ToolUpdateStatusInfo? status)
+    {
+        WriteTitle("dotnet skills version");
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().NoWrap());
+        grid.AddColumn();
+        grid.AddRow(new Markup("[grey]Package[/]"), new Markup(ToolVersionInfo.PackageId));
+        grid.AddRow(new Markup("[grey]Current[/]"), new Markup(Escape(currentVersion)));
+        grid.AddRow(new Markup("[grey]Build[/]"), new Markup(ToolVersionInfo.IsDevelopmentBuild ? "local development build" : "published tool build"));
+
+        if (status is not null)
+        {
+            grid.AddRow(new Markup("[grey]Latest NuGet[/]"), new Markup(Escape(status.LatestVersion ?? "unknown")));
+            grid.AddRow(new Markup("[grey]Status[/]"), new Markup(FormatToolUpdateState(status.State)));
+
+            if (status.CheckedAt is not null)
+            {
+                grid.AddRow(
+                    new Markup("[grey]Checked[/]"),
+                    new Markup($"{Escape(status.CheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss zzz"))}{(status.UsedCachedValue ? " [grey](cached)[/]" : string.Empty)}"));
+            }
+        }
+
+        AnsiConsole.Write(new Panel(grid).Header("Version").Expand());
+
+        if (status?.HasUpdate == true)
+        {
+            AnsiConsole.WriteLine();
+            AnsiConsole.Write(BuildUpdateCommandPanel(status));
+        }
+    }
+
     public static void RenderUsage()
     {
         WriteTitle("dotnet-skills");
@@ -204,6 +237,7 @@ internal static class ConsoleUi
         table.AddColumn("Command");
         table.AddColumn("Purpose");
         table.AddRow("[green]dotnet skills list[/]", "Show installed catalog skills, available catalog skills, and quick follow-up commands.");
+        table.AddRow("[green]dotnet skills version[/]", "Show the current tool version and check whether NuGet has a newer release.");
         table.AddRow("[green]dotnet skills recommend[/]", "Scan `*.csproj` files and suggest the most relevant `dotnet-*` skills to install.");
         table.AddRow("[green]dotnet skills install aspire orleans[/]", "Install one or more skills by slug or short alias.");
         table.AddRow("[green]dotnet skills remove --all[/]", "Remove installed catalog skills from the selected target.");
@@ -216,11 +250,14 @@ internal static class ConsoleUi
         var notes = string.Join(
             Environment.NewLine,
             "- `list`, `recommend`, `install`, and `update` use the latest `catalog-v*` GitHub release by default.",
+            "- `dotnet skills version` and `dotnet skills --version` both show the current tool version.",
+            "- Use `dotnet skills version --no-check` when you only want the local installed version without a NuGet lookup.",
             "- `list --installed-only` and `list --local` are equivalent shortcuts for the installed inventory view; `list --available-only` shows only the remaining catalog.",
             "- `--bundled` skips the network and uses the catalog packaged with the tool.",
             "- `--catalog-version <version>` pins a specific remote catalog release.",
             "- `--refresh` forces `install` or `update` to redownload the selected remote catalog first.",
             "- Short aliases work everywhere: `aspire` resolves to `dotnet-aspire`.",
+            "- Set `DOTNET_SKILLS_SKIP_UPDATE_CHECK=1` to suppress automatic tool update notices on startup.",
             "- Auto target detection probes `.codex`, `.claude`, `.github`, `.gemini`, and `.agents`; if none exist, it falls back to `./skills`.");
 
         AnsiConsole.Write(new Panel(new Markup(Escape(notes))).Header("Notes").Expand());
@@ -229,6 +266,18 @@ internal static class ConsoleUi
     public static void WriteWarning(string message)
     {
         AnsiConsole.MarkupLine($"[yellow]Warning:[/] {Escape(message)}");
+    }
+
+    public static void RenderToolUpdateNotice(ToolUpdateStatusInfo status)
+    {
+        if (!status.HasUpdate)
+        {
+            return;
+        }
+
+        Console.Error.WriteLine($"Tool update available: current {status.CurrentVersion}, latest {status.LatestVersion}.");
+        Console.Error.WriteLine("Update: dotnet tool update --global dotnet-skills");
+        Console.Error.WriteLine("If installed via a local tool manifest: dotnet tool update dotnet-skills");
     }
 
     private static void WriteTitle(string title)
@@ -271,6 +320,21 @@ internal static class ConsoleUi
         }
 
         return new Panel(grid).Header("Summary").Expand();
+    }
+
+    private static Panel BuildUpdateCommandPanel(ToolUpdateStatusInfo status)
+    {
+        var lines = string.Join(
+            Environment.NewLine,
+            $"A newer [bold]{Escape(status.LatestVersion ?? "unknown")}[/] release is available on NuGet. Current: [bold]{Escape(status.CurrentVersion)}[/].",
+            string.Empty,
+            "Global tool:",
+            $"[green]{Escape("dotnet tool update --global dotnet-skills")}[/]",
+            string.Empty,
+            "Local tool manifest:",
+            $"[green]{Escape("dotnet tool update dotnet-skills")}[/]");
+
+        return new Panel(new Markup(lines)).Expand();
     }
 
     private static Panel BuildRecommendationPanel(ProjectScanResult scanResult, SkillCatalogPackage catalog, SkillInstallLayout layout)
@@ -410,6 +474,15 @@ internal static class ConsoleUi
             ? $"[green]Installed {Escape(installed.InstalledVersion)}[/]"
             : $"[yellow]Update to {Escape(installed.Skill.Version)}[/]";
     }
+
+    private static string FormatToolUpdateState(ToolUpdateState state) => state switch
+    {
+        ToolUpdateState.Current => "[green]Current[/]",
+        ToolUpdateState.UpdateAvailable => "[yellow]Update available[/]",
+        ToolUpdateState.DevelopmentBuild => "[grey]Local development build[/]",
+        ToolUpdateState.Unknown => "[grey]Latest version unavailable[/]",
+        _ => Escape(state.ToString()),
+    };
 
     private static string Escape(string value) => Markup.Escape(value);
 

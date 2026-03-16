@@ -26,6 +26,11 @@ internal static class Program
         }
 
         var command = args[0];
+        if (IsVersionCommand(command))
+        {
+            return await RunVersionAsync(args[1..]);
+        }
+
         if (IsHelpCommand(command))
         {
             WriteUsage();
@@ -40,9 +45,39 @@ internal static class Program
             "remove" => await RunRemoveAsync(args[1..]),
             "update" => await RunUpdateAsync(args[1..]),
             "sync" => await RunSyncAsync(args[1..]),
-            "where" => RunWhere(args[1..]),
+            "where" => await RunWhereAsync(args[1..]),
             _ => UnknownCommand(command),
         };
+    }
+
+    private static async Task<int> RunVersionAsync(string[] args)
+    {
+        string? cachePath = null;
+        var checkLatest = true;
+
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--cache-dir":
+                    cachePath = ReadValue(args, ++index, "--cache-dir");
+                    break;
+                case "--no-check":
+                    checkLatest = false;
+                    break;
+                default:
+                    return UnknownCommand($"version {string.Join(' ', args)}");
+            }
+        }
+
+        ToolUpdateStatusInfo? status = null;
+        if (checkLatest)
+        {
+            status = await CreateToolUpdateService().GetStatusAsync(ResolveCacheRoot(cachePath), includeDevelopmentBuilds: true, CancellationToken.None);
+        }
+
+        ConsoleUi.RenderVersionSummary(ToolVersionInfo.CurrentVersion, status);
+        return 0;
     }
 
     private static async Task<int> RunListAsync(string[] args)
@@ -99,6 +134,8 @@ internal static class Program
             throw new InvalidOperationException("Use either --installed-only/--local or --available-only, not both.");
         }
 
+        await MaybeShowToolUpdateAsync(cachePath);
+
         var catalog = await ResolveCatalogForDisplayAsync(bundledOnly, cachePath, catalogVersion);
         var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
         var installer = new SkillInstaller(catalog);
@@ -152,6 +189,8 @@ internal static class Program
                     return UnknownCommand($"recommend {string.Join(' ', args)}");
             }
         }
+
+        await MaybeShowToolUpdateAsync(cachePath);
 
         var catalog = await ResolveCatalogForDisplayAsync(bundledOnly, cachePath, catalogVersion);
         var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
@@ -218,6 +257,8 @@ internal static class Program
             }
         }
 
+        await MaybeShowToolUpdateAsync(cachePath);
+
         var catalog = await ResolveCatalogForInstallAsync(bundledOnly, cachePath, catalogVersion, refreshCatalog);
         var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
         var installer = new SkillInstaller(catalog);
@@ -281,6 +322,8 @@ internal static class Program
         {
             throw new InvalidOperationException("Specify one or more skills to remove, or use `dotnet skills remove --all`.");
         }
+
+        await MaybeShowToolUpdateAsync(cachePath);
 
         var catalog = await ResolveCatalogForDisplayAsync(bundledOnly, cachePath, catalogVersion);
         var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
@@ -354,6 +397,8 @@ internal static class Program
             }
         }
 
+        await MaybeShowToolUpdateAsync(cachePath);
+
         var catalog = await ResolveCatalogForInstallAsync(bundledOnly, cachePath, catalogVersion, refreshCatalog);
         var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
         var installer = new SkillInstaller(catalog);
@@ -393,7 +438,7 @@ internal static class Program
         return 0;
     }
 
-    private static int RunWhere(string[] args)
+    private static async Task<int> RunWhereAsync(string[] args)
     {
         string? targetPath = null;
         string? projectDirectory = null;
@@ -420,6 +465,8 @@ internal static class Program
                     return UnknownCommand($"where {string.Join(' ', args)}");
             }
         }
+
+        await MaybeShowToolUpdateAsync(cachePath: null);
 
         var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
         Console.WriteLine(layout.PrimaryPath);
@@ -449,6 +496,8 @@ internal static class Program
                     return UnknownCommand($"sync {string.Join(' ', args)}");
             }
         }
+
+        await MaybeShowToolUpdateAsync(cachePath);
 
         var client = CreateReleaseClient(cachePath);
         var catalog = await client.SyncAsync(catalogVersion, force, CancellationToken.None);
@@ -504,11 +553,7 @@ internal static class Program
 
     private static GitHubCatalogReleaseClient CreateReleaseClient(string? cachePath)
     {
-        var cacheRoot = string.IsNullOrWhiteSpace(cachePath)
-            ? GitHubCatalogReleaseClient.ResolveDefaultCacheDirectory()
-            : new DirectoryInfo(Path.GetFullPath(cachePath));
-
-        return new GitHubCatalogReleaseClient(cacheRoot);
+        return new GitHubCatalogReleaseClient(ResolveCacheRoot(cachePath));
     }
 
     private static async Task<DirectoryInfo> MaterializeManifestOnlyCatalogAsync(DirectoryInfo cacheRoot, SkillManifest manifest, string? catalogVersion)
@@ -628,6 +673,30 @@ internal static class Program
         string.Equals(command, "help", StringComparison.OrdinalIgnoreCase)
         || string.Equals(command, "--help", StringComparison.OrdinalIgnoreCase)
         || string.Equals(command, "-h", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsVersionCommand(string command) =>
+        string.Equals(command, "version", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(command, "--version", StringComparison.OrdinalIgnoreCase);
+
+    private static DirectoryInfo ResolveCacheRoot(string? cachePath) => string.IsNullOrWhiteSpace(cachePath)
+        ? GitHubCatalogReleaseClient.ResolveDefaultCacheDirectory()
+        : new DirectoryInfo(Path.GetFullPath(cachePath));
+
+    private static ToolUpdateService CreateToolUpdateService() => new(new NuGetPackageVersionClient());
+
+    private static async Task MaybeShowToolUpdateAsync(string? cachePath)
+    {
+        if (ToolUpdateService.ShouldSkipAutomaticCheck())
+        {
+            return;
+        }
+
+        var status = await CreateToolUpdateService().GetStatusAsync(ResolveCacheRoot(cachePath), includeDevelopmentBuilds: false, CancellationToken.None);
+        if (status.HasUpdate)
+        {
+            ConsoleUi.RenderToolUpdateNotice(status);
+        }
+    }
 
     private static int UnknownCommand(string command)
     {
