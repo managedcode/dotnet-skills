@@ -79,7 +79,7 @@ skills/<skill-name>/
 
 <!-- BEGIN GENERATED CATALOG -->
 
-This catalog currently contains **62** skills.
+This catalog currently contains **63** skills.
 
 ### Core
 
@@ -124,6 +124,7 @@ This catalog currently contains **62** skills.
 
 | Skill | Version | Description |
 |-------|---------|-------------|
+| [`dotnet-libvlc`](skills/dotnet-libvlc/) | `1.0.0` | Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding. |
 | [`dotnet-winforms`](skills/dotnet-winforms/) | `1.0.0` | Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, and migration to modern .NET. |
 | [`dotnet-winui`](skills/dotnet-winui/) | `1.0.0` | Build or review WinUI 3 applications with the Windows App SDK, modern Windows desktop patterns, packaging decisions, and interop boundaries with other .NET stacks. |
 | [`dotnet-wpf`](skills/dotnet-wpf/) | `1.0.0` | Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions. |
@@ -337,5 +338,6 @@ This catalog builds on the work of many open-source projects and their authors:
 | [Semantic Kernel](https://github.com/microsoft/semantic-kernel) | Microsoft | MIT |
 | [Entity Framework Core](https://github.com/dotnet/efcore) | Microsoft, .NET Foundation | MIT |
 | [ML.NET](https://github.com/dotnet/machinelearning) | Microsoft, .NET Foundation | MIT |
+| [LibVLCSharp](https://github.com/videolan/libvlcsharp) | VideoLAN | LGPL-2.1 |
 
 *Want your project credited? Add a skill and include yourself in this list!*
