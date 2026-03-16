@@ -1,0 +1,98 @@
+{
+  "agents": [
+    {
+      "name": "dotnet-ai",
+      "title": ".NET AI",
+      "description": "AI-focused orchestration agent for Semantic Kernel, Microsoft Agent Framework, Microsoft.Extensions.AI, MCP, and ML.NET. Use when the dominant problem is LLM integration, agent workflows, tool calling, embeddings, or .NET AI platform selection.",
+      "skills": [
+        "dotnet-semantic-kernel",
+        "dotnet-microsoft-agent-framework",
+        "dotnet-microsoft-extensions-ai",
+        "dotnet-mcp",
+        "dotnet-mlnet",
+        "dotnet-mixed-reality"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "path": "agents/dotnet-ai/"
+    },
+    {
+      "name": "dotnet-build",
+      "title": ".NET Build",
+      "description": "Build-focused orchestration agent for .NET restore, build, test, packaging, CI failures, diagnostics, and environment drift. Use when the dominant problem is getting a .NET solution to restore, build, pack, or pass automation reliably.",
+      "skills": [
+        "dotnet-project-setup",
+        "dotnet-quality-ci",
+        "dotnet-code-analysis",
+        "dotnet-profiling",
+        "dotnet-coverlet",
+        "dotnet-reportgenerator"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "path": "agents/dotnet-build/"
+    },
+    {
+      "name": "dotnet-data",
+      "title": ".NET Data",
+      "description": "Data-access orchestration agent for EF Core, EF6, migrations, query translation, modeling, and persistence strategy decisions. Use when the dominant question is how a .NET app reads, writes, models, or migrates relational data.",
+      "skills": [
+        "dotnet-entity-framework-core",
+        "dotnet-entity-framework6",
+        "dotnet-managedcode-storage",
+        "dotnet-managedcode-markitdown"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "path": "agents/dotnet-data/"
+    },
+    {
+      "name": "dotnet-modernization",
+      "title": ".NET Modernization",
+      "description": "Modernization orchestration agent for upgrades, legacy migrations, compatibility planning, and staged adoption of modern .NET patterns. Use when the main problem is moving old .NET code or architecture toward a modern target without reckless rewrites.",
+      "skills": [
+        "dotnet-modern-csharp",
+        "dotnet-project-setup",
+        "dotnet-legacy-aspnet",
+        "dotnet-wcf",
+        "dotnet-workflow-foundation",
+        "dotnet-entity-framework6"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "path": "agents/dotnet-modernization/"
+    },
+    {
+      "name": "dotnet-review",
+      "title": ".NET Review",
+      "description": "Review orchestration agent for .NET changes across bugs, regressions, analyzers, architecture, tests, and maintainability. Use when the main task is to review or harden a .NET change set rather than to implement a new feature from scratch.",
+      "skills": [
+        "dotnet-code-review",
+        "dotnet-code-analysis",
+        "dotnet-analyzer-config",
+        "dotnet-quality-ci",
+        "dotnet-netarchtest",
+        "dotnet-archunitnet",
+        "dotnet-coverlet",
+        "dotnet-reportgenerator"
+      ],
+      "tools": "Read, Glob, Grep",
+      "model": "inherit",
+      "path": "agents/dotnet-review/"
+    },
+    {
+      "name": "dotnet-router",
+      "title": ".NET Router",
+      "description": "Broad .NET triage agent that classifies the repo and routes work to the right skills or specialist agents. Use for ambiguous or multi-domain .NET requests touching web, data, AI, build, UI, testing, or modernization.",
+      "skills": [
+        "dotnet",
+        "dotnet-architecture",
+        "dotnet-project-setup",
+        "dotnet-code-review"
+      ],
+      "tools": "Read, Glob, Grep, Bash",
+      "model": "inherit",
+      "path": "agents/dotnet-router/"
+    }
+  ]
+}

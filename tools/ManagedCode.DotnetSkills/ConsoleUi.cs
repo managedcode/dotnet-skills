@@ -284,6 +284,9 @@ internal static class ConsoleUi
         table.AddRow("[green]dotnet skills update[/]", "Refresh already installed catalog skills to the selected catalog version.");
         table.AddRow("[green]dotnet skills sync --force[/]", "Refresh the cached remote catalog payload.");
         table.AddRow("[green]dotnet skills where[/]", "Print the resolved install path.");
+        table.AddRow("[green]dotnet skills agent list[/]", "List available orchestration agents.");
+        table.AddRow("[green]dotnet skills agent install router ai[/]", "Install orchestration agents by name.");
+        table.AddRow("[green]dotnet skills agent install --all --auto[/]", "Install all agents to all detected platforms.");
         AnsiConsole.Write(table);
         AnsiConsole.WriteLine();
 
@@ -291,6 +294,7 @@ internal static class ConsoleUi
             Environment.NewLine,
             "- `list`, `recommend`, `install`, and `update` use the latest `catalog-v*` GitHub release by default.",
             "- `dotnet skills version` and `dotnet skills --version` both show the current tool version.",
+            "- The bare `dotnet skills` usage view and `help` path also run the automatic tool update check before rendering help.",
             "- Use `dotnet skills version --no-check` when you only want the local installed version without a NuGet lookup.",
             "- `list` stays compact: it shows the current installed inventory and a grouped category summary for the remaining catalog.",
             "- `list --installed-only` and `list --local` are equivalent shortcuts for the installed inventory view; `list --available-only` expands the remaining catalog into per-category skill tables with short summaries.",
@@ -635,6 +639,224 @@ internal static class ConsoleUi
     private static string ToAlias(string skillName) => skillName.StartsWith("dotnet-", StringComparison.OrdinalIgnoreCase)
         ? skillName["dotnet-".Length..]
         : skillName;
+
+    public static void RenderAgentList(
+        AgentCatalogPackage catalog,
+        AgentInstallLayout layout,
+        IReadOnlyList<InstalledAgentRecord> installedAgents)
+    {
+        WriteTitle("dotnet skills agent list");
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().NoWrap());
+        grid.AddColumn();
+        grid.AddRow(new Markup("[grey]Catalog agents[/]"), new Markup(catalog.Agents.Count.ToString()));
+        grid.AddRow(new Markup("[grey]Agent platform[/]"), new Markup(Escape(layout.Agent.ToString())));
+        grid.AddRow(new Markup("[grey]Scope[/]"), new Markup(Escape(layout.Scope.ToString())));
+        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
+        grid.AddRow(new Markup("[grey]Mode[/]"), new Markup(FormatAgentInstallMode(layout.Mode)));
+        grid.AddRow(new Markup("[grey]Installed[/]"), new Markup($"{installedAgents.Count} of {catalog.Agents.Count} agents"));
+        AnsiConsole.Write(new Panel(grid).Header("Session").Expand());
+        AnsiConsole.WriteLine();
+
+        if (catalog.Agents.Count == 0)
+        {
+            AnsiConsole.Write(new Panel(new Markup("No agents available in the catalog."))
+                .Header("Agents")
+                .Expand());
+            return;
+        }
+
+        var table = new Table().Expand();
+        table.Title = new TableTitle("Available orchestration agents");
+        table.AddColumn("Agent");
+        table.AddColumn("Status");
+        table.AddColumn("Skills");
+        table.AddColumn("Description");
+
+        foreach (var agent in catalog.Agents.OrderBy(a => a.Name, StringComparer.Ordinal))
+        {
+            var isInstalled = installedAgents.Any(i => string.Equals(i.Agent.Name, agent.Name, StringComparison.OrdinalIgnoreCase));
+            var skillsList = agent.Skills.Count > 0
+                ? string.Join(", ", agent.Skills.Take(3).Select(ToAlias))
+                  + (agent.Skills.Count > 3 ? $" (+{agent.Skills.Count - 3})" : "")
+                : "-";
+
+            table.AddRow(
+                $"[bold]{Escape(ToAlias(agent.Name))}[/]",
+                isInstalled ? "[green]Installed[/]" : "[grey]Not installed[/]",
+                Escape(skillsList),
+                Escape(CompactDescription(agent.Description)));
+        }
+
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
+
+        var notInstalled = catalog.Agents
+            .Where(a => !installedAgents.Any(i => string.Equals(i.Agent.Name, a.Name, StringComparison.OrdinalIgnoreCase)))
+            .Take(3)
+            .Select(a => ToAlias(a.Name))
+            .ToArray();
+
+        if (notInstalled.Length > 0)
+        {
+            AnsiConsole.Write(new Panel(new Markup(
+                $"Install agents:{Environment.NewLine}[green]dotnet skills agent install {string.Join(' ', notInstalled)}[/]{Environment.NewLine}{Environment.NewLine}" +
+                $"Install to all detected platforms:{Environment.NewLine}[green]dotnet skills agent install {string.Join(' ', notInstalled)} --auto[/]"))
+                .Header("Quick commands")
+                .Expand());
+        }
+    }
+
+    public static void RenderAgentInstallSummary(
+        AgentCatalogPackage catalog,
+        AgentInstallLayout layout,
+        IReadOnlyList<AgentEntry> agents,
+        AgentInstallSummary summary)
+    {
+        WriteTitle("dotnet skills agent install");
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().NoWrap());
+        grid.AddColumn();
+        grid.AddRow(new Markup("[grey]Agent platform[/]"), new Markup(Escape(layout.Agent.ToString())));
+        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
+        grid.AddRow(new Markup("[grey]Mode[/]"), new Markup(FormatAgentInstallMode(layout.Mode)));
+        grid.AddRow(new Markup("[grey]Installed[/]"), new Markup(summary.InstalledCount.ToString()));
+        grid.AddRow(new Markup("[grey]Skipped[/]"), new Markup(summary.SkippedExisting.Count.ToString()));
+        AnsiConsole.Write(new Panel(grid).Header("Summary").Expand());
+        AnsiConsole.WriteLine();
+
+        if (agents.Count > 0)
+        {
+            var table = new Table().Expand();
+            table.Title = new TableTitle("Installed agents");
+            table.AddColumn("Agent");
+            table.AddColumn("Skills");
+            table.AddColumn("Status");
+
+            foreach (var agent in agents.OrderBy(a => a.Name, StringComparer.Ordinal))
+            {
+                var wasSkipped = summary.SkippedExisting.Contains(agent.Name, StringComparer.OrdinalIgnoreCase);
+                var skillsList = agent.Skills.Count > 0
+                    ? string.Join(", ", agent.Skills.Take(4).Select(ToAlias))
+                    : "-";
+
+                table.AddRow(
+                    $"[bold]{Escape(ToAlias(agent.Name))}[/]",
+                    Escape(skillsList),
+                    wasSkipped ? "[grey]Skipped (exists)[/]" : "[green]Installed[/]");
+            }
+
+            AnsiConsole.Write(table);
+            AnsiConsole.WriteLine();
+        }
+
+        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("Next step").Expand());
+    }
+
+    public static void RenderAgentInstallSummaryMultiple(
+        AgentCatalogPackage catalog,
+        IReadOnlyList<AgentInstallLayout> layouts,
+        IReadOnlyList<AgentEntry> agents,
+        AgentInstallSummary summary)
+    {
+        WriteTitle("dotnet skills agent install");
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().NoWrap());
+        grid.AddColumn();
+        grid.AddRow(new Markup("[grey]Platforms detected[/]"), new Markup(layouts.Count.ToString()));
+        grid.AddRow(new Markup("[grey]Agents selected[/]"), new Markup(agents.Count.ToString()));
+        grid.AddRow(new Markup("[grey]Total installed[/]"), new Markup(summary.InstalledCount.ToString()));
+        AnsiConsole.Write(new Panel(grid).Header("Summary").Expand());
+        AnsiConsole.WriteLine();
+
+        var table = new Table().Expand();
+        table.Title = new TableTitle("Install targets");
+        table.AddColumn("Platform");
+        table.AddColumn("Mode");
+        table.AddColumn("Path");
+
+        foreach (var layout in layouts)
+        {
+            table.AddRow(
+                Escape(layout.Agent.ToString()),
+                FormatAgentInstallMode(layout.Mode),
+                Escape(layout.PrimaryRoot.FullName));
+        }
+
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
+
+        var agentTable = new Table().Expand();
+        agentTable.Title = new TableTitle("Installed agents");
+        agentTable.AddColumn("Agent");
+        agentTable.AddColumn("Skills");
+
+        foreach (var agent in agents.OrderBy(a => a.Name, StringComparer.Ordinal))
+        {
+            var skillsList = agent.Skills.Count > 0
+                ? string.Join(", ", agent.Skills.Take(4).Select(ToAlias))
+                : "-";
+
+            agentTable.AddRow(
+                $"[bold]{Escape(ToAlias(agent.Name))}[/]",
+                Escape(skillsList));
+        }
+
+        AnsiConsole.Write(agentTable);
+        AnsiConsole.WriteLine();
+
+        var hints = string.Join(Environment.NewLine, layouts.Select(l => $"• {l.Agent}: {l.ReloadHint}"));
+        AnsiConsole.Write(new Panel(new Markup(Escape(hints))).Header("Next steps").Expand());
+    }
+
+    public static void RenderAgentRemoveSummary(
+        AgentCatalogPackage catalog,
+        AgentInstallLayout layout,
+        IReadOnlyList<AgentEntry> agents,
+        AgentRemoveSummary summary)
+    {
+        WriteTitle("dotnet skills agent remove");
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().NoWrap());
+        grid.AddColumn();
+        grid.AddRow(new Markup("[grey]Agent platform[/]"), new Markup(Escape(layout.Agent.ToString())));
+        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
+        grid.AddRow(new Markup("[grey]Removed[/]"), new Markup(summary.RemovedCount.ToString()));
+        grid.AddRow(new Markup("[grey]Missing[/]"), new Markup(summary.MissingAgents.Count.ToString()));
+        AnsiConsole.Write(new Panel(grid).Header("Summary").Expand());
+        AnsiConsole.WriteLine();
+
+        if (agents.Count > 0)
+        {
+            var table = new Table().Expand();
+            table.Title = new TableTitle("Remove results");
+            table.AddColumn("Agent");
+            table.AddColumn("Status");
+
+            foreach (var agent in agents.OrderBy(a => a.Name, StringComparer.Ordinal))
+            {
+                var wasMissing = summary.MissingAgents.Contains(agent.Name, StringComparer.OrdinalIgnoreCase);
+
+                table.AddRow(
+                    $"[bold]{Escape(ToAlias(agent.Name))}[/]",
+                    wasMissing ? "[grey]Missing[/]" : "[red]Removed[/]");
+            }
+
+            AnsiConsole.Write(table);
+        }
+    }
+
+    private static string FormatAgentInstallMode(AgentInstallMode mode) => mode switch
+    {
+        AgentInstallMode.RawAgentPayloads => "Raw agent payloads",
+        AgentInstallMode.ClaudeSubagents => "Claude subagents",
+        AgentInstallMode.CopilotAgents => "Copilot agents (.agent.md)",
+        _ => Escape(mode.ToString()),
+    };
 }
 
 internal sealed record ScopeInventoryRow(

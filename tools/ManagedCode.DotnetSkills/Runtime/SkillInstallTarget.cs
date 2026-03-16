@@ -164,13 +164,14 @@ internal static class SkillInstallTarget
     {
         var rootDirectory = ResolveProjectRoot(projectDirectory);
 
-        if (Directory.Exists(Path.Combine(rootDirectory, ".codex")))
+        // Codex uses .agents/skills/ for project-level skills
+        if (Directory.Exists(Path.Combine(rootDirectory, ".agents")) || Directory.Exists(Path.Combine(rootDirectory, ".codex")))
         {
             return new SkillInstallLayout(
                 AgentPlatform.Codex,
                 InstallScope.Project,
                 SkillInstallMode.RawSkillPayloads,
-                new DirectoryInfo(Path.Combine(rootDirectory, ".codex", "skills")),
+                new DirectoryInfo(Path.Combine(rootDirectory, ".agents", "skills")),
                 IsExplicitTarget: false);
         }
 
@@ -219,7 +220,7 @@ internal static class SkillInstallTarget
         return agent switch
         {
             AgentPlatform.Auto => ResolveAutoProject(rootDirectory),
-            AgentPlatform.Codex => new SkillInstallLayout(agent, InstallScope.Project, SkillInstallMode.RawSkillPayloads, new DirectoryInfo(Path.Combine(rootDirectory, ".codex", "skills")), IsExplicitTarget: false),
+            AgentPlatform.Codex => new SkillInstallLayout(agent, InstallScope.Project, SkillInstallMode.RawSkillPayloads, new DirectoryInfo(Path.Combine(rootDirectory, ".agents", "skills")), IsExplicitTarget: false),
             AgentPlatform.Claude => new SkillInstallLayout(
                 agent,
                 InstallScope.Project,
@@ -244,7 +245,8 @@ internal static class SkillInstallTarget
             return new DirectoryInfo(Path.Combine(codexHome, "skills"));
         }
 
-        return new DirectoryInfo(Path.Combine(userHome, ".codex", "skills"));
+        // Codex uses ~/.agents/skills/ for global skills
+        return new DirectoryInfo(Path.Combine(userHome, ".agents", "skills"));
     }
 
     private static DirectoryInfo ResolveGeminiGlobal(string userHome)

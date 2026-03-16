@@ -47,10 +47,16 @@ dotnet skills install blazor --agent claude # install for a specific agent
 | `dotnet skills update [skill...]` | Update installed catalog skills to the selected catalog version |
 | `dotnet skills sync` | Download latest catalog |
 | `dotnet skills where` | Show install paths |
+| `dotnet skills agent list` | List available orchestration agents |
+| `dotnet skills agent install <agent...>` | Install orchestration agents |
+| `dotnet skills agent install router --auto` | Install agents to all detected platforms |
+| `dotnet skills agent remove <agent...>` | Remove installed agents |
 
 Use `--agent` to target a specific agent, `--scope` to choose global or project install. Use `dotnet skills list --installed-only` or the shorter `dotnet skills list --local` when you only want the installed inventory, or `--available-only` when you want the detailed category-by-category breakdown of the remaining catalog. The default `list` view stays compact: it shows the current target inventory, compares project/global scope when that comparison is meaningful, and keeps the remaining catalog as a short category summary instead of dumping one giant description table. The CLI renders rich terminal tables by default so you can quickly see installed versions, update candidates, install commands, and when a newer `dotnet-skills` package is available on NuGet. `dotnet skills --version` is a shortcut for the version view.
 
 `dotnet skills recommend` is a scan-only command: it inspects local project files, proposes a skill list, and prints the install command you can run if you agree with the recommendations. It does not install anything automatically.
+
+The bare `dotnet skills` usage view and `help` path also perform the automatic self-update check, so an outdated tool still tells you to upgrade before it renders the command table.
 
 Use `dotnet skills version --no-check` when you only want the local installed tool version without calling NuGet. Set `DOTNET_SKILLS_SKIP_UPDATE_CHECK=1` if you want to suppress automatic update notices during normal command startup.
 
@@ -58,20 +64,78 @@ Catalog releases are published automatically from `main` when `skills/` or catal
 
 ## Agent Support
 
+### Skills Installation Paths
+
 | Agent | Global | Project |
 |-------|--------|---------|
 | Claude | `~/.claude/agents/` | `.claude/agents/` |
 | Copilot | `~/.copilot/skills/` | `.github/skills/` |
 | Gemini | `~/.gemini/skills/` | `.gemini/skills/` |
-| Codex | `~/.codex/skills/` | `.codex/skills/` |
+| Codex | `~/.agents/skills/` | `.agents/skills/` |
 
-When `--agent` is omitted, the tool auto-detects your project layout.
+### Orchestration Agents Installation Paths
 
-## Skill Layout
+| Agent | Global | Project |
+|-------|--------|---------|
+| Claude | `~/.claude/agents/` | `.claude/agents/` |
+| Copilot | — | `.github/agents/` |
+| Gemini | `~/.gemini/agents/` | `.gemini/agents/` |
+| Codex | `~/.agents/skills/` | `.agents/skills/` |
+
+When `--agent` is omitted, the tool auto-detects your project layout by checking for `.codex/`, `.claude/`, `.github/`, `.gemini/`, or `.agents/` directories.
+
+## Orchestration Agents
+
+This repository now tracks a parallel agent layer above the skill catalog.
+
+- `skills/` remain the canonical reusable `dotnet-*` building blocks.
+- top-level `agents/<agent>/AGENT.md` folders hold broad orchestration agents for routing, review, modernization, or other grouped flows that span multiple skills.
+- `skills/<skill>/agents/<agent>/AGENT.md` can hold tightly coupled specialist agents that should ship next to one skill and use that skill as their main implementation source.
+- every agent gets its own folder so it can carry references, assets, scripts, and future installer metadata.
+- an agent can therefore represent either a grouped pack of related skills or a narrow companion to one specific skill.
+- the current `dotnet-skills` CLI remains skill-first; repo-owned agents can evolve and ship on their own track.
+- runtime-specific `.agent.md` or native Claude files should be treated as install adapters, not as the canonical repo source format.
+
+```mermaid
+flowchart LR
+  A["User or coding platform request"] --> B{"Broad cross-domain task?"}
+  B -->|Yes| C["agents/<agent>/AGENT.md"]
+  B -->|No, skill-specific| D["skills/<skill>/agents/<agent>/AGENT.md"]
+  C --> E["Route into skills/*"]
+  D --> E
+  E --> F["Apply narrow implementation guidance from SKILL.md"]
+```
+
+### Starter Agents
+
+| Agent | Scope | Primary routing |
+|-------|-------|-----------------|
+| [`dotnet-router`](agents/dotnet-router/AGENT.md) | top-level | classify web, data, AI, build, UI, testing, and modernization work |
+| [`dotnet-build`](agents/dotnet-build/AGENT.md) | top-level | restore, build, pack, CI, diagnostics |
+| [`dotnet-data`](agents/dotnet-data/AGENT.md) | top-level | EF Core, EF6, migrations, query issues |
+| [`dotnet-ai`](agents/dotnet-ai/AGENT.md) | top-level | Semantic Kernel, Microsoft Agent Framework, Microsoft.Extensions.AI, MCP, ML.NET |
+| [`dotnet-modernization`](agents/dotnet-modernization/AGENT.md) | top-level | upgrade, migration, and legacy modernization |
+| [`dotnet-review`](agents/dotnet-review/AGENT.md) | top-level | code review, analyzers, testing, architecture |
+
+## Repository Layout
 
 ```text
+agents/
+├── README.md
+└── <agent-name>/
+    ├── AGENT.md
+    ├── scripts/       # optional
+    ├── references/    # optional
+    └── assets/        # optional
+
 skills/<skill-name>/
 ├── SKILL.md          # required
+├── agents/           # optional skill-scoped agents
+│   └── <agent-name>/
+│       ├── AGENT.md
+│       ├── scripts/    # optional
+│       ├── references/ # optional
+│       └── assets/     # optional
 ├── scripts/          # optional
 ├── references/       # optional
 └── assets/           # optional
@@ -217,7 +281,7 @@ This catalog currently contains **63** skills.
 
 This repository does not guess what to monitor.
 
-It watches only the sources explicitly listed in [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json). That file is the human-maintained source of truth for:
+It watches only the sources explicitly listed in [`.github/upstream-watch.json`](.github/upstream-watch.json). That file is the human-maintained source of truth for:
 
 - GitHub release streams that should trigger skill review
 - documentation pages that should trigger skill review
@@ -269,7 +333,7 @@ That is enough for normal maintenance.
 `scripts/upstream_watch.py` derives the watch kind, ids, source coordinates, display names, and default notes at runtime.
 Use optional fields only when you really need them, for example `match_tag_regex` for mixed release streams or `id` for a stable legacy key.
 
-If you add a new library or framework and want this repo to keep watching it, the actual how-to is in [CONTRIBUTING.md](/Users/ksemenenko/Developer/dotnet-skills/CONTRIBUTING.md#upstream-watch-entries).
+If you add a new library or framework and want this repo to keep watching it, the actual how-to is in [CONTRIBUTING.md](CONTRIBUTING.md#upstream-watch-entries).
 
 ## Contributing
 
@@ -284,6 +348,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 ## Credits
 
 This catalog builds on the work of many open-source projects and their authors:
+
+### Inspiration & Standards
+
+| Project | Authors | Description |
+|---------|---------|-------------|
+| [dotnet/skills](https://github.com/dotnet/skills) | Microsoft, .NET team | Official .NET skills repository that inspired our agent format and skill structure |
+| [Agent Skills Standard](https://agentskills.io) | Anthropic | Open specification for portable agent skill packages |
+| [Claude Code](https://code.claude.com) | Anthropic | Subagent architecture that shaped our orchestration agent design |
 
 ### Test Frameworks
 

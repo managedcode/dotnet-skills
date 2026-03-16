@@ -8,6 +8,7 @@ public sealed class SkillInstallTargetTests
     public void ResolveAutoProject_PrefersCodexRootBeforeOtherAgentFolders()
     {
         using var tempDirectory = new TemporaryDirectory();
+        // When .codex or .agents exists, Codex uses .agents/skills path per official Codex docs
         Directory.CreateDirectory(System.IO.Path.Combine(tempDirectory.Path, ".codex"));
         Directory.CreateDirectory(System.IO.Path.Combine(tempDirectory.Path, ".claude"));
         Directory.CreateDirectory(System.IO.Path.Combine(tempDirectory.Path, ".github"));
@@ -20,6 +21,7 @@ public sealed class SkillInstallTargetTests
 
         Assert.Equal(AgentPlatform.Codex, layout.Agent);
         Assert.Equal(SkillInstallMode.RawSkillPayloads, layout.Mode);
-        Assert.Equal(System.IO.Path.Combine(tempDirectory.Path, ".codex", "skills"), layout.PrimaryRoot.FullName);
+        // Codex uses .agents/skills for project-level skills (per official docs)
+        Assert.Equal(System.IO.Path.Combine(tempDirectory.Path, ".agents", "skills"), layout.PrimaryRoot.FullName);
     }
 }
