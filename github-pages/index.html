@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SDZKDYXG1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-7SDZKDYXG1');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dotnet-skills - AI Agent Skills for .NET</title>
+  <meta name="description" content="The definitive AI agent skill catalog for .NET developers. Install skills for Claude, Copilot, Gemini, and Codex.">
+  <meta name="keywords" content="dotnet, .NET, AI, skills, Claude, Copilot, Gemini, Codex, agent, developer tools">
+  <meta name="author" content="ManagedCode">
+  <meta property="og:title" content="dotnet-skills - AI Agent Skills for .NET">
+  <meta property="og:description" content="Stop explaining .NET to your AI. Install skills for Claude, Copilot, Gemini, and Codex.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --accent-primary: #FF7E5D;
+      --accent-gradient: linear-gradient(135deg, #FF7E5D 0%, #FF6B4A 100%);
+      --accent-light: #FFF0ED;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-primary);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-light);
+      color: var(--accent-primary);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .hero h1 .highlight {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin-bottom: 40px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    /* About Section */
+    .about-section {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 50px 40px;
+      margin: 40px 0;
+    }
+
+    .about-section h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .about-card {
+      text-align: center;
+    }
+
+    .about-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+
+    .about-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .about-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Install Section */
+    .install-section {
+      margin: 50px 0;
+    }
+
+    .install-section h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .install-section > p {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+    }
+
+    .install-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .code-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      position: relative;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .code-block .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .code-block code {
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      display: block;
+    }
+
+    .code-block .command {
+      color: var(--accent-primary);
+      font-weight: 500;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-light);
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    /* Commands Table Section */
+    .commands-section {
+      margin: 50px 0;
+    }
+
+    .commands-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .commands-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .commands-table th,
+    .commands-table td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .commands-table th {
+      background: var(--bg-secondary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .commands-table td:first-child {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: var(--accent-primary);
+      white-space: nowrap;
+    }
+
+    .commands-table td:last-child {
+      color: var(--text-secondary);
+    }
+
+    .commands-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .commands-table tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    /* Search */
+    .search-section {
+      margin: 50px 0 30px;
+    }
+
+    .search-section h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .search-section > p {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+    }
+
+    .search-box {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 4px var(--accent-light);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 24px 0;
+    }
+
+    .filter-tab {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 10px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      color: white;
+    }
+
+    .filter-tab .count {
+      background: rgba(0,0,0,0.08);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 6px;
+      font-size: 0.75rem;
+    }
+
+    .filter-tab.active .count {
+      background: rgba(255,255,255,0.25);
+    }
+
+    /* Skills Grid */
+    .skills-section {
+      margin: 40px 0 60px;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .skill-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .skill-card:hover {
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .skill-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .skill-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+    }
+
+    .skill-version {
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .skill-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .skill-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .skill-category {
+      background: var(--accent-light);
+      color: var(--accent-primary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .skill-install-cmd {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* Agents Section */
+    .agents-section {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 50px 40px;
+      margin: 60px 0;
+      text-align: center;
+    }
+
+    .agents-section h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .agents-section > p {
+      color: var(--text-secondary);
+      margin-bottom: 36px;
+    }
+
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .agent-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .agent-card:hover {
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .agent-name {
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+    }
+
+    .agent-paths {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .agent-paths code {
+      display: block;
+      margin: 6px 0;
+      color: var(--text-secondary);
+    }
+
+    .agent-paths .path-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-top: 8px;
+      margin-bottom: 2px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      text-align: center;
+      padding: 60px 0;
+    }
+
+    .cta-section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .cta-section p {
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      font-size: 1.1rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-secondary);
+      padding: 60px 0 40px;
+      margin-top: 60px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-brand p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .footer-column h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column li {
+      margin-bottom: 10px;
+    }
+
+    .footer-column a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .footer-column a:hover {
+      color: var(--accent-primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-color);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-bottom p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-bottom a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+
+    .footer-bottom a:hover {
+      text-decoration: underline;
+    }
+
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-muted);
+    }
+
+    .no-results-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .footer-content {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .hero {
+        padding: 50px 0 40px;
+      }
+
+      .about-section,
+      .agents-section {
+        padding: 30px 20px;
+      }
+
+      .nav-links {
+        gap: 16px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .footer-brand p {
+        max-width: none;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .commands-table {
+        font-size: 0.85rem;
+      }
+
+      .commands-table th,
+      .commands-table td {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="/" class="logo">
+        <span class="logo-dot"></span>
+        dotnet-skills
+      </a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#catalog">Catalog</a>
+        <a href="https://github.com/managedcode/dotnet-skills" target="_blank">GitHub</a>
+        <a href="https://www.nuget.org/packages/dotnet-skills" target="_blank">NuGet</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-badge">
+        <span>Open Source</span>
+      </div>
+      <h1>AI Agent Skills<br>for <span class="highlight">.NET Developers</span></h1>
+      <p>Stop explaining .NET to your AI. Install skills for Claude, Copilot, Gemini, and Codex. Make your AI agent actually understand modern .NET.</p>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="skill-count">62</div>
+          <div class="stat-label">Skills</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">4</div>
+          <div class="stat-label">AI Agents</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="category-count">14</div>
+          <div class="stat-label">Categories</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section" id="about">
+      <h2>Why dotnet-skills?</h2>
+      <p style="text-align: center; color: var(--text-secondary); max-width: 700px; margin: 0 auto;">
+        We've all been there: asking Claude to use Entity Framework, only to get EF6 patterns in a .NET 8 project.
+        Explaining to Copilot that Blazor Server and Blazor WebAssembly aren't the same thing.
+        This catalog fixes that.
+      </p>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-icon">🎯</div>
+          <h3>Modern Patterns</h3>
+          <p>Skills are maintained by the community and track official Microsoft documentation. No more outdated advice.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon">🔄</div>
+          <h3>Works Everywhere</h3>
+          <p>Same skills for Claude, Copilot, Gemini, and Codex. Install once, use across all your AI coding assistants.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon">👥</div>
+          <h3>Community Driven</h3>
+          <p>Missing a skill for your favorite library? Add it and help everyone. Open source and welcoming contributions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="install-section">
+      <h2>Quick Start</h2>
+      <p>Install the CLI tool and start adding skills to your AI agent in seconds</p>
+      <div class="install-grid">
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyToClipboard('dotnet tool install --global dotnet-skills')">Copy</button>
+          <div class="label">Step 1: Install CLI</div>
+          <code><span class="command">dotnet tool install</span> --global dotnet-skills</code>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyToClipboard('dotnet skills list')">Copy</button>
+          <div class="label">Step 2: Browse Skills</div>
+          <code><span class="command">dotnet skills list</span></code>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyToClipboard('dotnet skills install aspire blazor')">Copy</button>
+          <div class="label">Step 3: Install Skills</div>
+          <code><span class="command">dotnet skills install</span> aspire blazor</code>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyToClipboard('dotnet skills recommend')">Copy</button>
+          <div class="label">Or: Get Recommendations</div>
+          <code><span class="command">dotnet skills recommend</span></code>
+        </div>
+      </div>
+    </section>
+
+    <section class="commands-section">
+      <h2>CLI Commands</h2>
+      <table class="commands-table">
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>dotnet skills list</td>
+            <td>Show installed and available skills with quick follow-up commands</td>
+          </tr>
+          <tr>
+            <td>dotnet skills list --local</td>
+            <td>Show only installed skills in the current target</td>
+          </tr>
+          <tr>
+            <td>dotnet skills recommend</td>
+            <td>Scan local .csproj files and suggest relevant skills</td>
+          </tr>
+          <tr>
+            <td>dotnet skills install &lt;skill...&gt;</td>
+            <td>Install one or more skills (use short names like "aspire", "blazor")</td>
+          </tr>
+          <tr>
+            <td>dotnet skills remove [skill...]</td>
+            <td>Remove installed skills, or use --all to clear all</td>
+          </tr>
+          <tr>
+            <td>dotnet skills update [skill...]</td>
+            <td>Update installed skills to the latest catalog version</td>
+          </tr>
+          <tr>
+            <td>dotnet skills sync</td>
+            <td>Download the latest skill catalog</td>
+          </tr>
+          <tr>
+            <td>dotnet skills where</td>
+            <td>Show install paths for each agent</td>
+          </tr>
+          <tr>
+            <td>dotnet skills install blazor --agent claude</td>
+            <td>Install for a specific agent</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="search-section" id="catalog">
+      <h2>Skill Catalog</h2>
+      <p>Browse and search through all available .NET skills</p>
+      <div class="search-box">
+        <input type="text" class="search-input" id="search-input" placeholder="Search skills by name, description, or category..." autocomplete="off">
+      </div>
+      <div class="filter-tabs" id="filter-tabs">
+        <button class="filter-tab active" data-category="all">All <span class="count" id="count-all">62</span></button>
+      </div>
+    </section>
+
+    <section class="skills-section">
+      <div class="skills-grid" id="skills-grid">
+        <!-- Skills will be populated by JavaScript -->
+      </div>
+      <div class="no-results hidden" id="no-results">
+        <div class="no-results-icon">🔍</div>
+        <p>No skills found matching your search.</p>
+      </div>
+    </section>
+
+    <section class="agents-section">
+      <h2>Supported AI Agents</h2>
+      <p>Install skills for any of these AI coding assistants</p>
+      <div class="agents-grid">
+        <div class="agent-card">
+          <div class="agent-name">Claude</div>
+          <div class="agent-paths">
+            <div class="path-label">Global</div>
+            <code>~/.claude/agents/</code>
+            <div class="path-label">Project</div>
+            <code>.claude/agents/</code>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-name">Copilot</div>
+          <div class="agent-paths">
+            <div class="path-label">Global</div>
+            <code>~/.copilot/skills/</code>
+            <div class="path-label">Project</div>
+            <code>.github/skills/</code>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-name">Gemini</div>
+          <div class="agent-paths">
+            <div class="path-label">Global</div>
+            <code>~/.gemini/skills/</code>
+            <div class="path-label">Project</div>
+            <code>.gemini/skills/</code>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-name">Codex</div>
+          <div class="agent-paths">
+            <div class="path-label">Global</div>
+            <code>~/.codex/skills/</code>
+            <div class="path-label">Project</div>
+            <code>.codex/skills/</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <h2>Ready to get started?</h2>
+      <p>Install the CLI and give your AI the .NET knowledge it needs.</p>
+      <div class="cta-buttons">
+        <a href="https://www.nuget.org/packages/dotnet-skills" class="btn btn-primary" target="_blank">
+          Install from NuGet
+        </a>
+        <a href="https://github.com/managedcode/dotnet-skills/blob/main/CONTRIBUTING.md" class="btn btn-secondary" target="_blank">
+          Contribute a Skill
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h3><span class="logo-dot"></span> dotnet-skills</h3>
+          <p>The definitive AI agent skill catalog for .NET developers. Community-maintained, open source, and always up-to-date with the latest .NET patterns.</p>
+        </div>
+        <div class="footer-column">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://github.com/managedcode/dotnet-skills" target="_blank">GitHub Repository</a></li>
+            <li><a href="https://www.nuget.org/packages/dotnet-skills" target="_blank">NuGet Package</a></li>
+            <li><a href="https://github.com/managedcode/dotnet-skills/blob/main/README.md" target="_blank">Documentation</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="https://github.com/managedcode/dotnet-skills/blob/main/CONTRIBUTING.md" target="_blank">Contributing Guide</a></li>
+            <li><a href="https://github.com/managedcode/dotnet-skills/issues" target="_blank">Report an Issue</a></li>
+            <li><a href="https://github.com/managedcode/dotnet-skills/discussions" target="_blank">Discussions</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="https://github.com/managedcode/dotnet-skills/blob/main/LICENSE" target="_blank">MIT License</a></li>
+            <li><a href="https://www.managed-code.com" target="_blank">ManagedCode</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024-2025 <a href="https://www.managed-code.com" target="_blank">ManagedCode</a>. All rights reserved.</p>
+        <p>Made with care for .NET developers</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Skills data - will be populated from catalog
+    const skillsData = SKILLS_DATA_PLACEHOLDER;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderFilterTabs();
+      renderSkills(skillsData);
+      setupSearch();
+      updateCategoriesCount();
+    });
+
+    function updateCategoriesCount() {
+      const categories = [...new Set(skillsData.map(s => s.category))];
+      document.getElementById('category-count').textContent = categories.length;
+    }
+
+    function renderFilterTabs() {
+      const tabsContainer = document.getElementById('filter-tabs');
+      const categories = [...new Set(skillsData.map(s => s.category))].sort();
+
+      document.getElementById('count-all').textContent = skillsData.length;
+      document.getElementById('skill-count').textContent = skillsData.length;
+
+      categories.forEach(category => {
+        const count = skillsData.filter(s => s.category === category).length;
+        const tab = document.createElement('button');
+        tab.className = 'filter-tab';
+        tab.dataset.category = category;
+        tab.innerHTML = `${category} <span class="count">${count}</span>`;
+        tab.addEventListener('click', () => filterByCategory(category));
+        tabsContainer.appendChild(tab);
+      });
+
+      document.querySelector('[data-category="all"]').addEventListener('click', () => filterByCategory('all'));
+    }
+
+    function renderSkills(skills) {
+      const grid = document.getElementById('skills-grid');
+      const noResults = document.getElementById('no-results');
+
+      if (skills.length === 0) {
+        grid.classList.add('hidden');
+        noResults.classList.remove('hidden');
+        return;
+      }
+
+      grid.classList.remove('hidden');
+      noResults.classList.add('hidden');
+
+      grid.innerHTML = skills.map(skill => `
+        <div class="skill-card" onclick="window.open('https://github.com/managedcode/dotnet-skills/tree/main/${skill.path}', '_blank')">
+          <div class="skill-header">
+            <span class="skill-name">${skill.title || skill.name}</span>
+            <span class="skill-version">v${skill.version}</span>
+          </div>
+          <p class="skill-description">${skill.description}</p>
+          <div class="skill-footer">
+            <span class="skill-category">${skill.category}</span>
+            <span class="skill-install-cmd">dotnet skills install ${skill.name.replace('dotnet-', '')}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterByCategory(category) {
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.category === category);
+      });
+
+      const filtered = category === 'all'
+        ? skillsData
+        : skillsData.filter(s => s.category === category);
+
+      const searchText = document.getElementById('search-input').value.toLowerCase();
+      const searchFiltered = searchText
+        ? filtered.filter(s =>
+            s.name.toLowerCase().includes(searchText) ||
+            s.description.toLowerCase().includes(searchText) ||
+            s.category.toLowerCase().includes(searchText) ||
+            (s.title && s.title.toLowerCase().includes(searchText))
+          )
+        : filtered;
+
+      renderSkills(searchFiltered);
+    }
+
+    function setupSearch() {
+      const input = document.getElementById('search-input');
+      input.addEventListener('input', (e) => {
+        const searchText = e.target.value.toLowerCase();
+        const activeCategory = document.querySelector('.filter-tab.active').dataset.category;
+
+        let filtered = activeCategory === 'all'
+          ? skillsData
+          : skillsData.filter(s => s.category === activeCategory);
+
+        if (searchText) {
+          filtered = filtered.filter(s =>
+            s.name.toLowerCase().includes(searchText) ||
+            s.description.toLowerCase().includes(searchText) ||
+            s.category.toLowerCase().includes(searchText) ||
+            (s.title && s.title.toLowerCase().includes(searchText))
+          );
+        }
+
+        renderSkills(filtered);
+      });
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (event && event.target) {
+          const btn = event.target;
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = originalText, 1500);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
