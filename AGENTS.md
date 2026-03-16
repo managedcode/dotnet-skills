@@ -535,6 +535,7 @@ This repository should behave like a maintainable documentation-and-automation s
 - Skill catalog cards on the public site must keep category badges and install commands on stable separate rows; badges must never collide with or visually break the command line.
 - Public README hero copy must avoid exact skill counts in the top badge and intro line; keep precise counts only in the generated catalog section where they can stay authoritative.
 - The README header generator must normalize duplicate generated lines after merges; one canonical top Skills badge and one canonical intro line only.
+- For internal `SKILL.md`, `AGENT.md`, and `references/` content, optimize first for model loading and token economy. Human clickability or decorative Markdown formatting is secondary unless it materially improves maintenance.
 
 ### Dislikes
 
@@ -552,6 +553,7 @@ This repository should behave like a maintainable documentation-and-automation s
 - Broken skill-card footers where category badges and install commands overlap, wrap awkwardly, or compete for the same horizontal space.
 - Exact skill counts in the public README hero badge or intro copy, where they go stale and create pointless merge churn.
 - README generators that update only the first header occurrence and leave duplicate Skills badges or duplicate intro lines behind after merges.
+- Rewriting concise internal reference paths into verbose Markdown-link syntax when that does not help the model.
 
 ## Anti-Patterns
 
