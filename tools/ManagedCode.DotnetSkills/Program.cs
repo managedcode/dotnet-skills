@@ -140,11 +140,17 @@ internal static class Program
         var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
         var installer = new SkillInstaller(catalog);
         var installedSkills = installer.GetInstalledSkills(layout);
+        var scopeInventory = BuildScopeInventory(layout, projectDirectory, installer, installedSkills);
+        var projectRoot = layout.Scope == InstallScope.Project
+            ? ResolveProjectRoot(projectDirectory)
+            : null;
 
         ConsoleUi.RenderList(
             catalog,
             layout,
             installedSkills,
+            scopeInventory,
+            projectRoot,
             showInstalledSection: !availableOnly,
             showAvailableSection: !installedOnly);
         return 0;
@@ -677,6 +683,51 @@ internal static class Program
     private static bool IsVersionCommand(string command) =>
         string.Equals(command, "version", StringComparison.OrdinalIgnoreCase)
         || string.Equals(command, "--version", StringComparison.OrdinalIgnoreCase);
+
+    private static IReadOnlyList<ScopeInventoryRow> BuildScopeInventory(
+        SkillInstallLayout currentLayout,
+        string? projectDirectory,
+        SkillInstaller installer,
+        IReadOnlyList<InstalledSkillRecord> currentInstalledSkills)
+    {
+        var rows = new List<ScopeInventoryRow>
+        {
+            new(currentLayout.Scope, currentLayout.PrimaryRoot, currentInstalledSkills),
+        };
+
+        if (currentLayout.IsExplicitTarget || currentLayout.Agent == AgentPlatform.Auto)
+        {
+            return rows;
+        }
+
+        var otherScope = currentLayout.Scope == InstallScope.Project
+            ? InstallScope.Global
+            : InstallScope.Project;
+        var otherLayout = SkillInstallTarget.Resolve(
+            null,
+            currentLayout.Agent,
+            otherScope,
+            projectDirectory);
+
+        if (string.Equals(
+                currentLayout.PrimaryRoot.FullName,
+                otherLayout.PrimaryRoot.FullName,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return rows;
+        }
+
+        rows.Add(new ScopeInventoryRow(
+            otherLayout.Scope,
+            otherLayout.PrimaryRoot,
+            installer.GetInstalledSkills(otherLayout)));
+
+        return rows;
+    }
+
+    private static string ResolveProjectRoot(string? projectDirectory) => string.IsNullOrWhiteSpace(projectDirectory)
+        ? Path.GetFullPath(Directory.GetCurrentDirectory())
+        : Path.GetFullPath(projectDirectory);
 
     private static DirectoryInfo ResolveCacheRoot(string? cachePath) => string.IsNullOrWhiteSpace(cachePath)
         ? GitHubCatalogReleaseClient.ResolveDefaultCacheDirectory()

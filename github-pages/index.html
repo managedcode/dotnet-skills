@@ -11,13 +11,14 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>dotnet-skills - AI Agent Skills for .NET</title>
-  <meta name="description" content="The definitive AI agent skill catalog for .NET developers. Install skills for Claude, Copilot, Gemini, and Codex.">
-  <meta name="keywords" content="dotnet, .NET, AI, skills, Claude, Copilot, Gemini, Codex, agent, developer tools">
+  <title>dotnet-skills - .NET Skills for AI Coding Platforms</title>
+  <meta name="description" content="The .NET skill catalog for Claude Code, GitHub Copilot, Gemini, and Codex. Install once and reuse across your coding platforms.">
+  <meta name="keywords" content="dotnet, .NET, AI, skills, Claude Code, GitHub Copilot, Gemini, Codex, developer tools, coding platforms">
   <meta name="author" content="ManagedCode">
-  <meta property="og:title" content="dotnet-skills - AI Agent Skills for .NET">
-  <meta property="og:description" content="Stop explaining .NET to your AI. Install skills for Claude, Copilot, Gemini, and Codex.">
+  <meta property="og:title" content="dotnet-skills - .NET Skills for AI Coding Platforms">
+  <meta property="og:description" content="Stop re-explaining .NET in every tool. Install the same skills for Claude Code, GitHub Copilot, Gemini, and Codex.">
   <meta property="og:type" content="website">
+  <link rel="canonical" href="SITE_URL_PLACEHOLDER">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -115,7 +116,7 @@
 
     /* Hero */
     .hero {
-      padding: 80px 0 60px;
+      padding: 64px 0 44px;
       text-align: center;
     }
 
@@ -151,15 +152,15 @@
       color: var(--text-secondary);
       font-size: 1.15rem;
       max-width: 600px;
-      margin: 0 auto 40px;
+      margin: 0 auto 30px;
       line-height: 1.7;
     }
 
     .stats {
       display: flex;
       justify-content: center;
-      gap: 60px;
-      margin-bottom: 40px;
+      gap: 48px;
+      margin-bottom: 24px;
     }
 
     .stat {
@@ -184,14 +185,14 @@
     .about-section {
       background: var(--bg-secondary);
       border-radius: var(--radius-lg);
-      padding: 50px 40px;
-      margin: 40px 0;
+      padding: 40px 32px;
+      margin: 24px 0 32px;
     }
 
     .about-section h2 {
       font-size: 1.75rem;
       font-weight: 600;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       color: var(--text-primary);
       text-align: center;
     }
@@ -199,8 +200,8 @@
     .about-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-      margin-top: 30px;
+      gap: 22px;
+      margin-top: 22px;
     }
 
     .about-card {
@@ -227,13 +228,13 @@
 
     /* Install Section */
     .install-section {
-      margin: 50px 0;
+      margin: 48px 0 56px;
     }
 
     .install-section h2 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
       color: var(--text-primary);
       text-align: center;
     }
@@ -241,28 +242,173 @@
     .install-section > p {
       text-align: center;
       color: var(--text-secondary);
-      margin-bottom: 30px;
+      margin: 0 auto 24px;
+      max-width: 680px;
+      font-size: 1.02rem;
     }
 
-    .install-grid {
+    .quickstart-shell {
+      background: linear-gradient(135deg, #fff6f2 0%, #ffffff 58%, #fff1eb 100%);
+      border: 1px solid #ffd8cc;
+      border-radius: 24px;
+      box-shadow: var(--shadow-md);
+      padding: 22px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .quickstart-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(255, 126, 93, 0.12), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(255, 107, 74, 0.08), transparent 30%);
+      pointer-events: none;
+    }
+
+    .quickstart-layout {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quickstart-primary,
+    .quickstart-sidebar-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(8px);
+    }
+
+    .quickstart-primary {
+      padding: 24px;
+    }
+
+    .quickstart-sidebar {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .quickstart-sidebar-card {
+      padding: 20px;
+    }
+
+    .quickstart-kicker,
+    .quickstart-side-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .quickstart-kicker {
+      background: #ffe4db;
+      color: #c24d2f;
+      margin-bottom: 12px;
+    }
+
+    .quickstart-side-kicker {
+      background: var(--accent-light);
+      color: var(--accent-primary);
+      margin-bottom: 10px;
+    }
+
+    .quickstart-primary h3,
+    .quickstart-sidebar-card h3 {
+      font-size: 1.4rem;
+      line-height: 1.25;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .quickstart-primary > p,
+    .quickstart-sidebar-card > p {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .quickstart-steps {
+      display: grid;
+      gap: 10px;
+    }
+
+    .quickstart-step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--accent-gradient);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.98rem;
+      font-weight: 700;
+      box-shadow: 0 10px 22px rgba(255, 126, 93, 0.22);
+    }
+
+    .step-copy {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .step-copy h4 {
+      font-size: 1rem;
+      line-height: 1.3;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .step-copy p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      margin-top: 2px;
+    }
+
+    .step-content {
+      min-width: 0;
+    }
+
+    .step-connector {
+      width: 2px;
+      height: 18px;
+      background: linear-gradient(180deg, rgba(255, 126, 93, 0.45), rgba(255, 126, 93, 0));
+      margin: 0 0 0 21px;
     }
 
     .code-block {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
+      background: var(--bg-primary);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-radius: 16px;
+      padding: 16px 18px;
       position: relative;
       font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
     }
 
     .code-block .label {
       font-size: 0.75rem;
       color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-family: 'Inter', sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -270,8 +416,9 @@
 
     .code-block code {
       color: var(--text-primary);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       display: block;
+      line-height: 1.45;
     }
 
     .code-block .command {
@@ -281,12 +428,12 @@
 
     .copy-btn {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 10px;
+      right: 10px;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      padding: 6px 12px;
+      padding: 6px 11px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.75rem;
@@ -300,9 +447,43 @@
       border-color: var(--accent-primary);
     }
 
+    .sidebar-note-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .sidebar-note {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--text-secondary);
+      font-size: 0.94rem;
+    }
+
+    .sidebar-note strong {
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 1px;
+    }
+
+    .sidebar-note-icon {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: 10px;
+      background: var(--accent-light);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
     /* Commands Table Section */
     .commands-section {
-      margin: 50px 0;
+      margin: 42px 0;
     }
 
     .commands-section h2 {
@@ -359,7 +540,7 @@
 
     /* Search */
     .search-section {
-      margin: 50px 0 30px;
+      margin: 42px 0 24px;
     }
 
     .search-section h2 {
@@ -450,7 +631,7 @@
 
     /* Skills Grid */
     .skills-section {
-      margin: 40px 0 60px;
+      margin: 32px 0 48px;
     }
 
     .skills-grid {
@@ -464,6 +645,8 @@
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
       padding: 24px;
+      display: flex;
+      flex-direction: column;
       transition: all 0.2s;
       cursor: pointer;
     }
@@ -475,9 +658,10 @@
     }
 
     .skill-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
       margin-bottom: 12px;
     }
 
@@ -485,6 +669,8 @@
       font-weight: 600;
       color: var(--text-primary);
       font-size: 1.1rem;
+      line-height: 1.25;
+      min-width: 0;
     }
 
     .skill-version {
@@ -500,7 +686,7 @@
       color: var(--text-secondary);
       font-size: 0.9rem;
       line-height: 1.6;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -508,9 +694,10 @@
     }
 
     .skill-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      gap: 10px;
+      align-items: start;
+      margin-top: auto;
     }
 
     .skill-category {
@@ -522,20 +709,30 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.3px;
+      display: inline-flex;
+      align-self: start;
+      width: fit-content;
+      max-width: 100%;
+      white-space: normal;
     }
 
     .skill-install-cmd {
       font-size: 0.8rem;
       color: var(--text-muted);
       font-family: 'SF Mono', 'Fira Code', monospace;
+      display: block;
+      line-height: 1.45;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
-    /* Agents Section */
+    /* Platforms Section */
     .agents-section {
       background: var(--bg-secondary);
       border-radius: var(--radius-lg);
-      padding: 50px 40px;
-      margin: 60px 0;
+      padding: 42px 32px;
+      margin: 48px 0;
       text-align: center;
     }
 
@@ -548,64 +745,133 @@
 
     .agents-section > p {
       color: var(--text-secondary);
-      margin-bottom: 36px;
+      margin-bottom: 28px;
     }
 
     .agents-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 20px;
-      max-width: 900px;
+      max-width: 1040px;
       margin: 0 auto;
     }
 
     .agent-card {
-      background: var(--bg-primary);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, #ffffff 100%);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
+      border-radius: 22px;
       padding: 24px;
-      text-align: center;
+      text-align: left;
       transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
     }
 
     .agent-card:hover {
       border-color: var(--accent-primary);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .agent-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .agent-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+      flex: 0 0 56px;
+    }
+
+    .claude-logo {
+      background: linear-gradient(135deg, #d97757 0%, #b4532f 100%);
+    }
+
+    .copilot-logo {
+      background: linear-gradient(135deg, #2563eb 0%, #0f766e 100%);
+    }
+
+    .gemini-logo {
+      background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+    }
+
+    .codex-logo {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    }
+
+    .agent-brand-copy {
+      min-width: 0;
+    }
+
+    .agent-eyebrow {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
     }
 
     .agent-name {
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-weight: 700;
       color: var(--text-primary);
       font-size: 1.1rem;
+      line-height: 1.25;
     }
 
-    .agent-paths {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-
-    .agent-paths code {
-      display: block;
-      margin: 6px 0;
+    .agent-summary {
       color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      min-height: 72px;
     }
 
-    .agent-paths .path-label {
+    .agent-path-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .agent-path-item {
+      background: var(--bg-secondary);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .agent-path-item code {
+      display: block;
+      margin-top: 6px;
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      line-height: 1.55;
+      word-break: break-all;
+    }
+
+    .agent-path-item .path-label {
       font-size: 0.7rem;
       color: var(--text-muted);
       font-family: 'Inter', sans-serif;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
-      margin-top: 8px;
-      margin-bottom: 2px;
+      letter-spacing: 0.08em;
     }
 
     /* CTA Section */
     .cta-section {
       text-align: center;
-      padding: 60px 0;
+      padding: 48px 0;
     }
 
     .cta-section h2 {
@@ -664,8 +930,8 @@
     /* Footer */
     footer {
       background: var(--bg-secondary);
-      padding: 60px 0 40px;
-      margin-top: 60px;
+      padding: 48px 0 32px;
+      margin-top: 44px;
     }
 
     .footer-content {
@@ -916,6 +1182,10 @@
 
     /* Responsive */
     @media (max-width: 900px) {
+      .quickstart-layout {
+        grid-template-columns: 1fr;
+      }
+
       .footer-content {
         grid-template-columns: 1fr 1fr;
       }
@@ -932,12 +1202,40 @@
       }
 
       .hero {
-        padding: 50px 0 40px;
+        padding: 42px 0 32px;
       }
 
       .about-section,
       .agents-section {
         padding: 30px 20px;
+      }
+
+      .quickstart-shell {
+        padding: 18px;
+      }
+
+      .quickstart-primary,
+      .quickstart-sidebar-card {
+        padding: 18px;
+      }
+
+      .quickstart-step {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+      }
+
+      .step-connector {
+        display: none;
+      }
+
+      .agent-path-grid {
+        grid-template-columns: 1fr;
       }
 
       .nav-links {
@@ -990,8 +1288,8 @@
       <div class="hero-badge">
         <span>Open Source</span>
       </div>
-      <h1>AI Agent Skills<br>for <span class="highlight">.NET Developers</span></h1>
-      <p>Stop explaining .NET to your AI. Install skills for Claude, Copilot, Gemini, and Codex. Make your AI agent actually understand modern .NET.</p>
+      <h1>.NET Skills<br>for <span class="highlight">Modern Coding Platforms</span></h1>
+      <p>Stop re-explaining .NET in every tool. Install the same skill catalog for Claude Code, GitHub Copilot, Gemini, and Codex.</p>
 
       <div class="stats">
         <div class="stat">
@@ -1000,7 +1298,7 @@
         </div>
         <div class="stat">
           <div class="stat-value">4</div>
-          <div class="stat-label">AI Agents</div>
+          <div class="stat-label">Platforms</div>
         </div>
         <div class="stat">
           <div class="stat-value" id="category-count">14</div>
@@ -1012,8 +1310,8 @@
     <section class="about-section" id="about">
       <h2>Why dotnet-skills?</h2>
       <p style="text-align: center; color: var(--text-secondary); max-width: 700px; margin: 0 auto;">
-        We've all been there: asking Claude to use Entity Framework, only to get EF6 patterns in a .NET 8 project.
-        Explaining to Copilot that Blazor Server and Blazor WebAssembly aren't the same thing.
+        We've all been there: asking Claude Code to use Entity Framework, only to get EF6 patterns in a .NET 8 project.
+        Explaining to GitHub Copilot that Blazor Server and Blazor WebAssembly aren't the same thing.
         This catalog fixes that.
       </p>
       <div class="about-grid">
@@ -1024,8 +1322,8 @@
         </div>
         <div class="about-card">
           <div class="about-icon">🔄</div>
-          <h3>Works Everywhere</h3>
-          <p>Same skills for Claude, Copilot, Gemini, and Codex. Install once, use across all your AI coding assistants.</p>
+          <h3>Works Across Platforms</h3>
+          <p>Same skills for Claude Code, GitHub Copilot, Gemini, and Codex. Install once, use across your coding workflow.</p>
         </div>
         <div class="about-card">
           <div class="about-icon">👥</div>
@@ -1037,27 +1335,110 @@
 
     <section class="install-section">
       <h2>Quick Start</h2>
-      <p>Install the CLI tool and start adding skills to your AI agent in seconds</p>
-      <div class="install-grid">
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard('dotnet tool install --global dotnet-skills')">Copy</button>
-          <div class="label">Step 1: Install CLI</div>
-          <code><span class="command">dotnet tool install</span> --global dotnet-skills</code>
-        </div>
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard('dotnet skills list')">Copy</button>
-          <div class="label">Step 2: Browse Skills</div>
-          <code><span class="command">dotnet skills list</span></code>
-        </div>
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard('dotnet skills install aspire blazor')">Copy</button>
-          <div class="label">Step 3: Install Skills</div>
-          <code><span class="command">dotnet skills install</span> aspire blazor</code>
-        </div>
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard('dotnet skills recommend')">Copy</button>
-          <div class="label">Or: Get Recommendations</div>
-          <code><span class="command">dotnet skills recommend</span></code>
+      <p>Install the CLI once, inspect the catalog, and add only the skills your platform actually needs.</p>
+      <div class="quickstart-shell">
+        <div class="quickstart-layout">
+          <div class="quickstart-primary">
+            <div class="quickstart-kicker">Primary flow</div>
+            <h3>Install, browse, and add the exact skills you want</h3>
+            <p>This is the fastest path when you already know the frameworks or libraries you want your coding platform to handle.</p>
+            <div class="quickstart-steps">
+              <div class="quickstart-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                  <div class="step-copy">
+                    <div>
+                      <h4>Install the CLI</h4>
+                      <p>One command and the catalog is ready to use on your machine.</p>
+                    </div>
+                  </div>
+                  <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard('dotnet tool install --global dotnet-skills')">Copy</button>
+                    <div class="label">Install CLI</div>
+                    <code><span class="command">dotnet tool install</span> --global dotnet-skills</code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-connector"></div>
+
+              <div class="quickstart-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                  <div class="step-copy">
+                    <div>
+                      <h4>Browse the catalog</h4>
+                      <p>See what is already installed and explore the remaining categories.</p>
+                    </div>
+                  </div>
+                  <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard('dotnet skills list')">Copy</button>
+                    <div class="label">Browse skills</div>
+                    <code><span class="command">dotnet skills list</span></code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-connector"></div>
+
+              <div class="quickstart-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                  <div class="step-copy">
+                    <div>
+                      <h4>Install what matches your stack</h4>
+                      <p>Add the exact skills you want your coding platform to use, using short aliases.</p>
+                    </div>
+                  </div>
+                  <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard('dotnet skills install aspire blazor')">Copy</button>
+                    <div class="label">Install skills</div>
+                    <code><span class="command">dotnet skills install</span> aspire blazor</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quickstart-sidebar">
+            <div class="quickstart-sidebar-card">
+              <div class="quickstart-side-kicker">Alternative path</div>
+              <h3>Want the tool to scan your repo first?</h3>
+              <p><code>dotnet skills recommend</code> inspects local <code>.csproj</code> files, proposes a skill list, and lets you decide whether to run the suggested install command.</p>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyToClipboard('dotnet skills recommend')">Copy</button>
+                <div class="label">Get recommendations</div>
+                <code><span class="command">dotnet skills recommend</span></code>
+              </div>
+            </div>
+
+            <div class="quickstart-sidebar-card">
+              <div class="quickstart-side-kicker">Need-to-know</div>
+              <div class="sidebar-note-list">
+                <div class="sidebar-note">
+                  <div class="sidebar-note-icon">1</div>
+                  <div>
+                    <strong>Works across platforms</strong>
+                    Claude Code, GitHub Copilot, Gemini, and Codex all use the same catalog.
+                  </div>
+                </div>
+                <div class="sidebar-note">
+                  <div class="sidebar-note-icon">2</div>
+                  <div>
+                    <strong>Choose the right scope</strong>
+                    Use <code>--scope global</code> or <code>--scope project</code> depending on whether you want machine-wide or repo-local installs.
+                  </div>
+                </div>
+                <div class="sidebar-note">
+                  <div class="sidebar-note-icon">3</div>
+                  <div>
+                    <strong>Drill into the catalog</strong>
+                    Use <code>dotnet skills list --available-only</code> for the full category-by-category breakdown.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1102,11 +1483,11 @@
           </tr>
           <tr>
             <td>dotnet skills where</td>
-            <td>Show install paths for each agent</td>
+            <td>Show install paths for each supported platform</td>
           </tr>
           <tr>
             <td>dotnet skills install blazor --agent claude</td>
-            <td>Install for a specific agent</td>
+            <td>Install for a specific platform</td>
           </tr>
         </tbody>
       </table>
@@ -1135,43 +1516,87 @@
     </section>
 
     <section class="agents-section">
-      <h2>Supported AI Agents</h2>
-      <p>Install skills for any of these AI coding assistants</p>
+      <h2>Supported Platforms</h2>
+      <p>Install the same catalog into the coding platform your team already uses.</p>
       <div class="agents-grid">
         <div class="agent-card">
-          <div class="agent-name">Claude</div>
-          <div class="agent-paths">
-            <div class="path-label">Global</div>
-            <code>~/.claude/agents/</code>
-            <div class="path-label">Project</div>
-            <code>.claude/agents/</code>
+          <div class="agent-brand">
+            <div class="agent-logo claude-logo">CC</div>
+            <div class="agent-brand-copy">
+              <div class="agent-eyebrow">Anthropic</div>
+              <div class="agent-name">Claude Code</div>
+            </div>
+          </div>
+          <p class="agent-summary">Uses Claude's native project and home-directory layouts, so installs stay where Claude Code expects them.</p>
+          <div class="agent-path-grid">
+            <div class="agent-path-item">
+              <div class="path-label">Global</div>
+              <code>~/.claude/agents/</code>
+            </div>
+            <div class="agent-path-item">
+              <div class="path-label">Project</div>
+              <code>.claude/agents/</code>
+            </div>
           </div>
         </div>
         <div class="agent-card">
-          <div class="agent-name">Copilot</div>
-          <div class="agent-paths">
-            <div class="path-label">Global</div>
-            <code>~/.copilot/skills/</code>
-            <div class="path-label">Project</div>
-            <code>.github/skills/</code>
+          <div class="agent-brand">
+            <div class="agent-logo copilot-logo">GH</div>
+            <div class="agent-brand-copy">
+              <div class="agent-eyebrow">GitHub</div>
+              <div class="agent-name">GitHub Copilot</div>
+            </div>
+          </div>
+          <p class="agent-summary">Targets Copilot skill folders directly, whether you want a personal install or a repo-local `.github/skills` setup.</p>
+          <div class="agent-path-grid">
+            <div class="agent-path-item">
+              <div class="path-label">Global</div>
+              <code>~/.copilot/skills/</code>
+            </div>
+            <div class="agent-path-item">
+              <div class="path-label">Project</div>
+              <code>.github/skills/</code>
+            </div>
           </div>
         </div>
         <div class="agent-card">
-          <div class="agent-name">Gemini</div>
-          <div class="agent-paths">
-            <div class="path-label">Global</div>
-            <code>~/.gemini/skills/</code>
-            <div class="path-label">Project</div>
-            <code>.gemini/skills/</code>
+          <div class="agent-brand">
+            <div class="agent-logo gemini-logo">GM</div>
+            <div class="agent-brand-copy">
+              <div class="agent-eyebrow">Google</div>
+              <div class="agent-name">Gemini</div>
+            </div>
+          </div>
+          <p class="agent-summary">Keeps Gemini installs aligned between your personal environment and repo-local `.gemini/skills` folders.</p>
+          <div class="agent-path-grid">
+            <div class="agent-path-item">
+              <div class="path-label">Global</div>
+              <code>~/.gemini/skills/</code>
+            </div>
+            <div class="agent-path-item">
+              <div class="path-label">Project</div>
+              <code>.gemini/skills/</code>
+            </div>
           </div>
         </div>
         <div class="agent-card">
-          <div class="agent-name">Codex</div>
-          <div class="agent-paths">
-            <div class="path-label">Global</div>
-            <code>~/.codex/skills/</code>
-            <div class="path-label">Project</div>
-            <code>.codex/skills/</code>
+          <div class="agent-brand">
+            <div class="agent-logo codex-logo">CX</div>
+            <div class="agent-brand-copy">
+              <div class="agent-eyebrow">OpenAI</div>
+              <div class="agent-name">Codex</div>
+            </div>
+          </div>
+          <p class="agent-summary">Matches Codex skill locations for both personal use and checked-in repo workflows without extra adapter steps.</p>
+          <div class="agent-path-grid">
+            <div class="agent-path-item">
+              <div class="path-label">Global</div>
+              <code>~/.codex/skills/</code>
+            </div>
+            <div class="agent-path-item">
+              <div class="path-label">Project</div>
+              <code>.codex/skills/</code>
+            </div>
           </div>
         </div>
       </div>
@@ -1179,7 +1604,7 @@
 
     <section class="cta-section">
       <h2>Ready to get started?</h2>
-      <p>Install the CLI and give your AI the .NET knowledge it needs.</p>
+      <p>Install the CLI and give your coding platform the .NET knowledge it needs.</p>
       <div class="cta-buttons">
         <a href="https://www.nuget.org/packages/dotnet-skills" class="btn btn-primary" target="_blank">
           Install from NuGet
@@ -1196,7 +1621,7 @@
       <div class="footer-content">
         <div class="footer-brand">
           <h3><span class="logo-dot"></span> dotnet-skills</h3>
-          <p>The definitive AI agent skill catalog for .NET developers. Community-maintained, open source, and always up-to-date with the latest .NET patterns.</p>
+          <p>The .NET skill catalog for Claude Code, GitHub Copilot, Gemini, and Codex. Community-maintained, open source, and up-to-date with modern .NET patterns.</p>
         </div>
         <div class="footer-column">
           <h4>Resources</h4>
@@ -1224,7 +1649,7 @@
       </div>
       <div class="footer-bottom">
         <p>Part of <a href="https://www.managed-code.com" target="_blank"><strong>ManagedCode</strong></a> open source ecosystem</p>
-        <p>&copy; 2024-2025 ManagedCode. MIT License.</p>
+        <p>&copy; COPYRIGHT_YEAR_RANGE_PLACEHOLDER ManagedCode. MIT License.</p>
       </div>
     </div>
   </footer>

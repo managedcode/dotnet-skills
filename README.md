@@ -40,15 +40,17 @@ dotnet skills install blazor --agent claude # install for a specific agent
 | Command | Description |
 |---------|-------------|
 | `dotnet skills version` | Show the current installed tool version and check whether NuGet has a newer release |
-| `dotnet skills list` | Show installed catalog skills, available catalog skills, and quick follow-up commands |
-| `dotnet skills recommend` | Scan local `*.csproj` files and suggest relevant `dotnet-*` skills |
+| `dotnet skills list` | Show the current inventory, compare project/global scope when relevant, and keep the remaining catalog as a compact category summary |
+| `dotnet skills recommend` | Scan local `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install |
 | `dotnet skills install <skill...>` | Install one or more skills |
 | `dotnet skills remove [skill...]` | Remove one or more installed catalog skills, or use `--all` to clear the target |
 | `dotnet skills update [skill...]` | Update installed catalog skills to the selected catalog version |
 | `dotnet skills sync` | Download latest catalog |
 | `dotnet skills where` | Show install paths |
 
-Use `--agent` to target a specific agent, `--scope` to choose global or project install. Use `dotnet skills list --installed-only` or the shorter `dotnet skills list --local` when you only want the installed inventory, or `--available-only` when you only want the remaining catalog. The CLI renders rich terminal tables by default so you can quickly see installed versions, update candidates, install commands, and when a newer `dotnet-skills` package is available on NuGet. `dotnet skills --version` is a shortcut for the version view.
+Use `--agent` to target a specific agent, `--scope` to choose global or project install. Use `dotnet skills list --installed-only` or the shorter `dotnet skills list --local` when you only want the installed inventory, or `--available-only` when you want the detailed category-by-category breakdown of the remaining catalog. The default `list` view stays compact: it shows the current target inventory, compares project/global scope when that comparison is meaningful, and keeps the remaining catalog as a short category summary instead of dumping one giant description table. The CLI renders rich terminal tables by default so you can quickly see installed versions, update candidates, install commands, and when a newer `dotnet-skills` package is available on NuGet. `dotnet skills --version` is a shortcut for the version view.
+
+`dotnet skills recommend` is a scan-only command: it inspects local project files, proposes a skill list, and prints the install command you can run if you agree with the recommendations. It does not install anything automatically.
 
 Use `dotnet skills version --no-check` when you only want the local installed tool version without calling NuGet. Set `DOTNET_SKILLS_SKIP_UPDATE_CHECK=1` if you want to suppress automatic update notices during normal command startup.
 

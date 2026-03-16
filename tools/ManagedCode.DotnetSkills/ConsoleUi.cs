@@ -9,12 +9,20 @@ internal static class ConsoleUi
         SkillCatalogPackage catalog,
         SkillInstallLayout layout,
         IReadOnlyList<InstalledSkillRecord> installedSkills,
+        IReadOnlyList<ScopeInventoryRow> scopeInventory,
+        string? projectRoot,
         bool showInstalledSection,
         bool showAvailableSection)
     {
         WriteTitle("dotnet skills list");
-        AnsiConsole.Write(BuildSessionPanel(catalog, layout, installedSkills.Count));
+        AnsiConsole.Write(BuildSessionPanel(catalog, layout, installedSkills.Count, projectRoot));
         AnsiConsole.WriteLine();
+
+        if (scopeInventory.Count > 1)
+        {
+            AnsiConsole.Write(BuildScopeInventoryTable(scopeInventory));
+            AnsiConsole.WriteLine();
+        }
 
         if (showInstalledSection)
         {
@@ -36,14 +44,38 @@ internal static class ConsoleUi
             .Where(skill => installedSkills.All(installed => !string.Equals(installed.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
             .OrderBy(skill => skill.Name, StringComparer.Ordinal)
             .ToArray();
+        var renderDetailedAvailableGroups = showAvailableSection && !showInstalledSection;
 
         if (showAvailableSection)
         {
-            AnsiConsole.Write(BuildAvailableSkillsTable(availableSkills));
+            if (availableSkills.Length == 0)
+            {
+                AnsiConsole.Write(new Panel(new Markup("All catalog skills are already installed in this target."))
+                    .Header("Available catalog skills")
+                    .Expand());
+            }
+            else
+            {
+                AnsiConsole.Write(BuildAvailableCategorySummaryTable(availableSkills));
+
+                if (renderDetailedAvailableGroups)
+                {
+                    AnsiConsole.WriteLine();
+                    RenderAvailableSkillGroups(availableSkills);
+                }
+                else
+                {
+                    AnsiConsole.WriteLine();
+                    AnsiConsole.Write(new Panel(new Markup("Use [green]dotnet skills list --available-only[/] to expand categories into per-skill tables with short summaries."))
+                        .Header("Explore skills")
+                        .Expand());
+                }
+            }
+
             AnsiConsole.WriteLine();
         }
 
-        AnsiConsole.Write(BuildQuickCommandPanel(installedSkills.Select(record => record.Skill).ToArray(), availableSkills));
+        AnsiConsole.Write(BuildQuickCommandPanel(layout, scopeInventory, installedSkills.Select(record => record.Skill).ToArray(), availableSkills));
     }
 
     public static void RenderInstallSummary(
@@ -142,7 +174,7 @@ internal static class ConsoleUi
 
         if (scanResult.Recommendations.Count == 0)
         {
-            AnsiConsole.Write(new Panel(new Markup("No direct package-based matches were found. Start with [bold]dotnet[/] and [bold]dotnet-modern-csharp[/] if you want a baseline .NET skill set."))
+            AnsiConsole.Write(new Panel(new Markup("No direct package-based matches were found. Nothing was installed. Start with [bold]dotnet[/] and [bold]dotnet-modern-csharp[/] if you want a baseline .NET skill set."))
                 .Header("Recommendations")
                 .Expand());
             return;
@@ -178,8 +210,16 @@ internal static class ConsoleUi
         if (installableSkills.Length > 0)
         {
             var command = $"dotnet skills install {string.Join(' ', installableSkills)}";
-            AnsiConsole.Write(new Panel(new Markup($"Install the strongest matches with:{Environment.NewLine}[green]{Escape(command)}[/]"))
-                .Header("Suggested command")
+            var text = string.Join(
+                Environment.NewLine,
+                "Scan complete. Nothing is installed automatically.",
+                "Review the proposed skills and run install only if the list looks right.",
+                string.Empty,
+                "Suggested command:",
+                $"[green]{Escape(command)}[/]");
+
+            AnsiConsole.Write(new Panel(new Markup(text))
+                .Header("Review and confirm")
                 .Expand());
         }
     }
@@ -236,9 +276,9 @@ internal static class ConsoleUi
         var table = new Table().Expand();
         table.AddColumn("Command");
         table.AddColumn("Purpose");
-        table.AddRow("[green]dotnet skills list[/]", "Show installed catalog skills, available catalog skills, and quick follow-up commands.");
+        table.AddRow("[green]dotnet skills list[/]", "Show the current inventory, compare project/global scope when relevant, and render available skills in grouped category tables.");
         table.AddRow("[green]dotnet skills version[/]", "Show the current tool version and check whether NuGet has a newer release.");
-        table.AddRow("[green]dotnet skills recommend[/]", "Scan `*.csproj` files and suggest the most relevant `dotnet-*` skills to install.");
+        table.AddRow("[green]dotnet skills recommend[/]", "Scan `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install.");
         table.AddRow("[green]dotnet skills install aspire orleans[/]", "Install one or more skills by slug or short alias.");
         table.AddRow("[green]dotnet skills remove --all[/]", "Remove installed catalog skills from the selected target.");
         table.AddRow("[green]dotnet skills update[/]", "Refresh already installed catalog skills to the selected catalog version.");
@@ -252,7 +292,8 @@ internal static class ConsoleUi
             "- `list`, `recommend`, `install`, and `update` use the latest `catalog-v*` GitHub release by default.",
             "- `dotnet skills version` and `dotnet skills --version` both show the current tool version.",
             "- Use `dotnet skills version --no-check` when you only want the local installed version without a NuGet lookup.",
-            "- `list --installed-only` and `list --local` are equivalent shortcuts for the installed inventory view; `list --available-only` shows only the remaining catalog.",
+            "- `list` stays compact: it shows the current installed inventory and a grouped category summary for the remaining catalog.",
+            "- `list --installed-only` and `list --local` are equivalent shortcuts for the installed inventory view; `list --available-only` expands the remaining catalog into per-category skill tables with short summaries.",
             "- `--bundled` skips the network and uses the catalog packaged with the tool.",
             "- `--catalog-version <version>` pins a specific remote catalog release.",
             "- `--refresh` forces `install` or `update` to redownload the selected remote catalog first.",
@@ -285,18 +326,52 @@ internal static class ConsoleUi
         AnsiConsole.Write(new Rule($"[deepskyblue1]{Escape(title)}[/]"));
     }
 
-    private static Panel BuildSessionPanel(SkillCatalogPackage catalog, SkillInstallLayout layout, int installedCount)
+    private static Panel BuildSessionPanel(SkillCatalogPackage catalog, SkillInstallLayout layout, int installedCount, string? projectRoot)
     {
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
         grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
         grid.AddRow(new Markup("[grey]Agent[/]"), new Markup(Escape(layout.Agent.ToString())));
         grid.AddRow(new Markup("[grey]Scope[/]"), new Markup(Escape(layout.Scope.ToString())));
-        grid.AddRow(new Markup("[grey]Mode[/]"), new Markup(Escape(layout.Mode.ToString())));
+        if (!string.IsNullOrWhiteSpace(projectRoot))
+        {
+            grid.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(projectRoot)));
+        }
+
+        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
+        grid.AddRow(new Markup("[grey]Mode[/]"), new Markup(FormatInstallMode(layout.Mode)));
         grid.AddRow(new Markup("[grey]Installed[/]"), new Markup($"{installedCount} of {catalog.Skills.Count} catalog skills"));
         return new Panel(grid).Header("Session").Expand();
+    }
+
+    private static Table BuildScopeInventoryTable(IReadOnlyList<ScopeInventoryRow> scopeInventory)
+    {
+        var table = new Table().Expand();
+        table.Title = new TableTitle("Scope inventory");
+        table.AddColumn("Scope");
+        table.AddColumn("Installed");
+        table.AddColumn("Target");
+        table.AddColumn("Skills");
+
+        foreach (var row in scopeInventory)
+        {
+            var aliases = row.InstalledSkills.Count == 0
+                ? "[grey]none[/]"
+                : Escape(string.Join(", ", row.InstalledSkills
+                    .OrderBy(skill => skill.Skill.Name, StringComparer.Ordinal)
+                    .Take(8)
+                    .Select(skill => ToAlias(skill.Skill.Name))))
+                    + (row.InstalledSkills.Count > 8 ? $" [grey](+{row.InstalledSkills.Count - 8} more)[/]" : string.Empty);
+
+            table.AddRow(
+                row.Scope == InstallScope.Project ? "[bold]Project[/]" : "[bold]Global[/]",
+                row.InstalledSkills.Count.ToString(),
+                Escape(row.TargetRoot.FullName),
+                aliases);
+        }
+
+        return table;
     }
 
     private static Panel BuildOperationPanel(
@@ -354,44 +429,75 @@ internal static class ConsoleUi
     {
         var table = new Table().Expand();
         table.Title = new TableTitle("Installed skills");
-        table.AddColumn("Skill");
+        table.AddColumn("Alias");
         table.AddColumn("Installed");
         table.AddColumn("Latest");
         table.AddColumn("Status");
-        table.AddColumn("Description");
+        table.AddColumn("Category");
 
-        foreach (var record in installedSkills)
+        foreach (var record in installedSkills.OrderBy(item => item.Skill.Name, StringComparer.Ordinal))
         {
             table.AddRow(
-                BuildSkillCell(record.Skill),
+                $"[bold]{Escape(ToAlias(record.Skill.Name))}[/]",
                 Escape(record.InstalledVersion),
                 Escape(record.Skill.Version),
                 record.IsCurrent ? "[green]Current[/]" : "[yellow]Update available[/]",
-                Escape(record.Skill.Description));
+                Escape(record.Skill.Category));
         }
 
         return table;
     }
 
-    private static Table BuildAvailableSkillsTable(IReadOnlyList<SkillEntry> availableSkills)
+    private static Table BuildAvailableCategorySummaryTable(IReadOnlyList<SkillEntry> availableSkills)
     {
         var table = new Table().Expand();
         table.Title = new TableTitle("Available catalog skills");
-        table.AddColumn("Skill");
-        table.AddColumn("Version");
         table.AddColumn("Category");
-        table.AddColumn("Description");
+        table.AddColumn("Available");
+        table.AddColumn("Examples");
 
-        foreach (var skill in availableSkills)
+        foreach (var group in availableSkills
+                     .GroupBy(skill => skill.Category, StringComparer.OrdinalIgnoreCase)
+                     .OrderBy(group => group.Key, StringComparer.Ordinal))
         {
+            var aliases = group
+                .OrderBy(skill => skill.Name, StringComparer.Ordinal)
+                .Take(4)
+                .Select(skill => ToAlias(skill.Name))
+                .ToArray();
+
             table.AddRow(
-                BuildSkillCell(skill),
-                Escape(skill.Version),
-                Escape(skill.Category),
-                Escape(skill.Description));
+                Escape(group.Key),
+                group.Count().ToString(),
+                Escape(string.Join(", ", aliases)) + (group.Count() > aliases.Length ? $" [grey](+{group.Count() - aliases.Length} more)[/]" : string.Empty));
         }
 
         return table;
+    }
+
+    private static void RenderAvailableSkillGroups(IReadOnlyList<SkillEntry> availableSkills)
+    {
+        foreach (var group in availableSkills
+                     .GroupBy(skill => skill.Category, StringComparer.OrdinalIgnoreCase)
+                     .OrderBy(group => group.Key, StringComparer.Ordinal))
+        {
+            var table = new Table().Expand();
+            table.Title = new TableTitle($"{group.Key} skills");
+            table.AddColumn("Alias");
+            table.AddColumn("Skill");
+            table.AddColumn("Summary");
+
+            foreach (var skill in group.OrderBy(item => item.Name, StringComparer.Ordinal))
+            {
+                table.AddRow(
+                    $"[bold]{Escape(ToAlias(skill.Name))}[/]",
+                    Escape(skill.Name),
+                    Escape(CompactDescription(skill.Description)));
+            }
+
+            AnsiConsole.Write(table);
+            AnsiConsole.WriteLine();
+        }
     }
 
     private static Table BuildOperationTable(string title, IReadOnlyList<SkillActionRow> rows)
@@ -417,7 +523,11 @@ internal static class ConsoleUi
         return table;
     }
 
-    private static Panel BuildQuickCommandPanel(IReadOnlyList<SkillEntry> installedSkills, IReadOnlyList<SkillEntry> availableSkills)
+    private static Panel BuildQuickCommandPanel(
+        SkillInstallLayout layout,
+        IReadOnlyList<ScopeInventoryRow> scopeInventory,
+        IReadOnlyList<SkillEntry> installedSkills,
+        IReadOnlyList<SkillEntry> availableSkills)
     {
         var lines = new List<string>();
 
@@ -430,6 +540,15 @@ internal static class ConsoleUi
         if (availableSkills.Count > 0)
         {
             lines.Add($"Install more skills:{Environment.NewLine}[green]{Escape($"dotnet skills install {string.Join(' ', availableSkills.Take(3).Select(skill => ToAlias(skill.Name)))}")}[/]");
+        }
+
+        var alternateScope = scopeInventory.FirstOrDefault(row => row.Scope != layout.Scope);
+        if (alternateScope is not null)
+        {
+            var command = alternateScope.Scope == InstallScope.Global
+                ? "dotnet skills list --scope global"
+                : "dotnet skills list --scope project";
+            lines.Add($"Check the {alternateScope.Scope.ToString().ToLowerInvariant()} inventory:{Environment.NewLine}[green]{Escape(command)}[/]");
         }
 
         lines.Add($"Get dependency-based recommendations:{Environment.NewLine}[green]{Escape("dotnet skills recommend")}[/]");
@@ -484,12 +603,44 @@ internal static class ConsoleUi
         _ => Escape(state.ToString()),
     };
 
+    private static string FormatInstallMode(SkillInstallMode mode) => mode switch
+    {
+        SkillInstallMode.RawSkillPayloads => "Raw skill payloads",
+        SkillInstallMode.ClaudeSubagents => "Claude subagents",
+        _ => Escape(mode.ToString()),
+    };
+
+    private static string CompactDescription(string description)
+    {
+        const string useWhenMarker = ". Use when";
+        var markerIndex = description.IndexOf(useWhenMarker, StringComparison.Ordinal);
+        if (markerIndex >= 0)
+        {
+            return description[..(markerIndex + 1)];
+        }
+
+        var firstSentenceIndex = description.IndexOf(". ", StringComparison.Ordinal);
+        if (firstSentenceIndex >= 0)
+        {
+            return description[..(firstSentenceIndex + 1)];
+        }
+
+        return description.Length <= 100
+            ? description
+            : $"{description[..97]}...";
+    }
+
     private static string Escape(string value) => Markup.Escape(value);
 
     private static string ToAlias(string skillName) => skillName.StartsWith("dotnet-", StringComparison.OrdinalIgnoreCase)
         ? skillName["dotnet-".Length..]
         : skillName;
 }
+
+internal sealed record ScopeInventoryRow(
+    InstallScope Scope,
+    DirectoryInfo TargetRoot,
+    IReadOnlyList<InstalledSkillRecord> InstalledSkills);
 
 internal sealed record SkillActionRow(SkillEntry Skill, string FromVersion, string ToVersion, SkillAction Action);
 

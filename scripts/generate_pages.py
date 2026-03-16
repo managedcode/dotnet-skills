@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Generate GitHub Pages site with skills data from the catalog."""
 
+from datetime import date
 import html
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -11,10 +13,16 @@ CATALOG_PATH = REPO_ROOT / "catalog" / "skills.json"
 TEMPLATE_PATH = REPO_ROOT / "github-pages" / "index.html"
 OUTPUT_DIR = REPO_ROOT / "artifacts" / "github-pages"
 OUTPUT_PATH = OUTPUT_DIR / "index.html"
+SITEMAP_PATH = OUTPUT_DIR / "sitemap.xml"
+ROBOTS_PATH = OUTPUT_DIR / "robots.txt"
 
 SKILLS_DATA_PLACEHOLDER = "SKILLS_DATA_PLACEHOLDER"
 SKILLS_GRID_PLACEHOLDER = "<!-- SKILLS_GRID_PLACEHOLDER -->"
 CATEGORY_TABS_PLACEHOLDER = "<!-- CATEGORY_TABS_PLACEHOLDER -->"
+COPYRIGHT_YEAR_RANGE_PLACEHOLDER = "COPYRIGHT_YEAR_RANGE_PLACEHOLDER"
+SITE_URL_PLACEHOLDER = "SITE_URL_PLACEHOLDER"
+COPYRIGHT_START_YEAR = 2024
+DEFAULT_SITE_URL = "https://managedcode.github.io/dotnet-skills/"
 
 
 def escape_html(text: str) -> str:
@@ -67,6 +75,44 @@ def render_category_tabs(skills: list) -> str:
     return "\n        ".join(tabs)
 
 
+def render_copyright_year_range() -> str:
+    """Render a stable copyright year or year range for the site footer."""
+    current_year = date.today().year
+    if current_year <= COPYRIGHT_START_YEAR:
+        return str(COPYRIGHT_START_YEAR)
+
+    return f"{COPYRIGHT_START_YEAR}-{current_year}"
+
+
+def normalize_site_url(raw_url: str) -> str:
+    """Normalize the public site URL for canonical and sitemap output."""
+    return raw_url.rstrip("/") + "/"
+
+
+def render_sitemap(site_url: str) -> str:
+    """Render a minimal sitemap for the GitHub Pages site."""
+    today = date.today().isoformat()
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>{site_url}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
+"""
+
+
+def render_robots(site_url: str) -> str:
+    """Render robots.txt that points crawlers at the sitemap."""
+    return f"""User-agent: *
+Allow: /
+
+Sitemap: {site_url}sitemap.xml
+"""
+
+
 def main() -> int:
     """Generate the GitHub Pages site with embedded skills data."""
 
@@ -88,6 +134,8 @@ def main() -> int:
     with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
         template = f.read()
 
+    site_url = normalize_site_url(os.environ.get("DOTNET_SKILLS_SITE_URL", DEFAULT_SITE_URL))
+
     # Generate HTML components
     skills_json = json.dumps(skills, indent=2)
     skills_grid_html = render_skills_grid(skills)
@@ -98,6 +146,8 @@ def main() -> int:
     output_html = output_html.replace(SKILLS_DATA_PLACEHOLDER, skills_json)
     output_html = output_html.replace(SKILLS_GRID_PLACEHOLDER, skills_grid_html)
     output_html = output_html.replace(CATEGORY_TABS_PLACEHOLDER, category_tabs_html)
+    output_html = output_html.replace(COPYRIGHT_YEAR_RANGE_PLACEHOLDER, render_copyright_year_range())
+    output_html = output_html.replace(SITE_URL_PLACEHOLDER, site_url)
 
     # Update counts
     output_html = output_html.replace(
@@ -119,6 +169,16 @@ def main() -> int:
         f.write(output_html)
 
     print(f"Generated {OUTPUT_PATH}")
+
+    with open(SITEMAP_PATH, "w", encoding="utf-8") as f:
+        f.write(render_sitemap(site_url))
+
+    print(f"Generated {SITEMAP_PATH}")
+
+    with open(ROBOTS_PATH, "w", encoding="utf-8") as f:
+        f.write(render_robots(site_url))
+
+    print(f"Generated {ROBOTS_PATH}")
 
     assets_dir = REPO_ROOT / "github-pages" / "assets"
     if assets_dir.exists():

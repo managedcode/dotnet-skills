@@ -30,15 +30,15 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -79,7 +79,7 @@ jobs:
         run: bash scripts/smoke_test_tool.sh artifacts/nuget
 
       - name: Upload NuGet package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: managedcode-dotnet-skills-${{ steps.version.outputs.package_version }}
           path: ${{ env.PACKAGE_OUTPUT_GLOB }}

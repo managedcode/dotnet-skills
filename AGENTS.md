@@ -270,6 +270,10 @@ Rules:
 - Keep the website focused on skill discovery and installation; do not expand it into unrelated documentation.
 - The website must show the `dotnet skills install <skill>` command pattern for each skill.
 - Dark terminal-like aesthetic with monospace fonts is the intended design language.
+- When the site refers to Claude Code, GitHub Copilot, Gemini, and Codex, present them as supported platforms or assistants that consume the catalog, not as repository-owned "AI agents".
+- Supported-platform sections on the site should use clearly differentiated brand-like tiles or logos instead of generic repeated cards.
+- Footer copyright years on the public site must be generated from the build year during page generation; do not hardcode stale years in the HTML template.
+- The public landing page should use tighter spacing rhythm than the current default: avoid oversized shell padding, overly tall card interiors, or loose gaps between onboarding steps and sidebar blocks.
 
 ## Source-of-Truth Policy
 
@@ -429,6 +433,11 @@ This repository should behave like a maintainable documentation-and-automation s
 - Minimal watch entries: `source` plus related skills, with optional overrides only when really needed.
 - English-only durable docs and skill content.
 - Catalog manifest generation in CI release workflows instead of relying on contributor-local regeneration.
+- Compact, readable CLI output that favors grouped summaries and short status views over giant wrapped tables.
+- The public landing page Quick Start section must look polished and intentionally composed; it should be one of the strongest visual sections on the site, not a loose grid of equally weighted cards.
+- Public site copy should frame Claude Code, GitHub Copilot, Gemini, and Codex as supported platforms with recognizable brand-style presentation, not as "AI agents".
+- Public landing page spacing should feel deliberate and compact; excessive whitespace between cards, sections, and step content is a regression.
+- Skill catalog cards on the public site must keep category badges and install commands on stable separate rows; badges must never collide with or visually break the command line.
 
 ### Dislikes
 
@@ -437,6 +446,11 @@ This repository should behave like a maintainable documentation-and-automation s
 - User-facing command examples that require the `dotnet-` prefix when the CLI can resolve a short alias.
 - Local contributor workflows built around `dotnet tool install --add-source artifacts/nuget`.
 - Treating checked-in `catalog/skills.json` as the source of truth instead of `skills/*/SKILL.md`.
+- Default CLI views that dump the entire catalog as a wide multi-line table with heavily wrapped descriptions.
+- Weak or awkward Quick Start layout on the public landing page, especially when the onboarding steps look visually scattered or poorly prioritized.
+- Misleading public site wording that calls the supported platforms "AI agents" instead of showing them as platforms that use the skill catalog.
+- Bloated spacing on the public landing page, especially in Quick Start shells, step stacks, and sidebar cards.
+- Broken skill-card footers where category badges and install commands overlap, wrap awkwardly, or compete for the same horizontal space.
 
 ## Anti-Patterns
 
