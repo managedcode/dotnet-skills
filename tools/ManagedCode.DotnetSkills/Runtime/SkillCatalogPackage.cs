@@ -37,13 +37,8 @@ internal sealed class SkillCatalogPackage
 
     public static SkillCatalogPackage LoadFromDirectory(DirectoryInfo rootDirectory, string sourceLabel, string catalogVersion)
     {
-        var skillsRoot = new DirectoryInfo(Path.Combine(rootDirectory.FullName, "skills"));
+        var skillsRoot = ResolveSkillsRoot(rootDirectory);
         var manifestPath = new FileInfo(Path.Combine(rootDirectory.FullName, "catalog", "skills.json"));
-
-        if (!skillsRoot.Exists)
-        {
-            throw new InvalidOperationException($"skills directory was not found under {rootDirectory.FullName}");
-        }
 
         if (!manifestPath.Exists)
         {
@@ -54,6 +49,20 @@ internal sealed class SkillCatalogPackage
             ?? throw new InvalidOperationException($"Could not parse {manifestPath.FullName}");
 
         return new SkillCatalogPackage(rootDirectory, skillsRoot, manifest.Skills, sourceLabel, catalogVersion);
+    }
+
+    private static DirectoryInfo ResolveSkillsRoot(DirectoryInfo rootDirectory)
+    {
+        foreach (var candidateName in new[] { "skills", "Skills" })
+        {
+            var candidate = new DirectoryInfo(Path.Combine(rootDirectory.FullName, candidateName));
+            if (candidate.Exists)
+            {
+                return candidate;
+            }
+        }
+
+        throw new InvalidOperationException($"skills directory was not found under {rootDirectory.FullName}");
     }
 
     public DirectoryInfo ResolveSkillSource(string skillName)

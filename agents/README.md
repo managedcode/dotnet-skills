@@ -2,8 +2,8 @@
 
 This repository maintains two parallel content layers:
 
-- [`skills/`](/Users/ksemenenko/Developer/dotnet-skills/skills): narrow, reusable `dotnet-*` instruction packs
-- [`agents/`](/Users/ksemenenko/Developer/dotnet-skills/agents): broader orchestration agents that triage work and route into the right skills
+- [`skills/`](../skills): narrow, reusable `dotnet-*` instruction packs
+- [`agents/`](../agents): broader orchestration agents that triage work and route into the right skills
 
 Use these placement rules:
 
@@ -15,12 +15,12 @@ Use these placement rules:
 
 ## Starter Agents
 
-- [`dotnet-router/AGENT.md`](/Users/ksemenenko/Developer/dotnet-skills/agents/dotnet-router/AGENT.md): first-stop router for broad or ambiguous `.NET` work
-- [`dotnet-build/AGENT.md`](/Users/ksemenenko/Developer/dotnet-skills/agents/dotnet-build/AGENT.md): build, restore, diagnostics, and CI-focused triage
-- [`dotnet-data/AGENT.md`](/Users/ksemenenko/Developer/dotnet-skills/agents/dotnet-data/AGENT.md): EF Core, EF6, migrations, and query issues
-- [`dotnet-ai/AGENT.md`](/Users/ksemenenko/Developer/dotnet-skills/agents/dotnet-ai/AGENT.md): Semantic Kernel, Microsoft Agent Framework, Microsoft.Extensions.AI, MCP, and ML.NET
-- [`dotnet-modernization/AGENT.md`](/Users/ksemenenko/Developer/dotnet-skills/agents/dotnet-modernization/AGENT.md): upgrade, migration, and legacy modernization
-- [`dotnet-review/AGENT.md`](/Users/ksemenenko/Developer/dotnet-skills/agents/dotnet-review/AGENT.md): review orchestration across quality, testing, and architecture
+- [`dotnet-router/AGENT.md`](../agents/dotnet-router/AGENT.md): first-stop router for broad or ambiguous `.NET` work
+- [`dotnet-build/AGENT.md`](../agents/dotnet-build/AGENT.md): build, restore, diagnostics, and CI-focused triage
+- [`dotnet-data/AGENT.md`](../agents/dotnet-data/AGENT.md): EF Core, EF6, migrations, and query issues
+- [`dotnet-ai/AGENT.md`](../agents/dotnet-ai/AGENT.md): Semantic Kernel, Microsoft Agent Framework, Microsoft.Extensions.AI, MCP, and ML.NET
+- [`dotnet-modernization/AGENT.md`](../agents/dotnet-modernization/AGENT.md): upgrade, migration, and legacy modernization
+- [`dotnet-review/AGENT.md`](../agents/dotnet-review/AGENT.md): review orchestration across quality, testing, and architecture
 
 ## Layout
 

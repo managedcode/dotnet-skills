@@ -281,7 +281,7 @@ This catalog currently contains **63** skills.
 
 This repository does not guess what to monitor.
 
-It watches only the sources explicitly listed in [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json). That file is the human-maintained source of truth for:
+It watches only the sources explicitly listed in [`.github/upstream-watch.json`](.github/upstream-watch.json). That file is the human-maintained source of truth for:
 
 - GitHub release streams that should trigger skill review
 - documentation pages that should trigger skill review
@@ -333,7 +333,7 @@ That is enough for normal maintenance.
 `scripts/upstream_watch.py` derives the watch kind, ids, source coordinates, display names, and default notes at runtime.
 Use optional fields only when you really need them, for example `match_tag_regex` for mixed release streams or `id` for a stable legacy key.
 
-If you add a new library or framework and want this repo to keep watching it, the actual how-to is in [CONTRIBUTING.md](/Users/ksemenenko/Developer/dotnet-skills/CONTRIBUTING.md#upstream-watch-entries).
+If you add a new library or framework and want this repo to keep watching it, the actual how-to is in [CONTRIBUTING.md](CONTRIBUTING.md#upstream-watch-entries).
 
 ## Contributing
 

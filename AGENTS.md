@@ -43,6 +43,13 @@ Follow official or documented agent standards where they exist; do not present a
 4. Local `AGENTS.md` files may refine or tighten root rules, but they must not silently weaken them.
 5. If a subtree needs a durable exception, document it explicitly in the nearest local `AGENTS.md` or another canonical repo document.
 
+## Path And Linking Rules
+
+- Never commit personal or machine-specific absolute filesystem paths such as `/Users/...`, `/home/...`, or `C:\Users\...` in repository docs, generated site files, manifests, examples, or contributor guidance.
+- In repository-facing Markdown, prefer repo-relative links such as `README.md`, `skills/`, or `.github/workflows/publish-tool.yml` instead of workstation-local absolute paths.
+- For path examples, use portable placeholders such as `~/...`, `/path/to/...`, `<repo-root>/...`, or product-native paths that are not tied to one contributor machine.
+- Before committing docs or generated artifacts, scan the diff for leaked local paths and remove them.
+
 ## Conversations (Self-Learning)
 
 Learn the user's stable habits, preferences, and corrections. Record durable rules here instead of relying on chat history.
@@ -87,8 +94,8 @@ If work touches `.NET` code in this repository:
 
 ## Canonical Layout
 
-The canonical skill tree is [`skills/`](/Users/ksemenenko/Developer/dotnet-skills/skills).
-The canonical top-level agent tree is [`agents/`](/Users/ksemenenko/Developer/dotnet-skills/agents).
+The canonical skill tree is [`skills/`](skills).
+The canonical top-level agent tree is [`agents/`](agents).
 
 Expected layout:
 
@@ -116,27 +123,27 @@ skills/<skill-slug>/
 
 Other important repository files:
 
-- [`CLAUDE.md`](/Users/ksemenenko/Developer/dotnet-skills/CLAUDE.md): Claude adapter that points Claude to the root repository instructions.
-- [`GEMINI.md`](/Users/ksemenenko/Developer/dotnet-skills/GEMINI.md): Gemini adapter that imports the root repository instructions.
-- [`.github/copilot-instructions.md`](/Users/ksemenenko/Developer/dotnet-skills/.github/copilot-instructions.md): Copilot adapter that points GitHub Copilot to the repository-wide rules.
-- [`README.md`](/Users/ksemenenko/Developer/dotnet-skills/README.md): public catalog and repository overview.
-- [`CONTRIBUTING.md`](/Users/ksemenenko/Developer/dotnet-skills/CONTRIBUTING.md): contributor workflow for skills, versions, descriptions, and watch entries.
-- [`agents/README.md`](/Users/ksemenenko/Developer/dotnet-skills/agents/README.md): index of repo-owned orchestration agents and layout conventions.
-- [`catalog/skills.json`](/Users/ksemenenko/Developer/dotnet-skills/catalog/skills.json): machine-readable generated skill manifest used for release packaging and tool fallback content.
-- [`.github/workflows/catalog-check.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/catalog-check.yml): CI validation for generated catalog outputs.
-- [`.github/workflows/publish-catalog.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-catalog.yml): release workflow for remote `catalog-v*` assets consumed by the tool.
-- [`.github/workflows/publish-tool.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-tool.yml): release workflow for the installable `dotnet-skills` package.
-- [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json): human-maintained upstream watch configuration with two lists: `github_releases` and `documentation`.
-- [`.github/upstream-watch-state.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch-state.json): machine-maintained baseline state.
-- [`.github/workflows/upstream-watch.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/upstream-watch.yml): scheduled workflow.
-- [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](/Users/ksemenenko/Developer/dotnet-skills/tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj): publishable `.NET` tool that installs the catalog through `dotnet skills ...`.
-- [`dotnet-skills.slnx`](/Users/ksemenenko/Developer/dotnet-skills/dotnet-skills.slnx): canonical solution entry point for repository-level `dotnet build` and `dotnet pack` commands.
-- [`scripts/generate_catalog.py`](/Users/ksemenenko/Developer/dotnet-skills/scripts/generate_catalog.py): catalog generator and checker.
-- [`scripts/smoke_test_tool.sh`](/Users/ksemenenko/Developer/dotnet-skills/scripts/smoke_test_tool.sh): CI smoke test for the installable tool package.
-- [`scripts/upstream_watch.py`](/Users/ksemenenko/Developer/dotnet-skills/scripts/upstream_watch.py): watch runner.
-- [`github-pages/index.html`](/Users/ksemenenko/Developer/dotnet-skills/github-pages/index.html): template for the public skills directory website.
-- [`scripts/generate_pages.py`](/Users/ksemenenko/Developer/dotnet-skills/scripts/generate_pages.py): generates the GitHub Pages site with embedded skills data.
-- [`.github/workflows/publish-pages.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-pages.yml): deploys the skills directory website to GitHub Pages.
+- [`CLAUDE.md`](CLAUDE.md): Claude adapter that points Claude to the root repository instructions.
+- [`GEMINI.md`](GEMINI.md): Gemini adapter that imports the root repository instructions.
+- [`.github/copilot-instructions.md`](.github/copilot-instructions.md): Copilot adapter that points GitHub Copilot to the repository-wide rules.
+- [`README.md`](README.md): public catalog and repository overview.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md): contributor workflow for skills, versions, descriptions, and watch entries.
+- [`agents/README.md`](agents/README.md): index of repo-owned orchestration agents and layout conventions.
+- [`catalog/skills.json`](catalog/skills.json): machine-readable generated skill manifest used for release packaging and tool fallback content.
+- [`.github/workflows/catalog-check.yml`](.github/workflows/catalog-check.yml): CI validation for generated catalog outputs.
+- [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml): release workflow for remote `catalog-v*` assets consumed by the tool.
+- [`.github/workflows/publish-tool.yml`](.github/workflows/publish-tool.yml): release workflow for the installable `dotnet-skills` package.
+- [`.github/upstream-watch.json`](.github/upstream-watch.json): human-maintained upstream watch configuration with two lists: `github_releases` and `documentation`.
+- [`.github/upstream-watch-state.json`](.github/upstream-watch-state.json): machine-maintained baseline state.
+- [`.github/workflows/upstream-watch.yml`](.github/workflows/upstream-watch.yml): scheduled workflow.
+- [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj): publishable `.NET` tool that installs the catalog through `dotnet skills ...`.
+- [`dotnet-skills.slnx`](dotnet-skills.slnx): canonical solution entry point for repository-level `dotnet build` and `dotnet pack` commands.
+- [`scripts/generate_catalog.py`](scripts/generate_catalog.py): catalog generator and checker.
+- [`scripts/smoke_test_tool.sh`](scripts/smoke_test_tool.sh): CI smoke test for the installable tool package.
+- [`scripts/upstream_watch.py`](scripts/upstream_watch.py): watch runner.
+- [`github-pages/index.html`](github-pages/index.html): template for the public skills directory website.
+- [`scripts/generate_pages.py`](scripts/generate_pages.py): generates the GitHub Pages site with embedded skills data.
+- [`.github/workflows/publish-pages.yml`](.github/workflows/publish-pages.yml): deploys the skills directory website to GitHub Pages.
 
 ## Skill Naming Rules
 
@@ -159,7 +166,7 @@ Rules:
 
 Before adding a new skill:
 
-1. Check whether the capability already exists in [`skills/`](/Users/ksemenenko/Developer/dotnet-skills/skills).
+1. Check whether the capability already exists in [`skills/`](skills).
 2. Confirm the framework or feature is important enough to justify a dedicated skill.
 3. Prefer official Microsoft or first-party documentation to shape the content.
 4. Check whether the capability is already covered indirectly by a broader skill such as `dotnet`, `dotnet-architecture`, or `dotnet-aspire`.
@@ -170,8 +177,8 @@ When creating a new skill:
 2. Add `SKILL.md`.
 3. Add `agents/` only when the skill needs one or more tightly coupled specialist agents that should live next to that skill.
 4. Add `references/` only if extra material is genuinely useful and not better kept in `SKILL.md`.
-5. Update any related [`README.md`](/Users/ksemenenko/Developer/dotnet-skills/README.md) notes and regenerate the catalog outputs.
-6. If the skill tracks a major framework or Microsoft surface, update the relevant list in [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json).
+5. Update any related [`README.md`](README.md) notes and regenerate the catalog outputs.
+6. If the skill tracks a major framework or Microsoft surface, update the relevant list in [`.github/upstream-watch.json`](.github/upstream-watch.json).
 
 ## When Adding or Updating an Agent
 
@@ -179,12 +186,12 @@ Agents are a parallel orchestration layer above the skill catalog.
 
 Use these placement rules:
 
-1. Put broad, reusable routing agents in [`agents/`](/Users/ksemenenko/Developer/dotnet-skills/agents).
+1. Put broad, reusable routing agents in [`agents/`](agents).
 2. Put tightly coupled specialist agents in `skills/<skill-slug>/agents/<agent-slug>/AGENT.md` when they only make sense next to one skill or one framework surface.
 3. Use top-level agents when they orchestrate a group of related skills; use skill-scoped agents when they should travel with one specific skill and rely on that skill for detailed implementation guidance.
 4. Keep agents focused on triage, routing, orchestration, and bounded role behavior; keep detailed implementation guidance in `SKILL.md`.
 5. Make the linked skill set explicit, so reviewers can see what the agent is expected to orchestrate.
-6. Update [`README.md`](/Users/ksemenenko/Developer/dotnet-skills/README.md) and [`CONTRIBUTING.md`](/Users/ksemenenko/Developer/dotnet-skills/CONTRIBUTING.md) when the public agent catalog shape changes.
+6. Update [`README.md`](README.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md) when the public agent catalog shape changes.
 
 When creating a new agent:
 
@@ -238,7 +245,7 @@ Rules:
 
 ## README Maintenance Rules
 
-[`README.md`](/Users/ksemenenko/Developer/dotnet-skills/README.md) is the public index for the catalog.
+[`README.md`](README.md) is the public index for the catalog.
 
 Whenever you add, rename, split, merge, or remove a skill:
 
@@ -252,13 +259,13 @@ Do not hand-edit the generated catalog section between `<!-- BEGIN GENERATED CAT
 
 Generated catalog outputs:
 
-- [`README.md`](/Users/ksemenenko/Developer/dotnet-skills/README.md) catalog section
-- [`catalog/skills.json`](/Users/ksemenenko/Developer/dotnet-skills/catalog/skills.json) machine-readable manifest
+- [`README.md`](README.md) catalog section
+- [`catalog/skills.json`](catalog/skills.json) machine-readable manifest
 
 Canonical generation point:
 
-- [`.github/workflows/publish-catalog.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-catalog.yml) for remote catalog releases
-- [`.github/workflows/publish-tool.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-tool.yml) for the bundled fallback catalog inside the published `.nupkg`
+- [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) for remote catalog releases
+- [`.github/workflows/publish-tool.yml`](.github/workflows/publish-tool.yml) for the bundled fallback catalog inside the published `.nupkg`
 
 ## Dotnet Tool Rules
 
@@ -338,7 +345,7 @@ For GitHub automation:
 
 The upstream automation exists so the skill catalog stays current without requiring manual ecosystem monitoring.
 
-Human-maintained configuration lives directly in [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json).
+Human-maintained configuration lives directly in [`.github/upstream-watch.json`](.github/upstream-watch.json).
 
 Keep the file obvious.
 
@@ -387,7 +394,7 @@ When adding a documentation watch:
 
 ## State File Rules
 
-[`.github/upstream-watch-state.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch-state.json) is machine-maintained state.
+[`.github/upstream-watch-state.json`](.github/upstream-watch-state.json) is machine-maintained state.
 
 Rules:
 
@@ -439,7 +446,7 @@ For dotnet tool changes:
 
 For catalog release changes:
 
-- Verify [`.github/workflows/publish-catalog.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-catalog.yml) still publishes `catalog-v*` releases.
+- Verify [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) still publishes `catalog-v*` releases.
 - Verify the release assets remain `dotnet-skills-manifest.json` and `dotnet-skills-catalog.zip`.
 
 For GitHub Pages changes:
@@ -447,7 +454,7 @@ For GitHub Pages changes:
 - `python3 -m py_compile scripts/generate_pages.py`
 - `python3 scripts/generate_pages.py`
 - Verify `artifacts/github-pages/index.html` was generated with embedded skills data
-- Verify [`.github/workflows/publish-pages.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-pages.yml) still deploys to GitHub Pages
+- Verify [`.github/workflows/publish-pages.yml`](.github/workflows/publish-pages.yml) still deploys to GitHub Pages
 
 For automation changes:
 
@@ -455,7 +462,7 @@ For automation changes:
 - `python3 scripts/upstream_watch.py --validate-config`
 - `python3 scripts/upstream_watch.py --dry-run`
 - `python3 scripts/upstream_watch.py --sync-state-only` when the watch config changes
-- Verify [`.github/workflows/upstream-watch.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/upstream-watch.yml) still points to the right script and token env
+- Verify [`.github/workflows/upstream-watch.yml`](.github/workflows/upstream-watch.yml) still points to the right script and token env
 
 For JSON changes:
 

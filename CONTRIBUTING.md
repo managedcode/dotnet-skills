@@ -22,8 +22,8 @@ Please contribute:
 
 If you want people to use your library well, please add:
 
-1. Your project to [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json)
-2. A dedicated skill under [`skills/`](/Users/ksemenenko/Developer/dotnet-skills/skills) when the project is important enough to justify one
+1. Your project to [`.github/upstream-watch.json`](.github/upstream-watch.json)
+2. A dedicated skill under [`skills/`](skills) when the project is important enough to justify one
 3. Clear guidance in that skill about:
    - what the library is
    - why someone should use it
@@ -177,8 +177,8 @@ python3 scripts/generate_catalog.py
 
 This preview updates:
 
-- the generated catalog section in [`README.md`](/Users/ksemenenko/Developer/dotnet-skills/README.md)
-- the machine-readable manifest in [`catalog/skills.json`](/Users/ksemenenko/Developer/dotnet-skills/catalog/skills.json)
+- the generated catalog section in [`README.md`](README.md)
+- the machine-readable manifest in [`catalog/skills.json`](catalog/skills.json)
 
 For metadata-only validation without rewriting generated files:
 
@@ -213,13 +213,13 @@ Agent target rule:
 - for Claude, generate native `.claude/agents` subagent files from `SKILL.md`
 - for Gemini, use `.gemini/skills` for explicit `--agent gemini` installs, but keep compatibility with existing shared `.agents/skills` layouts during auto-detect
 
-Publishing is handled by [`.github/workflows/publish-tool.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-tool.yml).
+Publishing is handled by [`.github/workflows/publish-tool.yml`](.github/workflows/publish-tool.yml).
 
 Preferred publish model:
 
 1. Add the `NUGET_API_KEY` repository secret
-2. Keep only the manual base version in [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](/Users/ksemenenko/Developer/dotnet-skills/tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj) as `<VersionPrefix>major.minor</VersionPrefix>`
-3. Let [`.github/workflows/publish-tool.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-tool.yml) publish automatically from `main` when tool-source inputs change, or trigger it manually only for a backfill or rerun
+2. Keep only the manual base version in [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj) as `<VersionPrefix>major.minor</VersionPrefix>`
+3. Let [`.github/workflows/publish-tool.yml`](.github/workflows/publish-tool.yml) publish automatically from `main` when tool-source inputs change, or trigger it manually only for a backfill or rerun
 
 The workflow resolves the publish version in CI as `<VersionPrefix>.<GITHUB_RUN_NUMBER>` and pushes the produced `.nupkg` to NuGet. For example, a checked-in `0.0` base version becomes `0.0.412` on run `412`.
 
@@ -227,7 +227,7 @@ The workflow resolves the publish version in CI as `<VersionPrefix>.<GITHUB_RUN_
 
 Skill content releases are separate from NuGet tool releases.
 
-Catalog releases are published automatically by [`.github/workflows/publish-catalog.yml`](/Users/ksemenenko/Developer/dotnet-skills/.github/workflows/publish-catalog.yml) on pushes to `main` when catalog-source inputs change.
+Catalog releases are published automatically by [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) on pushes to `main` when catalog-source inputs change.
 
 Rules:
 
@@ -272,7 +272,7 @@ Official references:
 
 If you add a project to the watch list:
 
-1. Add an entry to the right list in [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json)
+1. Add an entry to the right list in [`.github/upstream-watch.json`](.github/upstream-watch.json)
 2. Map it to the affected `dotnet-*` skills
 3. Add `match_tag_regex` if the repository publishes multiple release streams
 4. Validate the config:
@@ -295,7 +295,7 @@ python3 scripts/upstream_watch.py --dry-run
 
 ### Which File Do I Edit?
 
-Edit [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json) directly.
+Edit [`.github/upstream-watch.json`](.github/upstream-watch.json) directly.
 
 Keep it simple:
 
@@ -371,7 +371,7 @@ Do not use umbrella skills such as `dotnet`, `dotnet-architecture`, or `dotnet-o
 
 ### Commands To Run After Editing Watches
 
-After editing [`.github/upstream-watch.json`](/Users/ksemenenko/Developer/dotnet-skills/.github/upstream-watch.json):
+After editing [`.github/upstream-watch.json`](.github/upstream-watch.json):
 
 ```bash
 python3 scripts/upstream_watch.py --validate-config
