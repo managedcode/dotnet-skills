@@ -97,11 +97,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [patterns.md](references/patterns.md)
-- [examples.md](references/examples.md)
-- [netarchtest.md](references/netarchtest.md)
+- `references/patterns.md`
+- `references/examples.md`
+- `references/netarchtest.md`
 
 ## Example Requests
 

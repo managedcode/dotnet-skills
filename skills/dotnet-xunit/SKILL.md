@@ -115,11 +115,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [xunit.md](references/xunit.md)
-- [patterns.md](references/patterns.md)
-- [anti-patterns.md](references/anti-patterns.md)
+- `references/xunit.md`
+- `references/patterns.md`
+- `references/anti-patterns.md`
 
 ## Example Requests
 

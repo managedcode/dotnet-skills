@@ -132,8 +132,8 @@ Treat `SKILL.md` as the control plane, not the full documentation dump:
 - keep trigger conditions, workflow, deliverables, validation, and concise decision logic in `SKILL.md`
 - move long official documentation mirrors, API maps, examples, recipes, and deep topic notes into `references/`
 - prefer several small topic-focused reference files over one giant omnibus file so agents can load only the material they need
-- every meaningful file under `references/` must be linked from `SKILL.md` or from an index that `SKILL.md` links directly
-- when `SKILL.md` points at `references/`, use real Markdown links, not plain text path mentions
+- every meaningful file under `references/` must be referenced from `SKILL.md` or from an index that `SKILL.md` points to directly
+- when `SKILL.md` points at `references/`, concise explicit path mentions such as `references/patterns.md` are fine; use Markdown links only when clickability actually helps
 
 ## Required Files For A New Agent
 

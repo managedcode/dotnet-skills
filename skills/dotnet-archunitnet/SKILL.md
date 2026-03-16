@@ -95,11 +95,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [archunitnet.md](references/archunitnet.md)
-- [patterns.md](references/patterns.md)
-- [examples.md](references/examples.md)
+- `references/archunitnet.md`
+- `references/patterns.md`
+- `references/examples.md`
 
 ## Example Requests
 

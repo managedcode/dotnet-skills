@@ -108,11 +108,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [patterns.md](references/patterns.md)
-- [migration.md](references/migration.md)
-- [tunit.md](references/tunit.md)
+- `references/patterns.md`
+- `references/migration.md`
+- `references/tunit.md`
 
 ## Running Tests
 
@@ -132,7 +130,7 @@ dotnet run --project Tests.csproj -- --treenode-filter "/*/*/*/*[Category=Unit]"
 dotnet run --project Tests.csproj -- --treenode-filter "/*/*/*/*[Category!=Slow]"
 ```
 
-Filter syntax: `/<Assembly>/<Namespace>/<Class>/<Test>` with `*` wildcards. See [patterns.md](references/patterns.md) for full examples.
+Filter syntax: `/<Assembly>/<Namespace>/<Class>/<Test>` with `*` wildcards. See `references/patterns.md` for full examples.
 
 ## Example Requests
 

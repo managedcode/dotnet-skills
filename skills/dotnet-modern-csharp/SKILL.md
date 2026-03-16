@@ -110,11 +110,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [patterns.md](references/patterns.md)
-- [migration.md](references/migration.md)
-- [csharp-modern-features.md](references/csharp-modern-features.md)
+- `references/patterns.md`
+- `references/migration.md`
+- `references/csharp-modern-features.md`
 
 ## Example Requests
 

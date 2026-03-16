@@ -114,11 +114,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [rules.md](references/rules.md)
-- [config.md](references/config.md)
-- [roslynator.md](references/roslynator.md)
+- `references/rules.md`
+- `references/config.md`
+- `references/roslynator.md`
 
 ## Example Requests
 

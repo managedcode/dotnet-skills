@@ -101,11 +101,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [dotnet-format.md](references/dotnet-format.md)
-- [commands.md](references/commands.md)
-- [config.md](references/config.md)
+- `references/dotnet-format.md`
+- `references/commands.md`
+- `references/config.md`
 
 ## Example Requests
 

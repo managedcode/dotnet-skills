@@ -106,11 +106,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [commands.md](references/commands.md)
-- [patterns.md](references/patterns.md)
-- [coverlet.md](references/coverlet.md)
+- `references/commands.md`
+- `references/patterns.md`
+- `references/coverlet.md`
 
 ## Example Requests
 

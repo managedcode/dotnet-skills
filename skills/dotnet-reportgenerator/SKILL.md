@@ -103,11 +103,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [reportgenerator.md](references/reportgenerator.md)
-- [commands.md](references/commands.md)
-- [formats.md](references/formats.md)
+- `references/reportgenerator.md`
+- `references/commands.md`
+- `references/formats.md`
 
 ## Example Requests
 

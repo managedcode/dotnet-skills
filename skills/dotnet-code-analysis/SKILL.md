@@ -179,11 +179,9 @@ Never skip the ask step. The user decides the pace.
 
 ## Load References
 
-Open only what you need:
-
-- [rules.md](references/rules.md)
-- [config.md](references/config.md)
-- [code-analysis.md](references/code-analysis.md)
+- `references/rules.md`
+- `references/config.md`
+- `references/code-analysis.md`
 
 ## Example Requests
 

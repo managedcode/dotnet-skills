@@ -98,11 +98,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [commands.md](references/commands.md)
-- [config.md](references/config.md)
-- [csharpier.md](references/csharpier.md)
+- `references/commands.md`
+- `references/config.md`
+- `references/csharpier.md`
 
 ## Example Requests
 

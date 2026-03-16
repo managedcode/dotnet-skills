@@ -143,12 +143,10 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [editorconfig-and-ci.md](references/editorconfig-and-ci.md)
-- [quality-toolchain.md](references/quality-toolchain.md)
-- [workflows.md](references/workflows.md)
-- [checklist.md](references/checklist.md)
+- `references/editorconfig-and-ci.md`
+- `references/quality-toolchain.md`
+- `references/workflows.md`
+- `references/checklist.md`
 
 ## Example Requests
 

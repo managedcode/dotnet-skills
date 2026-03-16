@@ -132,11 +132,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [commands.md](references/commands.md)
-- [examples.md](references/examples.md)
-- [cloc.md](references/cloc.md)
+- `references/commands.md`
+- `references/examples.md`
+- `references/cloc.md`
 
 ## Example Requests
 

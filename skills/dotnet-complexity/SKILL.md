@@ -104,11 +104,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [complexity.md](references/complexity.md)
-- [metrics.md](references/metrics.md)
-- [config.md](references/config.md)
+- `references/complexity.md`
+- `references/metrics.md`
+- `references/config.md`
 
 ## Example Requests
 

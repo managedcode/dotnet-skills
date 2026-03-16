@@ -103,11 +103,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [analyzer-config.md](references/analyzer-config.md)
-- [template.md](references/template.md)
-- [rules.md](references/rules.md)
+- `references/analyzer-config.md`
+- `references/template.md`
+- `references/rules.md`
 
 ## Example Requests
 

@@ -98,11 +98,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [stryker.md](references/stryker.md)
-- [commands.md](references/commands.md)
-- [patterns.md](references/patterns.md)
+- `references/stryker.md`
+- `references/commands.md`
+- `references/patterns.md`
 
 ## Example Requests
 

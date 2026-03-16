@@ -95,11 +95,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [meziantou-analyzer.md](references/meziantou-analyzer.md)
-- [rules.md](references/rules.md)
-- [config.md](references/config.md)
+- `references/meziantou-analyzer.md`
+- `references/rules.md`
+- `references/config.md`
 
 ## Example Requests
 

@@ -94,11 +94,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [codeql.md](references/codeql.md)
-- [queries.md](references/queries.md)
-- [workflow.md](references/workflow.md)
+- `references/codeql.md`
+- `references/queries.md`
+- `references/workflow.md`
 
 ## Example Requests
 

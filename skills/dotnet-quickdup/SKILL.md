@@ -123,11 +123,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [commands.md](references/commands.md)
-- [examples.md](references/examples.md)
-- [quickdup.md](references/quickdup.md)
+- `references/commands.md`
+- `references/examples.md`
+- `references/quickdup.md`
 
 ## Example Requests
 

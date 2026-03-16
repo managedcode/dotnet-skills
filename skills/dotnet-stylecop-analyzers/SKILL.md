@@ -99,11 +99,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-Open only what you need:
-
-- [stylecop-analyzers.md](references/stylecop-analyzers.md)
-- [rules.md](references/rules.md)
-- [config.md](references/config.md)
+- `references/stylecop-analyzers.md`
+- `references/rules.md`
+- `references/config.md`
 
 ## Example Requests
 
