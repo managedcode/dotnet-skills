@@ -751,31 +751,33 @@
       font-size: 1.02rem;
     }
 
-    .agents-section .agents-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 18px;
+    .platforms-shell {
       max-width: 1180px;
       margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .platforms-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
       align-items: stretch;
     }
 
-    .agents-section .agent-card {
+    .platform-tile {
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, #ffffff 100%);
       border: 1px solid rgba(214, 223, 235, 0.95);
       border-radius: 22px;
-      padding: 22px 22px 20px;
+      padding: 18px 18px 16px;
       text-align: left;
       transition: all 0.2s;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
       position: relative;
       overflow: hidden;
     }
 
-    .agents-section .agent-card::before {
+    .platform-tile::before {
       content: "";
       position: absolute;
       inset: 0 0 auto 0;
@@ -784,7 +786,7 @@
       opacity: 0.9;
     }
 
-    .agents-section .agent-card:hover {
+    .platform-tile:hover {
       border-color: rgba(255, 126, 93, 0.55);
       box-shadow: 0 14px 34px rgba(15, 23, 42, 0.09);
       transform: translateY(-2px);
@@ -848,50 +850,106 @@
       line-height: 1.25;
     }
 
-    .agents-section .agent-summary {
+    .platform-note {
       color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.58;
-      margin-bottom: 0;
-      min-height: 0;
+      font-size: 0.92rem;
+      line-height: 1.55;
     }
 
-    .agents-section .agent-path-grid {
-      display: grid;
-      gap: 10px;
-      margin-top: auto;
+    .platforms-matrix {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, #ffffff 100%);
+      border: 1px solid rgba(214, 223, 235, 0.95);
+      border-radius: 22px;
+      padding: 10px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      overflow-x: auto;
     }
 
-    .agents-section .agent-path-item {
-      background: rgba(248, 250, 252, 0.96);
-      border: 1px solid rgba(226, 232, 240, 0.95);
-      border-radius: 14px;
-      padding: 12px 14px;
-      display: grid;
-      grid-template-columns: 58px minmax(0, 1fr);
-      gap: 12px;
-      align-items: center;
+    .platforms-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      text-align: left;
     }
 
-    .agents-section .agent-path-item code {
-      display: block;
-      margin-top: 0;
-      color: var(--text-primary);
-      font-size: 0.82rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      line-height: 1.35;
-      white-space: nowrap;
-      word-break: normal;
-      overflow-wrap: normal;
+    .platforms-table th,
+    .platforms-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+      vertical-align: middle;
     }
 
-    .agents-section .agent-path-item .path-label {
-      font-size: 0.68rem;
+    .platforms-table thead th {
+      font-size: 0.78rem;
       color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      line-height: 1.2;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .platforms-table tbody th {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      white-space: nowrap;
+      width: 110px;
+    }
+
+    .platforms-table tbody tr:last-child th,
+    .platforms-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .platform-platform {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .platform-platform-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      flex: 0 0 32px;
+    }
+
+    .platform-platform span {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .platform-path {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(248, 250, 252, 0.98);
+      border: 1px solid rgba(226, 232, 240, 0.98);
+      border-radius: 12px;
+      padding: 8px 10px;
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .platforms-footnote {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      text-align: left;
+      padding: 2px 4px 0;
     }
 
     /* CTA Section */
@@ -1260,14 +1318,8 @@
         display: none;
       }
 
-      .agents-section .agent-path-item {
+      .platforms-overview {
         grid-template-columns: 1fr;
-        gap: 6px;
-      }
-
-      .agents-section .agent-path-item code {
-        white-space: normal;
-        overflow-wrap: anywhere;
       }
 
       .nav-links {
@@ -1605,88 +1657,100 @@
 
     <section class="agents-section">
       <h2>Supported Platforms</h2>
-      <p>One catalog, native install locations, and no manual remapping between personal and repo-local setups.</p>
-      <div class="agents-grid">
-        <div class="agent-card">
-          <div class="agent-brand">
-            <div class="agent-logo claude-logo">CC</div>
-            <div class="agent-brand-copy">
-              <div class="agent-eyebrow">Anthropic</div>
-              <div class="agent-name">Claude Code</div>
+      <p>Install into the paths your coding platform already expects, then let the CLI resolve the right location for global or repo-local use.</p>
+      <div class="platforms-shell">
+        <div class="platforms-overview">
+          <div class="platform-tile">
+            <div class="agent-brand">
+              <div class="agent-logo claude-logo">CC</div>
+              <div class="agent-brand-copy">
+                <div class="agent-eyebrow">Anthropic</div>
+                <div class="agent-name">Claude Code</div>
+              </div>
             </div>
+            <p class="platform-note">Native agent folders for both personal and checked-in project setups.</p>
           </div>
-          <p class="agent-summary">Installs into Claude Code's native agent folders, whether you want a machine-wide setup or a checked-in repo path.</p>
-          <div class="agent-path-grid">
-            <div class="agent-path-item">
-              <div class="path-label">Global</div>
-              <code>~/.claude/agents</code>
+          <div class="platform-tile">
+            <div class="agent-brand">
+              <div class="agent-logo copilot-logo">GH</div>
+              <div class="agent-brand-copy">
+                <div class="agent-eyebrow">GitHub</div>
+                <div class="agent-name">GitHub Copilot</div>
+              </div>
             </div>
-            <div class="agent-path-item">
-              <div class="path-label">Project</div>
-              <code>.claude/agents</code>
-            </div>
+            <p class="platform-note">Direct skill-folder targeting for personal installs and repository workflows.</p>
           </div>
-        </div>
-        <div class="agent-card">
-          <div class="agent-brand">
-            <div class="agent-logo copilot-logo">GH</div>
-            <div class="agent-brand-copy">
-              <div class="agent-eyebrow">GitHub</div>
-              <div class="agent-name">GitHub Copilot</div>
+          <div class="platform-tile">
+            <div class="agent-brand">
+              <div class="agent-logo gemini-logo">GM</div>
+              <div class="agent-brand-copy">
+                <div class="agent-eyebrow">Google</div>
+                <div class="agent-name">Gemini</div>
+              </div>
             </div>
+            <p class="platform-note">Consistent skill locations between your home directory and project folders.</p>
           </div>
-          <p class="agent-summary">Targets Copilot skill folders directly for both personal installs and checked-in repository workflows.</p>
-          <div class="agent-path-grid">
-            <div class="agent-path-item">
-              <div class="path-label">Global</div>
-              <code>~/.copilot/skills</code>
+          <div class="platform-tile">
+            <div class="agent-brand">
+              <div class="agent-logo codex-logo">CX</div>
+              <div class="agent-brand-copy">
+                <div class="agent-eyebrow">OpenAI</div>
+                <div class="agent-name">Codex</div>
+              </div>
             </div>
-            <div class="agent-path-item">
-              <div class="path-label">Project</div>
-              <code>.github/skills</code>
-            </div>
-          </div>
-        </div>
-        <div class="agent-card">
-          <div class="agent-brand">
-            <div class="agent-logo gemini-logo">GM</div>
-            <div class="agent-brand-copy">
-              <div class="agent-eyebrow">Google</div>
-              <div class="agent-name">Gemini</div>
-            </div>
-          </div>
-          <p class="agent-summary">Keeps Gemini installs consistent between your personal environment and repo-local project folders.</p>
-          <div class="agent-path-grid">
-            <div class="agent-path-item">
-              <div class="path-label">Global</div>
-              <code>~/.gemini/skills</code>
-            </div>
-            <div class="agent-path-item">
-              <div class="path-label">Project</div>
-              <code>.gemini/skills</code>
-            </div>
+            <p class="platform-note">Skill paths that match both personal use and checked-in repository setups.</p>
           </div>
         </div>
-        <div class="agent-card">
-          <div class="agent-brand">
-            <div class="agent-logo codex-logo">CX</div>
-            <div class="agent-brand-copy">
-              <div class="agent-eyebrow">OpenAI</div>
-              <div class="agent-name">Codex</div>
-            </div>
-          </div>
-          <p class="agent-summary">Matches Codex skill locations for both home-directory installs and checked-in repo workflows without extra adapters.</p>
-          <div class="agent-path-grid">
-            <div class="agent-path-item">
-              <div class="path-label">Global</div>
-              <code>~/.codex/skills</code>
-            </div>
-            <div class="agent-path-item">
-              <div class="path-label">Project</div>
-              <code>.codex/skills</code>
-            </div>
-          </div>
+        <div class="platforms-matrix">
+          <table class="platforms-table">
+            <thead>
+              <tr>
+                <th>Location</th>
+                <th>
+                  <div class="platform-platform">
+                    <div class="platform-platform-logo claude-logo">CC</div>
+                    <span>Claude Code</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="platform-platform">
+                    <div class="platform-platform-logo copilot-logo">GH</div>
+                    <span>GitHub Copilot</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="platform-platform">
+                    <div class="platform-platform-logo gemini-logo">GM</div>
+                    <span>Gemini</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="platform-platform">
+                    <div class="platform-platform-logo codex-logo">CX</div>
+                    <span>Codex</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Global</th>
+                <td><code class="platform-path">~/.claude/agents</code></td>
+                <td><code class="platform-path">~/.copilot/skills</code></td>
+                <td><code class="platform-path">~/.gemini/skills</code></td>
+                <td><code class="platform-path">~/.codex/skills</code></td>
+              </tr>
+              <tr>
+                <th scope="row">Project</th>
+                <td><code class="platform-path">.claude/agents</code></td>
+                <td><code class="platform-path">.github/skills</code></td>
+                <td><code class="platform-path">.gemini/skills</code></td>
+                <td><code class="platform-path">.codex/skills</code></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+        <p class="platforms-footnote">Use <code>dotnet skills where</code> to print the resolved install path for the current platform and scope.</p>
       </div>
     </section>
 

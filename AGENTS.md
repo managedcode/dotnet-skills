@@ -316,6 +316,7 @@ Rules:
 - When the site refers to Claude Code, GitHub Copilot, Gemini, and Codex, present them as supported platforms or assistants that consume the catalog, not as repository-owned "AI agents".
 - Supported-platform sections on the site should use clearly differentiated brand-like tiles or logos instead of generic repeated cards.
 - Supported-platform path examples must stay readable at a glance: avoid aggressive word-breaking, tiny dual-column chips, or layouts that split short filesystem paths into visual fragments.
+- The public supported-platforms section should prefer a compact comparison matrix plus lightweight platform identity tiles over tall repeated marketing cards with duplicated copy.
 - Footer copyright years on the public site must be generated from the build year during page generation; do not hardcode stale years in the HTML template.
 - The public landing page should use tighter spacing rhythm than the current default: avoid oversized shell padding, overly tall card interiors, or loose gaps between onboarding steps and sidebar blocks.
 
