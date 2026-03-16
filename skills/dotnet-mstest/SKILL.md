@@ -108,9 +108,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/mstest.md` first
-- read `references/patterns.md` for MSTest patterns (DataRow, DynamicData, lifecycle hooks, parallel testing)
-- read `references/anti-patterns.md` for common testing mistakes to avoid
+Open only what you need:
+
+- [mstest.md](references/mstest.md)
+- [patterns.md](references/patterns.md)
+- [anti-patterns.md](references/anti-patterns.md)
 
 ## Example Requests
 

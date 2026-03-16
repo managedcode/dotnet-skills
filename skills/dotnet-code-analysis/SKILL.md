@@ -179,8 +179,11 @@ Never skip the ask step. The user decides the pace.
 
 ## Load References
 
-- `references/rules.md` — rule categories and severity guidance
-- `references/config.md` — MSBuild properties and .editorconfig settings
+Open only what you need:
+
+- [rules.md](references/rules.md)
+- [config.md](references/config.md)
+- [code-analysis.md](references/code-analysis.md)
 
 ## Example Requests
 

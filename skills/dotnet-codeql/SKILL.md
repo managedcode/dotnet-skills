@@ -94,9 +94,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/codeql.md` first for overview and licensing context
-- read `references/queries.md` for common security queries and custom query patterns
-- read `references/workflow.md` for GitHub Actions setup and configuration
+Open only what you need:
+
+- [codeql.md](references/codeql.md)
+- [queries.md](references/queries.md)
+- [workflow.md](references/workflow.md)
 
 ## Example Requests
 

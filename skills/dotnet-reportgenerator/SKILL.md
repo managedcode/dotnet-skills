@@ -103,9 +103,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/reportgenerator.md` first
-- read `references/commands.md` for CLI command syntax and examples
-- read `references/formats.md` for output format options and combinations
+Open only what you need:
+
+- [reportgenerator.md](references/reportgenerator.md)
+- [commands.md](references/commands.md)
+- [formats.md](references/formats.md)
 
 ## Example Requests
 

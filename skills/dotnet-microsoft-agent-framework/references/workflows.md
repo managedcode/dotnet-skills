@@ -1,53 +1,69 @@
 # Workflows
 
-## Use Workflows When Control Flow Must Be Explicit
+## Workflows Exist To Make Control Flow Explicit
 
-Choose Workflows when you need:
+Use a workflow when the correctness of the system depends on an explicit execution graph rather than a model deciding everything on the fly.
 
-- typed execution stages
-- explicit sequencing or branching
-- multiple agents that coordinate predictably
-- checkpoints and resume
-- request and response loops for human-in-the-loop or external systems
-- shared state and deterministic orchestration
+Typical reasons:
 
-If one dynamic agent with a small tool surface is enough, keep the design simpler and stay with an agent.
+- typed multi-step execution
+- predictable branching
+- fan-out and aggregation
+- human-in-the-loop pauses
+- checkpoint and resume
+- durable orchestration
+- multi-agent collaboration that must stay inspectable
+
+If a single agent with a small tool surface can solve the task, stay with an agent.
 
 ## Core Concepts
 
-| Concept | Meaning |
-|---|---|
-| Executor | A processing node that handles messages |
-| Edge | A routing rule between executors |
-| Workflow | A graph of executors and edges |
-| Superstep | A unit of workflow progress after which checkpoints can be captured |
-| `InputPort` | Boundary that lets workflows emit requests and receive responses |
-| Shared state | Workflow-wide durable data accessible to executors |
-| Checkpoint | Saved workflow state that supports restore or rehydration |
-| Workflow as agent | A workflow wrapped so it can be exposed like an `AIAgent` |
+| Concept | Meaning | Why It Matters |
+| --- | --- | --- |
+| Executor | A typed processing node | Owns one step of the workflow |
+| Edge | A routing rule between executors | Makes branching and handoff explicit |
+| Workflow | The execution graph | Defines the process structure |
+| Superstep | A unit of progress between checkpoint points | Determines checkpoint timing |
+| `InputPort` | The boundary for external requests and responses | Enables HITL and system callbacks |
+| Shared state | Workflow-wide durable data | Avoids abusing agent state for process state |
+| Checkpoint | A saved execution snapshot | Enables recovery, resume, and rehydration |
 
-## Builders And Composition
+## Builder Selection
 
-- Use `WorkflowBuilder` for graph-shaped flows with explicit edges and message types.
-- Use `AgentWorkflowBuilder` when you want built-in orchestration helpers such as sequential or concurrent agent patterns.
-- Use workflows to coordinate agents, custom executors, or both.
-- Convert a workflow to an agent when a hosting protocol expects an `AIAgent`.
+Use `WorkflowBuilder` when:
 
-## Orchestration Patterns
+- you need custom executors
+- the graph is not just agent orchestration
+- you want explicit control over edges and message types
 
-| Pattern | Best For | Notes |
-|---|---|---|
-| Sequential | Pipelines and staged refinement | Each stage builds on the previous result |
-| Concurrent | Parallel analysis and fan-out | Aggregate results explicitly |
-| Handoff | Dynamic expert routing | Agents pass control based on context |
-| Group Chat | Managed multi-agent discussion | Manager controls turn taking |
-| Magentic | Planner-led multi-agent collaboration | Good for complex, generalist decomposition |
+Use `AgentWorkflowBuilder` when:
 
-These are workflow patterns, not vague prompt recipes. Prefer them when the collaboration shape matters to correctness.
+- you are primarily coordinating agents
+- the orchestration matches built-in agent patterns
+- you want sequential or concurrent pipeline helpers
 
-## Requests, Responses, And Human-In-The-Loop
+## Workflow Patterns
 
-Workflows can send requests outside the workflow and pause until a response arrives.
+| Pattern | Best For | Main Risk |
+| --- | --- | --- |
+| Sequential | staged refinement and pipelines | hidden accumulation of low-quality output between stages |
+| Concurrent | parallel analysis and aggregation | weak aggregation logic or duplicated work |
+| Handoff | routing to the right specialist | opaque routing if criteria stay implicit |
+| Group Chat | managed multi-agent discussion | noisy collaboration without clear stopping rules |
+| Magentic | planner-led decomposition | overkill for simple bounded tasks |
+
+These are workflow patterns, not prompt slogans. If you cannot explain the message flow in code, you probably do not have a real workflow design yet.
+
+## Request And Response
+
+Request and response is the first-class way to model:
+
+- human approval
+- external callbacks
+- asynchronous system input
+- pauses that must survive beyond one model run
+
+`InputPort` is the key primitive.
 
 ```csharp
 var inputPort = InputPort.Create<ApprovalRequest, ApprovalResponse>("approval");
@@ -58,57 +74,97 @@ var workflow = new WorkflowBuilder(inputPort)
     .Build<ApprovalRequest>();
 ```
 
-Key ideas:
+Operationally:
 
-- executors send requests through the workflow context
-- the outer host listens for `RequestInfoEvent`
-- responses are sent back into the workflow and routed to the waiting executor
-- pending requests are preserved in checkpoints
+1. an executor emits a request
+2. the host sees a `RequestInfoEvent`
+3. the outer system resolves the request
+4. the response is sent back into the workflow
+5. the waiting executor resumes
 
-This is the clean way to model approval, escalation, and external callbacks.
+If approval, escalation, or external data truly changes the control flow, this is cleaner than stuffing everything into tools and prompts.
 
 ## Checkpoints
 
-Checkpoints are created at the end of supersteps.
-
-They capture:
+Checkpoints are captured at superstep boundaries and include:
 
 - executor state
-- queued messages
+- pending messages
 - pending requests and responses
 - shared states
 
-Custom executors that carry internal state must persist and restore it explicitly during checkpoint save and restore hooks.
+For custom executors, checkpointing is not free. You must explicitly save and restore internal executor state.
 
-## Shared State And State Isolation
+Use checkpoints when:
 
-- Use shared state only for data that truly belongs to the workflow as a whole.
-- Keep executor-local state local and checkpoint it intentionally.
-- Treat built workflows as immutable execution definitions.
-- Be careful when reusing mutable workflow builders; state isolation matters when workflows are created through factories or reused in long-lived hosts.
+- runs are long-lived
+- resume matters
+- failures must not discard progress
+- the workflow crosses system boundaries
 
-## Workflows As Agents
+## Shared State Versus Executor State
 
-Wrap a workflow as an agent when:
+Use shared state only for data that belongs to the workflow as a whole.
 
-- you want to expose it through ASP.NET Core hosting
-- a higher-level system expects an `AIAgent`
-- you want protocol adapters such as OpenAI-compatible endpoints or A2A over a workflow
+Keep executor-local state local when:
 
-Do not wrap a workflow as an agent just to hide its structure from yourself. Keep the workflow graph explicit in code and docs.
+- it belongs to one step only
+- it should not be a shared mutable dependency
+- you need clearer reasoning about checkpoint behavior
 
-## Observability And Visualization
+This separation matters because workflows become hard to reason about when every executor reads and writes one giant state bag.
 
-- Workflow execution emits events such as executor start, agent response updates, workflow output, and superstep completion.
-- Use workflow observability and visualization when diagnosing routing, aggregation, or checkpoint behavior.
-- Visual traces are especially important once you introduce concurrent, handoff, or Magentic patterns.
+## Workflow As Agent
 
-## Declarative Workflows
+Wrap the workflow as an agent when:
 
-Official docs currently position declarative workflows as Python-first, with YAML-based workflow definitions, expressions, and action libraries.
+- a hosting layer expects an `AIAgent`
+- another system only knows how to talk to agents
+- you need to expose the workflow through OpenAI-compatible endpoints, A2A, or similar surfaces
 
-For .NET work:
+Do not wrap a workflow as an agent just to hide complexity from your own codebase. Keep the graph explicit in code and docs.
 
-- treat declarative workflow docs as conceptual guidance only
-- do not invent a .NET declarative API surface that the docs do not actually publish
-- keep .NET implementations programmatic unless official .NET declarative docs and packages are explicitly available
+## Observability
+
+Workflow observability is not optional once you have:
+
+- concurrency
+- branching
+- approvals
+- retries
+- multiple specialists
+
+At minimum, be able to answer:
+
+- which executor ran
+- what message it received
+- why a branch was chosen
+- whether a request is pending
+- which checkpoint corresponds to which execution stage
+
+## Declarative Workflows And `.NET`
+
+The official docs currently position declarative workflows as Python-first.
+
+For `.NET`:
+
+- treat those docs as conceptual guidance
+- do not invent a declarative `.NET` API surface that the docs do not actually publish
+- keep production `.NET` implementations programmatic unless official `.NET` declarative support is documented
+
+## Anti-Patterns
+
+- Using one giant workflow because it feels "enterprise".
+- Encoding routing rules in prompt text instead of edges.
+- Using workflow state as a dumping ground for every executor's scratch data.
+- Forgetting to checkpoint custom executor state.
+- Wrapping a workflow as an agent and then forgetting the actual workflow still exists underneath.
+
+## Source Pages
+
+- `references/official-docs/user-guide/workflows/overview.md`
+- `references/official-docs/user-guide/workflows/core-concepts/overview.md`
+- `references/official-docs/user-guide/workflows/requests-and-responses.md`
+- `references/official-docs/user-guide/workflows/checkpoints.md`
+- `references/official-docs/user-guide/workflows/as-agents.md`
+- `references/official-docs/user-guide/workflows/orchestrations/overview.md`

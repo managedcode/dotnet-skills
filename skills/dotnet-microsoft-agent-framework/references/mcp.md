@@ -1,55 +1,68 @@
-# Model Context Protocol And External Boundaries
+# Model Context Protocol and External Boundaries
 
-## Choose The Right Protocol
+## Keep The Protocols Separate
 
-| Need | Choose | Why |
-|---|---|---|
-| Expose tools or contextual data to an agent | MCP | Tool and context transport |
-| Let one agent call another remote agent | A2A | Agent-to-agent delegation and discovery |
-| Drive a browser or app UI for humans | AG-UI | Streaming UI protocol with state and approvals |
+| Need | Correct Protocol | Why |
+| --- | --- | --- |
+| Expose tools or contextual data to models and agents | MCP | Tool and context transport |
+| Let one remote agent talk to another remote agent | A2A | Agent-to-agent delegation and discovery |
+| Drive a rich human-facing web or mobile UI | AG-UI | Interactive UI protocol with streaming and state |
 
-Do not blur these together:
+The most common architectural mistake is to blur these:
 
-- MCP is about tools and context.
-- A2A is about remote agents.
-- AG-UI is about human-facing UI integration.
+- MCP is not a remote-agent protocol.
+- A2A is not a tool protocol.
+- AG-UI is not MCP over HTTP with a prettier client.
 
-## Using MCP With Agents
+## What MCP Means In Agent Framework
 
-Agent Framework can attach remote MCP servers as tools for agents.
+Agent Framework can attach remote MCP servers as tools for agents. In practice that means:
 
-Typical pattern:
+1. configure an MCP client or tool resource
+2. add the resulting tool surface to the agent
+3. run the agent normally
 
-- create or configure the MCP tool or client
-- add the resulting tool set to the agent
-- run the agent normally with those tools available
+The agent sees MCP as tool capability, not as a separate execution runtime.
 
-The official docs emphasize these security rules:
+## The Security Model Matters More Than The API
 
-- prefer trusted providers over random proxy servers
-- review exactly what prompt or tool data is shared with each MCP server
-- log or audit data exchanged with third-party MCP services
-- pass authentication headers at run time rather than baking them into durable agent definitions
+The official docs are very explicit here:
 
-## Headers And Credentials
+- review every third-party MCP server
+- prefer servers run by trusted providers over random proxies
+- review what prompt data is being sent
+- log what the server receives and returns when possible
+- inject headers and auth only at run time
 
-Custom headers such as bearer tokens should be injected only for the current run through the tool resources or request context that the MCP integration exposes.
+The framework supports custom headers specifically so you can pass run-scoped auth, which is the safe default.
 
-Do not:
+## Header And Credential Rules
 
-- persist API keys inside long-lived thread state
-- hardcode third-party MCP credentials in source
-- assume all MCP servers use the same auth pattern
+Custom headers should be:
 
-## Hosted MCP Versus Local Or Remote MCP
+- injected per run
+- short-lived where possible
+- excluded from durable thread state
+- excluded from source code and static agent definitions
 
-- A `ChatClientAgent` can use MCP servers as tools when the underlying service and tool path support it.
-- Some hosted providers also surface MCP as a managed tool category.
-- Support is provider-specific. Verify the chosen agent type before you assume hosted MCP works.
+Common safe pattern:
+
+- agent definition is stable
+- MCP auth arrives via request-scoped tool resources
+- the current run gets only the headers it needs
+
+## MCP Versus Hosted Tools
+
+There are two distinct cases:
+
+1. your agent uses an MCP server directly as an external tool source
+2. your provider offers hosted MCP-like capabilities as managed service tools
+
+Do not assume those behave the same way operationally. Hosted provider tools inherit provider behavior; remote MCP servers inherit the trust and failure modes of the remote server.
 
 ## Agent As MCP Tool
 
-You can expose an agent itself as an MCP tool so that any MCP client can call it.
+You can expose an agent itself as an MCP tool so that MCP clients can call it.
 
 ```csharp
 using Microsoft.Agents.AI;
@@ -69,15 +82,30 @@ await builder.Build().RunAsync();
 
 Use this when:
 
-- you want external tools or clients to consume the agent through the MCP ecosystem
-- the right abstraction is a callable tool, not a full conversational remote agent
+- you want the agent to behave like a callable tool in the MCP ecosystem
+- conversational agent semantics are not required by the caller
 
-Use A2A instead when the remote system should remain an agent with its own protocol semantics, discovery, and task model.
+Use A2A instead when the remote thing should remain an agent with its own protocol semantics and discovery model.
 
-## Security Checklist
+## Deployment Checklist
 
-- Review every third-party MCP server before enabling it.
-- Keep credentials request-scoped.
-- Log what the agent sends to and receives from MCP servers.
-- Limit the MCP tool set to the smallest useful subset.
-- Treat MCP output as untrusted input before passing it to sensitive tools or downstream systems.
+- Restrict MCP servers to the smallest trusted set.
+- Keep auth request-scoped.
+- Audit the prompt and tool data exchanged with remote servers.
+- Treat MCP output as untrusted input before using it in downstream tools.
+- Do not persist third-party secrets inside thread state.
+
+## When To Avoid MCP
+
+Avoid MCP when:
+
+- you really need remote-agent semantics rather than tool semantics
+- your frontend protocol is the real problem and AG-UI is the right answer
+- the external system is too sensitive to expose through a broad tool interface
+
+## Source Pages
+
+- `references/official-docs/user-guide/model-context-protocol/index.md`
+- `references/official-docs/user-guide/model-context-protocol/using-mcp-tools.md`
+- `references/official-docs/user-guide/model-context-protocol/using-mcp-with-foundry-agents.md`
+- `references/official-docs/tutorials/agents/agent-as-mcp-tool.md`

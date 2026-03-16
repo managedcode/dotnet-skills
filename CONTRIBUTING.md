@@ -127,6 +127,14 @@ skills/<skill-slug>/
 
 `SKILL.md` is the only required file. It uses the universal Agent Skills format with YAML frontmatter (name, description) that works across Claude, Copilot, Gemini, and Codex.
 
+Treat `SKILL.md` as the control plane, not the full documentation dump:
+
+- keep trigger conditions, workflow, deliverables, validation, and concise decision logic in `SKILL.md`
+- move long official documentation mirrors, API maps, examples, recipes, and deep topic notes into `references/`
+- prefer several small topic-focused reference files over one giant omnibus file so agents can load only the material they need
+- every meaningful file under `references/` must be linked from `SKILL.md` or from an index that `SKILL.md` links directly
+- when `SKILL.md` points at `references/`, use real Markdown links, not plain text path mentions
+
 ## Required Files For A New Agent
 
 Agent placement depends on scope:
@@ -164,7 +172,7 @@ An agent file should:
 - list the `dotnet-*` skills it is expected to orchestrate
 - explain its boundaries and what it should hand off
 
-Keep detailed implementation instructions in `SKILL.md`. Use agents for routing, triage, and bounded role behavior.
+Keep `AGENT.md` short. Use it for routing, triage, and bounded role behavior. Put deep framework notes, large decision tables, protocol details, and other heavy material in `references/` or in the paired skill instead of bloating the agent entry file.
 Do not store agents as loose flat `.agent.md` source files in the repo; folder-per-agent is the canonical source layout here.
 
 Current skill-scoped specialist examples:

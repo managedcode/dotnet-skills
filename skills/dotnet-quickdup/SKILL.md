@@ -123,8 +123,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/commands.md` for CLI options and syntax
-- read `references/examples.md` for common usage scenarios
+Open only what you need:
+
+- [commands.md](references/commands.md)
+- [examples.md](references/examples.md)
+- [quickdup.md](references/quickdup.md)
 
 ## Example Requests
 

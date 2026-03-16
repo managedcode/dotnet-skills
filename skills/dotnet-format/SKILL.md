@@ -101,9 +101,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/dotnet-format.md` first for overview and installation
-- read `references/commands.md` for CLI command patterns and CI integration
-- read `references/config.md` for .editorconfig settings and code style options
+Open only what you need:
+
+- [dotnet-format.md](references/dotnet-format.md)
+- [commands.md](references/commands.md)
+- [config.md](references/config.md)
 
 ## Example Requests
 

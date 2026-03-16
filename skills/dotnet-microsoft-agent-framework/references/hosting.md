@@ -1,28 +1,30 @@
 # Hosting and Integration Surfaces
 
-## Core ASP.NET Core Hosting
+## Keep Hosting Separate From Core Logic
 
-The base hosting layer is `Microsoft.Agents.AI.Hosting`.
+The core rule is simple:
+
+- the agent or workflow is your core execution model
+- hosting libraries are protocol adapters around it
+
+Do not choose your architecture because a protocol package exists. Choose the runtime model first, then attach the hosting surface you actually need.
+
+## Core Hosting Library
+
+`Microsoft.Agents.AI.Hosting` is the base ASP.NET Core hosting layer.
 
 Use it to:
 
-- register agents with dependency injection
-- attach tools and thread stores through the hosted builder
-- register workflows alongside agents
-- convert workflows into `AIAgent` surfaces when protocol adapters need an agent
+- register `AIAgent` instances in DI
+- register workflows
+- attach tools and thread stores
+- expose workflows as `AIAgent` surfaces when a protocol needs an agent
+
+Representative shape:
 
 ```csharp
-using Azure.AI.OpenAI;
-using Azure.Identity;
-using Microsoft.Agents.AI;
-using Microsoft.Agents.AI.Hosting;
-using Microsoft.Extensions.AI;
-
 var builder = WebApplication.CreateBuilder(args);
 
-IChatClient chatClient = new AzureOpenAIClient(new Uri(endpoint), new DefaultAzureCredential())
-    .GetChatClient(deploymentName)
-    .AsIChatClient();
 builder.Services.AddSingleton(chatClient);
 
 var pirateAgent = builder.AddAIAgent(
@@ -33,40 +35,59 @@ var workflow = builder.AddWorkflow("science-workflow", (sp, key) => { /* build w
     .AddAsAIAgent();
 ```
 
-Useful hosted-builder extensions from the official docs:
+## Hosted Builder Extensions That Matter
+
+The official docs repeatedly rely on these extensions:
 
 - `.WithAITool(...)`
 - `.WithInMemoryThreadStore()`
 - `.AddAsAIAgent()` for workflows
 
-## OpenAI-Compatible HTTP Endpoints
+That means the hosting layer is not just for HTTP exposure. It is also the composition point for common infrastructure around the agent.
 
-Use `Microsoft.Agents.AI.Hosting.OpenAI` when external clients should call your agent through OpenAI-style APIs.
+## Protocol Adapter Matrix
 
-The docs expose two protocol families:
+| Surface | Package Family | Use It For | Key Rule |
+| --- | --- | --- | --- |
+| Core hosting | `Microsoft.Agents.AI.Hosting` | DI registration and local hosting composition | Start here |
+| OpenAI-compatible HTTP | `Microsoft.Agents.AI.Hosting.OpenAI` | Chat Completions, Responses, Conversations endpoints | Prefer Responses for new work |
+| A2A | `Microsoft.Agents.AI.Hosting.A2A` and `.AspNetCore` | agent-to-agent interoperability | Agent cards and task semantics matter |
+| AG-UI | `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` | rich web/mobile UI protocols | Treat browser input as hostile unless mediated |
+| Azure Functions durable | `Microsoft.Agents.AI.Hosting.AzureFunctions` | long-running durable hosting | Choose only for real durability needs |
+
+## OpenAI-Compatible Hosting
+
+The docs expose three related protocol families:
 
 - Chat Completions
-- Responses, plus conversation helpers
+- Responses
+- Conversations
 
-Key methods called out in the official docs:
+Key builder and mapping calls:
 
 - `builder.AddOpenAIChatCompletions()`
 - `app.MapOpenAIChatCompletions(agent)`
 - `builder.AddOpenAIResponses()`
-- `builder.AddOpenAIConversations()`
 - `app.MapOpenAIResponses(agent)`
+- `builder.AddOpenAIConversations()`
 - `app.MapOpenAIConversations()`
 
-Default guidance:
+Choose Responses when:
 
-- Prefer Responses for new work.
-- Keep Chat Completions for compatibility with older clients or simpler stateless integrations.
+- building new endpoints
+- you want richer response semantics
+- background responses or server-side conversation support matter
+
+Choose Chat Completions when:
+
+- integrating with existing clients that already speak that shape
+- the endpoint is intentionally simple and stateless
 
 ## A2A Hosting
 
-Use `Microsoft.Agents.AI.Hosting.A2A` and `Microsoft.Agents.AI.Hosting.A2A.AspNetCore` when your surface is another agent, not a generic HTTP client.
+A2A is the right surface when the caller is another agent platform rather than a generic HTTP app.
 
-The official hosting guide uses:
+Representative mapping:
 
 ```csharp
 app.MapA2A(agent, "/a2a/my-agent", agentCard: new()
@@ -77,43 +98,42 @@ app.MapA2A(agent, "/a2a/my-agent", agentCard: new()
 });
 ```
 
-A2A gives you:
+A2A adds:
 
-- agent discovery through agent cards
-- message-based interop
+- agent discovery via agent cards
+- message-based interoperability
 - long-running task semantics
-- cross-framework interoperability
+- cross-framework agent communication
 
-## AG-UI
+If your real problem is tool exchange, use MCP instead. If your real problem is human UI, use AG-UI instead.
 
-Use `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` when the problem is an interactive web or mobile agent UI.
+## AG-UI Hosting
 
-The official docs emphasize:
+AG-UI is for rich human-facing agent interfaces over HTTP plus SSE.
 
-- Server-Sent Events streaming
-- thread or conversation management
-- backend tool rendering
-- human approval flows
-- shared or predictive state updates
-
-Core .NET entry point:
+Representative mapping:
 
 ```csharp
 app.MapAGUI("/", agent);
 ```
 
-AG-UI is a protocol adapter for humans and frontends. It is not the same thing as A2A and it is not just MCP over HTTP.
+What AG-UI adds beyond direct agent usage:
 
-## Azure Functions Durable Hosting
+- remote service hosting
+- SSE streaming for UI updates
+- thread and state synchronization
+- approval workflows
+- backend and frontend tool rendering patterns
 
-Use `Microsoft.Agents.AI.Hosting.AzureFunctions` when you need:
+Important security rule from the docs:
 
-- serverless hosting
-- durable thread persistence
-- deterministic multi-agent orchestrations
-- long-running flows that can survive failures and restarts
+- do not expose AG-UI directly to untrusted browser clients without a trusted frontend mediation layer
 
-The official docs use:
+## Durable Azure Functions Hosting
+
+Use `Microsoft.Agents.AI.Hosting.AzureFunctions` only when durable execution is a real requirement.
+
+Representative shape:
 
 ```csharp
 using IHost app = FunctionsApplication
@@ -123,28 +143,39 @@ using IHost app = FunctionsApplication
     .Build();
 ```
 
-In durable orchestrations:
+This is the right path for:
 
-- retrieve agents from the orchestration context
-- let Durable Task own persistence and replay
-- keep orchestration logic deterministic
+- replayable orchestration
+- persistent threads
+- failure recovery across long runs
+- serverless Azure hosting
 
 ## Purview Integration
 
-For governance and compliance, the official docs include the `Microsoft.Agents.AI.Purview` integration.
+The official docs also call out `Microsoft.Agents.AI.Purview`.
 
-Typical .NET shape:
+Use it when:
 
-- build the agent
-- convert to builder
-- add `.WithPurview(...)`
-- rebuild the agent
+- prompts and responses need governance checks
+- policy enforcement or audit requirements are enterprise-critical
+- your rollout requires explicit compliance integration
 
-Use this when prompts or responses need policy enforcement, audit, or compliance hooks before the agent is approved for enterprise rollout.
+This is not a universal default. It is a targeted enterprise control layer.
 
-## Practical Rules
+## Production Rules
 
-- Keep agent logic protocol-agnostic; let hosting layers adapt the protocol.
-- Prefer one clear protocol surface per endpoint.
-- Wrap workflows as agents only when a hosting layer truly requires an `AIAgent`.
-- Keep DevUI separate from production hosting decisions.
+- Keep the in-process agent or workflow protocol-agnostic.
+- Expose one clear protocol surface per endpoint.
+- Use workflows-as-agents only when a protocol layer requires an `AIAgent`.
+- Keep DevUI separate from production hosting.
+- Document the trust boundary for AG-UI and MCP explicitly.
+
+## Source Pages
+
+- `references/official-docs/user-guide/hosting/index.md`
+- `references/official-docs/user-guide/hosting/openai-integration.md`
+- `references/official-docs/user-guide/hosting/agent-to-agent-integration.md`
+- `references/official-docs/integrations/ag-ui/index.md`
+- `references/official-docs/integrations/ag-ui/security-considerations.md`
+- `references/official-docs/tutorials/agents/create-and-run-durable-agent.md`
+- `references/official-docs/tutorials/plugins/use-purview-with-agent-framework-sdk.md`

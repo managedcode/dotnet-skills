@@ -110,8 +110,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/patterns.md` for modern C# patterns (primary constructors, records, pattern matching, collection expressions, and more)
-- read `references/migration.md` for guidance on upgrading from older C# versions
+Open only what you need:
+
+- [patterns.md](references/patterns.md)
+- [migration.md](references/migration.md)
+- [csharp-modern-features.md](references/csharp-modern-features.md)
 
 ## Example Requests
 

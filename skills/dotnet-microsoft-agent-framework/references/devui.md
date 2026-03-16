@@ -1,67 +1,63 @@
 # DevUI
 
-## What DevUI Is
+## What DevUI Actually Is
 
-DevUI is a sample application for running and testing agents and workflows with:
+DevUI is a sample app for development-time testing of agents and workflows.
 
-- a web UI
-- an OpenAI-compatible local API
+It gives you:
+
+- a local web UI
+- an OpenAI-compatible local API surface
 - trace viewing
-- directory discovery and sample loading
+- directory discovery for sample entities
+- a quick way to exercise inputs without building your real frontend
 
-The official docs are explicit: DevUI is for development and debugging, not for production.
+It is not a production hosting surface.
 
-## Important .NET Caveat
+## `.NET` Caveat
 
-Current DevUI docs are primarily published for Python, and the .NET sections are largely marked as "coming soon".
+The current docs are explicit that `.NET` DevUI documentation is still limited and mostly "coming soon", while Python has the richer published guidance.
 
-For .NET work:
+So for `.NET` work:
 
-- use DevUI docs as conceptual guidance
-- do not invent unsupported .NET APIs from the Python pages
-- keep the production architecture on normal hosting surfaces such as ASP.NET Core, A2A, OpenAI hosting, or AG-UI
+- treat DevUI docs as conceptual guidance
+- do not invent `.NET` APIs that the docs do not actually publish
+- do not anchor production architecture on DevUI behavior
 
-## What DevUI Gives You
+## Good Uses
 
-- interactive testing of agents and workflows
-- automatic input-shape handling
-- sample gallery and local entity discovery
-- OpenTelemetry trace viewing
-- OpenAI-compatible local `/v1/*` API surface
+- smoke-testing prompts and tools locally
+- checking whether a workflow input shape is usable
+- tracing runs during early development
+- trying sample entities before you wire real hosting
 
-This makes it useful for:
+## Bad Uses
 
-- quick prompt and tool smoke tests
-- validating a workflow input contract
-- visually inspecting trace behavior
-- trying sample agents before writing your own
+- production chat surfaces
+- public internet endpoints
+- security boundaries
+- long-lived integration contracts
 
-## Modes And Auth
+## DevUI Versus Real Hosting
 
-The docs describe two modes:
-
-- developer mode: full debug and reload capabilities
-- user mode: restricted, simplified surface
-
-Auth is optional and bearer-token based. Even so, the docs still position DevUI as a local-development tool, not a production boundary.
+| Need | Use DevUI? | Real Answer |
+| --- | --- | --- |
+| Local debugging | Yes | DevUI is good here |
+| Human-facing production UI | No | AG-UI or your own app |
+| OpenAI-compatible production endpoint | No | Hosting.OpenAI |
+| Agent-to-agent interoperability | No | A2A |
+| Secure public service boundary | No | ASP.NET Core hosting with your own auth and policies |
 
 ## Safe Usage Rules
 
-- Keep DevUI on localhost by default.
-- If you expose it on a network, use auth and a reverse proxy, and still treat it as non-production.
-- Do not use DevUI as your real public chat surface.
-- Be cautious when agents use side-effecting tools or MCP integrations.
+- Keep it on localhost by default.
+- If you expose it to a network, add auth and still treat it as non-production.
+- Be careful with side-effecting tools even in local demos.
+- Do not mistake "it works in DevUI" for "the production contract is done".
 
-## When To Use DevUI
+## Source Pages
 
-- local debugging
-- sample exploration
-- trace inspection
-- rapid iteration during agent and workflow design
-
-## When Not To Use DevUI
-
-- production web applications
-- long-lived public endpoints
-- strong security isolation requirements
-- protocol contracts that should be owned by your real app rather than a sample tool
+- `references/official-docs/user-guide/devui/index.md`
+- `references/official-docs/user-guide/devui/security.md`
+- `references/official-docs/user-guide/devui/tracing.md`
+- `references/official-docs/user-guide/devui/directory-discovery.md`

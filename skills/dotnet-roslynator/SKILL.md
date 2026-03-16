@@ -114,8 +114,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/rules.md` for commonly used Roslynator analyzer rules by category
-- read `references/config.md` for `.editorconfig` settings and configuration templates
+Open only what you need:
+
+- [rules.md](references/rules.md)
+- [config.md](references/config.md)
+- [roslynator.md](references/roslynator.md)
 
 ## Example Requests
 

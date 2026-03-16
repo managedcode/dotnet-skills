@@ -104,9 +104,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/complexity.md` first for rule overview and verification commands
-- read `references/metrics.md` for detailed metric explanations and thresholds
-- read `references/config.md` for analyzer configuration options
+Open only what you need:
+
+- [complexity.md](references/complexity.md)
+- [metrics.md](references/metrics.md)
+- [config.md](references/config.md)
 
 ## Example Requests
 

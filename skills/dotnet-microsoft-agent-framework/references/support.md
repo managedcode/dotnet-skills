@@ -1,78 +1,93 @@
 # Preview Status, Support, and Recurring Checks
 
-## Official Support Channels
+## Public Preview Is An Engineering Constraint
 
-| Need | Official Source |
-|---|---|
-| Current docs | Microsoft Learn Agent Framework site |
-| Source and release visibility | `microsoft/agent-framework` GitHub repository |
-| Questions and discussion | GitHub Discussions |
-| Community help | Community and office-hours information in the repo |
+The overview page still marks Microsoft Agent Framework as public preview.
 
-## Public Preview Reality
+Treat that as a real design input:
 
-The official overview page still marks Microsoft Agent Framework as public preview.
+- package versions will churn
+- docs will move
+- some features are uneven across languages
+- some hosting and integration packages are pre-release only
 
-Treat that as a real engineering constraint:
+Preview does not mean "do not use". It means "do not pretend the surface is stable".
 
-- expect prerelease packages
-- expect API churn
-- verify current docs before locking abstractions
-- keep production risk and rollout expectations explicit
+## Official Support Surfaces
 
-## What To Verify On Every Non-Trivial Task
+| Need | Official Place |
+| --- | --- |
+| current docs | Microsoft Learn Agent Framework site |
+| issues and releases | `microsoft/agent-framework` repository |
+| questions and discussion | GitHub Discussions |
+| migration signals | Learn migration and support pages |
 
-- Which provider and SDK are actually in use.
-- Whether the chosen feature has documented .NET support or only Python documentation.
-- Whether the agent uses in-memory history, service-stored history, or a custom chat store.
-- Whether side-effecting tools have approval and audit paths.
-- Whether the hosting surface is OpenAI-compatible HTTP, A2A, AG-UI, Azure Functions, or only local development.
-- Whether preview packages and auth requirements are documented in the target repo or service.
+## What To Check On Every Non-Trivial Task
+
+- Which provider and SDK are actually in use?
+- Is the feature documented for `.NET`, or only conceptually in Python?
+- Is history local, service-backed, or custom-store-backed?
+- Are risky tools governed by approvals or middleware?
+- Is the hosting surface OpenAI-compatible HTTP, A2A, AG-UI, Azure Functions, or just local testing?
+- Are prerelease packages called out explicitly in the target repo?
+
+## Documentation Maturity Signals
+
+The current docs already show uneven maturity:
+
+- declarative workflows are mainly Python-first
+- DevUI docs are much richer for Python than for `.NET`
+- support upgrade guides are Python-heavy
+- troubleshooting is still sparse and being reworked
+
+That means you should use some pages as roadmap or concept signals rather than as proof of shipped `.NET` APIs.
+
+## Support Page Signals That Matter
+
+The live support pages currently reinforce these practical checks:
+
+- FAQ confirms `.NET` and Python are the main languages
+- troubleshooting currently starts with authentication and package-version checks
+- upgrade guides are not strong `.NET` implementation docs right now
 
 ## Common Failure Modes
 
-- Reusing an `AgentThread` with a different agent or provider configuration.
-- Expecting service-managed history from a Chat Completions-style agent.
-- Putting too many unrelated tools on one agent instead of using workflows or specialist agents.
-- Treating DevUI as a production hosting solution.
-- Persisting MCP credentials in durable configuration instead of run-scoped tool resources.
-- Forgetting that hosted-thread cleanup may require the provider SDK rather than `AgentThread` itself.
+- Presenting Python-first docs as if they were guaranteed `.NET` APIs
+- Assuming preview packages can be locked once and forgotten
+- Ignoring provider-specific auth and endpoint requirements
+- Treating DevUI as a production support answer
+- Building around a support page hint rather than an actual `.NET` guide
 
-## Documentation Coverage Notes
+## Minimal Troubleshooting Playbook
 
-The official docs set currently spans:
+When something breaks, check in this order:
 
-- overview and quick start
-- tutorials
-- user guide pages for agents, workflows, hosting, MCP, observability, and DevUI
-- AG-UI integration pages
-- migration guides
-- support pages, including FAQ, troubleshooting, and upgrade-guide indexes
+1. package versions and prerelease alignment
+2. provider authentication
+3. endpoint format and SDK mismatch
+4. thread mode mismatch
+5. tool support mismatch
+6. protocol-hosting mismatch
 
-Some areas are uneven across languages:
+That catches most real integration failures faster than diving into app code first.
 
-- declarative workflows are documented primarily for Python
-- DevUI docs are published mainly for Python, with .NET placeholders
-- support upgrade guides are currently Python-focused
-- the troubleshooting page currently contains only a small starter set of issues and is still being reworked
+## Refresh Checklist When The Framework Moves
 
-## Support Page Signals
+At minimum re-check:
 
-The live Learn support pages currently reinforce these practical checks:
+- overview
+- agent types
+- running agents
+- tools
+- workflows overview
+- hosting overview
+- protocol integrations you actually use
+- migration and support pages
 
-- FAQ confirms the main supported languages are .NET and Python.
-- Troubleshooting currently starts with authentication and package-version checks.
-- Upgrade guides currently point mainly to Python migration notes, so treat them as churn signals rather than direct .NET API guidance.
+## Source Pages
 
-Use those pages as concept and roadmap signals, but do not present them as guaranteed .NET APIs when the .NET docs do not actually publish them.
-
-## Practical Refresh Rule
-
-When the framework changes, re-check at least:
-
-- the overview page
-- agent types and running-agents docs
-- workflows overview and requests-and-responses docs
-- hosting docs
-- AG-UI docs if you have a frontend protocol surface
-- migration and support pages for churn signals
+- `references/official-docs/overview/agent-framework-overview.md`
+- `references/official-docs/support/index.md`
+- `references/official-docs/support/faq.md`
+- `references/official-docs/support/troubleshooting.md`
+- `references/official-docs/support/upgrade/index.md`

@@ -12,6 +12,7 @@ Use these placement rules:
 - Use a top-level agent when it orchestrates a group of related skills.
 - Use a skill-scoped agent when it should travel with one specific skill and rely on that skill for detailed implementation guidance.
 - Keep one folder per agent so each agent can carry references, assets, scripts, and future installer metadata.
+- Keep `AGENT.md` thin and routing-oriented. Put bulk documentation, protocol notes, and long decision support material in `references/` or in the paired skill so the agent entrypoint stays token-efficient.
 
 ## Starter Agents
 

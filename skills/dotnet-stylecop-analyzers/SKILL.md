@@ -99,9 +99,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/stylecop-analyzers.md` for installation and ownership model
-- read `references/rules.md` for commonly used StyleCop rules and .editorconfig examples
-- read `references/config.md` for stylecop.json settings and configuration options
+Open only what you need:
+
+- [stylecop-analyzers.md](references/stylecop-analyzers.md)
+- [rules.md](references/rules.md)
+- [config.md](references/config.md)
 
 ## Example Requests
 

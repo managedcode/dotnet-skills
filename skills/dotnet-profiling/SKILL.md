@@ -124,8 +124,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/commands.md` for dotnet-trace, dotnet-counters, dotnet-dump, and dotnet-gcdump CLI commands
-- read `references/patterns.md` for CPU, memory, GC, contention, and exception profiling patterns
+Open only what you need:
+
+- [commands.md](references/commands.md)
+- [patterns.md](references/patterns.md)
+- [profiling.md](references/profiling.md)
 
 ## Example Requests
 

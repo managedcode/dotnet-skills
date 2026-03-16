@@ -98,9 +98,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/stryker.md` for installation and verification
-- read `references/commands.md` for CLI commands and configuration options
-- read `references/patterns.md` for mutation testing patterns and thresholds
+Open only what you need:
+
+- [stryker.md](references/stryker.md)
+- [commands.md](references/commands.md)
+- [patterns.md](references/patterns.md)
 
 ## Example Requests
 

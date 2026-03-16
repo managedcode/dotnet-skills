@@ -143,11 +143,12 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/editorconfig-and-ci.md` first for ownership and config rules
-- open `references/quality-toolchain.md` for the curated OSS tool list
-- open `references/workflows.md` for GitHub Actions workflow examples
-- open `references/checklist.md` for a comprehensive CI quality checklist
-- use the dedicated tool skill when you are installing, configuring, or debugging one specific tool
+Open only what you need:
+
+- [editorconfig-and-ci.md](references/editorconfig-and-ci.md)
+- [quality-toolchain.md](references/quality-toolchain.md)
+- [workflows.md](references/workflows.md)
+- [checklist.md](references/checklist.md)
 
 ## Example Requests
 

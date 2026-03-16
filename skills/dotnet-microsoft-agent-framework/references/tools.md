@@ -1,24 +1,35 @@
 # Tools and Tool Approval
 
-## Tool Support Is Agent-Specific
+## Tool Support Depends On The Concrete Agent
 
-The base `AIAgent` abstraction does not guarantee tool support. Tooling depends on the specific agent type and the underlying service.
+`AIAgent` itself does not promise a universal tool model. Tooling behavior comes from the actual agent type and the underlying service.
 
-For .NET, the common default is a `ChatClientAgent`, which supports:
+For most `.NET` work, `ChatClientAgent` is the practical default because it supports:
 
-- custom function tools that you provide
-- service-provided built-in tools when the underlying service exposes them
+- custom function tools
+- service-provided tools where the backend exposes them
 - per-agent and per-run tool injection
 
-## Function Tools
+## Tool Categories
 
-Use `AIFunctionFactory.Create` to expose plain .NET methods.
+| Tool Category | Source | Typical Use | Main Risk |
+| --- | --- | --- | --- |
+| Function tools | Your `.NET` methods exposed through `AIFunctionFactory.Create` | domain actions, lookups, side effects | poor contracts and unsafe side effects |
+| Service-provided tools | Backend-specific `AITool` implementations | code interpreter, file search, managed web search, hosted MCP | portability and provider lock-in |
+| Agent-as-tool | Another agent exposed as an `AIFunction` | bounded delegation | hiding orchestration complexity inside tool calls |
+| MCP tools | Remote tool servers integrated into the agent | external tool ecosystems and context servers | trust, auth, and data exfiltration |
+
+## Function Tool Design Rules
+
+Function tools should be:
+
+- narrow
+- deterministic where possible
+- clearly described
+- explicit about side effects
+- easy to audit
 
 ```csharp
-using System.ComponentModel;
-using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
-
 [Description("Get the weather for a location.")]
 static string GetWeather([Description("City or region.")] string location)
     => $"Weather in {location}: cloudy and 15C";
@@ -28,15 +39,27 @@ AIAgent agent = chatClient.AsAIAgent(
     tools: [AIFunctionFactory.Create(GetWeather)]);
 ```
 
-Guidance:
+Minimum hygiene:
 
-- Add `Description` metadata to both the method and parameters.
-- Keep tool contracts narrow and deterministic.
-- Put side effects behind clearly named tools so approval or auditing is easy.
+- add `Description` to the method
+- add `Description` to parameters
+- avoid ambiguous names
+- avoid giant "do everything" tools
 
-## Per-Run Tools
+## Per-Agent Versus Per-Run Tools
 
-`ChatClientAgent` can accept tools per invocation by merging `ChatOptions` into `ChatClientAgentRunOptions`.
+Register a tool at agent construction when:
+
+- every run should see the tool
+- the tool contract is stable
+- the tool does not depend on request-scoped auth or tenant data
+
+Register a tool per run when:
+
+- authorization is request-specific
+- the available tools depend on the user or tenant
+- credentials are short-lived
+- temporary capabilities should not persist
 
 ```csharp
 var chatOptions = new ChatOptions
@@ -50,54 +73,38 @@ AgentResponse response = await agent.RunAsync(
     options: options);
 ```
 
-Use per-run tools when:
-
-- a tool should be available only for a single request
-- tool access depends on the current user or tenant
-- you need to attach temporary credentials or request-specific behavior
-
 ## Service-Provided Tools
 
-Some agent backends expose service-native tools. These are provider-specific `AITool` implementations rather than plain functions.
+Hosted or provider-native tools are backend-specific.
 
-Typical categories surfaced by the official docs are:
+Typical examples called out in the docs:
 
 - code interpreter
 - file search
 - web search
-- hosted MCP tools
+- hosted MCP
 
-Example for a hosted service tool:
+These should be treated as provider features, not baseline framework guarantees.
 
-```csharp
-var agent = await persistentAgentsClient.CreateAIAgentAsync(
-    deploymentName,
-    instructions: "You are a helpful assistant.",
-    tools: [new CodeInterpreterToolDefinition()]);
-```
-
-Do not assume these tools exist for every agent type. Check the provider and service before depending on them.
-
-## Tool Approval And Human-In-The-Loop
-
-Approval support is not uniform across all providers.
+## Approval Strategy
 
 Use approval for:
 
+- destructive writes
 - money movement
-- data deletion or mutation
-- external side effects
-- third-party calls that can exfiltrate data
+- sensitive data access
+- third-party calls that can leak data
+- actions that have legal or operational consequences
 
-If the chosen agent backend does not give you built-in approval semantics, model approval explicitly with:
+If the backend does not offer built-in approvals:
 
-- workflow request and response handling
-- middleware that blocks or rewrites calls
-- a dedicated approval tool that returns a denial unless a human explicitly authorizes the action
+1. use function middleware for gatekeeping
+2. use workflows with request and response when human approval is a real state transition
+3. log the attempted tool call whether it executes or not
 
-## Agent As A Tool
+## Agent As Tool
 
-Wrap a specialist agent as a callable tool when you want one agent to delegate bounded work to another.
+Use agent-as-tool when one agent needs a bounded specialist capability without promoting the relationship to a full workflow.
 
 ```csharp
 AIAgent weatherAgent = chatClient.AsAIAgent(
@@ -111,18 +118,50 @@ AIAgent coordinator = chatClient.AsAIAgent(
     tools: [weatherAgent.AsAIFunction()]);
 ```
 
-Choose agent-as-tool when:
+Use this when:
 
-- the delegated task has a clear boundary
-- the caller should stay in control
-- you do not need a full workflow graph
+- the delegated behavior is narrow
+- the caller stays in control
+- failures and retries do not need explicit workflow semantics
 
-Choose a workflow instead when the handoff or retry logic must be explicit and inspectable.
+Escalate to workflows when:
 
-## Tool Guardrails
+- handoff logic matters
+- retries and fallback paths matter
+- multiple specialists coordinate in known patterns
 
-- Start with the minimum useful tool set.
-- Avoid putting dozens of unrelated tools on one agent; split into workflows or specialist agents.
-- Log tool name, arguments, result shape, and approval outcome.
-- Keep secrets out of static tool registration when they should be injected per request.
-- Treat tool outputs as untrusted input, especially when they come from MCP servers or remote systems.
+## Tool Output Is Untrusted Input
+
+Treat tool output as untrusted when it comes from:
+
+- remote systems
+- MCP servers
+- generated code
+- file or web search results
+- any third-party service
+
+Never assume a tool result is safe just because your agent called it.
+
+## Common Tool Smells
+
+- one agent with a huge tool inventory that no human can reason about
+- tools with broad side effects and vague names
+- credentials baked into long-lived tool registration
+- no approval layer for dangerous tools
+- mixing provider-native and custom tools without documenting which backend guarantees what
+
+## Practical Tool Checklist
+
+- Is the tool surface the minimum useful set?
+- Does each risky tool have approval or denial behavior?
+- Are per-run credentials actually per-run?
+- Is the tool output logged or at least observable?
+- Is the tool portable, or is it provider-specific by design?
+
+## Source Pages
+
+- `references/official-docs/user-guide/agents/agent-tools.md`
+- `references/official-docs/tutorials/agents/function-tools.md`
+- `references/official-docs/tutorials/agents/function-tools-approvals.md`
+- `references/official-docs/tutorials/agents/agent-as-function-tool.md`
+- `references/official-docs/tutorials/agents/agent-as-mcp-tool.md`

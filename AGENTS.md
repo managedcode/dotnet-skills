@@ -187,7 +187,7 @@ When creating a new skill:
 1. Create `skills/<skill-slug>/`.
 2. Add `SKILL.md`.
 3. Add `agents/` only when the skill needs one or more tightly coupled specialist agents that should live next to that skill.
-4. Add `references/` only if extra material is genuinely useful and not better kept in `SKILL.md`.
+4. Add `references/` for the heavy material: official docs snapshots, API maps, long examples, migration notes, provider matrices, and other supporting documentation that would bloat `SKILL.md`.
 5. Update any related [`README.md`](README.md) notes and regenerate the catalog outputs.
 6. If the skill tracks a major framework or Microsoft surface, update the relevant upstream watch shard under [`.github/upstream-watch*.json`](.github/).
 
@@ -212,6 +212,7 @@ When creating a new agent:
 4. Prefer concise, role-based agent slugs. Avoid awkward names that simply repeat the full parent skill slug with a generic suffix like `-specialist` when a shorter slug such as `agent-framework-router` or `aspire-orchestrator` would be clearer.
 5. Reference the relevant `dotnet-*` skills it is expected to orchestrate.
 6. Keep validation explicit: what a good completion looks like, what the agent should hand off, and what it should refuse.
+7. Keep `AGENT.md` short and routing-focused. Put bulk framework notes, decision tables, protocol details, and other deep material in sibling `references/` files or in the paired skill instead of turning `AGENT.md` into a second skill-sized document.
 
 ## `SKILL.md` Requirements
 
@@ -242,11 +243,16 @@ Content rules:
 - `description` must be an exact, reusable one-line description of what the skill is for, because the README catalog copies it directly.
 - `version` must use semantic versioning and must be bumped when the skill guidance materially changes.
 - `category` must match the supported README catalog categories.
+- Treat `SKILL.md` as the control plane for the skill: trigger conditions, selection logic, workflow, deliverables, and validation. Move large documentation bodies, reference tables, long examples, and mirrored upstream material into `references/`.
+- Optimize for token economy. Prefer a short `Load References` section with topic-focused files over one large `SKILL.md` or one giant omnibus reference file.
 - When a skill explains non-trivial implementation details, integration flow, component boundaries, or decision logic, add at least one Mermaid diagram instead of leaving the explanation text-only.
 - When mirroring or bundling official documentation into a skill's `references/`, also extract the main operational guidance into `SKILL.md` or curated reference summaries. Do not leave the skill usable only as a raw documentation dump.
 - When mirroring official docs into a skill snapshot, keep only high-signal, skill-useful markdown. Do not vendor project files, snippets trees, media folders, images, TOC scaffolding, DocFX support files, or Python-only pages unless they are directly necessary for the skill.
 - If a mirrored Learn page still contains raw `:::code`, `:::image`, or similar source-asset directives after those assets were excluded, strip those directives from the local snapshot instead of keeping broken references.
 - Do not leave orphaned reference files in a skill. Every meaningful file under `references/` must be reachable through an explicit Markdown link path from `SKILL.md` or from an index file that `SKILL.md` links directly.
+- When `SKILL.md` points to files under `references/`, use real Markdown links such as `[patterns.md](references/patterns.md)`. Do not leave reference discovery in plain text or backticked paths that are not clickable.
+- Split `references/` by topic, workflow branch, provider, or subsystem so agents can load only the relevant slice. Avoid dumping a whole framework into one mega-file when smaller references would keep context usage lower.
+- Curated `references/*.md` files must carry real extracted knowledge. Do not create shallow placeholder references that only restate topic names, point back to the docs mirror, or summarize a whole framework in a few thin bullets. If a reference file exists, it should materially help solve the task without forcing the reader back into the raw docs immediately.
 - The top-level `dotnet-ai` orchestration agent should treat Microsoft Agent Framework and Microsoft.Extensions.AI as a combined primary surface when tasks span agent orchestration and `IChatClient`-based provider composition.
 
 ## Diagramming Rules

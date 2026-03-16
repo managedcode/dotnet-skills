@@ -95,9 +95,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/archunitnet.md` first
-- read `references/patterns.md` for rule syntax and selection patterns
-- read `references/examples.md` for common architecture rule implementations
+Open only what you need:
+
+- [archunitnet.md](references/archunitnet.md)
+- [patterns.md](references/patterns.md)
+- [examples.md](references/examples.md)
 
 ## Example Requests
 

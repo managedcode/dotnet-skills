@@ -97,8 +97,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/patterns.md` for NetArchTest fluent API patterns and predicate usage
-- read `references/examples.md` for common architecture test implementations
+Open only what you need:
+
+- [patterns.md](references/patterns.md)
+- [examples.md](references/examples.md)
+- [netarchtest.md](references/netarchtest.md)
 
 ## Example Requests
 

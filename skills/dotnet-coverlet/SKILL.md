@@ -106,8 +106,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/commands.md` for CLI commands and MSBuild options
-- read `references/patterns.md` for coverage collection patterns and exclusions
+Open only what you need:
+
+- [commands.md](references/commands.md)
+- [patterns.md](references/patterns.md)
+- [coverlet.md](references/coverlet.md)
 
 ## Example Requests
 

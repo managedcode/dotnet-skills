@@ -115,9 +115,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/xunit.md` first
-- read `references/patterns.md` for testing patterns (Arrange-Act-Assert, fixtures, theory data, mocking)
-- read `references/anti-patterns.md` for common testing mistakes to avoid
+Open only what you need:
+
+- [xunit.md](references/xunit.md)
+- [patterns.md](references/patterns.md)
+- [anti-patterns.md](references/anti-patterns.md)
 
 ## Example Requests
 

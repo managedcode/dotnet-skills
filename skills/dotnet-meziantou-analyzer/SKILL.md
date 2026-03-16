@@ -95,9 +95,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/meziantou-analyzer.md` first
-- read `references/rules.md` for commonly used rules and their categories
-- read `references/config.md` for .editorconfig configuration patterns
+Open only what you need:
+
+- [meziantou-analyzer.md](references/meziantou-analyzer.md)
+- [rules.md](references/rules.md)
+- [config.md](references/config.md)
 
 ## Example Requests
 

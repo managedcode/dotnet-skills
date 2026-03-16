@@ -103,9 +103,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/analyzer-config.md` first for file format and layout guidance
-- read `references/template.md` for complete `.editorconfig` templates
-- read `references/rules.md` for common rule categories and severity configuration
+Open only what you need:
+
+- [analyzer-config.md](references/analyzer-config.md)
+- [template.md](references/template.md)
+- [rules.md](references/rules.md)
 
 ## Example Requests
 

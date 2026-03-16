@@ -123,7 +123,7 @@ Generated badges display coverage percentages:
 Usage in README:
 
 ```markdown
-![Coverage](./artifacts/coverage/badge_linecoverage.svg)
+`badge_linecoverage.svg`
 ```
 
 Or link to raw file URL in GitHub:

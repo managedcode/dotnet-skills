@@ -225,7 +225,7 @@ This catalog currently contains **63** skills.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [`dotnet-mcp`](skills/dotnet-mcp/) | `1.1.0` | Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. |
-| [`dotnet-microsoft-agent-framework`](skills/dotnet-microsoft-agent-framework/) | `1.3.1` | Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails. |
+| [`dotnet-microsoft-agent-framework`](skills/dotnet-microsoft-agent-framework/) | `1.4.0` | Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails. |
 | [`dotnet-microsoft-extensions-ai`](skills/dotnet-microsoft-extensions-ai/) | `1.2.1` | Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation. |
 | [`dotnet-mixed-reality`](skills/dotnet-mixed-reality/) | `1.0.0` | Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack. |
 | [`dotnet-mlnet`](skills/dotnet-mlnet/) | `1.0.0` | Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations. |

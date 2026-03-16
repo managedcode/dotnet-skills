@@ -1,83 +1,145 @@
 # Middleware
 
-## Middleware Layers
+## Middleware Exists At Three Different Layers
 
-| Layer | Intercepts | Best For |
-|---|---|---|
-| Agent run middleware | Whole agent runs and agent outputs | input rewriting, audit spans, response shaping |
-| Function-calling middleware | Tool invocations inside the agent loop | approvals, argument validation, result filtering |
-| `IChatClient` middleware | Raw model calls for `ChatClientAgent`-style agents | logging, transport customization, model-call policy |
+| Layer | What It Intercepts | Use It For | Do Not Use It For |
+| --- | --- | --- | --- |
+| Agent run middleware | Whole agent runs and their outputs | audit, input normalization, cross-run policy, response shaping | core business flow that should live in workflows or tools |
+| Function-calling middleware | Tool calls inside the agent loop | approvals, argument checks, result filtering, side-effect controls | generic model-call telemetry that belongs lower |
+| `IChatClient` middleware | Raw model requests for `ChatClientAgent`-style agents | logging, retries, tracing, transport policy, model-call stamping | hosted-agent paths that do not use `IChatClient` |
 
-## Registering Middleware
+The important point is scope. Put the rule at the lowest layer that still sees the thing you need to govern.
+
+## Registration Patterns
+
+Agent middleware is attached through the agent builder:
 
 ```csharp
-var agentWithMiddleware = originalAgent
+var guardedAgent = originalAgent
     .AsBuilder()
     .Use(runFunc: CustomRunMiddleware, runStreamingFunc: CustomRunStreamingMiddleware)
-    .Use(CustomFunctionMiddleware)
-    .Build();
-
-var chatClientWithMiddleware = chatClient
-    .AsBuilder()
-    .Use(getResponseFunc: CustomChatClientMiddleware, getStreamingResponseFunc: null)
+    .Use(CustomFunctionCallingMiddleware)
     .Build();
 ```
 
-You can also register `IChatClient` middleware through the `clientFactory` argument when creating an agent from a provider helper.
+`IChatClient` middleware is attached to the chat client:
 
-## Agent Run Middleware
+```csharp
+var guardedChatClient = chatClient
+    .AsBuilder()
+    .Use(getResponseFunc: CustomChatClientMiddleware, getStreamingResponseFunc: CustomStreamingChatMiddleware)
+    .Build();
+```
 
-Use run middleware when you need to inspect or modify:
+Then the guarded client is wrapped in `ChatClientAgent`.
 
-- incoming messages
-- thread usage
+## Layer Selection Rules
+
+Use agent run middleware when the policy cares about:
+
+- inbound messages
+- thread use
 - high-level run options
-- final `AgentResponse` or streamed updates
+- the final aggregated response
 
-Important rule:
+Use function middleware when the policy cares about:
 
-- If you provide only non-streaming middleware, streaming invocations can be forced through non-streaming behavior to satisfy middleware expectations.
-- Prefer supplying both `runFunc` and `runStreamingFunc`, or use the shared overload when you only need pre-run behavior.
+- which tool is being invoked
+- which arguments are being sent
+- whether the tool call should be blocked or approved
+- how the raw tool result is normalized
 
-## Function-Calling Middleware
+Use `IChatClient` middleware when the policy cares about:
 
-Function middleware is the right place for:
+- model request and response telemetry
+- transport, retries, and headers
+- prompt stamping or correlation IDs
+- low-level model call behavior
+
+## Streaming Caveats
+
+The official docs call out an easy footgun:
+
+- if you provide only non-streaming agent middleware, streaming runs can be forced through non-streaming execution
+- that changes the runtime behavior and can hide streaming-specific issues
+
+So the default rule is:
+
+- provide both `runFunc` and `runStreamingFunc`
+- or use the shared overload only for pre-run inspection that does not need to rewrite output
+
+## Function Middleware Is The Right Place For Tool Governance
+
+Function-calling middleware should own:
 
 - approval checks
-- argument sanitization
-- side-effect blocking
-- result normalization
+- argument validation
+- allow/deny policy
+- result filtering
+- logging of side effects
 
-It is currently tied to agent paths that use function-invoking chat clients, such as `ChatClientAgent`.
+This is where you stop dangerous calls before they execute, rather than trying to clean up the consequences after the agent already used the result.
 
-You can terminate a function loop by setting `FunctionInvocationContext.Terminate = true`, but use that carefully:
+### Approval Pattern
 
-- it can stop remaining function calls in the same loop
-- it can leave the thread with function-call content but no matching result content
-- that can make the thread unusable for later runs
+If the backend does not provide first-class approval semantics, implement approval with:
 
-## `IChatClient` Middleware
+1. function middleware that detects risky tools
+2. workflow request and response if human approval is a real state transition
+3. explicit denial or placeholder result when approval is absent
 
-Use chat-client middleware when the policy belongs to the model call itself:
+Use workflow request/response for approval when:
 
-- telemetry enrichment
-- prompt stamping
-- model-level retries or custom transport behavior
-- sensitive-data logging controls
+- the process must pause and wait
+- the approval itself needs auditability
+- the approval result affects future execution branches
 
-Remember that `IChatClient` middleware only sees `ChatClientAgent`-style inference calls. It does not automatically intercept arbitrary provider-hosted agent logic that bypasses `IChatClient`.
+## `Terminate` Is Dangerous
 
-## Practical Middleware Patterns
+The docs explicitly warn that terminating the function loop can leave the thread inconsistent.
 
-- Logging and audit trails around agent runs and tool calls
-- Policy enforcement before sensitive tools execute
-- Prompt or message normalization before model calls
-- Output filtering before results leave your service
-- Correlation IDs and OpenTelemetry context propagation
+Use `FunctionInvocationContext.Terminate = true` only when:
 
-## Guardrails
+- you understand exactly how the current loop iteration will end
+- you do not leave function-call content without matching result content
+- you have tests proving the thread can still be reused safely
 
-- Keep middleware deterministic and easy to test.
-- Use middleware for cross-cutting policy, not core business logic.
-- Prefer explicit workflow request and response paths when a human decision is a real state transition.
-- Be conservative about mutating messages or tool results unless the behavior is documented and covered by tests.
+If the goal is human approval or escalation, request/response workflows are usually safer than hard loop termination.
+
+## Practical Middleware Compositions
+
+### Safe baseline for `ChatClientAgent`
+
+1. `IChatClient` middleware for tracing, retries, and correlation IDs.
+2. Agent run middleware for input normalization and high-level audit.
+3. Function middleware for tool approval and result filtering.
+
+### Enterprise baseline
+
+1. request-scoped correlation and telemetry
+2. PII or sensitive-data checks before model calls
+3. risky-tool approval middleware
+4. response filtering before external emission
+5. OpenTelemetry spans around the whole run
+
+## Anti-Patterns
+
+- Putting domain business logic in middleware because it is "easy to inject".
+- Mutating every message on the way through without documenting the contract.
+- Assuming `IChatClient` middleware covers hosted-agent services that bypass `IChatClient`.
+- Using middleware to fake workflow state transitions.
+- Terminating function loops without understanding thread consistency.
+
+## Testing Checklist
+
+- Non-streaming and streaming both execute through the intended middleware paths.
+- Risky tools are blocked or paused exactly once.
+- Middleware ordering is explicit and documented.
+- Chat-client middleware does not leak transport-specific assumptions into provider-agnostic logic.
+- Tool result filtering is deterministic and observable.
+
+## Source Pages
+
+- `references/official-docs/user-guide/agents/agent-middleware.md`
+- `references/official-docs/tutorials/agents/middleware.md`
+- `references/official-docs/tutorials/agents/function-tools-approvals.md`

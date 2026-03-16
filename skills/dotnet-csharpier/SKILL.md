@@ -98,8 +98,11 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/commands.md` for CLI commands and installation
-- read `references/config.md` for `.csharpierrc` settings and ignore patterns
+Open only what you need:
+
+- [commands.md](references/commands.md)
+- [config.md](references/config.md)
+- [csharpier.md](references/csharpier.md)
 
 ## Example Requests
 
