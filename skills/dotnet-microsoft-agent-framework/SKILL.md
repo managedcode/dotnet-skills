@@ -1,6 +1,6 @@
 ---
 name: dotnet-microsoft-agent-framework
-version: "1.4.1"
+version: "1.5.1"
 category: "AI"
 description: "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails."
 compatibility: "Requires preview-era Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration."
@@ -54,6 +54,7 @@ flowchart LR
 - `AgentResponse` and `AgentResponseUpdate` are not just text containers. They can include tool calls, tool results, structured output, reasoning-like updates, and response metadata.
 - `ChatClientAgent` is the safest default when you already have an `IChatClient` and do not need a hosted-agent service.
 - `Workflow` is an explicit graph of executors and edges. Use it when the control flow must stay inspectable, typed, resumable, or human-steerable.
+- `AgentWorkflowBuilder` provides high-level factory methods such as `BuildConcurrent` for common agent orchestration patterns. Use it when you need concurrent or sequential agent pipelines without writing custom executor classes.
 - Hosting layers such as OpenAI-compatible HTTP, A2A, and AG-UI are adapters over your in-process agent or workflow. They do not replace the core architecture choice.
 - Durable agents are a hosting and persistence decision for Azure Functions. They are not the default answer for ordinary app-level orchestration.
 
@@ -65,7 +66,7 @@ flowchart LR
 | OpenAI-style future-facing APIs, background responses, or richer response state | Responses-based agent | Better fit for new OpenAI-compatible integrations |
 | Simple client-managed chat history | Chat Completions agent | Keeps request/response simple |
 | Service-hosted agents and service-owned threads/tools | Azure AI Foundry Agent or other hosted agent | Managed runtime is the requirement |
-| Typed multi-step orchestration | `Workflow` | Control flow stays explicit and testable |
+| Typed multi-step orchestration | `Workflow` or `AgentWorkflowBuilder` helpers | Control flow stays explicit and testable; use `BuildConcurrent` for agent fan-out/fan-in |
 | Week-long or failure-resilient Azure execution | Durable agent on Azure Functions | Durable Task gives replay and persisted state |
 | Agent-to-agent interoperability | A2A hosting or A2A proxy agent | This is protocol-level delegation, not local inference |
 | Browser or web UI protocol integration | AG-UI | Designed for remote UI sync and approval flows |
