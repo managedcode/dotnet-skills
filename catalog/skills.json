@@ -273,7 +273,7 @@
     {
       "name": "dotnet-microsoft-agent-framework",
       "title": "Microsoft Agent Framework",
-      "version": "1.4.0",
+      "version": "1.5.1",
       "category": "AI",
       "description": "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails.",
       "compatibility": "Requires preview-era Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration.",
@@ -449,6 +449,15 @@
       "description": "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable.",
       "compatibility": "Requires Semantic Kernel 1.x packages (.NET 8+).",
       "path": "skills/dotnet-semantic-kernel/"
+    },
+    {
+      "name": "dotnet-sep",
+      "title": "Sep for separated values",
+      "version": "1.0.0",
+      "category": "Data",
+      "description": "Use Sep for high-performance separated-value parsing and writing with low allocations, control over escaping/trimming behavior, and AOT-friendly runtime performance in .NET.",
+      "compatibility": "Requires a .NET project that can reference the `Sep` package and accept ref struct/span-oriented read/write patterns for row and column access.",
+      "path": "skills/dotnet-sep/"
     },
     {
       "name": "dotnet-signalr",
