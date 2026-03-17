@@ -31,9 +31,9 @@ If you start from the SDK alone, you usually miss the thread and hosting consequ
 | --- | --- | --- | --- | --- |
 | Any `IChatClient` | `new ChatClientAgent(chatClient, ...)` or `chatClient.AsAIAgent(...)` | Depends on provider | Broadest integration surface | Tooling and history are only as good as the concrete client |
 | Azure OpenAI Chat Completions | `AzureOpenAIClient(...).GetChatClient(...).AsAIAgent(...)` | Local or custom store | Simple chat flows | You own conversation persistence |
-| Azure OpenAI Responses | `AzureOpenAIClient(...).GetOpenAIResponseClient(...).AsAIAgent(...)` | Service-backed or local, depending on mode | New OpenAI-style apps | Preview packages and mode-specific behavior |
+| Azure OpenAI Responses | `AzureOpenAIClient(...).GetResponsesClient(...).AsAIAgent(...)` | Service-backed or local, depending on mode | New OpenAI-style apps | Preview packages and mode-specific behavior |
 | OpenAI Chat Completions | `OpenAIClient(...).GetChatClient(...).AsAIAgent(...)` | Local or custom store | Straightforward request/response chat | No service-backed history by default |
-| OpenAI Responses | `OpenAIClient(...).GetOpenAIResponseClient(...).AsAIAgent(...)` | Service-backed or local, depending on mode | Long-running or richer response flows | Requires discipline about state mode |
+| OpenAI Responses | `OpenAIClient(...).GetResponsesClient(...).AsAIAgent(...)` | Service-backed or local, depending on mode | Long-running or richer response flows | Requires discipline about state mode |
 | Anthropic (Claude) | `new AnthropicClient { APIKey = ... }.AsAIAgent(...)` | Local or custom store | Claude models with function tools, streaming, and hosted tools | Preview package; haiku-3 deprecated; use haiku-4-5, sonnet-4-5, sonnet-4-6, or opus-4-5 |
 | Anthropic on Azure Foundry | `new AnthropicFoundryClient(...).AsAIAgent(...)` | Local or custom store | Enterprise Claude via Azure Foundry with API key or Azure credentials | Requires `Anthropic.Foundry` package; managed separately from Azure OpenAI |
 | Azure AI Foundry Agents | `PersistentAgentsClient.CreateAIAgentAsync(...)` | Service-stored only | Managed agent resources and managed tools | Lower portability and provider-specific lifecycle |
