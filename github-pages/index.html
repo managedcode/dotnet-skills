@@ -13,12 +13,174 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>dotnet-skills - .NET Skills for AI Coding Platforms</title>
   <meta name="description" content="The .NET skill catalog for Claude Code, GitHub Copilot, Gemini, and Codex. Install once and reuse across your coding platforms.">
-  <meta name="keywords" content="dotnet, .NET, AI, skills, Claude Code, GitHub Copilot, Gemini, Codex, developer tools, coding platforms">
+  <meta name="keywords" content="dotnet, .NET, AI, skills, Claude Code, GitHub Copilot, Gemini, Codex, developer tools, coding platforms, AI coding assistant, .NET development, Entity Framework, Blazor, ASP.NET Core, .NET Aspire">
   <meta name="author" content="ManagedCode">
-  <meta property="og:title" content="dotnet-skills - .NET Skills for AI Coding Platforms">
-  <meta property="og:description" content="Stop re-explaining .NET in every tool. Install the same skills for Claude Code, GitHub Copilot, Gemini, and Codex.">
-  <meta property="og:type" content="website">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow">
   <link rel="canonical" href="SITE_URL_PLACEHOLDER">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="SITE_URL_PLACEHOLDER">
+  <meta property="og:title" content="dotnet-skills - .NET Skills for AI Coding Platforms">
+  <meta property="og:description" content="Stop re-explaining .NET in every tool. Install the same skills for Claude Code, GitHub Copilot, Gemini, and Codex. Community-maintained, open source.">
+  <meta property="og:site_name" content="dotnet-skills">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="dotnet-skills - .NET Skills for AI Coding Platforms">
+  <meta name="twitter:description" content="Stop re-explaining .NET in every tool. Install the same skills for Claude Code, GitHub Copilot, Gemini, and Codex.">
+  <meta name="twitter:site" content="@managedcode">
+
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#FF7E5D">
+  <meta name="application-name" content="dotnet-skills">
+  <link rel="sitemap" type="application/xml" href="SITE_URL_PLACEHOLDERsitemap.xml">
+
+  <!-- JSON-LD Structured Data for SEO/GEO/AEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "SITE_URL_PLACEHOLDER#website",
+        "url": "SITE_URL_PLACEHOLDER",
+        "name": "dotnet-skills",
+        "description": "The .NET skill catalog for Claude Code, GitHub Copilot, Gemini, and Codex",
+        "publisher": {
+          "@id": "SITE_URL_PLACEHOLDER#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "SITE_URL_PLACEHOLDER#catalog?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        },
+        "inLanguage": "en-US"
+      },
+      {
+        "@type": "Organization",
+        "@id": "SITE_URL_PLACEHOLDER#organization",
+        "name": "ManagedCode",
+        "url": "https://www.managed-code.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "SITE_URL_PLACEHOLDERassets/logo.png"
+        },
+        "sameAs": [
+          "https://github.com/managedcode"
+        ]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "SITE_URL_PLACEHOLDER#application",
+        "name": "dotnet-skills",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "CLI tool to install and manage .NET skills for AI coding assistants like Claude Code, GitHub Copilot, Gemini, and Codex",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "downloadUrl": "https://www.nuget.org/packages/dotnet-skills",
+        "softwareVersion": "CATALOG_VERSION_PLACEHOLDER",
+        "author": {
+          "@id": "SITE_URL_PLACEHOLDER#organization"
+        },
+        "keywords": ".NET, AI, skills, Claude Code, GitHub Copilot, Gemini, Codex, developer tools"
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "SITE_URL_PLACEHOLDER#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is dotnet-skills?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "dotnet-skills is a .NET skill catalog for AI coding platforms. It provides consistent, up-to-date .NET knowledge to Claude Code, GitHub Copilot, Gemini, and Codex so they use modern patterns instead of outdated advice."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I install dotnet-skills?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Install the CLI globally using: dotnet tool install --global dotnet-skills. Then use 'dotnet skills list' to browse available skills and 'dotnet skills install <skill>' to add specific skills."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which AI coding platforms does dotnet-skills support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "dotnet-skills supports Claude Code (Anthropic), GitHub Copilot, Gemini (Google), and Codex (OpenAI). The same skills work across all platforms."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is dotnet-skills free and open source?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, dotnet-skills is completely free and open source under the MIT License. Community contributions are welcome."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "@id": "SITE_URL_PLACEHOLDER#howto",
+        "name": "How to install .NET skills for AI coding assistants",
+        "description": "Step-by-step guide to install and use dotnet-skills with your AI coding platform",
+        "totalTime": "PT5M",
+        "tool": {
+          "@type": "HowToTool",
+          "name": ".NET SDK"
+        },
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Install the CLI",
+            "text": "Run 'dotnet tool install --global dotnet-skills' to install the command-line tool globally."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Browse the catalog",
+            "text": "Run 'dotnet skills list' to see all available skills organized by category."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Install skills for your stack",
+            "text": "Run 'dotnet skills install aspire blazor' to install specific skills using short aliases."
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "SITE_URL_PLACEHOLDER#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "SITE_URL_PLACEHOLDER"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Skill Catalog",
+            "item": "SITE_URL_PLACEHOLDER#catalog"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

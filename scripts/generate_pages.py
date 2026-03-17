@@ -5,6 +5,7 @@ from datetime import date
 import html
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -23,6 +24,7 @@ AGENTS_GRID_PLACEHOLDER = "<!-- AGENTS_GRID_PLACEHOLDER -->"
 CATEGORY_TABS_PLACEHOLDER = "<!-- CATEGORY_TABS_PLACEHOLDER -->"
 COPYRIGHT_YEAR_RANGE_PLACEHOLDER = "COPYRIGHT_YEAR_RANGE_PLACEHOLDER"
 SITE_URL_PLACEHOLDER = "SITE_URL_PLACEHOLDER"
+CATALOG_VERSION_PLACEHOLDER = "CATALOG_VERSION_PLACEHOLDER"
 COPYRIGHT_START_YEAR = 2024
 DEFAULT_SITE_URL = "https://managedcode.github.io/dotnet-skills/"
 
@@ -151,17 +153,131 @@ def normalize_site_url(raw_url: str) -> str:
     return raw_url.rstrip("/") + "/"
 
 
-def render_sitemap(site_url: str) -> str:
-    """Render a minimal sitemap for the GitHub Pages site."""
-    today = date.today().isoformat()
+def get_git_last_modified(path: str) -> str:
+    """Get the last commit date for a file or directory from git."""
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--date=short", "--format=%cd", "--", path],
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+            timeout=5
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+    return date.today().isoformat()
+
+
+def get_git_dates_for_skills(skills: list) -> dict:
+    """Get git last modified dates for all skills."""
+    dates = {}
+    for skill in skills:
+        skill_path = skill.get("path", f"skills/{skill['name']}")
+        dates[skill["name"]] = get_git_last_modified(skill_path)
+    return dates
+
+
+def get_git_dates_for_agents(agents: list) -> dict:
+    """Get git last modified dates for all agents."""
+    dates = {}
+    for agent in agents:
+        agent_path = agent.get("path", f"agents/{agent['name']}")
+        dates[agent["name"]] = get_git_last_modified(agent_path)
+    return dates
+
+
+def get_main_page_date() -> str:
+    """Get the last commit date for the main page template."""
+    return get_git_last_modified("github-pages/index.html")
+
+
+def render_sitemap(
+    site_url: str,
+    skills: list,
+    agents: list,
+    skill_dates: dict,
+    agent_dates: dict,
+    main_page_date: str
+) -> str:
+    """Render an enhanced sitemap for the GitHub Pages site with skill and agent anchors.
+
+    Uses actual git commit dates for lastmod instead of today's date.
+    """
+    # Build skill URLs with fragment identifiers and git dates
+    skill_entries = []
+    for skill in skills:
+        name = html.escape(skill["name"])
+        lastmod = skill_dates.get(skill["name"], main_page_date)
+        skill_entries.append(f"""  <url>
+    <loc>{site_url}#skill-{name}</loc>
+    <lastmod>{lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>""")
+
+    # Build agent URLs with fragment identifiers and git dates
+    agent_entries = []
+    for agent in agents:
+        name = html.escape(agent["name"])
+        lastmod = agent_dates.get(agent["name"], main_page_date)
+        agent_entries.append(f"""  <url>
+    <loc>{site_url}#agent-{name}</loc>
+    <lastmod>{lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>""")
+
+    # Build category URLs - use newest skill date in each category
+    category_dates = {}
+    for skill in skills:
+        cat = skill["category"]
+        skill_date = skill_dates.get(skill["name"], main_page_date)
+        if cat not in category_dates or skill_date > category_dates[cat]:
+            category_dates[cat] = skill_date
+
+    categories = sorted(set(s["category"] for s in skills))
+    category_entries = []
+    for cat in categories:
+        escaped_cat = html.escape(cat).replace(" ", "-").lower()
+        lastmod = category_dates.get(cat, main_page_date)
+        category_entries.append(f"""  <url>
+    <loc>{site_url}#category-{escaped_cat}</loc>
+    <lastmod>{lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>""")
+
+    all_entries = "\n".join(skill_entries + agent_entries + category_entries)
+
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>{site_url}</loc>
-    <lastmod>{today}</lastmod>
+    <lastmod>{main_page_date}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>{site_url}#about</loc>
+    <lastmod>{main_page_date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>{site_url}#agents</loc>
+    <lastmod>{main_page_date}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>{site_url}#catalog</loc>
+    <lastmod>{main_page_date}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+{all_entries}
 </urlset>
 """
 
@@ -223,6 +339,8 @@ def main() -> int:
     output_html = output_html.replace(CATEGORY_TABS_PLACEHOLDER, category_tabs_html)
     output_html = output_html.replace(COPYRIGHT_YEAR_RANGE_PLACEHOLDER, render_copyright_year_range())
     output_html = output_html.replace(SITE_URL_PLACEHOLDER, site_url)
+    catalog_version = catalog.get("version", "1.0.0")
+    output_html = output_html.replace(CATALOG_VERSION_PLACEHOLDER, catalog_version)
 
     # Update counts
     output_html = output_html.replace(
@@ -249,8 +367,14 @@ def main() -> int:
 
     print(f"Generated {OUTPUT_PATH}")
 
+    # Get git dates for sitemap
+    print("Fetching git dates for skills and agents...")
+    skill_dates = get_git_dates_for_skills(skills)
+    agent_dates = get_git_dates_for_agents(agents)
+    main_page_date = get_main_page_date()
+
     with open(SITEMAP_PATH, "w", encoding="utf-8") as f:
-        f.write(render_sitemap(site_url))
+        f.write(render_sitemap(site_url, skills, agents, skill_dates, agent_dates, main_page_date))
 
     print(f"Generated {SITEMAP_PATH}")
 
