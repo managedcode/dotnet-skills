@@ -42,6 +42,18 @@ Use `AgentWorkflowBuilder` when:
 - the orchestration matches built-in agent patterns
 - you want sequential or concurrent pipeline helpers
 
+### `AgentWorkflowBuilder.BuildConcurrent`
+
+```csharp
+var workflow = AgentWorkflowBuilder.BuildConcurrent(agents);
+```
+
+- Accepts `IEnumerable<AIAgent>` and an optional custom aggregator `Func<IList<List<ChatMessage>>, List<ChatMessage>>`.
+- Handles fan-out and fan-in automatically without requiring custom executor classes.
+- Default aggregator returns the last message from each responding agent.
+- After `InProcessExecution.StreamAsync`, send `TurnToken(emitEvents: true)` via `run.TrySendMessageAsync` to kick off agents.
+- Use manual `WorkflowBuilder` with `AddFanOutEdge`/`AddFanInEdge` only when you need a custom dispatcher or aggregation logic beyond what the built-in overload supports.
+
 ## Workflow Patterns
 
 | Pattern | Best For | Main Risk |
