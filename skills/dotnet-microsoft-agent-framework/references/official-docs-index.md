@@ -6,7 +6,7 @@ The local snapshot lives under `references/official-docs/`.
 
 ## Scope
 
-- Mirrored authored docs: `102` markdown pages across overview, tutorials, user guide, integrations, migration, and support
+- Mirrored authored docs: `100` markdown pages across overview, tutorials, user guide, integrations, migration, and support
 - Live-only Learn pages added into the mirror: `support/faq.md`, `support/troubleshooting.md`, and `support/upgrade/index.md`
 - Generated API references are not mirrored page-by-page; use the live `.NET` API landing page when exact symbols matter
 - Intentional exclusions: media files, TOC scaffolding, breadcrumb files, DocFX support files, and Python-only upgrade pages are not mirrored into the skill
@@ -103,9 +103,7 @@ The local snapshot lives under `references/official-docs/`.
 
 - [`official-docs/user-guide/agents/agent-types/a2a-agent.md`](official-docs/user-guide/agents/agent-types/a2a-agent.md)
 - [`official-docs/user-guide/agents/agent-types/anthropic-agent.md`](official-docs/user-guide/agents/agent-types/anthropic-agent.md)
-- [`official-docs/user-guide/agents/agent-types/azure-ai-foundry-agent.md`](official-docs/user-guide/agents/agent-types/azure-ai-foundry-agent.md)
-- [`official-docs/user-guide/agents/agent-types/azure-ai-foundry-models-chat-completion-agent.md`](official-docs/user-guide/agents/agent-types/azure-ai-foundry-models-chat-completion-agent.md)
-- [`official-docs/user-guide/agents/agent-types/azure-ai-foundry-models-responses-agent.md`](official-docs/user-guide/agents/agent-types/azure-ai-foundry-models-responses-agent.md)
+- [`official-docs/user-guide/agents/agent-types/microsoft-foundry-agents.md`](official-docs/user-guide/agents/agent-types/microsoft-foundry-agents.md) — Consolidated "Microsoft Foundry Agents" page covering persistent Azure AI Foundry Agents, Foundry Models Chat Completions, and Foundry Models Responses (all three upstream URLs now resolve to this single page)
 - [`official-docs/user-guide/agents/agent-types/azure-openai-chat-completion-agent.md`](official-docs/user-guide/agents/agent-types/azure-openai-chat-completion-agent.md)
 - [`official-docs/user-guide/agents/agent-types/azure-openai-responses-agent.md`](official-docs/user-guide/agents/agent-types/azure-openai-responses-agent.md)
 - [`official-docs/user-guide/agents/agent-types/chat-client-agent.md`](official-docs/user-guide/agents/agent-types/chat-client-agent.md)

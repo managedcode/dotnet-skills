@@ -147,4 +147,4 @@ Before you commit to a local or custom model path, verify:
 - `references/official-docs/user-guide/agents/agent-types/azure-openai-responses-agent.md`
 - `references/official-docs/user-guide/agents/agent-types/openai-chat-completion-agent.md`
 - `references/official-docs/user-guide/agents/agent-types/openai-responses-agent.md`
-- `references/official-docs/user-guide/agents/agent-types/azure-ai-foundry-agent.md`
+- `references/official-docs/user-guide/agents/agent-types/microsoft-foundry-agents.md`

@@ -46,9 +46,7 @@ To make creating these agents even easier, Agent Framework provides helpers for 
 
 | Underlying inference service | Description | Service chat history storage support | Custom chat history storage support |
 |------------------------------|-------------|--------------------------------------|-------------------------------------|
-|[Azure AI Foundry Agent](./azure-ai-foundry-agent.md)|An agent that uses the Azure AI Foundry Agents Service as its backend.|Yes|No|
-|[Azure AI Foundry Models ChatCompletion](./azure-ai-foundry-models-chat-completion-agent.md)|An agent that uses any of the models deployed in the Azure AI Foundry Service as its backend via ChatCompletion.|No|Yes|
-|[Azure AI Foundry Models Responses](./azure-ai-foundry-models-responses-agent.md)|An agent that uses any of the models deployed in the Azure AI Foundry Service as its backend via Responses.|No|Yes|
+|[Microsoft Foundry Agents](./microsoft-foundry-agents.md)|Persistent Azure AI Foundry Agents (service-managed threads) and Foundry Models via Chat Completions or Responses API.|Persistent agents: Yes; Models: No|Persistent agents: No; Models: Yes|
 |[Azure OpenAI ChatCompletion](./azure-openai-chat-completion-agent.md)|An agent that uses the Azure OpenAI ChatCompletion service.|No|Yes|
 |[Azure OpenAI Responses](./azure-openai-responses-agent.md)|An agent that uses the Azure OpenAI Responses service.|Yes|Yes|
 |[OpenAI ChatCompletion](./openai-chat-completion-agent.md)|An agent that uses the OpenAI ChatCompletion service.|No|Yes|
@@ -203,7 +201,7 @@ For detailed examples, see the agent-specific documentation sections below.
 
 |Underlying Inference Service|Description|Service Chat History storage supported|Custom Chat History storage supported|
 |---|---|---|---|
-|[Azure AI Agent](./azure-ai-foundry-agent.md)|An agent that uses the Azure AI Agents Service as its backend.|Yes|No|
+|[Microsoft Foundry Agents](./microsoft-foundry-agents.md)|An agent that uses the Azure AI Foundry Agents Service (persistent) or Foundry Models (Chat Completions/Responses) as its backend.|Persistent: Yes; Models: No|Persistent: No; Models: Yes|
 |[Azure OpenAI Chat Completion](./azure-openai-chat-completion-agent.md)|An agent that uses the Azure OpenAI Chat Completion service.|No|Yes|
 |[Azure OpenAI Responses](./azure-openai-responses-agent.md)|An agent that uses the Azure OpenAI Responses service.|Yes|Yes|
 |[OpenAI Chat Completion](./openai-chat-completion-agent.md)|An agent that uses the OpenAI Chat Completion service.|No|Yes|

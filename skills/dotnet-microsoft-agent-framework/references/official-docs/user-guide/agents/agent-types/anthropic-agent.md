@@ -430,4 +430,4 @@ See the [Agent getting started tutorials](../../../tutorials/overview.md) for mo
 ## Next steps
 
 > [!div class="nextstepaction"]
-> [Azure AI Agents](./azure-ai-foundry-agent.md)
+> [Microsoft Foundry Agents](./microsoft-foundry-agents.md)
