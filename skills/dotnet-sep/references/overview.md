@@ -6,6 +6,10 @@
 - [NuGet package (`Sep`)](https://www.nuget.org/packages/Sep/)
 - [Main README](https://github.com/nietras/Sep/blob/main/README.md)
 - [RFC 4180 (CSV baseline)](https://www.ietf.org/rfc/rfc4180.txt)
+- [API and options overview in README](https://github.com/nietras/Sep#application-programming-interface-api)
+- [Async support section](https://github.com/nietras/Sep#async-support)
+- [SepReader options section](https://github.com/nietras/Sep#sepreaderoptions)
+- [SepWriter options section](https://github.com/nietras/Sep#sepwriteroptions)
 
 ## Notes to use in routing
 

@@ -65,6 +65,7 @@ Update this file when the user gives:
 - a lasting preference
 - a workflow change
 - a high-signal frustration that indicates a rule was missed
+- a rule request for library skill quality, such as “when adding a library skill, include installation and practical usage patterns in the skill body”
 
 Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do this again" as strong signals that a durable rule should likely be captured here.
 
@@ -73,6 +74,17 @@ Do not record:
 - one-off instructions for the current task
 - temporary exceptions
 - requirements that are already captured elsewhere without change
+
+## Library Skill Standard
+
+- When a user asks to add a skill for a library, update the skill with source-driven usage guidance, not a placeholder.
+- The skill must include, at minimum:
+  - install path for the library (NuGet/PackageReference/cmd examples where relevant),
+  - at least two practical usage snippets (read + write),
+  - option/setting patterns that affect behavior,
+  - tradeoffs and constraints (for example ref-struct and async limits),
+  - validation checks the user can run locally.
+- Prefer a practical “how to use this from today” structure: install, read, write, validate.
 
 ### Provided Source Links
 

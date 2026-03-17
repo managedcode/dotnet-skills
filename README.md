@@ -219,7 +219,7 @@ This catalog currently contains **64** skills.
 | [`dotnet-entity-framework6`](skills/dotnet-entity-framework6/) | `1.0.0` | Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. |
 | [`dotnet-managedcode-markitdown`](skills/dotnet-managedcode-markitdown/) | `1.0.0` | Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows. |
 | [`dotnet-managedcode-storage`](skills/dotnet-managedcode-storage/) | `1.0.0` | Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept behind one library contract. |
-| [`dotnet-sep`](skills/dotnet-sep/) | `1.0.0` | Use Sep for high-performance separated-value parsing and writing with low allocations, control over escaping/trimming behavior, and AOT-friendly runtime performance in .NET. |
+| [`dotnet-sep`](skills/dotnet-sep/) | `1.0.0` | Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows. |
 
 ### AI
 
