@@ -990,13 +990,13 @@
       "value": "\"kEO327oBV65XCWnsC8oLQWjcd20=\""
     },
     "dotnet-ai-docs-conceptual-ai-tools": {
-      "etag": "\"/dULbGGERD9KyoyWRfsrp6lBe0k=\"",
-      "human": "AI tool calling - .NET | Microsoft Learn | ETag \"/dULbGGERD9KyoyWRfsrp6lBe0k=\"",
+      "etag": "\"qOQE34iG/eIWdjXow8IPawIDAt8=\"",
+      "human": "AI tool calling - .NET | Microsoft Learn | ETag \"qOQE34iG/eIWdjXow8IPawIDAt8=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 00:29:58 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/ai-tools",
       "title": "AI tool calling - .NET | Microsoft Learn",
-      "value": "\"/dULbGGERD9KyoyWRfsrp6lBe0k=\""
+      "value": "\"qOQE34iG/eIWdjXow8IPawIDAt8=\""
     },
     "dotnet-ai-docs-conceptual-chain-of-thought-prompting": {
       "etag": "\"E1U07lSVVXf7yYaXwYkGWCM87V0=\"",
@@ -1008,13 +1008,13 @@
       "value": "\"E1U07lSVVXf7yYaXwYkGWCM87V0=\""
     },
     "dotnet-ai-docs-conceptual-data-ingestion": {
-      "etag": "\"hnYXQTHiKDo7sAz/tpu/zcPtPbE=\"",
-      "human": "Data ingestion - .NET | Microsoft Learn | ETag \"hnYXQTHiKDo7sAz/tpu/zcPtPbE=\"",
+      "etag": "\"bbmlT91a5zfdzmgYulknYxy8GhQ=\"",
+      "human": "Data ingestion - .NET | Microsoft Learn | ETag \"bbmlT91a5zfdzmgYulknYxy8GhQ=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:26:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/data-ingestion",
       "title": "Data ingestion - .NET | Microsoft Learn",
-      "value": "\"hnYXQTHiKDo7sAz/tpu/zcPtPbE=\""
+      "value": "\"bbmlT91a5zfdzmgYulknYxy8GhQ=\""
     },
     "dotnet-ai-docs-conceptual-embeddings": {
       "etag": "\"07kkxzqpZL4h+2H/mofFogHBPQI=\"",
