@@ -69,6 +69,11 @@ Update this file when the user gives:
 
 Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do this again" as strong signals that a durable rule should likely be captured here.
 
+### Issue Workflow
+
+- When repository work is driven by GitHub issues, complete the implementation end-to-end: inspect the issue, make the repo changes, validate them, commit, push, and close the resolved issues.
+- When committing work that resolves repository issues, include the issue-closing references in the commit body, for example `Closes #48`.
+
 Do not record:
 
 - one-off instructions for the current task

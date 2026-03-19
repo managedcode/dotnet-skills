@@ -300,7 +300,7 @@
     {
       "name": "dotnet-microsoft-extensions-ai",
       "title": "Microsoft.Extensions.AI",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "category": "AI",
       "description": "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation.",
       "compatibility": "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration.",

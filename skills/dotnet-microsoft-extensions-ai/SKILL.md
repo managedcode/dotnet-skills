@@ -1,6 +1,6 @@
 ---
 name: dotnet-microsoft-extensions-ai
-version: "1.2.1"
+version: "1.2.2"
 category: "AI"
 description: "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation."
 compatibility: "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration."
@@ -22,7 +22,7 @@ compatibility: "Requires `Microsoft.Extensions.AI` or a .NET AI application that
 3. Reference `Microsoft.Extensions.AI.Abstractions` directly only when authoring provider libraries or lower-level reusable integration packages.
 4. Model `IChatClient` and `IEmbeddingGenerator` composition explicitly in DI. Keep options, caching, telemetry, logging, and tool invocation inspectable in the pipeline.
 5. Treat chat state deliberately. For stateless providers, resend history. For stateful providers, propagate `ConversationId` rather than assuming all providers behave the same way.
-6. Use `Microsoft.Extensions.VectorData` and `Microsoft.Extensions.DataIngestion` as adjacent building blocks for RAG instead of hand-rolling store abstractions prematurely.
+6. Use `Microsoft.Extensions.VectorData` and `Microsoft.Extensions.DataIngestion` as adjacent building blocks for RAG instead of hand-rolling store abstractions prematurely. Model ingestion as an explicit reader -> processor -> chunker -> writer pipeline when the document-preparation path matters.
 7. Escalate to `dotnet-microsoft-agent-framework` when the requirement becomes agent threads, multi-agent orchestration, higher-order workflows, durable execution, or remote agent hosting.
 8. Validate with real providers, realistic prompts, and evaluation gates so the abstraction layer actually buys portability and reliability.
 
@@ -47,7 +47,12 @@ flowchart LR
 - `IChatClient` centers on `GetResponseAsync` and `GetStreamingResponseAsync`. The returned `ChatResponse` or `ChatResponseUpdate` objects carry messages, tool-related content, metadata, and optional conversation identifiers.
 - `ChatOptions` is the normal control plane for model ID, temperature, tools, `AdditionalProperties`, and provider-specific raw options.
 - Tool calling is modeled with `AIFunction`, `AIFunctionFactory`, and `FunctionInvokingChatClient`. Ambient data can flow through closures, `AdditionalProperties`, `AIFunctionArguments.Context`, or DI.
+- Tool calling can target local .NET methods, external APIs, or MCP-backed tools. The model requests calls; your app still owns execution, validation, and side-effect boundaries.
+- Tool definitions consume request tokens. Keep tool descriptions short and register only the tools relevant for the current conversation or workflow.
+- `FunctionInvokingChatClient` can handle the tool-invocation loop and parallel tool-call responses automatically when the provider/model supports that shape.
 - `IEmbeddingGenerator` is the standard abstraction for semantic search, vector indexing, similarity, and cache-key generation. Pair it with `Microsoft.Extensions.VectorData.Abstractions` for vector store operations.
+- `Microsoft.Extensions.DataIngestion` gives you the document-side RAG pipeline: `IngestionDocument`, document readers like MarkItDown/Markdig, document processors such as `ImageAlternativeTextEnricher`, chunkers, chunk processors, `VectorStoreWriter<T>`, and `IngestionPipeline<T>` for end-to-end composition.
+- `IngestionPipeline<T>.ProcessAsync` is partial-success oriented. Handle `IAsyncEnumerable<IngestionResult>` deliberately instead of assuming one failed document should automatically crash the whole ingestion run.
 - `Microsoft.Extensions.AI.Evaluation.*` gives you quality, NLP, safety, caching, and reporting layers for regression checks and CI gates.
 - `Microsoft Agent Framework` builds on these abstractions. Use it when you need autonomous orchestration, threads, workflows, hosting, or multi-agent collaboration instead of just model composition.
 

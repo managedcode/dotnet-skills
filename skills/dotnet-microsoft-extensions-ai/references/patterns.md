@@ -27,9 +27,20 @@
 
 - Describe tools with `AIFunction` and `AIFunctionFactory`.
 - Use `FunctionInvokingChatClient` when you want automatic tool invocation instead of manually inspecting tool-related message content.
+- Keep tool registration scoped to the current conversation or job. Tool descriptions count against token limits and can become a hidden cost/latency tax when the list grows.
+- Remember that tools can be local .NET methods, external APIs, or MCP-backed operations. The model chooses; your application still validates arguments and decides whether the call is safe to execute.
 - Pass ambient data through closures, `ChatOptions.AdditionalProperties`, `AIFunctionArguments.Context`, or DI, depending on lifetime and ownership.
 - Validate invalid tool input explicitly. Do not trust the model to always produce perfectly shaped arguments.
 - Keep side effects narrow, auditable, and guarded outside the prompt.
+
+## Data Ingestion Pipelines
+
+- Use `Microsoft.Extensions.DataIngestion` when the document-processing side of RAG matters as much as retrieval or prompting.
+- Model the flow explicitly: document reader -> document processor -> chunker -> chunk processor -> writer.
+- Start from `IngestionDocument` and choose built-in readers like MarkItDown or Markdig instead of ad-hoc file-to-string helpers when document fidelity matters.
+- Use `ImageAlternativeTextEnricher` at the document level and chunk enrichers like `SummaryEnricher`, `KeywordEnricher`, or `ClassificationEnricher` at the chunk level.
+- Keep tokenizer, chunk size, overlap, and embedding model choices versioned together so reindexing and evaluation stay comparable.
+- Treat `IngestionPipeline<T>.ProcessAsync` as partial success. Handle `IngestionResult` per document and decide explicitly whether to retry, continue, or fail the batch.
 
 ## Structured Output
 

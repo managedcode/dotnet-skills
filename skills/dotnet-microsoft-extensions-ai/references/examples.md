@@ -10,7 +10,7 @@
 | Request structured output | `official-docs/quickstarts/structured-output.md` | typed `GetResponseAsync<T>` helpers | Prefer typed enums or records over manual JSON parsing |
 | Execute local tools | `official-docs/quickstarts/use-function-calling.md` | `AIFunction`, `FunctionInvokingChatClient` | Add invalid-input handling from `official-docs/how-to/handle-invalid-tool-input.md` |
 | Build vector search or RAG | `official-docs/quickstarts/build-vector-search-app.md` | `IEmbeddingGenerator`, `Microsoft.Extensions.VectorData.Abstractions` | Keep chunking and embedding model/version stable |
-| Process data for RAG | `official-docs/quickstarts/process-data.md` | `Microsoft.Extensions.DataIngestion` | Use when the ingestion pipeline matters as much as inference |
+| Process data for RAG | `official-docs/quickstarts/process-data.md` | `Microsoft.Extensions.DataIngestion`, `IngestionPipeline<T>` | Use when the ingestion pipeline matters as much as inference |
 | Chat with a local model | `official-docs/quickstarts/chat-local-model.md` | local provider adapter + `IChatClient` | Good for dev, lower cost, and offline workflows |
 | Generate images | `official-docs/quickstarts/text-to-image.md` | experimental `IImageGenerator` or provider client | Treat image generation as a separate capability surface |
 | Build an MCP client | `official-docs/quickstarts/build-mcp-client.md` | MCP client + `IChatClient` | Relevant when tools live behind MCP servers |
@@ -36,6 +36,17 @@
 - Use `IEmbeddingGenerator<string, Embedding<float>>` to create embeddings for both source content and user queries.
 - Store vectors in a vector store accessed through `Microsoft.Extensions.VectorData.Abstractions`.
 - Keep ingestion, chunking, and retrieval policies versioned so evaluation results stay meaningful over time.
+
+### Data Ingestion for RAG
+
+- Start from `Microsoft.Extensions.DataIngestion` when documents must be read, normalized, enriched, chunked, and written as one pipeline instead of a pile of custom helpers.
+- Reach for the official processing shape:
+  - document reader such as MarkItDown or Markdig
+  - optional document processor such as `ImageAlternativeTextEnricher`
+  - chunker such as `HeaderChunker` or semantic chunking
+  - chunk processors such as `SummaryEnricher`
+  - `VectorStoreWriter<T>` and `IngestionPipeline<T>` for the final persisted flow
+- Handle `ProcessAsync` results per document. A single ingestion failure should be an explicit policy decision, not an accidental crash.
 
 ### Evaluation-Backed Delivery
 
