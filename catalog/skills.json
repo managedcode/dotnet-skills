@@ -299,11 +299,11 @@
     },
     {
       "name": "dotnet-mcaf",
-      "title": "MCAF for .NET Repositories",
-      "version": "1.0.0",
+      "title": "MCAF Adoption",
+      "version": "1.1.0",
       "category": "Core",
-      "description": "Adopt MCAF in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow.",
-      "compatibility": "Best for .NET repositories that want a durable AI-development framework with explicit instructions, verification gates, and versioned repo context.",
+      "description": "Adopt MCAF alongside the dotnet-skills catalog with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow.",
+      "compatibility": "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work.",
       "path": "skills/dotnet-mcaf/"
     },
     {

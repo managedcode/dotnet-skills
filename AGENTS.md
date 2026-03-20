@@ -187,6 +187,7 @@ Rules:
 - Prefer framework or capability names that match official Microsoft naming.
 - Do not invent vanity prefixes.
 - Do not create duplicate skills that differ only by wording.
+- When a skill in this repository references an external framework that is not itself a `.NET` framework, keep the external framework's canonical name in titles and prose. The `dotnet-*` prefix is this catalog's namespace, not a claim that every referenced framework is part of `.NET`. For example, MCAF should be described as `MCAF`, not as a `.NET` framework.
 
 ## When Adding or Updating a Skill
 

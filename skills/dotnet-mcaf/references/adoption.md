@@ -1,6 +1,6 @@
-# MCAF Adoption for .NET Repositories
+# MCAF Adoption Alongside dotnet-skills
 
-Use this reference when a `.NET` repository wants to adopt the Managed Code Coding AI Framework instead of keeping AI workflow rules scattered across chat threads, tribal knowledge, or ad hoc prompts.
+Use this reference when a repository wants to adopt the Managed Code Coding AI Framework and also uses the dotnet-skills catalog for `.NET` implementation work instead of keeping AI workflow rules scattered across chat threads, tribal knowledge, or ad hoc prompts.
 
 ## Canonical Sources
 
@@ -11,7 +11,7 @@ Use this reference when a `.NET` repository wants to adopt the Managed Code Codi
 
 The concepts page defines the framework. The tutorial is the canonical bootstrap flow.
 
-## What MCAF Adds To A .NET Repo
+## What MCAF Adds To A Repository
 
 From the official concepts and tutorial pages, the core MCAF shape is:
 
@@ -20,14 +20,14 @@ From the official concepts and tutorial pages, the core MCAF shape is:
 3. verification is enforced through tests and analyzers
 4. guidance stays small, explicit, versioned, and repo-native
 
-For `.NET` repositories, the official tutorial makes one boundary explicit:
+For repositories that also contain `.NET` code, the official tutorial makes one boundary explicit:
 
 - install MCAF governance skills from the MCAF catalog
 - install implementation-focused `dotnet-*` skills from `https://skills.managed-code.com/`
 
 That means MCAF is the framework layer, while this repository remains the `.NET` execution layer.
 
-## Bootstrap Rules That Matter For .NET
+## Bootstrap Rules That Matter Alongside dotnet-skills
 
 Use the tutorial as the single canonical install surface.
 
@@ -38,7 +38,7 @@ Required bootstrap artifacts:
 - MCAF skills under the native agent skill directory
 - `dotnet-*` skills from the external `.NET` catalog when the repo contains `.NET` code
 
-For multi-project `.NET` solutions:
+For multi-project solutions:
 
 - keep one root `AGENTS.md`
 - add one local `AGENTS.md` per project or module root when local rules differ
@@ -92,23 +92,16 @@ For `.NET` repos this means “tests passed” is insufficient if the repo also 
 - architecture tests
 - security gates
 
-## MCAF Skill Map That Usually Matters In .NET Repos
+## MCAF Skill Map That Usually Matters Alongside dotnet-skills
 
-The current public `managedcode/MCAF` repo exposes skills such as:
-
-- `mcaf-solution-governance`
-- `mcaf-architecture-overview`
-- `mcaf-feature-spec`
-- `mcaf-adr-writing`
-- `mcaf-testing`
-- `mcaf-ci-cd`
-- `mcaf-code-review`
-- `mcaf-solid-maintainability`
+The local `managedcode/MCAF` catalog currently exposes 18 separate `mcaf-*` skills. In practice that means teams should route to a narrow governance skill, not cite "MCAF" generically.
 
 Recommended split:
 
-- use MCAF skills for governance, docs, planning, maintainability, testing policy, and CI policy
+- use MCAF skills for governance, docs, planning, maintainability, testing policy, CI/CD policy, observability, security baseline, and delivery process
 - use `dotnet-*` skills from this catalog for framework-specific implementation and validation
+
+The most common `.NET` adoption map is in `references/skill-map.md`.
 
 ## Practical Routing For .NET Teams
 
@@ -117,3 +110,4 @@ When the ask is:
 - "set up repo rules, AGENTS, docs, and delivery workflow" -> start with `dotnet-mcaf`
 - "implement or fix actual ASP.NET/Orleans/EF/Agent Framework code" -> route from `dotnet-mcaf` into the narrowest `dotnet-*` skill
 - "tighten verification and CI rules" -> combine `dotnet-mcaf` with the appropriate testing or quality skill
+- "choose which MCAF skill should own governance work" -> route through the grouped map in `references/skill-map.md`
