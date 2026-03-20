@@ -370,13 +370,13 @@
       "value": "\"5uov2W7piqetQnpJuEqd2C9QQ0c=\""
     },
     "agent-framework-docs-user-guide-agents-agent-middleware": {
-      "etag": "\"C+6Xu3AV3PMFh+fQ2VGfNZbbGfY=\"",
-      "human": "Agent Middleware | Microsoft Learn | ETag \"C+6Xu3AV3PMFh+fQ2VGfNZbbGfY=\"",
+      "etag": "\"wWcJzBUCvGEDZJWdaM8r4coi1FA=\"",
+      "human": "Agent Middleware | Microsoft Learn | ETag \"wWcJzBUCvGEDZJWdaM8r4coi1FA=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 11:09:50 GMT",
+      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/agents/middleware/",
       "title": "Agent Middleware | Microsoft Learn",
-      "value": "\"C+6Xu3AV3PMFh+fQ2VGfNZbbGfY=\""
+      "value": "\"wWcJzBUCvGEDZJWdaM8r4coi1FA=\""
     },
     "agent-framework-docs-user-guide-agents-agent-rag": {
       "etag": "\"5uov2W7piqetQnpJuEqd2C9QQ0c=\"",
@@ -424,49 +424,49 @@
       "value": "\"w3mAMFtSgEQWnoFLOr+BCQAGw50=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-agent": {
-      "etag": "\"wWbXn1YJG8ogZA1LWOup/xoNxKw=\"",
-      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"wWbXn1YJG8ogZA1LWOup/xoNxKw=\"",
+      "etag": "\"4AHUCCkIuJbGJvvzg6xVTVpME5E=\"",
+      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"4AHUCCkIuJbGJvvzg6xVTVpME5E=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-agent",
       "title": "Microsoft Foundry Agents | Microsoft Learn",
-      "value": "\"wWbXn1YJG8ogZA1LWOup/xoNxKw=\""
+      "value": "\"4AHUCCkIuJbGJvvzg6xVTVpME5E=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-models-chat-completion-agent": {
-      "etag": "\"wWbXn1YJG8ogZA1LWOup/xoNxKw=\"",
-      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"wWbXn1YJG8ogZA1LWOup/xoNxKw=\"",
+      "etag": "\"4AHUCCkIuJbGJvvzg6xVTVpME5E=\"",
+      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"4AHUCCkIuJbGJvvzg6xVTVpME5E=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-models-chat-completion-agent",
       "title": "Microsoft Foundry Agents | Microsoft Learn",
-      "value": "\"wWbXn1YJG8ogZA1LWOup/xoNxKw=\""
+      "value": "\"4AHUCCkIuJbGJvvzg6xVTVpME5E=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-models-responses-agent": {
-      "etag": "\"wWbXn1YJG8ogZA1LWOup/xoNxKw=\"",
-      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"wWbXn1YJG8ogZA1LWOup/xoNxKw=\"",
+      "etag": "\"4AHUCCkIuJbGJvvzg6xVTVpME5E=\"",
+      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"4AHUCCkIuJbGJvvzg6xVTVpME5E=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-models-responses-agent",
       "title": "Microsoft Foundry Agents | Microsoft Learn",
-      "value": "\"wWbXn1YJG8ogZA1LWOup/xoNxKw=\""
+      "value": "\"4AHUCCkIuJbGJvvzg6xVTVpME5E=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-openai-chat-completion-agent": {
-      "etag": "\"ytid5/0mLUMCzZEGn9as42XMW3c=\"",
-      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"ytid5/0mLUMCzZEGn9as42XMW3c=\"",
+      "etag": "\"tUrMv09GP0Sqwt6NLu1eW+cTUQw=\"",
+      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"tUrMv09GP0Sqwt6NLu1eW+cTUQw=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-openai-chat-completion-agent",
       "title": "Azure OpenAI Agents | Microsoft Learn",
-      "value": "\"ytid5/0mLUMCzZEGn9as42XMW3c=\""
+      "value": "\"tUrMv09GP0Sqwt6NLu1eW+cTUQw=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-openai-responses-agent": {
-      "etag": "\"ytid5/0mLUMCzZEGn9as42XMW3c=\"",
-      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"ytid5/0mLUMCzZEGn9as42XMW3c=\"",
+      "etag": "\"tUrMv09GP0Sqwt6NLu1eW+cTUQw=\"",
+      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"tUrMv09GP0Sqwt6NLu1eW+cTUQw=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-openai-responses-agent",
       "title": "Azure OpenAI Agents | Microsoft Learn",
-      "value": "\"ytid5/0mLUMCzZEGn9as42XMW3c=\""
+      "value": "\"tUrMv09GP0Sqwt6NLu1eW+cTUQw=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-chat-client-agent": {
       "etag": "\"7KyNSHn0G5splgtjshLsoiUnO0s=\"",
@@ -926,20 +926,20 @@
       "value": "\"e11c27083a1c77ee29c24fc54a2f957ef1a4680fd199d6ac6004971196dd3d3f\""
     },
     "aspire-docs": {
-      "etag": "\"dBon4NmgoSK7Q2ZGpuKZzdo4MRk8AaFtm3mhcsy7dYQ=\"",
-      "human": "Aspire \u2014 Your stack, streamlined | ETag \"dBon4NmgoSK7Q2ZGpuKZzdo4MRk8AaFtm3mhcsy7dYQ=\"",
+      "etag": "\"kTNOQaIYVRQO/uvShCV9zDtep861o8Qr7hVLxzb0j2I=\"",
+      "human": "Aspire \u2014 Your stack, streamlined | ETag \"kTNOQaIYVRQO/uvShCV9zDtep861o8Qr7hVLxzb0j2I=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 18 Mar 2026 15:05:38 GMT",
+      "last_modified": "Thu, 19 Mar 2026 15:17:49 GMT",
       "source_url": "https://aspire.dev/",
       "title": "Aspire \u2014 Your stack, streamlined",
-      "value": "\"dBon4NmgoSK7Q2ZGpuKZzdo4MRk8AaFtm3mhcsy7dYQ=\""
+      "value": "\"kTNOQaIYVRQO/uvShCV9zDtep861o8Qr7hVLxzb0j2I=\""
     },
     "aspire-release": {
-      "human": "v13.1.2 (2026-02-26T03:54:31Z)",
+      "human": "v13.1.3 (2026-03-19T20:13:58Z)",
       "kind": "github_release",
-      "published_at": "2026-02-26T03:54:31Z",
-      "source_url": "https://github.com/dotnet/aspire/releases/tag/v13.1.2",
-      "value": "v13.1.2"
+      "published_at": "2026-03-19T20:13:58Z",
+      "source_url": "https://github.com/dotnet/aspire/releases/tag/v13.1.3",
+      "value": "v13.1.3"
     },
     "aspnetcore-overview-docs": {
       "etag": "\"VAj87KOIiNc/fGZzM1hfGX5RqVM=\"",
@@ -1630,11 +1630,11 @@
       "value": "12.1.0.39434"
     },
     "stylelint-release": {
-      "human": "17.4.0 (2026-02-25T13:22:00Z)",
+      "human": "17.5.0 (2026-03-19T16:32:30Z)",
       "kind": "github_release",
-      "published_at": "2026-02-25T13:22:00Z",
-      "source_url": "https://github.com/stylelint/stylelint/releases/tag/17.4.0",
-      "value": "17.4.0"
+      "published_at": "2026-03-19T16:32:30Z",
+      "source_url": "https://github.com/stylelint/stylelint/releases/tag/17.5.0",
+      "value": "17.5.0"
     },
     "webhint-release": {
       "human": "hint-v4.5.0 (2019-03-07T22:20:20Z)",
