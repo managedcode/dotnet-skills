@@ -27,6 +27,8 @@ For repositories that also contain `.NET` code, the official tutorial makes one 
 
 That means MCAF is the framework layer, while this repository remains the `.NET` execution layer.
 
+The local `dotnet-skills` catalog now mirrors the net-new MCAF governance surfaces as installable `dotnet-mcaf-*` skills. Use the local mirrors first for the transferred surfaces, and fall back to the upstream MCAF catalog when a governance skill has not been mirrored here yet.
+
 ## Bootstrap Rules That Matter Alongside dotnet-skills
 
 Use the tutorial as the single canonical install surface.
@@ -35,8 +37,8 @@ Required bootstrap artifacts:
 
 - root `AGENTS.md` at the repo or solution root
 - optional `CLAUDE.md` wrapper when the repo uses Claude Code
-- MCAF skills under the native agent skill directory
-- `dotnet-*` skills from the external `.NET` catalog when the repo contains `.NET` code
+- local `dotnet-mcaf*` governance skills under the native agent skill directory
+- `dotnet-*` implementation skills from this catalog when the repo contains `.NET` code
 
 For multi-project solutions:
 
@@ -110,4 +112,4 @@ When the ask is:
 - "set up repo rules, AGENTS, docs, and delivery workflow" -> start with `dotnet-mcaf`
 - "implement or fix actual ASP.NET/Orleans/EF/Agent Framework code" -> route from `dotnet-mcaf` into the narrowest `dotnet-*` skill
 - "tighten verification and CI rules" -> combine `dotnet-mcaf` with the appropriate testing or quality skill
-- "choose which MCAF skill should own governance work" -> route through the grouped map in `references/skill-map.md`
+- "choose which local MCAF mirror should own governance work" -> route through the grouped map in `references/skill-map.md`

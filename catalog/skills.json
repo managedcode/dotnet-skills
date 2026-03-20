@@ -300,11 +300,92 @@
     {
       "name": "dotnet-mcaf",
       "title": "MCAF Adoption",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "category": "Core",
       "description": "Adopt MCAF alongside the dotnet-skills catalog with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow.",
       "compatibility": "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work.",
       "path": "skills/dotnet-mcaf/"
+    },
+    {
+      "name": "dotnet-mcaf-agile-delivery",
+      "title": "MCAF: Agile Delivery",
+      "version": "1.0.0",
+      "category": "Core",
+      "description": "Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements.",
+      "compatibility": "Requires repository access only when the repo stores delivery docs or governance guidance.",
+      "path": "skills/dotnet-mcaf-agile-delivery/"
+    },
+    {
+      "name": "dotnet-mcaf-devex",
+      "title": "MCAF: Developer Experience",
+      "version": "1.0.0",
+      "category": "Core",
+      "description": "Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into.",
+      "compatibility": "Requires repository access; may update docs, task runners, devcontainer guidance, or local setup conventions.",
+      "path": "skills/dotnet-mcaf-devex/"
+    },
+    {
+      "name": "dotnet-mcaf-documentation",
+      "title": "MCAF: Documentation",
+      "version": "1.0.0",
+      "category": "Architecture",
+      "description": "Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. Use when a repo\u2019s docs are missing, stale, duplicated, or hard to navigate, or when adding new durable engineering guidance.",
+      "compatibility": "Requires repository write access; updates docs and documentation structure.",
+      "path": "skills/dotnet-mcaf-documentation/"
+    },
+    {
+      "name": "dotnet-mcaf-feature-spec",
+      "title": "MCAF: Feature Spec",
+      "version": "1.0.0",
+      "category": "Architecture",
+      "description": "Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. Use when the user asks for a feature spec, executable requirements, acceptance criteria, behaviour documentation, or a pre-implementation plan for non-trivial behaviour changes.",
+      "compatibility": "Requires repository write access; produces Markdown docs with Mermaid diagrams and executable verification steps.",
+      "path": "skills/dotnet-mcaf-feature-spec/"
+    },
+    {
+      "name": "dotnet-mcaf-human-review-planning",
+      "title": "MCAF: Human Review Planning",
+      "version": "1.0.0",
+      "category": "Core",
+      "description": "Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the files a human should inspect first. Use when the codebase is too large to review line-by-line and you need a practical review sequence plus a prioritized file list.",
+      "compatibility": "Requires repository read access; may write a `HUMAN_REVIEW_PLAN.md` file under docs, or to an exact docs path the user specifies, when the user asks for a saved review plan.",
+      "path": "skills/dotnet-mcaf-human-review-planning/"
+    },
+    {
+      "name": "dotnet-mcaf-ml-ai-delivery",
+      "title": "MCAF: ML/AI Delivery",
+      "version": "1.0.0",
+      "category": "AI",
+      "description": "Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. Use when the repo includes model training, inference, data science workflows, or ML-specific delivery planning.",
+      "compatibility": "Requires repository access when ML/AI docs, experiments, or delivery guidance live in the repo.",
+      "path": "skills/dotnet-mcaf-ml-ai-delivery/"
+    },
+    {
+      "name": "dotnet-mcaf-nfr",
+      "title": "MCAF: Non-Functional Requirements",
+      "version": "1.0.0",
+      "category": "Architecture",
+      "description": "Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. Use when a feature or architecture change needs explicit quality attributes and trade-offs.",
+      "compatibility": "Requires repository access when NFRs are documented in feature docs, ADRs, or architecture docs.",
+      "path": "skills/dotnet-mcaf-nfr/"
+    },
+    {
+      "name": "dotnet-mcaf-source-control",
+      "title": "MCAF: Source Control",
+      "version": "1.0.0",
+      "category": "Core",
+      "description": "Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. Use when bootstrapping a repo, tightening PR flow, or documenting branch and release policy.",
+      "compatibility": "Requires repository access; may update contribution docs, AGENTS rules, or repository policy files.",
+      "path": "skills/dotnet-mcaf-source-control/"
+    },
+    {
+      "name": "dotnet-mcaf-ui-ux",
+      "title": "MCAF: UI/UX",
+      "version": "1.0.0",
+      "category": "Cross-Platform UI",
+      "description": "Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. Use when bootstrapping a UI project, choosing front-end stack, or tightening design and accessibility practices.",
+      "compatibility": "Requires repository access when UI docs, component guidance, or design system rules live in the repo.",
+      "path": "skills/dotnet-mcaf-ui-ux/"
     },
     {
       "name": "dotnet-mcp",
@@ -669,6 +750,25 @@
   ],
   "packages": [
     {
+      "name": "mcaf",
+      "title": "MCAF package",
+      "description": "Install the locally mirrored MCAF governance skills in one command, including adoption, delivery workflow, developer experience, documentation, feature specs, review planning, NFRs, source-control policy, UI/UX, and ML/AI delivery guidance.",
+      "kind": "curated",
+      "sourceCategory": "",
+      "skills": [
+        "dotnet-mcaf",
+        "dotnet-mcaf-agile-delivery",
+        "dotnet-mcaf-devex",
+        "dotnet-mcaf-documentation",
+        "dotnet-mcaf-feature-spec",
+        "dotnet-mcaf-human-review-planning",
+        "dotnet-mcaf-ml-ai-delivery",
+        "dotnet-mcaf-nfr",
+        "dotnet-mcaf-source-control",
+        "dotnet-mcaf-ui-ux"
+      ]
+    },
+    {
       "name": "orleans",
       "title": "Orleans package",
       "description": "Install the main Orleans stack in one command, including Orleans core guidance, adjacent ManagedCode integrations, worker-hosting patterns, Aspire orchestration, and SignalR delivery support.",
@@ -686,7 +786,7 @@
     {
       "name": "core",
       "title": "Core package",
-      "description": "Install all 8 skills from the Core category in one command.",
+      "description": "Install all 12 skills from the Core category in one command.",
       "kind": "category",
       "sourceCategory": "Core",
       "skills": [
@@ -696,6 +796,10 @@
         "dotnet-managedcode-communication",
         "dotnet-managedcode-mimetypes",
         "dotnet-mcaf",
+        "dotnet-mcaf-agile-delivery",
+        "dotnet-mcaf-devex",
+        "dotnet-mcaf-human-review-planning",
+        "dotnet-mcaf-source-control",
         "dotnet-microsoft-extensions",
         "dotnet-project-setup"
       ]
@@ -755,11 +859,12 @@
     {
       "name": "cross-platform-ui",
       "title": "Cross-Platform UI package",
-      "description": "Install all 3 skills from the Cross-Platform UI category in one command.",
+      "description": "Install all 4 skills from the Cross-Platform UI category in one command.",
       "kind": "category",
       "sourceCategory": "Cross-Platform UI",
       "skills": [
         "dotnet-maui",
+        "dotnet-mcaf-ui-ux",
         "dotnet-mvvm",
         "dotnet-uno-platform"
       ]
@@ -781,10 +886,11 @@
     {
       "name": "ai",
       "title": "AI package",
-      "description": "Install all 6 skills from the AI category in one command.",
+      "description": "Install all 7 skills from the AI category in one command.",
       "kind": "category",
       "sourceCategory": "AI",
       "skills": [
+        "dotnet-mcaf-ml-ai-delivery",
         "dotnet-mcp",
         "dotnet-microsoft-agent-framework",
         "dotnet-microsoft-extensions-ai",
@@ -851,11 +957,14 @@
     {
       "name": "architecture",
       "title": "Architecture package",
-      "description": "Install all 2 skills from the Architecture category in one command.",
+      "description": "Install all 5 skills from the Architecture category in one command.",
       "kind": "category",
       "sourceCategory": "Architecture",
       "skills": [
         "dotnet-archunitnet",
+        "dotnet-mcaf-documentation",
+        "dotnet-mcaf-feature-spec",
+        "dotnet-mcaf-nfr",
         "dotnet-netarchtest"
       ]
     },

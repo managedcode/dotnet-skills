@@ -46,6 +46,24 @@ CATEGORY_ORDER = [
 
 CURATED_PACKAGES = [
     {
+        "name": "mcaf",
+        "title": "MCAF package",
+        "description": "Install the locally mirrored MCAF governance skills in one command, including adoption, delivery workflow, developer experience, documentation, feature specs, review planning, NFRs, source-control policy, UI/UX, and ML/AI delivery guidance.",
+        "kind": "curated",
+        "skills": [
+            "dotnet-mcaf",
+            "dotnet-mcaf-agile-delivery",
+            "dotnet-mcaf-devex",
+            "dotnet-mcaf-documentation",
+            "dotnet-mcaf-feature-spec",
+            "dotnet-mcaf-human-review-planning",
+            "dotnet-mcaf-ml-ai-delivery",
+            "dotnet-mcaf-nfr",
+            "dotnet-mcaf-source-control",
+            "dotnet-mcaf-ui-ux",
+        ],
+    },
+    {
         "name": "orleans",
         "title": "Orleans package",
         "description": "Install the main Orleans stack in one command, including Orleans core guidance, adjacent ManagedCode integrations, worker-hosting patterns, Aspire orchestration, and SignalR delivery support.",

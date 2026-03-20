@@ -1,6 +1,6 @@
 ---
 name: dotnet-mcaf
-version: "1.1.1"
+version: "1.2.0"
 category: "Core"
 description: "Adopt MCAF alongside the dotnet-skills catalog with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow."
 compatibility: "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work."
@@ -27,16 +27,19 @@ compatibility: "Best for repositories that want MCAF governance and also use dot
    - durable instructions in `AGENTS.md`
    - durable engineering docs in the repository
    - workflow details in skills, references, and repo docs instead of chat memory
-4. Treat MCAF as its own skill catalog, not one monolithic rule file. The current catalog exposes separate `mcaf-*` skills for governance, docs, testing, CI/CD, observability, maintainability, source control, UI/UX, and AI/ML delivery.
-5. Route to the narrowest MCAF skill once the governance problem is clear:
-   - repo bootstrap and local `AGENTS.md`: `mcaf-solution-governance`
-   - architecture map: `mcaf-architecture-overview`
-   - feature spec and ADRs: `mcaf-feature-spec`, `mcaf-adr-writing`
-   - testing and review policy: `mcaf-testing`, `mcaf-code-review`
-   - release and pipeline policy: `mcaf-ci-cd`, `mcaf-source-control`
-   - maintainability and NFR policy: `mcaf-solid-maintainability`, `mcaf-nfr`
-6. Expect partial conceptual overlap with existing `dotnet-*` skills. Keep MCAF for repo-governance, documentation, delivery, and cross-cutting process policy. Keep `dotnet-*` skills for framework-specific implementation, .NET-specific quality tooling, and concrete code changes.
-7. For `.NET` repositories, fetch framework-governance skills from the MCAF catalog and fetch implementation skills from `https://skills.managed-code.com/`. Do not replace repo-specific `dotnet build`, `dotnet test`, `dotnet format`, analyzer, coverage, and CI commands with vague generic guidance.
+4. Treat MCAF as its own skill catalog, not one monolithic rule file. This catalog now mirrors the net-new MCAF governance surfaces as dedicated `dotnet-mcaf-*` skills while keeping clear boundaries against overlapping `dotnet-*` implementation skills.
+5. Route to the narrowest local MCAF skill once the governance problem is clear:
+   - delivery workflow and feedback loops: `dotnet-mcaf-agile-delivery`
+   - developer onboarding and local inner loop: `dotnet-mcaf-devex`
+   - durable docs structure and source-of-truth placement: `dotnet-mcaf-documentation`
+   - executable feature behaviour docs: `dotnet-mcaf-feature-spec`
+   - human review sequencing for large AI-generated drops: `dotnet-mcaf-human-review-planning`
+   - ML/AI product delivery process: `dotnet-mcaf-ml-ai-delivery`
+   - explicit quality attributes and trade-offs: `dotnet-mcaf-nfr`
+   - branch, merge, and release hygiene: `dotnet-mcaf-source-control`
+   - design-system, accessibility, and front-end direction: `dotnet-mcaf-ui-ux`
+6. Expect partial conceptual overlap with existing `dotnet-*` skills. Keep MCAF for repo governance, documentation, delivery, and cross-cutting process policy. Keep `dotnet-*` skills for framework-specific implementation, .NET-specific quality tooling, and concrete code changes. Use the overlap map in `references/skill-map.md` before adding duplicate surfaces.
+7. For `.NET` repositories, install the local MCAF governance mirrors from this catalog and install the narrow framework implementation skills from the same catalog. When the upstream MCAF catalog evolves faster than the local mirror, refer back to `https://mcaf.managed-code.com/` for the canonical source and update path.
 8. Keep documentation explicit enough for direct implementation:
    - `docs/Architecture.md`
    - `docs/Features/`
@@ -55,8 +58,8 @@ flowchart LR
   B --> C{"Multi-project solution?"}
   C -->|Yes| D["Project-local AGENTS.md files"]
   C -->|No| E["Keep root policy only"]
-  B --> F["Install MCAF skills from mcaf.managed-code.com"]
-  B --> G["Install dotnet-* skills from skills.managed-code.com"]
+  B --> F["Install local dotnet-mcaf-* governance skills"]
+  B --> G["Install local dotnet-* implementation skills"]
   D --> H["Document local boundaries and commands"]
   E --> H
   F --> I["Repo-native docs and workflow scaffolds"]
@@ -71,6 +74,7 @@ flowchart LR
 - a repository-ready MCAF adoption shape for the solution
 - clear root and local `AGENTS.md` responsibilities
 - the right split between overlapping `mcaf-*` governance skills and `dotnet-*` implementation skills
+- local installable MCAF governance skills for the net-new process areas that this catalog did not cover before
 - explicit repo docs and verification expectations instead of chat-only instructions
 
 ## Validate
@@ -84,5 +88,5 @@ flowchart LR
 
 ## References
 
-- [references/adoption.md](references/adoption.md) - Canonical MCAF entry points, bootstrap rules for repos that also use dotnet-skills, and the most relevant MCAF adoption boundaries
-- [references/skill-map.md](references/skill-map.md) - Current MCAF catalog map, grouped by governance concern and split into overlap-vs-new guidance so teams can route to the right `mcaf-*` skill instead of treating MCAF as a single blob
+- [references/adoption.md](references/adoption.md) - Canonical MCAF entry points, bootstrap rules for repos that also use dotnet-skills, and the local-mirror boundary between MCAF governance skills and `.NET` implementation skills
+- [references/skill-map.md](references/skill-map.md) - Current MCAF catalog map, including the locally mirrored `dotnet-mcaf-*` skills and the overlap-vs-new split so teams can route precisely instead of treating MCAF as a single blob

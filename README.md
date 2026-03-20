@@ -31,6 +31,7 @@ dotnet skills package list                  # show curated and category-based pa
 dotnet skills list --local                  # only installed skills in the current target
 dotnet skills recommend                     # suggest skills from local .csproj files
 dotnet skills install package ai            # install a multi-skill package
+dotnet skills install package mcaf          # install the local MCAF governance package
 dotnet skills package install orleans       # alias for package-first install flow
 dotnet skills install aspire orleans        # install skills
 dotnet skills remove --all                  # remove installed catalog skills from the target
@@ -47,7 +48,7 @@ dotnet skills install blazor --agent claude # install for a specific agent
 | `dotnet skills package list` | Show the curated and category-based packages that expand into multiple related skills |
 | `dotnet skills recommend` | Scan local `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install |
 | `dotnet skills install <skill...>` | Install one or more skills |
-| `dotnet skills install package <package...>` | Install one or more packages such as `ai`, `code-quality`, or `orleans`, with each package expanding into multiple related skills |
+| `dotnet skills install package <package...>` | Install one or more packages such as `ai`, `code-quality`, `mcaf`, or `orleans`, with each package expanding into multiple related skills |
 | `dotnet skills package install <package...>` | Alias for the same package installation flow |
 | `dotnet skills remove [skill...]` | Remove one or more installed catalog skills, or use `--all` to clear the target |
 | `dotnet skills update [skill...]` | Update installed catalog skills to the selected catalog version |
@@ -60,7 +61,7 @@ dotnet skills install blazor --agent claude # install for a specific agent
 
 Use `--agent` to target a specific agent, `--scope` to choose global or project install. Use `dotnet skills list --installed-only` or the shorter `dotnet skills list --local` when you only want the installed inventory, or `--available-only` when you want the detailed category-by-category breakdown of the remaining catalog. The default `list` view stays compact: it shows the current target inventory, compares project/global scope when that comparison is meaningful, and keeps the remaining catalog as a short category summary instead of dumping one giant description table. The CLI renders rich terminal tables by default so you can quickly see installed versions, update candidates, install commands, and when a newer `dotnet-skills` package is available on NuGet. `dotnet skills --version` is a shortcut for the version view.
 
-`dotnet skills package list` shows the ready-made packages. Package installs are bulk shortcuts for related skill sets, so `dotnet skills install package ai`, `dotnet skills install package code-quality`, or `dotnet skills install package orleans` will install every skill mapped to that package in one pass.
+`dotnet skills package list` shows the ready-made packages. Package installs are bulk shortcuts for related skill sets, so `dotnet skills install package ai`, `dotnet skills install package code-quality`, `dotnet skills install package mcaf`, or `dotnet skills install package orleans` will install every skill mapped to that package in one pass.
 
 `dotnet skills recommend` is a scan-only command: it inspects local project files, proposes a skill list, and prints the install command you can run if you agree with the recommendations. It does not install anything automatically.
 
@@ -169,7 +170,7 @@ skills/<skill-name>/
 
 <!-- BEGIN GENERATED CATALOG -->
 
-This catalog currently contains **74** skills.
+This catalog currently contains **83** skills.
 
 ### Core
 
@@ -180,7 +181,11 @@ This catalog currently contains **74** skills.
 | [`dotnet-code-review`](skills/dotnet-code-review/) | `1.0.0` | Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them. |
 | [`dotnet-managedcode-communication`](skills/dotnet-managedcode-communication/) | `1.0.0` | Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow. |
 | [`dotnet-managedcode-mimetypes`](skills/dotnet-managedcode-mimetypes/) | `1.0.0` | Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses. |
-| [`dotnet-mcaf`](skills/dotnet-mcaf/) | `1.1.1` | Adopt MCAF alongside the dotnet-skills catalog with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow. |
+| [`dotnet-mcaf`](skills/dotnet-mcaf/) | `1.2.0` | Adopt MCAF alongside the dotnet-skills catalog with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow. |
+| [`dotnet-mcaf-agile-delivery`](skills/dotnet-mcaf-agile-delivery/) | `1.0.0` | Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements. |
+| [`dotnet-mcaf-devex`](skills/dotnet-mcaf-devex/) | `1.0.0` | Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into. |
+| [`dotnet-mcaf-human-review-planning`](skills/dotnet-mcaf-human-review-planning/) | `1.0.0` | Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the files a human should inspect first. Use when the codebase is too large to review line-by-line and you need a practical review sequence plus a prioritized file list. |
+| [`dotnet-mcaf-source-control`](skills/dotnet-mcaf-source-control/) | `1.0.0` | Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. Use when bootstrapping a repo, tightening PR flow, or documenting branch and release policy. |
 | [`dotnet-microsoft-extensions`](skills/dotnet-microsoft-extensions/) | `1.0.0` | Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns. |
 | [`dotnet-project-setup`](skills/dotnet-project-setup/) | `1.0.0` | Create or reorganize .NET solutions with clean project boundaries, repeatable SDK settings, and a maintainable baseline for libraries, apps, tests, CI, and local development. |
 
@@ -225,6 +230,7 @@ This catalog currently contains **74** skills.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [`dotnet-maui`](skills/dotnet-maui/) | `1.0.0` | Build, review, or migrate .NET MAUI applications across Android, iOS, macOS, and Windows with correct cross-platform UI, platform integration, and native packaging assumptions. |
+| [`dotnet-mcaf-ui-ux`](skills/dotnet-mcaf-ui-ux/) | `1.0.0` | Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. Use when bootstrapping a UI project, choosing front-end stack, or tightening design and accessibility practices. |
 | [`dotnet-mvvm`](skills/dotnet-mvvm/) | `1.0.0` | Implement the Model-View-ViewModel pattern in .NET applications with proper separation of concerns, data binding, commands, and testable ViewModels using MVVM Toolkit. |
 | [`dotnet-uno-platform`](skills/dotnet-uno-platform/) | `1.0.0` | Build cross-platform .NET applications with Uno Platform targeting WebAssembly, iOS, Android, macOS, Linux, and Windows from a single XAML/C# codebase. |
 
@@ -242,6 +248,7 @@ This catalog currently contains **74** skills.
 
 | Skill | Version | Description |
 |-------|---------|-------------|
+| [`dotnet-mcaf-ml-ai-delivery`](skills/dotnet-mcaf-ml-ai-delivery/) | `1.0.0` | Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. Use when the repo includes model training, inference, data science workflows, or ML-specific delivery planning. |
 | [`dotnet-mcp`](skills/dotnet-mcp/) | `1.1.0` | Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. |
 | [`dotnet-microsoft-agent-framework`](skills/dotnet-microsoft-agent-framework/) | `1.7.0` | Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails. |
 | [`dotnet-microsoft-extensions-ai`](skills/dotnet-microsoft-extensions-ai/) | `1.2.2` | Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation. |
@@ -297,6 +304,9 @@ This catalog currently contains **74** skills.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [`dotnet-archunitnet`](skills/dotnet-archunitnet/) | `1.0.0` | Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide. |
+| [`dotnet-mcaf-documentation`](skills/dotnet-mcaf-documentation/) | `1.0.0` | Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. Use when a repo’s docs are missing, stale, duplicated, or hard to navigate, or when adding new durable engineering guidance. |
+| [`dotnet-mcaf-feature-spec`](skills/dotnet-mcaf-feature-spec/) | `1.0.0` | Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. Use when the user asks for a feature spec, executable requirements, acceptance criteria, behaviour documentation, or a pre-implementation plan for non-trivial behaviour changes. |
+| [`dotnet-mcaf-nfr`](skills/dotnet-mcaf-nfr/) | `1.0.0` | Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. Use when a feature or architecture change needs explicit quality attributes and trade-offs. |
 | [`dotnet-netarchtest`](skills/dotnet-netarchtest/) | `1.0.0` | Use the open-source free `NetArchTest.Rules` library for architecture rules in .NET unit tests. Use when a repo wants lightweight, fluent architecture assertions for namespaces, dependencies, or layering. |
 
 ### Metrics

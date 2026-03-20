@@ -11,6 +11,22 @@ This map is sourced from the current local `managedcode/MCAF` catalog under `ski
 | `mcaf-source-control` | branch naming, merge strategy, commit hygiene, release-policy guardrails, and secrets-in-git discipline |
 | `mcaf-human-review-planning` | large AI-generated changes that need a practical human review sequence instead of a flat file-by-file read |
 
+## Local Mirrors In This Catalog
+
+The following net-new MCAF surfaces are now mirrored locally in `dotnet-skills`:
+
+| Canonical MCAF skill | Local mirror in this catalog |
+|---|---|
+| `mcaf-agile-delivery` | `dotnet-mcaf-agile-delivery` |
+| `mcaf-devex` | `dotnet-mcaf-devex` |
+| `mcaf-documentation` | `dotnet-mcaf-documentation` |
+| `mcaf-feature-spec` | `dotnet-mcaf-feature-spec` |
+| `mcaf-human-review-planning` | `dotnet-mcaf-human-review-planning` |
+| `mcaf-ml-ai-delivery` | `dotnet-mcaf-ml-ai-delivery` |
+| `mcaf-nfr` | `dotnet-mcaf-nfr` |
+| `mcaf-source-control` | `dotnet-mcaf-source-control` |
+| `mcaf-ui-ux` | `dotnet-mcaf-ui-ux` |
+
 ## Docs And Architecture
 
 | MCAF skill | Use it for |
@@ -46,12 +62,17 @@ Start with `dotnet-mcaf` when the ask is "adopt MCAF" or "make this repo follow 
 
 Then route:
 
-- repo bootstrap and root/local `AGENTS.md` work -> `mcaf-solution-governance`
-- architecture and docs bootstrap -> `mcaf-architecture-overview`, `mcaf-documentation`
-- feature or ADR authoring -> `mcaf-feature-spec`, `mcaf-adr-writing`
-- testing and review process -> `mcaf-testing`, `mcaf-code-review`
-- release and pipeline policy -> `mcaf-ci-cd`, `mcaf-source-control`
-- maintainability, observability, security, or NFR policy -> the corresponding narrow MCAF skill
+- repo bootstrap and root/local `AGENTS.md` work -> `dotnet-mcaf`
+- delivery workflow -> `dotnet-mcaf-agile-delivery`
+- developer onboarding and local loop -> `dotnet-mcaf-devex`
+- docs bootstrap -> `dotnet-mcaf-documentation`
+- feature behaviour docs -> `dotnet-mcaf-feature-spec`
+- large generated-drop review sequencing -> `dotnet-mcaf-human-review-planning`
+- ML or AI delivery policy -> `dotnet-mcaf-ml-ai-delivery`
+- source-control policy -> `dotnet-mcaf-source-control`
+- explicit quality attributes -> `dotnet-mcaf-nfr`
+- UI/UX and accessibility direction -> `dotnet-mcaf-ui-ux`
+- overlapping architecture, testing, CI, security, observability, and maintainability areas -> keep the boundary guidance below and route into the existing `dotnet-*` implementation skills as needed
 
 After governance routing is clear, switch to the matching `dotnet-*` skill for real framework or code changes.
 
@@ -74,16 +95,16 @@ Some MCAF skills overlap conceptually with areas that already exist in `dotnet-s
 
 ### Surfaces that are effectively new relative to this catalog
 
-These MCAF skills do not have a close one-to-one equivalent in the current `dotnet-skills` catalog and should stay represented as MCAF-native governance capabilities:
+These MCAF skills did not have a close one-to-one equivalent in the original `dotnet-skills` catalog and are now mirrored locally as:
 
-- `mcaf-agile-delivery`
-- `mcaf-devex`
-- `mcaf-documentation`
-- `mcaf-feature-spec`
-- `mcaf-human-review-planning`
-- `mcaf-ml-ai-delivery`
-- `mcaf-nfr`
-- `mcaf-source-control`
-- `mcaf-ui-ux`
+- `dotnet-mcaf-agile-delivery`
+- `dotnet-mcaf-devex`
+- `dotnet-mcaf-documentation`
+- `dotnet-mcaf-feature-spec`
+- `dotnet-mcaf-human-review-planning`
+- `dotnet-mcaf-ml-ai-delivery`
+- `dotnet-mcaf-nfr`
+- `dotnet-mcaf-source-control`
+- `dotnet-mcaf-ui-ux`
 
 Treat those as genuinely additive. They extend repo workflow and delivery governance rather than duplicating .NET implementation guidance.
