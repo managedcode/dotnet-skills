@@ -569,6 +569,7 @@ This repository should behave like a maintainable documentation-and-automation s
 - Skill catalog cards on the public site must keep category badges and install commands on stable separate rows; badges must never collide with or visually break the command line.
 - Skill catalog cards must avoid oversized glassmorphism, heavy blur, inflated pill buttons, and equal-height empty space. Prefer sharper surfaces, tighter padding, calmer shadows, and content-driven card height.
 - Directory cards that represent navigable resources such as categories should make the whole card feel interactive. Do not leave large dead zones where only a small nested button or heading opens the destination.
+- The public skills site should visually align with the main ManagedCode website rather than inventing a separate noisy catalog aesthetic. When redesigning the site, inspect live ManagedCode pages first and reuse their calmer premium typography, spacing, accent restraint, and overall tone.
 - Public README hero copy must avoid exact skill counts in the top badge and intro line; keep precise counts only in the generated catalog section where they can stay authoritative.
 - The README header generator must normalize duplicate generated lines after merges; one canonical top Skills badge and one canonical intro line only.
 - For internal `SKILL.md`, `AGENT.md`, and `references/` content, optimize first for model loading and token economy. Human clickability or decorative Markdown formatting is secondary unless it materially improves maintenance.

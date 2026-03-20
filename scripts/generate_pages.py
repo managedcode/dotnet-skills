@@ -600,17 +600,14 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
         )
     )
     actions = [
-        render_button("Open skill page", detail_href, "primary"),
+        f'<a class="card-inline-link" href="{escape_html(detail_href)}">Open skill page'
+        '<span class="card-inline-arrow">→</span></a>',
     ]
     if quick_view:
-        actions.insert(
-            0,
-            f'<button type="button" class="button button-ghost" data-open-skill="{escape_html(skill["name"])}">'
-            "Quick view</button>",
-        )
+        actions.insert(0, f'<button type="button" class="button button-ghost" data-open-skill="{escape_html(skill["name"])}">Quick view</button>')
 
     return f"""
-      <article class="directory-card skill-card js-filter-card" data-category="{escape_html(skill['category'])}" data-filtertext="{escape_html(filter_text)}">
+      <article class="directory-card skill-card is-clickable js-filter-card" data-category="{escape_html(skill['category'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
         <div class="card-top">
           <div>
             <div class="card-kicker">Skill</div>
@@ -625,7 +622,7 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
         <div class="command-row skill-command-row">
           <code>{escape_html(install_command)}</code>
         </div>
-        <div class="card-actions">
+        <div class="card-actions card-actions-inline">
           {"".join(actions)}
         </div>
       </article>
@@ -638,7 +635,7 @@ def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, di
     install_command = f"dotnet skills agent install {agent['short_name']}"
     summary = preview_text(agent["description"], limit=150)
     related_skill_chips = []
-    visible_linked_skills = agent.get("skills", [])[:3]
+    visible_linked_skills = agent.get("skills", [])[:2]
     for skill_name in visible_linked_skills:
         skill = linked_skills.get(skill_name)
         if not skill:
@@ -664,7 +661,7 @@ def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, di
     )
 
     return f"""
-      <article class="directory-card agent-card js-filter-card" data-category="agents" data-filtertext="{escape_html(filter_text)}">
+      <article class="directory-card agent-card is-clickable js-filter-card" data-category="agents" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(agent['title'])} agent">
         <div class="agent-card-meta">
           <div class="card-kicker">Orchestration agent</div>
           <span class="card-version">{len(agent.get("skills", []))} linked skills</span>
@@ -680,9 +677,9 @@ def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, di
             {"".join(related_skill_chips)}
           </div>
         </div>
-        <div class="card-actions">
-          {render_button("Open agent page", detail_href, "primary")}
+        <div class="card-actions card-actions-inline">
           {render_button("Source", agent["source_url"], "ghost", external=True)}
+          <a class="card-inline-link" href="{escape_html(detail_href)}">Open agent page<span class="card-inline-arrow">→</span></a>
         </div>
       </article>
     """.strip()
@@ -719,7 +716,7 @@ def render_category_card(category_name: str, category_info: dict, root_prefix: s
           <span class="chip">{escape_html(sample_skills or 'catalog overview')}</span>
         </div>
         <div class="card-inline-link" aria-hidden="true">
-          <span>Browse category</span>
+          <span>Browse skills</span>
           <span class="card-inline-arrow">→</span>
         </div>
       </article>
@@ -756,7 +753,7 @@ def render_package_card(package: dict, root_prefix: str) -> str:
         )
 
     return f"""
-      <article class="directory-card package-card js-filter-card" data-category="{escape_html(package['kind'])}" data-filtertext="{escape_html(filter_text)}">
+      <article class="directory-card package-card is-clickable js-filter-card" data-category="{escape_html(package['kind'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(package['title'])} package">
         <div class="card-top">
           <div>
             <div class="card-kicker">{escape_html(package["kind_label"])}</div>
@@ -770,11 +767,9 @@ def render_package_card(package: dict, root_prefix: str) -> str:
         </div>
         <div class="command-row">
           <code>{escape_html(install_command)}</code>
-          <button type="button" class="button button-ghost" data-copy="{escape_html(install_command)}">Copy</button>
         </div>
-        <div class="card-actions">
-          {render_button("Open package", detail_href, "primary")}
-          {render_button("Browse included skills", root_prefix + "skills/", "ghost")}
+        <div class="card-actions card-actions-inline">
+          <a class="card-inline-link" href="{escape_html(detail_href)}">Open package<span class="card-inline-arrow">→</span></a>
         </div>
       </article>
     """.strip()
@@ -836,10 +831,24 @@ def render_skill_listing_section(
     *,
     include_tabs: bool,
     empty_message: str,
+    show_controls: bool = True,
+    show_index_link: bool = False,
 ) -> str:
     """Render a searchable skill directory section."""
     tabs_html = render_filter_tabs(category_infos) if include_tabs else ""
     cards_html = "\n".join(render_skill_card(skill, root_prefix) for skill in skills)
+    section_links = render_panel_links([("Skill directory", f"{root_prefix}skills/")]) if show_index_link else ""
+
+    toolbar_html = ""
+    empty_state_html = ""
+    if show_controls:
+        toolbar_html = f"""
+          <div class="listing-toolbar">
+            <input class="search-input" id="search-input" type="search" placeholder="Search by name, category, or topic" autocomplete="off">
+            {'<div class="filter-tabs">' + tabs_html + '</div>' if tabs_html else ''}
+          </div>
+        """.strip()
+        empty_state_html = render_empty_state(empty_message)
 
     return f"""
       <section class="section-stack">
@@ -848,16 +857,14 @@ def render_skill_listing_section(
             <h2>{escape_html(title)}</h2>
             <p>{escape_html(description)}</p>
           </div>
+          {section_links}
         </div>
         <div class="panel">
-          <div class="listing-toolbar">
-            <input class="search-input" id="search-input" type="search" placeholder="Search by name, category, or topic" autocomplete="off">
-            {'<div class="filter-tabs">' + tabs_html + '</div>' if tabs_html else ''}
-          </div>
+          {toolbar_html}
           <div class="directory-grid" id="listing-grid">
             {cards_html}
           </div>
-          {render_empty_state(empty_message)}
+          {empty_state_html}
         </div>
       </section>
     """.strip()
@@ -1000,17 +1007,18 @@ def render_quickstart_panel() -> str:
 def render_support_panel(root_prefix: str) -> str:
     """Render a compact supported-platforms panel."""
     platforms = [
-        ("Claude Code", "Native personal and project folders for skills and agents."),
-        ("GitHub Copilot", "Repository-friendly skill layouts for team workflows and check-ins."),
-        ("Gemini", "Consistent directory conventions for personal and repo-local installs."),
-        ("Codex", "Native `.codex` roots plus auto-detect support in the CLI."),
+        ("Claude Code", "CC", "Native personal and project folders for skills and agents."),
+        ("GitHub Copilot", "GH", "Repository-friendly skill layouts for team workflows and check-ins."),
+        ("Gemini", "GM", "Consistent directory conventions for personal and repo-local installs."),
+        ("Codex", "CX", "Native `.codex` roots plus auto-detect support in the CLI."),
     ]
 
     cards = []
-    for name, description in platforms:
+    for name, mark, description in platforms:
         cards.append(
             f"""
-              <div class="directory-card">
+              <div class="directory-card support-card">
+                <div class="support-mark" aria-hidden="true">{escape_html(mark)}</div>
                 <div class="card-kicker">Supported platform</div>
                 <h3>{escape_html(name)}</h3>
                 <p>{escape_html(description)}</p>
@@ -1023,7 +1031,7 @@ def render_support_panel(root_prefix: str) -> str:
         <div class="section-header">
           <div>
             <h2>One catalog, multiple coding platforms</h2>
-            <p>The same installable catalog is routed into Claude Code, GitHub Copilot, Gemini, and Codex.</p>
+            <p>The same installable catalog lands in Claude Code, GitHub Copilot, Gemini, and Codex without inventing a different setup flow for each one.</p>
           </div>
           {render_panel_links([("About the catalog", f"{root_prefix}about/")])}
         </div>
@@ -1047,15 +1055,14 @@ def render_home_page(
       <section class="page-hero">
         <div class="eyebrow-row">
           <span class="eyebrow">Open source</span>
-          <span class="tag tag-accent">Browse by category</span>
+          <span class="tag tag-accent">Curated for modern .NET</span>
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
-        <h1 class="page-title">.NET Skills for <span class="accent">Modern Coding Platforms</span></h1>
-        <p class="page-lead">Install one shared .NET skill catalog for Claude Code, GitHub Copilot, Gemini, and Codex. Start with package installs when you want broad coverage fast, then drill into category, skill, and agent pages when you need specifics.</p>
+        <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>
+        <p class="page-lead">Start with a package when you need broad coverage fast. Drop into categories, skills, and orchestration agents when you want more exact .NET guidance for the coding platform you already use.</p>
         <div class="hero-actions">
           {render_button("Browse packages", f"{root_prefix}packages/", "primary")}
-          {render_button("Browse categories", f"{root_prefix}categories/", "primary")}
-          {render_button("See all skills", f"{root_prefix}skills/", "ghost")}
+          {render_button("Browse categories", f"{root_prefix}categories/", "ghost")}
           {render_button("Read about the catalog", f"{root_prefix}about/", "ghost")}
         </div>
         <div class="metric-grid">
@@ -1084,13 +1091,15 @@ def render_home_page(
         render_agent_listing_section(agents[:6], root_prefix, {skill["name"]: skill for skill in skills}),
         render_support_panel(root_prefix),
         render_skill_listing_section(
-            skills,
+            skills[:6],
             category_infos,
             root_prefix,
-            "Full skill catalog",
-            "The home page still carries the full catalog with search and quick-view popups. Dedicated pages give each topic its own place.",
-            include_tabs=True,
+            "Featured skills",
+            "A few representative entries from the catalog. Use the full directory when you want the searchable complete list.",
+            include_tabs=False,
             empty_message="No skills match this combination yet.",
+            show_controls=False,
+            show_index_link=True,
         ),
     ]
 
