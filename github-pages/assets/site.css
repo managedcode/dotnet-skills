@@ -424,7 +424,7 @@ body.page-home .page-lead {
 .directory-links {
   display: grid;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .panel-grid {
@@ -459,6 +459,7 @@ body.page-categories .panel #listing-grid {
   display: grid;
   align-content: start;
   gap: 16px;
+  height: 100%;
   padding: 32px;
   border-radius: 22px;
   background: #ffffff;
@@ -525,6 +526,45 @@ body.page-categories .panel #listing-grid {
   -webkit-line-clamp: 4;
   overflow: hidden;
   max-width: 36ch;
+}
+
+.skill-card {
+  grid-template-rows: minmax(84px, auto) minmax(108px, 1fr) auto auto auto;
+}
+
+.skill-card .card-top {
+  min-height: 84px;
+}
+
+.skill-card h3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.skill-card .card-summary {
+  -webkit-line-clamp: 3;
+  min-height: 4.92em;
+}
+
+.skill-card .skill-meta-row {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+}
+
+.skill-card .skill-command-row {
+  margin-top: 0;
+}
+
+.skill-card .skill-command-row code {
+  width: 100%;
+}
+
+.skill-card .card-actions-inline {
+  margin-top: 0;
+  padding-top: 2px;
 }
 
 .agent-card {
