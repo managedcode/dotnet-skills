@@ -325,7 +325,7 @@ Rules:
 - Keep canonical skill IDs namespaced as `dotnet-*` in the repository, but let the CLI accept short aliases such as `aspire` or `orleans` in commands.
 - Treat repo-owned orchestration agents as a parallel catalog layer; do not force the first rollout of agents into the current `dotnet-skills` CLI lifecycle before the repo structure and docs are stable.
 - Canonical repo-owned agents live in folder-per-agent layouts with `AGENT.md`; runtime-specific `.agent.md` or native Claude files are adapters, not the source of truth.
-- The installer must account for Codex, Claude, Copilot, and Gemini target layouts instead of assuming only one global skills directory.
+- The installer must account for Codex, Claude, Copilot, Gemini, and Junie target layouts instead of assuming only one global skills directory.
 - When vendor-specific install behavior diverges, model it with separate per-platform strategy classes instead of growing one shared resolver or installer full of platform switches.
 - Do not duplicate home-directory or environment-root resolution helpers across resolvers. Keep shared path-context logic in one place and let per-platform strategies consume it.
 - `SKILL.md` is the canonical skill contract; vendor-specific files are adapters.
@@ -333,9 +333,10 @@ Rules:
 - For Claude Code, use the official native paths: project `.claude/skills` and `.claude/agents`, user `~/.claude/skills` and `~/.claude/agents`.
 - For Codex, use the native per-platform buckets that `dotnet-skills` manages: project `.codex/skills` and `.codex/agents`, user `$CODEX_HOME/skills` and `$CODEX_HOME/agents` (default `~/.codex/skills` and `~/.codex/agents`). Keep `.agents/skills` only as the default fallback when no native client root exists.
 - For Gemini CLI, use the native paths: project `.gemini/skills` and `.gemini/agents`, user `~/.gemini/skills` and `~/.gemini/agents`.
-- When `--agent` is omitted for skill installation, detect existing native client roots in this order: `.codex`, `.claude`, `.github`, `.gemini`. Install into every detected native client target. Use `.agents/skills` only when none of those native roots exist yet.
+- For Junie, use the native paths: project `.junie/skills` and `.junie/agents`, user `~/.junie/skills` and `~/.junie/agents`.
+- When `--agent` is omitted for skill installation, detect existing native client roots in this order: `.codex`, `.claude`, `.github`, `.gemini`, `.junie`. Install into every detected native client target. Use `.agents/skills` only when none of those native roots exist yet.
 - Do not add `.agents/skills` alongside native client targets during auto-detect. `.agents/skills` is fallback-only, not an extra fan-out destination when a native CLI root already exists.
-- For repo-owned orchestration agents, auto-detect only vendor-native agent locations: `.codex/agents`, `.claude/agents`, `.github/agents`, and `.gemini/agents`.
+- For repo-owned orchestration agents, auto-detect only vendor-native agent locations: `.codex/agents`, `.claude/agents`, `.github/agents`, `.gemini/agents`, and `.junie/agents`.
 - Do not treat shared `.agents` directories as a portable agent target and do not map `.agents` to Codex.
 - If `dotnet skills agent install` runs in auto mode and no native agent directory exists yet, fail with a clear message that asks for an explicit `--agent` or `--target`.
 - If `dotnet skills agent ... --target <path>` is used, require an explicit `--agent`. Agent payload formats differ by platform, so auto mode must not guess a file format for a custom target.
@@ -554,7 +555,7 @@ This repository should behave like a maintainable documentation-and-automation s
 
 - Public NuGet distribution and CI-verified installability for the tool instead of contributor-local `--add-source` install loops.
 - Canonical `dotnet-*` skill IDs in the repository, with short aliases in CLI commands.
-- Agent-aware install flows that understand Codex, Claude, Copilot, and Gemini instead of assuming one shared folder layout.
+- Agent-aware install flows that understand Codex, Claude, Copilot, Gemini, and Junie instead of assuming one shared folder layout.
 - Official agent standards and native agent layouts instead of repo-local pseudo-standards.
 - One obvious upstream watch config surface: a small base file plus optional shard files with the same two obvious lists: `github_releases` and `documentation`.
 - Minimal watch entries: `source` plus related skills, with optional overrides only when really needed.

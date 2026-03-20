@@ -23,6 +23,7 @@ internal sealed record AgentInstallLayout(
         AgentPlatform.Claude => "Restart Claude Code or run /agents to pick up new agents.",
         AgentPlatform.Copilot => "Restart Copilot CLI or your IDE agent session to pick up new agents.",
         AgentPlatform.Gemini => "Run /agents reload or restart Gemini CLI to pick up new agents.",
+        AgentPlatform.Junie => "Restart Junie or reload the project to pick up new agents.",
         _ => "Restart your agent session to pick up new agents.",
     };
 

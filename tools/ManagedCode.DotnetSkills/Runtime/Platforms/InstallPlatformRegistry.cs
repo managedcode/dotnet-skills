@@ -8,6 +8,7 @@ internal static class InstallPlatformRegistry
         new ClaudeInstallPlatformStrategy(),
         new CopilotInstallPlatformStrategy(),
         new GeminiInstallPlatformStrategy(),
+        new JunieInstallPlatformStrategy(),
     ];
 
     public static IReadOnlyList<IInstallPlatformStrategy> StrategiesInDetectionOrder => Strategies;

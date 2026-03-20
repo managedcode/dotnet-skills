@@ -7,6 +7,7 @@ internal enum AgentPlatform
     Claude,
     Copilot,
     Gemini,
+    Junie,
 }
 
 internal enum InstallScope
@@ -36,6 +37,7 @@ internal sealed record SkillInstallLayout(
         AgentPlatform.Claude => "Restart Claude Code or start a new session to pick up new skills.",
         AgentPlatform.Copilot => "Restart Copilot CLI or your IDE agent session to pick up new skills.",
         AgentPlatform.Gemini => "Run /skills reload or restart Gemini CLI to pick up new skills.",
+        AgentPlatform.Junie => "Restart Junie or reload the project to pick up new skills.",
         _ => "Restart your agent session to pick up new skills.",
     };
 }
@@ -77,7 +79,9 @@ internal static class SkillInstallTarget
         "gemini" => AgentPlatform.Gemini,
         "google" => AgentPlatform.Gemini,
         "google-gemini" => AgentPlatform.Gemini,
-        _ => throw new InvalidOperationException("Unsupported agent: " + value + ". Expected auto, codex, openai, claude, anthropic, copilot, github-copilot, gemini, or google-gemini."),
+        "junie" => AgentPlatform.Junie,
+        "jetbrains" => AgentPlatform.Junie,
+        _ => throw new InvalidOperationException("Unsupported agent: " + value + ". Expected auto, codex, openai, claude, anthropic, copilot, github-copilot, gemini, google-gemini, junie, or jetbrains."),
     };
 
     public static InstallScope ParseScope(string value) => value.ToLowerInvariant() switch
