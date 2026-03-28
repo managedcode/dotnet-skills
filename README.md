@@ -336,6 +336,7 @@ Those files are the human-maintained source of truth for:
 - GitHub release streams that should trigger skill review
 - documentation pages that should trigger skill review
 - which `dotnet-*` skills are affected by each upstream change
+- how multiple page-level watches roll up into one open upstream issue per library or skill group
 
 Each named shard file has exactly two lists:
 
@@ -350,7 +351,7 @@ flowchart LR
   B --> C["Run dry-run and sync-state-only once"]
   C --> D["Scheduled upstream-watch.yml runs upstream_watch.py daily"]
   D --> E["GitHub release or documentation change is detected"]
-  E --> F["Automation opens or updates an upstream issue"]
+  E --> F["Automation opens or updates one grouped upstream issue per library or skill set"]
   F --> G["A human or agent updates skills/ and docs"]
   G --> H["Changes merge to main"]
   H --> I["04:00 UTC release pipeline publishes catalog, site, and tool"]

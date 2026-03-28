@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import glob
 import hashlib
 import html
@@ -18,6 +19,9 @@ from urllib.parse import urlparse
 
 USER_AGENT = "dotnet-skills-upstream-watch"
 MARKER_RE = re.compile(r"<!-- upstream-watch:id=(?P<watch_id>[^>]+) -->")
+VALUE_MARKER_RE = re.compile(r"<!-- upstream-watch:value=(?P<value>[^>]+) -->")
+ISSUE_KEY_MARKER_RE = re.compile(r"<!-- upstream-watch:issue-key=(?P<issue_key>[^>]+) -->")
+PAYLOAD_MARKER_RE = re.compile(r"<!-- upstream-watch:payload-b64=(?P<payload>[^>]+) -->")
 
 
 def load_json(path: Path, default: Any) -> Any:
@@ -206,11 +210,38 @@ def validate_skills(watch: dict[str, Any]) -> None:
         raise ValueError(f"Watch {watch.get('id', '<unknown>')} must define a non-empty skills list")
 
 
+def default_issue_key(skills: list[str]) -> str:
+    return "+".join(sorted({slugify(skill) for skill in skills}))
+
+
+def default_issue_name(skills: list[str]) -> str:
+    ordered = sorted(dict.fromkeys(skills))
+    if not ordered:
+        return "upstream-watch"
+    if len(ordered) == 1:
+        return ordered[0]
+    return " + ".join(ordered)
+
+
+def validate_issue_group_fields(normalized: dict[str, Any], raw_watch: dict[str, Any]) -> None:
+    issue_key = raw_watch.get("issue_key") or default_issue_key(normalized["skills"])
+    issue_name = raw_watch.get("issue_name") or default_issue_name(normalized["skills"])
+
+    if not isinstance(issue_key, str) or not issue_key.strip():
+        raise ValueError(f"Watch {normalized.get('id', '<unknown>')} must define a non-empty issue_key")
+    if not isinstance(issue_name, str) or not issue_name.strip():
+        raise ValueError(f"Watch {normalized.get('id', '<unknown>')} must define a non-empty issue_name")
+
+    normalized["issue_key"] = issue_key.strip()
+    normalized["issue_name"] = issue_name.strip()
+
+
 def normalize_human_watch(watch: dict[str, Any], kind: str) -> dict[str, Any]:
     if not isinstance(watch, dict):
         raise ValueError(f"{kind} entries must be JSON objects")
     normalized = normalize_github_release_watch(watch) if kind == "github_release" else normalize_http_document_watch(watch)
     validate_skills(normalized)
+    validate_issue_group_fields(normalized, watch)
     return normalized
 
 
@@ -440,43 +471,174 @@ def fetch_snapshot(watch: dict[str, Any], token: str | None) -> dict[str, Any]:
     raise RuntimeError(f"Unsupported watch kind: {kind}")
 
 
-def issue_title(watch: dict[str, Any], snapshot: dict[str, Any]) -> str:
+def watch_source_url(watch: dict[str, Any]) -> str:
     if watch["kind"] == "github_release":
-        return f"Upstream update: {watch['name']} -> {snapshot['value']}"
-    return f"Upstream update: {watch['name']} documentation changed"
+        return f"https://github.com/{watch['owner']}/{watch['repo']}/releases"
+    return watch["url"]
 
 
-def issue_body(watch: dict[str, Any], old_snapshot: dict[str, Any] | None, new_snapshot: dict[str, Any]) -> str:
+def minimal_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: snapshot[key]
+        for key in ("kind", "value", "human", "source_url", "published_at", "title", "etag", "last_modified")
+        if snapshot.get(key) is not None
+    }
+
+
+def encode_issue_payload(issue_key: str, skills: list[str], pending_watches: dict[str, dict[str, Any]]) -> str:
+    payload = {
+        "issue_key": issue_key,
+        "skills": sorted(dict.fromkeys(skills)),
+        "watches": pending_watches,
+    }
+    raw = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("ascii")
+
+
+def decode_issue_payload(body: str) -> dict[str, Any] | None:
+    match = PAYLOAD_MARKER_RE.search(body)
+    if not match:
+        return None
+
+    try:
+        decoded = base64.urlsafe_b64decode(match.group("payload").encode("ascii"))
+        payload = json.loads(decoded.decode("utf-8"))
+    except Exception:  # noqa: BLE001
+        return None
+
+    if not isinstance(payload, dict):
+        return None
+    return payload
+
+
+def collect_group_skills(
+    pending_watches: dict[str, dict[str, Any]],
+    watch_index: dict[str, dict[str, Any]],
+    *,
+    fallback_skills: list[str] | None = None,
+) -> list[str]:
+    skills = list(fallback_skills or [])
+    seen = set(skills)
+    for watch_id in pending_watches:
+        watch = watch_index.get(watch_id)
+        if not watch:
+            continue
+        for skill in watch.get("skills", []):
+            if skill not in seen:
+                skills.append(skill)
+                seen.add(skill)
+    return sorted(skills)
+
+
+def parse_legacy_issue(
+    *,
+    body: str,
+    watch_index: dict[str, dict[str, Any]],
+    state_watches: dict[str, dict[str, Any]],
+) -> tuple[str, list[str], dict[str, dict[str, Any]]] | None:
+    match = MARKER_RE.search(body)
+    if not match:
+        return None
+
+    watch_id = match.group("watch_id")
+    watch = watch_index.get(watch_id)
+    issue_key = watch["issue_key"] if watch else watch_id
+    skills = list(watch.get("skills", [])) if watch else []
+
+    snapshot = minimal_snapshot(state_watches.get(watch_id, {}))
+    if not snapshot:
+        snapshot = {"value": VALUE_MARKER_RE.search(body).group("value")} if VALUE_MARKER_RE.search(body) else {}
+        if watch:
+            snapshot.setdefault("kind", watch["kind"])
+            snapshot.setdefault("source_url", watch_source_url(watch))
+
+    if watch:
+        snapshot.setdefault("kind", watch["kind"])
+        snapshot.setdefault("source_url", watch_source_url(watch))
+
+    return issue_key, skills, {watch_id: snapshot}
+
+
+def parse_open_issue(
+    issue: dict[str, Any],
+    *,
+    watch_index: dict[str, dict[str, Any]],
+    state_watches: dict[str, dict[str, Any]],
+) -> tuple[str, list[str], dict[str, dict[str, Any]]] | None:
+    body = issue.get("body") or ""
+    issue_key_match = ISSUE_KEY_MARKER_RE.search(body)
+    payload = decode_issue_payload(body)
+
+    if issue_key_match and payload and isinstance(payload.get("watches"), dict):
+        issue_key = issue_key_match.group("issue_key")
+        raw_skills = payload.get("skills", [])
+        skills = [skill for skill in raw_skills if isinstance(skill, str) and skill]
+        pending_watches = {
+            watch_id: minimal_snapshot(snapshot)
+            for watch_id, snapshot in payload["watches"].items()
+            if isinstance(watch_id, str) and isinstance(snapshot, dict)
+        }
+        return issue_key, skills, pending_watches
+
+    return parse_legacy_issue(body=body, watch_index=watch_index, state_watches=state_watches)
+
+
+def issue_title(issue_name: str) -> str:
+    return f"Upstream update: {issue_name}"
+
+
+def issue_body(
+    *,
+    issue_key: str,
+    issue_name: str,
+    skills: list[str],
+    pending_watches: dict[str, dict[str, Any]],
+    watch_index: dict[str, dict[str, Any]],
+) -> str:
     lines = [
-        f"Automation detected an upstream change for **{watch['name']}**.",
+        f"Automation detected pending upstream changes for **{issue_name}**.",
         "",
-        f"- Watch id: `{watch['id']}`",
-        f"- Kind: `{watch['kind']}`",
-        f"- Source: {new_snapshot['source_url']}",
-        f"- Current value: `{new_snapshot['value']}`",
+        f"- Issue key: `{issue_key}`",
+        f"- Affected skills: {', '.join(f'`{skill}`' for skill in skills)}",
+        f"- Pending upstream watches: `{len(pending_watches)}`",
+        "",
+        "Pending upstream sources:",
     ]
 
-    if old_snapshot:
-        lines.append(f"- Previous value: `{old_snapshot['value']}`")
-
-    if new_snapshot.get("published_at"):
-        lines.append(f"- Published at: `{new_snapshot['published_at']}`")
-
-    lines.extend(
-        [
-            "",
-            "Observed detail:",
-            f"- {new_snapshot['human']}",
-        ]
+    sorted_pending = sorted(
+        pending_watches.items(),
+        key=lambda item: ((watch_index.get(item[0], {}).get("name") or item[0]).lower(), item[0]),
     )
+    for watch_id, snapshot in sorted_pending:
+        watch = watch_index.get(watch_id)
+        watch_name = watch["name"] if watch else watch_id
+        watch_kind = watch["kind"] if watch else snapshot.get("kind", "unknown")
+        lines.append(f"- `{watch_id}` | `{watch_kind}` | **{watch_name}**")
 
-    if watch.get("notes"):
-        lines.extend(["", "Why this matters:", f"- {watch['notes']}"])
+        source_url = snapshot.get("source_url") or (watch_source_url(watch) if watch else None)
+        if source_url:
+            lines.append(f"  - Source: {source_url}")
 
-    if watch.get("skills"):
-        lines.extend(["", "Likely skills to review:"])
-        lines.extend(f"- `{skill}`" for skill in watch["skills"])
+        current_value = snapshot.get("value", "unknown")
+        lines.append(f"  - Current value: `{current_value}`")
 
+        if snapshot.get("published_at"):
+            lines.append(f"  - Published at: `{snapshot['published_at']}`")
+        if snapshot.get("human"):
+            lines.append(f"  - Detail: {snapshot['human']}")
+
+    notes: list[str] = []
+    for watch_id in pending_watches:
+        watch = watch_index.get(watch_id)
+        note = watch.get("notes") if watch else None
+        if note and note not in notes:
+            notes.append(note)
+
+    if notes:
+        lines.extend(["", "Why this matters:"])
+        lines.extend(f"- {note}" for note in notes)
+
+    payload = encode_issue_payload(issue_key, skills, pending_watches)
     lines.extend(
         [
             "",
@@ -486,24 +648,44 @@ def issue_body(watch: dict[str, Any], old_snapshot: dict[str, Any] | None, new_s
             "- [ ] Update `README.md` if framework coverage or guidance changed",
             "- [ ] Close this issue after the catalog has been refreshed",
             "",
-            f"<!-- upstream-watch:id={watch['id']} -->",
-            f"<!-- upstream-watch:value={new_snapshot['value']} -->",
+            f"<!-- upstream-watch:issue-key={issue_key} -->",
+            f"<!-- upstream-watch:payload-b64={payload} -->",
         ]
     )
     return "\n".join(lines)
 
 
-def refresh_comment(watch: dict[str, Any], old_snapshot: dict[str, Any], new_snapshot: dict[str, Any]) -> str:
-    return "\n".join(
+def refresh_comment(
+    *,
+    issue_key: str,
+    watch: dict[str, Any],
+    existing_watch_snapshot: dict[str, Any] | None,
+    old_snapshot: dict[str, Any] | None,
+    new_snapshot: dict[str, Any],
+) -> str:
+    previous_value = None
+    if existing_watch_snapshot:
+        previous_value = existing_watch_snapshot.get("value")
+    elif old_snapshot:
+        previous_value = old_snapshot.get("value")
+
+    lines = [
+        "Automation detected another upstream change for this skill group.",
+        "",
+        f"- Issue key: `{issue_key}`",
+        f"- Watch id: `{watch['id']}`",
+        f"- Watch: **{watch['name']}**",
+        f"- Change type: `{'updated-watch' if existing_watch_snapshot else 'new-watch'}`",
+    ]
+    if previous_value:
+        lines.append(f"- Previous value: `{previous_value}`")
+    lines.extend(
         [
-            "Automation detected another upstream change for this watch.",
-            "",
-            f"- Watch id: `{watch['id']}`",
-            f"- Previous value: `{old_snapshot['value']}`",
             f"- Current value: `{new_snapshot['value']}`",
             f"- Source: {new_snapshot['source_url']}",
         ]
     )
+    return "\n".join(lines)
 
 
 def ensure_labels(repo: str, token: str, labels: list[dict[str, str]], dry_run: bool) -> None:
@@ -524,19 +706,158 @@ def ensure_labels(repo: str, token: str, labels: list[dict[str, str]], dry_run: 
         )
 
 
-def find_open_issues(repo: str, token: str, watch_label: str) -> dict[str, dict[str, Any]]:
-    issues = gh_api(
-        f"/repos/{repo}/issues?state=open&labels={watch_label}&per_page=100",
-        token=token,
+def list_open_issues(repo: str, token: str, watch_label: str) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    page = 1
+    while True:
+        batch = gh_api(
+            f"/repos/{repo}/issues?state=open&labels={watch_label}&per_page=100&page={page}",
+            token=token,
+        )
+        if not isinstance(batch, list):
+            raise RuntimeError(f"Unexpected issue payload while listing upstream-watch issues for {repo}")
+        if not batch:
+            break
+        issues.extend(issue for issue in batch if not issue.get("pull_request"))
+        page += 1
+    return issues
+
+
+def choose_canonical_issue(issues: list[dict[str, Any]]) -> dict[str, Any]:
+    return max(
+        issues,
+        key=lambda issue: (
+            issue.get("updated_at") or "",
+            issue.get("created_at") or "",
+            issue.get("number") or 0,
+        ),
     )
-    indexed: dict[str, dict[str, Any]] = {}
-    for issue in issues:
-        if issue.get("pull_request"):
+
+
+def load_open_issue_groups(
+    *,
+    repo: str,
+    token: str,
+    watch_label: str,
+    watch_index: dict[str, dict[str, Any]],
+    state_watches: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    groups: dict[str, dict[str, Any]] = {}
+    for issue in list_open_issues(repo, token, watch_label):
+        parsed = parse_open_issue(issue, watch_index=watch_index, state_watches=state_watches)
+        if not parsed:
             continue
-        match = MARKER_RE.search(issue.get("body") or "")
-        if match:
-            indexed[match.group("watch_id")] = issue
-    return indexed
+
+        issue_key, skills, pending_watches = parsed
+        group = groups.setdefault(
+            issue_key,
+            {
+                "issues": [],
+                "pending_watches": {},
+                "skills": [],
+            },
+        )
+        group["issues"].append(issue)
+
+        for skill in skills:
+            if skill not in group["skills"]:
+                group["skills"].append(skill)
+
+        for watch_id, snapshot in pending_watches.items():
+            if watch_id in state_watches:
+                group["pending_watches"][watch_id] = minimal_snapshot(state_watches[watch_id])
+            else:
+                group["pending_watches"][watch_id] = snapshot
+
+    return groups
+
+
+def close_duplicate_issue(repo: str, token: str, issue_number: int, canonical_number: int) -> None:
+    gh_api(
+        f"/repos/{repo}/issues/{issue_number}/comments",
+        token=token,
+        method="POST",
+        data={
+            "body": (
+                f"Automation consolidated this legacy upstream-watch issue into #{canonical_number} "
+                "so the library or skill group keeps a single open maintenance thread."
+            )
+        },
+    )
+    gh_api(
+        f"/repos/{repo}/issues/{issue_number}",
+        token=token,
+        method="PATCH",
+        data={"state": "closed"},
+    )
+
+
+def reconcile_open_issues(
+    *,
+    repo: str,
+    token: str,
+    open_issue_groups: dict[str, dict[str, Any]],
+    watch_index: dict[str, dict[str, Any]],
+    dry_run: bool,
+) -> tuple[dict[str, dict[str, Any]], dict[str, int]]:
+    normalized: dict[str, dict[str, Any]] = {}
+    stats = {
+        "groups": 0,
+        "issues_rewritten": 0,
+        "duplicates_closed": 0,
+    }
+
+    for issue_key, group in open_issue_groups.items():
+        canonical_issue = choose_canonical_issue(group["issues"])
+        pending_watches = group["pending_watches"]
+        skills = collect_group_skills(pending_watches, watch_index, fallback_skills=group.get("skills"))
+        issue_name = default_issue_name(skills) if skills else issue_key
+        title = issue_title(issue_name)
+        body = issue_body(
+            issue_key=issue_key,
+            issue_name=issue_name,
+            skills=skills,
+            pending_watches=pending_watches,
+            watch_index=watch_index,
+        )
+
+        if dry_run:
+            if canonical_issue.get("title") != title or canonical_issue.get("body") != body:
+                stats["issues_rewritten"] += 1
+            stats["duplicates_closed"] += max(0, len(group["issues"]) - 1)
+            normalized[issue_key] = {
+                "issue": canonical_issue,
+                "pending_watches": pending_watches,
+                "skills": skills,
+                "issue_name": issue_name,
+            }
+            stats["groups"] += 1
+            continue
+
+        if canonical_issue.get("title") != title or canonical_issue.get("body") != body:
+            canonical_issue = gh_api(
+                f"/repos/{repo}/issues/{canonical_issue['number']}",
+                token=token,
+                method="PATCH",
+                data={"title": title, "body": body},
+            )
+            stats["issues_rewritten"] += 1
+
+        for issue in group["issues"]:
+            if issue["number"] == canonical_issue["number"]:
+                continue
+            close_duplicate_issue(repo, token, issue["number"], canonical_issue["number"])
+            stats["duplicates_closed"] += 1
+
+        normalized[issue_key] = {
+            "issue": canonical_issue,
+            "pending_watches": pending_watches,
+            "skills": skills,
+            "issue_name": issue_name,
+        }
+        stats["groups"] += 1
+
+    return normalized, stats
 
 
 def upsert_issue(
@@ -547,32 +868,59 @@ def upsert_issue(
     watch: dict[str, Any],
     old_snapshot: dict[str, Any] | None,
     new_snapshot: dict[str, Any],
-    open_issues: dict[str, dict[str, Any]],
+    watch_index: dict[str, dict[str, Any]],
+    open_issue_groups: dict[str, dict[str, Any]],
     dry_run: bool,
 ) -> str:
-    title = issue_title(watch, new_snapshot)
-    body = issue_body(watch, old_snapshot, new_snapshot)
-    existing = open_issues.get(watch["id"])
+    issue_key = watch["issue_key"]
+    existing_group = open_issue_groups.get(issue_key)
+    pending_watches = dict(existing_group.get("pending_watches", {})) if existing_group else {}
+    existing_watch_snapshot = pending_watches.get(watch["id"])
+    pending_watches[watch["id"]] = minimal_snapshot(new_snapshot)
+    skills = collect_group_skills(pending_watches, watch_index, fallback_skills=watch.get("skills"))
+    issue_name = default_issue_name(skills) if skills else watch.get("issue_name", issue_key)
+    title = issue_title(issue_name)
+    body = issue_body(
+        issue_key=issue_key,
+        issue_name=issue_name,
+        skills=skills,
+        pending_watches=pending_watches,
+        watch_index=watch_index,
+    )
 
     if dry_run:
-        action = "update" if existing else "create"
-        print(f"[dry-run] Would {action} issue for {watch['id']}: {title}")
+        action = "update" if existing_group else "create"
+        print(f"[dry-run] Would {action} issue for {watch['id']} via {issue_key}: {title}")
         return action
 
-    if existing:
+    if existing_group:
+        existing_issue = existing_group["issue"]
         gh_api(
-            f"/repos/{repo}/issues/{existing['number']}/comments",
+            f"/repos/{repo}/issues/{existing_issue['number']}/comments",
             token=token,
             method="POST",
-            data={"body": refresh_comment(watch, old_snapshot or {"value": "unknown"}, new_snapshot)},
+            data={
+                "body": refresh_comment(
+                    issue_key=issue_key,
+                    watch=watch,
+                    existing_watch_snapshot=existing_watch_snapshot,
+                    old_snapshot=old_snapshot,
+                    new_snapshot=new_snapshot,
+                )
+            },
         )
         updated = gh_api(
-            f"/repos/{repo}/issues/{existing['number']}",
+            f"/repos/{repo}/issues/{existing_issue['number']}",
             token=token,
             method="PATCH",
             data={"title": title, "body": body},
         )
-        open_issues[watch["id"]] = updated
+        open_issue_groups[issue_key] = {
+            "issue": updated,
+            "pending_watches": pending_watches,
+            "skills": skills,
+            "issue_name": issue_name,
+        }
         return "update"
 
     created = gh_api(
@@ -581,7 +929,12 @@ def upsert_issue(
         method="POST",
         data={"title": title, "body": body, "labels": labels},
     )
-    open_issues[watch["id"]] = created
+    open_issue_groups[issue_key] = {
+        "issue": created,
+        "pending_watches": pending_watches,
+        "skills": skills,
+        "issue_name": issue_name,
+    }
     return "create"
 
 
@@ -625,6 +978,7 @@ def main() -> int:
 
     state = load_json(state_path, default={"watches": {}})
     prior_watches = state.get("watches", {})
+    watch_index = {watch["id"]: watch for watch in config.get("watches", [])}
 
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     repo = os.environ.get("GITHUB_REPOSITORY")
@@ -640,11 +994,33 @@ def main() -> int:
         f"- Sync state only: `{args.sync_state_only}`",
     ]
 
-    if (token and repo) and not args.dry_run:
-        ensure_labels(repo, token, config.get("labels", []), dry_run=False)
-        open_issues = find_open_issues(repo, token, watch_label)
+    reconciliation_stats = {
+        "groups": 0,
+        "issues_rewritten": 0,
+        "duplicates_closed": 0,
+    }
+    if token and repo:
+        if not args.dry_run and not args.sync_state_only:
+            ensure_labels(repo, token, config.get("labels", []), dry_run=False)
+
+        open_issue_groups = load_open_issue_groups(
+            repo=repo,
+            token=token,
+            watch_label=watch_label,
+            watch_index=watch_index,
+            state_watches=prior_watches,
+        )
+
+        reconcile_dry_run = args.dry_run or args.sync_state_only
+        open_issue_groups, reconciliation_stats = reconcile_open_issues(
+            repo=repo,
+            token=token,
+            open_issue_groups=open_issue_groups,
+            watch_index=watch_index,
+            dry_run=reconcile_dry_run,
+        )
     else:
-        open_issues = {}
+        open_issue_groups = {}
 
     next_state: dict[str, Any] = {"watches": {}}
     bootstrapped = 0
@@ -687,7 +1063,8 @@ def main() -> int:
                 watch=watch,
                 old_snapshot=previous,
                 new_snapshot=snapshot,
-                open_issues=open_issues,
+                watch_index=watch_index,
+                open_issue_groups=open_issue_groups,
                 dry_run=args.dry_run,
             )
             if action == "create":
@@ -711,6 +1088,9 @@ def main() -> int:
             f"- Changed watches: `{changed}`",
             f"- Issues created: `{created}`",
             f"- Issues updated: `{updated}`",
+            f"- Issue groups scanned: `{reconciliation_stats['groups']}`",
+            f"- Issue bodies normalized: `{reconciliation_stats['issues_rewritten']}`",
+            f"- Duplicate issues closed: `{reconciliation_stats['duplicates_closed']}`",
             f"- Errors: `{len(errors)}`",
         ]
     )

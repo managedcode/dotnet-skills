@@ -402,6 +402,7 @@ For normal config entries, every watch entry must define:
 
 The watcher derives `kind`, `id`, `name`, source coordinates, and default `notes`.
 You can still override those fields explicitly, but do it only when the default output would be unclear.
+Issues are deduplicated at the library or skill-group level, so related documentation pages should normally roll up into one open upstream issue instead of one issue per page.
 
 For project-specific libraries, the `skills` list must point to the dedicated project skill.
 Do not use umbrella skills such as `dotnet`, `dotnet-architecture`, or `dotnet-orleans` as placeholders for a concrete library watch.

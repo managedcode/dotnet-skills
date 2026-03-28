@@ -665,7 +665,7 @@
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-workflow-builder-with-factories",
-      "source": "https://raw.githubusercontent.com/MicrosoftDocs/semantic-kernel-docs/main/agent-framework/tutorials/workflows/workflow-builder-with-factories.md",
+      "source": "https://learn.microsoft.com/agent-framework/workflows/workflows",
       "skills": [
         "dotnet-microsoft-agent-framework"
       ]
@@ -1078,7 +1078,7 @@
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-shared-states",
-      "source": "https://raw.githubusercontent.com/MicrosoftDocs/semantic-kernel-docs/main/agent-framework/user-guide/workflows/shared-states.md",
+      "source": "https://learn.microsoft.com/agent-framework/workflows/state",
       "skills": [
         "dotnet-microsoft-agent-framework"
       ]

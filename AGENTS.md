@@ -462,6 +462,9 @@ When adding a documentation watch:
 
 - Watch stable, meaningful overview pages, not random transient pages.
 - Prefer official Microsoft Learn URLs that define platform or framework guidance.
+- Keep issue fan-out reviewable. Upstream-watch automation must track one open maintenance issue per library or skill group, not one permanently open issue per individual documentation page when those pages roll up to the same library refresh.
+- When another upstream change arrives for a library or skill group that already has an open upstream-watch issue, update that existing issue and append the new watch detail instead of creating another open issue.
+- Upstream-watch issue discovery must paginate across the full matching issue set before deciding whether an issue already exists. Do not assume the first page of GitHub issues is sufficient for deduplication or repair.
 
 ## State File Rules
 

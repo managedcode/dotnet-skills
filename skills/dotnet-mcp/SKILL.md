@@ -1,6 +1,6 @@
 ---
 name: dotnet-mcp
-version: "1.1.0"
+version: "1.1.1"
 category: "AI"
 description: "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation."
 compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.1.x SDK."
@@ -14,6 +14,7 @@ compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol
 - choosing between stdio and HTTP transport for MCP
 - exposing tools, resources, prompts, completions, or logging to an MCP host
 - connecting a .NET app to an existing MCP server and passing discovered tools into `IChatClient`
+- bootstrapping a minimal MCP client/server from the `.NET AI` quickstarts or publishing a server to the MCP Registry
 - implementing capability-aware flows such as roots, sampling, elicitation, subscriptions, or session resumption
 
 ## Use This Skill Instead Of
@@ -21,6 +22,7 @@ compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol
 - Use `dotnet-mcp` when **protocol interoperability** is the requirement.
 - Use `dotnet-microsoft-extensions-ai` when you only need model/provider abstraction or local tool orchestration without the MCP wire protocol.
 - Use `dotnet-microsoft-agent-framework` when the main problem is agent orchestration; combine it with `dotnet-mcp` only when those agents must consume or expose MCP endpoints.
+- Use the `.NET AI` quickstarts for the very first vertical slice, then come back here to harden transport, capability negotiation, publishing, and host interoperability.
 
 ## Documentation
 
@@ -77,6 +79,7 @@ flowchart LR
    - Local child-process server: `ModelContextProtocol` + `WithStdioServerTransport()`.
    - Remote server: `ModelContextProtocol.AspNetCore` + `WithHttpTransport()` + `MapMcp()`.
    - Client-only app: start with `ModelContextProtocol` or `ModelContextProtocol.Core`.
+   - Registry distribution: pair a minimal server with the MCP Registry publishing flow only after the server contract is stable.
 
 2. Model the MCP surface explicitly.
    - Tools: `[McpServerToolType]` + `[McpServerTool]`
@@ -174,7 +177,11 @@ if (client.ServerCapabilities.Prompts is not null)
    - HTTP clients can use `AutoDetect` by default, or force `StreamableHttp` / `Sse`.
    - Session resumption is available for Streamable HTTP through `McpClient.ResumeSessionAsync(...)`.
 
-8. Respect current error and serialization rules.
+8. Treat the `.NET AI` MCP quickstarts as bootstrap examples.
+   - `build-mcp-client` and `build-mcp-server` are good starting points when the surrounding app is still MEAI-centric.
+   - `publish-mcp-registry` is the distribution step, not the design step. Stabilize the protocol surface before publishing.
+
+9. Respect current error and serialization rules.
    - Tool exceptions normally come back as `CallToolResult.IsError == true`.
    - Throw `McpProtocolException` only for protocol-level JSON-RPC failures.
    - `McpClientTool` inherits from `AIFunction`, so discovered tools can be passed directly into `IChatClient`.
