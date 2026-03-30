@@ -478,7 +478,7 @@ internal static class ConsoleUi
         table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install --all --auto")}[/]", "Install all agents to every detected native agent directory.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} remove router")}[/]", "Remove one or more installed orchestration agents.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} where --agent codex")}[/]", "Print the resolved native agent install path.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} version")}[/]", "Show the current `dotnet-agents` version and check whether NuGet has a newer release.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} version")}[/]", $"Show the current `{ToolIdentity.PackageId}` version and check whether NuGet has a newer release.");
         AnsiConsole.Write(table);
         AnsiConsole.WriteLine();
 

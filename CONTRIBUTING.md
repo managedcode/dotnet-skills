@@ -211,7 +211,7 @@ python3 scripts/generate_catalog.py --validate-only
 
 ## Dotnet Tool Distribution
 
-This repository publishes two installable `.NET` tools for consumers of the catalog:
+This repository publishes three installable `.NET` tools for consumers of the catalog:
 
 - `dotnet-skills`
   - package id: `dotnet-skills`
@@ -221,10 +221,14 @@ This repository publishes two installable `.NET` tools for consumers of the cata
   - package id: `dotnet-agents`
   - command name: `dotnet-agents`
   - CLI shape: `dotnet agents ...`
+- `agents`
+  - package id: `agents`
+  - command name: `agents`
+  - CLI shape: `agents ...`
 
 The tools are for distribution of the catalog itself, not for general repo maintenance.
 `dotnet-skills` uses remote GitHub catalog releases by default and only falls back to the bundled catalog when remote sync is unavailable.
-`dotnet-agents` is the dedicated agent-only surface and installs only bundled repo-owned orchestration agents.
+`dotnet-agents` and `agents` are the dedicated agent-only surfaces and install only bundled repo-owned orchestration agents.
 Do not trigger ad-hoc publish runs for every merge; the unified `04:00` UTC release workflow publishes the tool, catalog release, and site together.
 
 CLI naming rule:
@@ -247,7 +251,7 @@ Agent target rule:
 - for orchestration agents, auto-detect only vendor-native agent locations such as `.codex/agents`, `.claude/agents`, `.github/agents`, and `.gemini/agents`
 - do not treat `.agents` as a shared agent-install target and do not map it to Codex
 - if no native agent directory exists, require an explicit `--agent` or `--target` instead of inventing a fallback
-- if a caller uses `dotnet agents ... --target <path>`, require an explicit `--agent`; agent payload formats are platform-specific and must not be guessed
+- if a caller uses `dotnet agents ... --target <path>` or `agents ... --target <path>`, require an explicit `--agent`; agent payload formats are platform-specific and must not be guessed
 - when installing Codex globally, honor `CODEX_HOME` for both skills and agents
 
 Publishing is handled by [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml).
@@ -255,7 +259,7 @@ Publishing is handled by [`.github/workflows/publish-catalog.yml`](.github/workf
 Preferred publish model:
 
 1. Add the `NUGET_API_KEY` repository secret
-2. Keep the same manual base version in [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj) and [`tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj`](tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj) as `<VersionPrefix>major.minor</VersionPrefix>`
+2. Keep the same manual base version in [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj), [`tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj`](tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj), and [`tools/ManagedCode.Agents/ManagedCode.Agents.csproj`](tools/ManagedCode.Agents/ManagedCode.Agents.csproj) as `<VersionPrefix>major.minor</VersionPrefix>`
 3. Let [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) publish automatically at `04:00` UTC after merges to `main`, or trigger it manually only for a backfill or rerun
 
 The workflow resolves the publish version in CI as `<VersionPrefix>.<GITHUB_RUN_NUMBER>` and pushes the produced `.nupkg` files to NuGet. For example, a checked-in `0.0` base version becomes `0.0.412` on run `412`.

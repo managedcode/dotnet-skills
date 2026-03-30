@@ -25,7 +25,7 @@ env:
   DOTNET_SKILLS_SITE_URL: https://skills.managed-code.com/
   DOTNET_VERSION: "10.0.x"
   SOLUTION_FILE: "dotnet-skills.slnx"
-  TOOL_PROJECTS: "tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj"
+  TOOL_PROJECTS: "tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj tools/ManagedCode.Agents/ManagedCode.Agents.csproj"
   PACKAGE_SOURCE: "https://api.nuget.org/v3/index.json"
   PACKAGE_OUTPUT_GLOB: "artifacts/nuget/*.nupkg"
 

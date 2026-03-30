@@ -52,6 +52,7 @@ resolve_package() {
 
 skills_package="$(resolve_package dotnet-skills)"
 agents_package="$(resolve_package dotnet-agents)"
+plain_agents_package="$(resolve_package agents)"
 
 skills_version="$(basename "$skills_package")"
 skills_version="${skills_version#dotnet-skills.}"
@@ -60,6 +61,10 @@ skills_version="${skills_version%.nupkg}"
 agents_version="$(basename "$agents_package")"
 agents_version="${agents_version#dotnet-agents.}"
 agents_version="${agents_version%.nupkg}"
+
+plain_agents_version="$(basename "$plain_agents_package")"
+plain_agents_version="${plain_agents_version#agents.}"
+plain_agents_version="${plain_agents_version%.nupkg}"
 
 dotnet tool install \
   --tool-path "$tool_path" \
@@ -73,15 +78,25 @@ dotnet tool install \
   dotnet-agents \
   --add-source "$package_feed"
 
+dotnet tool install \
+  --tool-path "$tool_path" \
+  --version "$plain_agents_version" \
+  agents \
+  --add-source "$package_feed"
+
 export PATH="$tool_path:$PATH"
 export DOTNET_SKILLS_SKIP_UPDATE_CHECK=1
 export DOTNET_AGENTS_SKIP_UPDATE_CHECK=1
+export AGENTS_SKIP_UPDATE_CHECK=1
 
 dotnet skills version --no-check > "$skills_path/version.txt"
 grep -q "dotnet-skills" "$skills_path/version.txt"
 
 dotnet agents version --no-check > "$skills_path/agents-version.txt"
 grep -q "dotnet-agents" "$skills_path/agents-version.txt"
+
+agents version --no-check > "$skills_path/plain-agents-version.txt"
+grep -q "agents" "$skills_path/plain-agents-version.txt"
 
 dotnet skills list --available-only --target "$skills_path" > "$skills_path/available-list.txt"
 grep -q "dotnet-aspire" "$skills_path/available-list.txt"
@@ -199,3 +214,17 @@ esac
 dotnet agents install router --auto --scope project --project-dir "$hybrid_workspace"
 test -f "$hybrid_workspace/.codex/agents/dotnet-router.toml"
 test -f "$hybrid_workspace/.claude/agents/dotnet-router.md"
+
+plain_agents_target="$(agents where --project-dir "$hybrid_workspace")"
+case "$plain_agents_target" in
+  */.codex/agents) ;;
+  *)
+    echo "Unexpected plain agents target: $plain_agents_target" >&2
+    exit 1
+    ;;
+esac
+
+agents install router --agent claude --scope project --project-dir "$workspace_path"
+test -f "$workspace_path/.claude/agents/dotnet-router.md"
+agents remove router --agent claude --scope project --project-dir "$workspace_path"
+test ! -e "$workspace_path/.claude/agents/dotnet-router.md"

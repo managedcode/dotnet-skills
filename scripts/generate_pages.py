@@ -632,7 +632,8 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
 def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, dict]) -> str:
     """Render an orchestration agent card."""
     detail_href = f"{root_prefix}{agent['detail_path']}"
-    install_command = f"dotnet agents install {agent['short_name']}"
+    install_command = f"agents install {agent['short_name']}"
+    alternate_install_command = f"dotnet agents install {agent['short_name']}"
     summary = preview_text(agent["description"], limit=150)
     related_skill_chips = []
     visible_linked_skills = agent.get("skills", [])[:2]
@@ -671,6 +672,7 @@ def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, di
         <div class="agent-install-row">
           <span class="chip command-chip">{escape_html(install_command)}</span>
         </div>
+        <p class="card-summary">Also works: <code>{escape_html(alternate_install_command)}</code></p>
         <div class="agent-links-block">
           <div class="card-kicker agent-links-label">Routes to</div>
           <div class="chip-row agent-chip-row">
@@ -1292,9 +1294,10 @@ def render_agent_detail_page(agent: dict, linked_skills: list[dict], root_prefix
           <div class="sidebar-card">
             <div class="detail-card-label">Install command</div>
             <div class="command-row">
-              <code>dotnet agents install {escape_html(agent['short_name'])}</code>
-              <button type="button" class="button button-ghost" data-copy="dotnet agents install {escape_html(agent['short_name'])}">Copy</button>
+              <code>agents install {escape_html(agent['short_name'])}</code>
+              <button type="button" class="button button-ghost" data-copy="agents install {escape_html(agent['short_name'])}">Copy</button>
             </div>
+            <p class="card-summary">Alternate command: <code>dotnet agents install {escape_html(agent['short_name'])}</code></p>
           </div>
 
           <div class="sidebar-card">
