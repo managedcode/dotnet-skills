@@ -18,10 +18,12 @@ jobs:
           python-version: "3.12"
 
       - name: Validate automation scripts
-        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_release_notes.py scripts/upstream_watch.py
+        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/upstream_watch.py
 
       - name: Validate catalog source metadata
-        run: python3 scripts/generate_catalog.py --validate-only
+        run: |
+          python3 scripts/generate_catalog.py --validate-only
+          python3 scripts/generate_agent_catalog.py --output /tmp/dotnet-agents-manifest.json
 
       - name: Validate upstream watch config
         run: python3 scripts/upstream_watch.py --validate-config

@@ -1,20 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>ManagedCode.DotnetAgents</AssemblyName>
+    <RootNamespace>ManagedCode.DotnetSkills</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <PackAsTool>true</PackAsTool>
-    <PackageId>dotnet-skills</PackageId>
-    <ToolCommandName>dotnet-skills</ToolCommandName>
+    <PackageId>dotnet-agents</PackageId>
+    <ToolCommandName>dotnet-agents</ToolCommandName>
     <VersionPrefix>0.0</VersionPrefix>
     <Version>$(VersionPrefix).0</Version>
-    <Title>ManagedCode .NET Skills</Title>
+    <Title>ManagedCode .NET Agents</Title>
     <Authors>ManagedCode</Authors>
     <Company>ManagedCode</Company>
-    <Description>Install and manage the dotnet-skills catalog as a global .NET CLI tool.</Description>
-    <PackageTags>dotnet;skills;codex;ai;mcaf</PackageTags>
+    <Description>Install and manage the dotnet-skills orchestration agents as a global .NET CLI tool.</Description>
+    <PackageTags>dotnet;agents;codex;ai;mcaf</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/managedcode/dotnet-skills</PackageProjectUrl>
     <RepositoryUrl>https://github.com/managedcode/dotnet-skills.git</RepositoryUrl>
@@ -24,28 +27,21 @@
     <PackageOutputPath>../../artifacts/nuget</PackageOutputPath>
     <IncludeContentInPack>true</IncludeContentInPack>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <DotnetSkillsGeneratedDir>$(BaseIntermediateOutputPath)dotnet-skills-generated</DotnetSkillsGeneratedDir>
-    <DotnetSkillsGeneratedManifestPath>$(DotnetSkillsGeneratedDir)/catalog/skills.json</DotnetSkillsGeneratedManifestPath>
-    <DotnetSkillsGeneratedAgentsManifestPath>$(DotnetSkillsGeneratedDir)/catalog/agents.json</DotnetSkillsGeneratedAgentsManifestPath>
+    <DotnetAgentsGeneratedDir>$(BaseIntermediateOutputPath)dotnet-agents-generated</DotnetAgentsGeneratedDir>
+    <DotnetAgentsGeneratedManifestPath>$(DotnetAgentsGeneratedDir)/catalog/agents.json</DotnetAgentsGeneratedManifestPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="../../skills/**/*" Exclude="../../skills/**/.DS_Store">
-      <Link>skills/%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>false</Pack>
-    </Content>
+    <Compile Include="../ManagedCode.DotnetSkills/**/*.cs" Exclude="../ManagedCode.DotnetSkills/bin/**;../ManagedCode.DotnetSkills/obj/**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="../../agents/**/*" Exclude="../../agents/**/.DS_Store">
       <Link>agents/%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>false</Pack>
     </Content>
-    <Content Include="$(DotnetSkillsGeneratedManifestPath)">
-      <Link>catalog/skills.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>false</Pack>
-    </Content>
-    <Content Include="$(DotnetSkillsGeneratedAgentsManifestPath)">
+    <Content Include="$(DotnetAgentsGeneratedManifestPath)">
       <Link>catalog/agents.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>false</Pack>
@@ -67,17 +63,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AssemblyMetadata Include="ManagedCode.DotnetSkills.Surface" Value="skills" />
+    <AssemblyMetadata Include="ManagedCode.DotnetSkills.Surface" Value="agents" />
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.PackageId" Value="$(PackageId)" />
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.ToolCommandName" Value="$(ToolCommandName)" />
-    <AssemblyMetadata Include="ManagedCode.DotnetSkills.DisplayCommand" Value="dotnet skills" />
-    <AssemblyMetadata Include="ManagedCode.DotnetSkills.SkipUpdateEnvironmentVariable" Value="DOTNET_SKILLS_SKIP_UPDATE_CHECK" />
-    <AssemblyMetadata Include="ManagedCode.DotnetSkills.CacheDirectoryName" Value="dotnet-skills" />
+    <AssemblyMetadata Include="ManagedCode.DotnetSkills.DisplayCommand" Value="dotnet agents" />
+    <AssemblyMetadata Include="ManagedCode.DotnetSkills.SkipUpdateEnvironmentVariable" Value="DOTNET_AGENTS_SKIP_UPDATE_CHECK" />
+    <AssemblyMetadata Include="ManagedCode.DotnetSkills.CacheDirectoryName" Value="dotnet-agents" />
   </ItemGroup>
 
-  <Target Name="GenerateBundledCatalogManifest" BeforeTargets="PrepareForBuild">
-    <MakeDir Directories="$(DotnetSkillsGeneratedDir)/catalog" />
-    <Exec Command="python3 ../../scripts/generate_catalog.py --manifest-output &quot;$(DotnetSkillsGeneratedManifestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
-    <Exec Command="python3 ../../scripts/generate_agent_catalog.py --output &quot;$(DotnetSkillsGeneratedAgentsManifestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  <Target Name="GenerateBundledAgentCatalogManifest" BeforeTargets="PrepareForBuild">
+    <MakeDir Directories="$(DotnetAgentsGeneratedDir)/catalog" />
+    <Exec Command="python3 ../../scripts/generate_agent_catalog.py --output &quot;$(DotnetAgentsGeneratedManifestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 </Project>

@@ -69,7 +69,7 @@ internal sealed class NuGetPackageVersionClient : IPackageVersionSource
     {
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(ToolVersionInfo.PackageId, "1.0.0"));
+        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(ToolIdentity.PackageId, "1.0.0"));
         return httpClient;
     }
 }

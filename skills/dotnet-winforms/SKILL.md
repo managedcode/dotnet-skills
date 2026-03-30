@@ -1,7 +1,7 @@
 ---
 name: dotnet-winforms
 version: "1.0.1"
-category: "Desktop and Mobile"
+category: "Desktop"
 description: "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. Use when working on WinForms projects or migrating from .NET Framework."
 compatibility: "Requires a Windows Forms project on .NET or .NET Framework."
 ---

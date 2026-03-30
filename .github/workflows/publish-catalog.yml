@@ -25,7 +25,7 @@ env:
   DOTNET_SKILLS_SITE_URL: https://skills.managed-code.com/
   DOTNET_VERSION: "10.0.x"
   SOLUTION_FILE: "dotnet-skills.slnx"
-  TOOL_PROJECT: "tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj"
+  TOOL_PROJECTS: "tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj"
   PACKAGE_SOURCE: "https://api.nuget.org/v3/index.json"
   PACKAGE_OUTPUT_GLOB: "artifacts/nuget/*.nupkg"
 
@@ -159,17 +159,31 @@ jobs:
         id: package_version
         shell: bash
         run: |
-          base_version=$(sed -n 's:.*<VersionPrefix>\(.*\)</VersionPrefix>.*:\1:p' "${{ env.TOOL_PROJECT }}" | head -n 1 | tr -d '[:space:]')
+          base_version=""
 
-          if [[ -z "$base_version" ]]; then
-            echo "VersionPrefix is required in ${{ env.TOOL_PROJECT }}." >&2
-            exit 1
-          fi
+          for project in ${{ env.TOOL_PROJECTS }}; do
+            project_version=$(sed -n 's:.*<VersionPrefix>\(.*\)</VersionPrefix>.*:\1:p' "$project" | head -n 1 | tr -d '[:space:]')
 
-          if [[ ! "$base_version" =~ ^[0-9]+\.[0-9]+$ ]]; then
-            echo "VersionPrefix must use <major>.<minor>. Got: $base_version" >&2
-            exit 1
-          fi
+            if [[ -z "$project_version" ]]; then
+              echo "VersionPrefix is required in $project." >&2
+              exit 1
+            fi
+
+            if [[ ! "$project_version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+              echo "VersionPrefix must use <major>.<minor>. Got: $project_version in $project" >&2
+              exit 1
+            fi
+
+            if [[ -z "$base_version" ]]; then
+              base_version="$project_version"
+              continue
+            fi
+
+            if [[ "$project_version" != "$base_version" ]]; then
+              echo "All tool projects must share the same VersionPrefix. Found $base_version and $project_version." >&2
+              exit 1
+            fi
+          done
 
           version="${base_version}.${GITHUB_RUN_NUMBER}"
 
@@ -239,7 +253,7 @@ jobs:
         if: steps.changes.outputs.has_new_commits == 'true'
         uses: actions/upload-artifact@v6
         with:
-          name: managedcode-dotnet-skills-${{ steps.package_version.outputs.package_version }}
+          name: managedcode-dotnet-tools-${{ steps.package_version.outputs.package_version }}
           path: ${{ env.PACKAGE_OUTPUT_GLOB }}
           if-no-files-found: error
 

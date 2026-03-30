@@ -1,7 +1,7 @@
 ---
 name: dotnet-entity-framework6
 version: "1.0.1"
-category: "Data, Distributed, and AI"
+category: "Data"
 description: "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. Use when working in an EF6 codebase or planning a data layer migration."
 compatibility: "Requires EF6 or a transition plan from EF6 to EF Core or modern .NET."
 ---

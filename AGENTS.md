@@ -30,6 +30,7 @@ Follow official or documented agent standards where they exist; do not present a
 - Areas with specialized responsibilities:
   - `agents/`: top-level orchestration agents that sit above the skill catalog, one folder per agent
   - `skills/`: canonical skill catalog
+  - `tools/ManagedCode.DotnetAgents/`: publishable `dotnet-agents` installer tool for repo-owned orchestration agents
   - `tools/ManagedCode.DotnetSkills/`: publishable `dotnet-skills` installer tool
   - `scripts/`: catalog generation and upstream-watch automation
   - `.github/workflows/`: CI, release, and scheduled automation
@@ -308,23 +309,28 @@ Canonical generation point:
 
 ## Dotnet Tool Rules
 
-The only allowed repository-owned executable project is the publishable catalog installer tool:
+The only allowed repository-owned executable projects are the publishable catalog installer tools:
 
-- package id: `dotnet-skills`
-- command name: `dotnet-skills`
-- usage shape: `dotnet skills ...`
+- `dotnet-skills`
+  - package id: `dotnet-skills`
+  - command name: `dotnet-skills`
+  - usage shape: `dotnet skills ...`
+- `dotnet-agents`
+  - package id: `dotnet-agents`
+  - command name: `dotnet-agents`
+  - usage shape: `dotnet agents ...`
 
 Rules:
 
-- Keep the tool focused on listing, syncing, and installing the skill catalog.
+- Keep the tools focused on installing and managing the skill catalog or the repo-owned orchestration agents.
 - Do not expand it into a general repo-maintenance application.
 - Repo maintenance automation may stay in GitHub Actions scripts and does not need to be moved into the tool.
 - Use a clean canonical tool name; avoid redundant public package names with a trailing `.Tool` when the command shape already makes the tool purpose obvious.
-- Prefer the public NuGet package ID `dotnet-skills` so installation stays `dotnet tool install --global dotnet-skills`.
+- Prefer the public NuGet package IDs `dotnet-skills` and `dotnet-agents` so installation stays `dotnet tool install --global dotnet-skills` and `dotnet tool install --global dotnet-agents`.
 - Keep only the manual base version in the project file; CI must derive the publish version automatically by appending the GitHub run number as the numeric patch segment.
 - Do not require or document local `dotnet tool install --add-source ...` smoke tests for contributors; validate installability in CI instead and keep user-facing docs focused on the public NuGet install flow.
 - Keep canonical skill IDs namespaced as `dotnet-*` in the repository, but let the CLI accept short aliases such as `aspire` or `orleans` in commands.
-- Treat repo-owned orchestration agents as a parallel catalog layer; do not force the first rollout of agents into the current `dotnet-skills` CLI lifecycle before the repo structure and docs are stable.
+- Keep `dotnet-skills` as the skill-first CLI. `dotnet-agents` is the dedicated agent-only CLI; do not collapse them into one ambiguous default surface.
 - Canonical repo-owned agents live in folder-per-agent layouts with `AGENT.md`; runtime-specific `.agent.md` or native Claude files are adapters, not the source of truth.
 - The installer must account for Codex, Claude, Copilot, Gemini, and Junie target layouts instead of assuming only one global skills directory.
 - The bare `dotnet skills` entrypoint should behave like a polished interactive console application for browsing the catalog, inspecting details, and installing or removing content without remembering subcommands. Explicit command arguments must still bypass the interactive app and execute directly.
@@ -340,8 +346,8 @@ Rules:
 - Do not add `.agents/skills` alongside native client targets during auto-detect. `.agents/skills` is fallback-only, not an extra fan-out destination when a native CLI root already exists.
 - For repo-owned orchestration agents, auto-detect only vendor-native agent locations: `.codex/agents`, `.claude/agents`, `.github/agents`, `.gemini/agents`, and `.junie/agents`.
 - Do not treat shared `.agents` directories as a portable agent target and do not map `.agents` to Codex.
-- If `dotnet skills agent install` runs in auto mode and no native agent directory exists yet, fail with a clear message that asks for an explicit `--agent` or `--target`.
-- If `dotnet skills agent ... --target <path>` is used, require an explicit `--agent`. Agent payload formats differ by platform, so auto mode must not guess a file format for a custom target.
+- If `dotnet agents install` runs in auto mode and no native agent directory exists yet, fail with a clear message that asks for an explicit `--agent` or `--target`.
+- If `dotnet agents ... --target <path>` is used, require an explicit `--agent`. Agent payload formats differ by platform, so auto mode must not guess a file format for a custom target.
 - Use the same NuGet publish pattern as other ManagedCode repositories: publish from `publish-catalog.yml` with `dotnet nuget push` and the `NUGET_API_KEY` secret inside the shell step.
 - Do not reference `secrets.*` in GitHub Actions `if:` expressions for NuGet publish branching; keep secret-dependent logic inside the shell step instead.
 - Publish workflows should derive the package version from the checked-in base version plus the CI run number instead of relying on a manually typed patch version.
@@ -372,7 +378,7 @@ Rules:
 - The website displays the full skill catalog with search, category filters, installation commands, and a visible orchestration-agents section sourced from the repo catalog.
 - Keep the website focused on skill discovery and installation; do not expand it into unrelated documentation.
 - The website must show the `dotnet skills install <skill>` command pattern for each skill.
-- The website must also show the `dotnet skills agent install <agent>` command pattern for repo-owned orchestration agents.
+- The website must also show the `dotnet agents install <agent>` command pattern for repo-owned orchestration agents.
 - Dark terminal-like aesthetic with monospace fonts is the intended design language.
 - When the site refers to Claude Code, GitHub Copilot, Gemini, and Codex, present them as supported platforms or assistants that consume the catalog, not as repository-owned "AI agents".
 - Supported-platform sections on the site should use clearly differentiated brand-like tiles or logos instead of generic repeated cards.

@@ -27,7 +27,7 @@ internal sealed class ToolUpdateService(IPackageVersionSource versionSource, Fun
 
         try
         {
-            var latestVersion = await versionSource.GetLatestStableVersionAsync(ToolVersionInfo.PackageId, cancellationToken);
+            var latestVersion = await versionSource.GetLatestStableVersionAsync(ToolIdentity.PackageId, cancellationToken);
             if (!string.IsNullOrWhiteSpace(latestVersion))
             {
                 cacheRoot.Create();
@@ -51,9 +51,15 @@ internal sealed class ToolUpdateService(IPackageVersionSource versionSource, Fun
 
     public static bool ShouldSkipAutomaticCheck()
     {
-        var value = Environment.GetEnvironmentVariable("DOTNET_SKILLS_SKIP_UPDATE_CHECK");
-        return string.Equals(value, "1", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+        var values = new[]
+        {
+            Environment.GetEnvironmentVariable(ToolIdentity.SkipUpdateEnvironmentVariable),
+            Environment.GetEnvironmentVariable("DOTNET_SKILLS_SKIP_UPDATE_CHECK"),
+        };
+
+        return values.Any(value =>
+            string.Equals(value, "1", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase));
     }
 
     internal static ToolUpdateStatusInfo Evaluate(

@@ -316,12 +316,12 @@ internal static class ConsoleUi
 
     public static void RenderVersionSummary(string currentVersion, ToolUpdateStatusInfo? status)
     {
-        WriteTitle("dotnet skills version");
+        WriteTitle($"{ToolIdentity.DisplayCommand} version");
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Package[/]"), new Markup(ToolVersionInfo.PackageId));
+        grid.AddRow(new Markup("[grey]Package[/]"), new Markup(ToolIdentity.PackageId));
         grid.AddRow(new Markup("[grey]Current[/]"), new Markup(Escape(currentVersion)));
         grid.AddRow(new Markup("[grey]Build[/]"), new Markup(ToolVersionInfo.IsDevelopmentBuild ? "local development build" : "published tool build"));
 
@@ -412,48 +412,85 @@ internal static class ConsoleUi
 
     public static void RenderUsage()
     {
-        WriteTitle("dotnet-skills");
+        if (ToolIdentity.IsAgentFirstTool)
+        {
+            RenderAgentToolUsage();
+            return;
+        }
+
+        WriteTitle(ToolIdentity.PackageId);
 
         var table = new Table().Expand();
         table.AddColumn("Command");
         table.AddColumn("Purpose");
-        table.AddRow("[green]dotnet skills[/]", "Launch the interactive catalog shell for browsing, installing, removing, and updating skills or agents.");
-        table.AddRow("[green]dotnet skills help[/]", "Render the direct command reference without entering the interactive shell.");
-        table.AddRow("[green]dotnet skills list[/]", "Show the current inventory, compare project/global scope when relevant, and render available skills in grouped category tables.");
-        table.AddRow("[green]dotnet skills package list[/]", "List curated and category-based packages that expand into multiple related skills.");
-        table.AddRow("[green]dotnet skills version[/]", "Show the current tool version and check whether NuGet has a newer release.");
-        table.AddRow("[green]dotnet skills recommend[/]", "Scan `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install.");
-        table.AddRow("[green]dotnet skills install aspire orleans[/]", "Install one or more skills by slug or short alias.");
-        table.AddRow("[green]dotnet skills install package ai[/]", "Install a package that expands into a related multi-skill set.");
-        table.AddRow("[green]dotnet skills package install orleans[/]", "Alias for package installation when you prefer the package-first command shape.");
-        table.AddRow("[green]dotnet skills remove --all[/]", "Remove installed catalog skills from the selected target.");
-        table.AddRow("[green]dotnet skills update[/]", "Refresh already installed catalog skills to the selected catalog version.");
-        table.AddRow("[green]dotnet skills sync --force[/]", "Refresh the cached remote catalog payload.");
-        table.AddRow("[green]dotnet skills where[/]", "Print the resolved install path.");
-        table.AddRow("[green]dotnet skills agent list[/]", "List available orchestration agents.");
-        table.AddRow("[green]dotnet skills agent install router ai[/]", "Install orchestration agents by name.");
-        table.AddRow("[green]dotnet skills agent install --all --auto[/]", "Install all agents to all detected platforms.");
-        table.AddRow("[green]dotnet skills agent install router --target /path/to/agents[/]", "Install agents to an explicit custom target.");
+        table.AddRow($"[green]{Escape(ToolIdentity.DisplayCommand)}[/]", "Launch the interactive catalog shell for browsing, installing, removing, and updating skills or agents.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} help")}[/]", "Render the direct command reference without entering the interactive shell.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} list")}[/]", "Show the current inventory, compare project/global scope when relevant, and render available skills in grouped category tables.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} package list")}[/]", "List curated and category-based packages that expand into multiple related skills.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} version")}[/]", "Show the current tool version and check whether NuGet has a newer release.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} recommend")}[/]", "Scan `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install aspire orleans")}[/]", "Install one or more skills by slug or short alias.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install package ai")}[/]", "Install a package that expands into a related multi-skill set.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} package install orleans")}[/]", "Alias for package installation when you prefer the package-first command shape.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} remove --all")}[/]", "Remove installed catalog skills from the selected target.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} update")}[/]", "Refresh already installed catalog skills to the selected catalog version.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} sync --force")}[/]", "Refresh the cached remote catalog payload.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} where")}[/]", "Print the resolved install path.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} list")}[/]", "List available orchestration agents.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install router ai")}[/]", "Install orchestration agents by name.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install --all --auto")}[/]", "Install all agents to all detected platforms.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install router --target /path/to/agents")}[/]", "Install agents to an explicit custom target.");
         AnsiConsole.Write(table);
         AnsiConsole.WriteLine();
 
         var notes = string.Join(
             Environment.NewLine,
             "- `list`, `package list`, `recommend`, `install`, and `update` use the latest `catalog-v*` GitHub release by default.",
-            "- Bare `dotnet skills` starts the interactive shell; use `dotnet skills help` when you want the direct command reference only.",
-            "- `dotnet skills version` and `dotnet skills --version` both show the current tool version.",
+            $"- Bare `{ToolIdentity.DisplayCommand}` starts the interactive shell; use `{ToolIdentity.DisplayCommand} help` when you want the direct command reference only.",
+            $"- `{ToolIdentity.DisplayCommand} version` and `{ToolIdentity.DisplayCommand} --version` both show the current tool version.",
             "- `help` and the interactive startup path both run the automatic tool update check unless it is suppressed.",
-            "- Use `dotnet skills version --no-check` when you only want the local installed version without a NuGet lookup.",
+            $"- Use `{ToolIdentity.DisplayCommand} version --no-check` when you only want the local installed version without a NuGet lookup.",
             "- `list` stays compact: it shows the current installed inventory and a grouped category summary for the remaining catalog.",
             "- `list --installed-only` and `list --local` are equivalent shortcuts for the installed inventory view; `list --available-only` expands the remaining catalog into per-category skill tables with short summaries.",
             "- `--bundled` skips the network and uses the catalog packaged with the tool.",
             "- `--catalog-version <version>` pins a specific remote catalog release.",
             "- `--refresh` forces `install` or `update` to redownload the selected remote catalog first.",
             "- Short aliases work everywhere: `aspire` resolves to `dotnet-aspire`.",
-            "- Package installs expand into multiple skills. Example: `dotnet skills install package code-quality`.",
-            "- Set `DOTNET_SKILLS_SKIP_UPDATE_CHECK=1` to suppress automatic tool update notices on startup.",
+            $"- Package installs expand into multiple skills. Example: `{ToolIdentity.SkillsDisplayCommand} install package code-quality`.",
+            $"- Set `{ToolIdentity.SkipUpdateEnvironmentVariable}=1` to suppress automatic tool update notices on startup.",
             "- Auto skill target detection probes `.codex`, `.claude`, `.github`, `.gemini`, and `.junie`; it writes to every existing native platform target it finds, and falls back to `.agents/skills` only when no native platform folder exists.",
             "- Agent auto-detect uses only native agent roots. If none exist yet, specify `--agent` or `--target`.");
+
+        AnsiConsole.Write(new Panel(new Markup(Escape(notes))).Header("Notes").Expand());
+    }
+
+    private static void RenderAgentToolUsage()
+    {
+        WriteTitle(ToolIdentity.PackageId);
+
+        var table = new Table().Expand();
+        table.AddColumn("Command");
+        table.AddColumn("Purpose");
+        table.AddRow($"[green]{Escape(ToolIdentity.DisplayCommand)}[/]", "List bundled orchestration agents and show the current install target.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} help")}[/]", "Render the direct command reference for the agent-only tool.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} list")}[/]", "List available orchestration agents.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install router ai")}[/]", "Install one or more orchestration agents by name.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install --all --auto")}[/]", "Install all agents to every detected native agent directory.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} remove router")}[/]", "Remove one or more installed orchestration agents.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} where --agent codex")}[/]", "Print the resolved native agent install path.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} version")}[/]", "Show the current `dotnet-agents` version and check whether NuGet has a newer release.");
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
+
+        var notes = string.Join(
+            Environment.NewLine,
+            $"- `{ToolIdentity.DisplayCommand}` is the dedicated agent-only CLI. It does not install skills.",
+            $"- Use `{ToolIdentity.SkillsDisplayCommand} ...` when you want catalog skills or package installs.",
+            $"- `{ToolIdentity.DisplayCommand} list` and bare `{ToolIdentity.DisplayCommand}` both show the bundled agent catalog.",
+            $"- `{ToolIdentity.DisplayCommand} version` and `{ToolIdentity.DisplayCommand} --version` both show the current tool version.",
+            $"- Set `{ToolIdentity.SkipUpdateEnvironmentVariable}=1` to suppress automatic tool update notices on startup.",
+            "- Agent auto-detect uses only native agent roots. If none exist yet, specify `--agent` or `--target`.",
+            "- Explicit `--target` still requires `--agent`, because the generated file format depends on the selected platform.");
 
         AnsiConsole.Write(new Panel(new Markup(Escape(notes))).Header("Notes").Expand());
     }
@@ -471,8 +508,8 @@ internal static class ConsoleUi
         }
 
         Console.Error.WriteLine($"Tool update available: current {status.CurrentVersion}, latest {status.LatestVersion}.");
-        Console.Error.WriteLine("Update: dotnet tool update --global dotnet-skills");
-        Console.Error.WriteLine("If installed via a local tool manifest: dotnet tool update dotnet-skills");
+        Console.Error.WriteLine($"Update: {GlobalToolUpdateCommand}");
+        Console.Error.WriteLine($"If installed via a local tool manifest: {LocalToolUpdateCommand}");
     }
 
     private static void WriteTitle(string title)
@@ -558,10 +595,10 @@ internal static class ConsoleUi
             $"A newer [bold]{Escape(status.LatestVersion ?? "unknown")}[/] release is available on NuGet. Current: [bold]{Escape(status.CurrentVersion)}[/].",
             string.Empty,
             "Global tool:",
-            $"[green]{Escape("dotnet tool update --global dotnet-skills")}[/]",
+            $"[green]{Escape(GlobalToolUpdateCommand)}[/]",
             string.Empty,
             "Local tool manifest:",
-            $"[green]{Escape("dotnet tool update dotnet-skills")}[/]");
+            $"[green]{Escape(LocalToolUpdateCommand)}[/]");
 
         return new Panel(new Markup(lines)).Expand();
     }
@@ -816,12 +853,16 @@ internal static class ConsoleUi
         return $"{rank}:{package.Name}";
     }
 
+    private static string GlobalToolUpdateCommand => $"dotnet tool update --global {ToolIdentity.PackageId}";
+
+    private static string LocalToolUpdateCommand => $"dotnet tool update {ToolIdentity.PackageId}";
+
     public static void RenderAgentList(
         AgentCatalogPackage catalog,
         AgentInstallLayout layout,
         IReadOnlyList<InstalledAgentRecord> installedAgents)
     {
-        WriteTitle("dotnet skills agent list");
+        WriteTitle($"{ToolIdentity.AgentDisplayCommand} list");
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
@@ -877,8 +918,8 @@ internal static class ConsoleUi
         if (notInstalled.Length > 0)
         {
             AnsiConsole.Write(new Panel(new Markup(
-                $"Install agents:{Environment.NewLine}[green]dotnet skills agent install {string.Join(' ', notInstalled)}[/]{Environment.NewLine}{Environment.NewLine}" +
-                $"Install to all detected platforms:{Environment.NewLine}[green]dotnet skills agent install {string.Join(' ', notInstalled)} --auto[/]"))
+                $"Install agents:{Environment.NewLine}[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install {string.Join(' ', notInstalled)}")}[/]{Environment.NewLine}{Environment.NewLine}" +
+                $"Install to all detected platforms:{Environment.NewLine}[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install {string.Join(' ', notInstalled)} --auto")}[/]"))
                 .Header("Quick commands")
                 .Expand());
         }
@@ -890,7 +931,7 @@ internal static class ConsoleUi
         IReadOnlyList<AgentEntry> agents,
         AgentInstallSummary summary)
     {
-        WriteTitle("dotnet skills agent install");
+        WriteTitle($"{ToolIdentity.AgentDisplayCommand} install");
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
@@ -937,7 +978,7 @@ internal static class ConsoleUi
         IReadOnlyList<AgentEntry> agents,
         AgentInstallSummary summary)
     {
-        WriteTitle("dotnet skills agent install");
+        WriteTitle($"{ToolIdentity.AgentDisplayCommand} install");
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
@@ -994,7 +1035,7 @@ internal static class ConsoleUi
         IReadOnlyList<AgentEntry> agents,
         AgentRemoveSummary summary)
     {
-        WriteTitle("dotnet skills agent remove");
+        WriteTitle($"{ToolIdentity.AgentDisplayCommand} remove");
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());

@@ -23,6 +23,7 @@ This catalog fixes that. A growing catalog covering the entire .NET ecosystem—
 
 ```bash
 dotnet tool install --global dotnet-skills
+dotnet tool install --global dotnet-agents
 
 dotnet skills version                       # show current tool version and latest NuGet version
 dotnet skills --version                     # alias for the same version view
@@ -37,6 +38,8 @@ dotnet skills install aspire orleans        # install skills
 dotnet skills remove --all                  # remove installed catalog skills from the target
 dotnet skills update                        # refresh installed catalog skills
 dotnet skills install blazor --agent claude # install for a specific agent
+dotnet agents list                          # show bundled orchestration agents
+dotnet agents install router --auto         # install agents to detected native agent folders
 ```
 
 ## Commands
@@ -54,12 +57,15 @@ dotnet skills install blazor --agent claude # install for a specific agent
 | `dotnet skills update [skill...]` | Update installed catalog skills to the selected catalog version |
 | `dotnet skills sync` | Download latest catalog |
 | `dotnet skills where` | Show install paths |
-| `dotnet skills agent list` | List available orchestration agents |
-| `dotnet skills agent install <agent...>` | Install orchestration agents |
-| `dotnet skills agent install router --auto` | Install agents to all detected platforms |
-| `dotnet skills agent remove <agent...>` | Remove installed agents |
+| `dotnet agents list` | List available orchestration agents |
+| `dotnet agents install <agent...>` | Install orchestration agents |
+| `dotnet agents install router --auto` | Install agents to all detected platforms |
+| `dotnet agents remove <agent...>` | Remove installed agents |
+| `dotnet agents where` | Show native agent install paths |
 
-Use `--agent` to target a specific agent, `--scope` to choose global or project install. Use `dotnet skills list --installed-only` or the shorter `dotnet skills list --local` when you only want the installed inventory, or `--available-only` when you want the detailed category-by-category breakdown of the remaining catalog. The default `list` view stays compact: it shows the current target inventory, compares project/global scope when that comparison is meaningful, and keeps the remaining catalog as a short category summary instead of dumping one giant description table. The CLI renders rich terminal tables by default so you can quickly see installed versions, update candidates, install commands, and when a newer `dotnet-skills` package is available on NuGet. `dotnet skills --version` is a shortcut for the version view.
+Use `--agent` to target a specific agent platform, `--scope` to choose global or project install. Use `dotnet skills list --installed-only` or the shorter `dotnet skills list --local` when you only want the installed inventory, or `--available-only` when you want the detailed category-by-category breakdown of the remaining catalog. The default `list` view stays compact: it shows the current target inventory, compares project/global scope when that comparison is meaningful, and keeps the remaining catalog as a short category summary instead of dumping one giant description table. The CLI renders rich terminal tables by default so you can quickly see installed versions, update candidates, install commands, and when a newer `dotnet-skills` or `dotnet-agents` package is available on NuGet. `dotnet skills --version` and `dotnet agents --version` are shortcuts for the version view.
+
+`dotnet-skills` remains the skill-first CLI and still supports `dotnet skills agent ...` for compatibility. `dotnet-agents` is the dedicated agent-only tool, so top-level `list`, `install`, `remove`, and `where` there all target orchestration agents directly.
 
 `dotnet skills package list` shows the ready-made packages. Package installs are bulk shortcuts for related skill sets, so `dotnet skills install package ai`, `dotnet skills install package code-quality`, `dotnet skills install package mcaf`, or `dotnet skills install package orleans` will install every skill mapped to that package in one pass.
 
@@ -67,9 +73,9 @@ Use `--agent` to target a specific agent, `--scope` to choose global or project 
 
 The bare `dotnet skills` usage view and `help` path also perform the automatic self-update check, so an outdated tool still tells you to upgrade before it renders the command table.
 
-Use `dotnet skills version --no-check` when you only want the local installed tool version without calling NuGet. Set `DOTNET_SKILLS_SKIP_UPDATE_CHECK=1` if you want to suppress automatic update notices during normal command startup.
+Use `dotnet skills version --no-check` or `dotnet agents version --no-check` when you only want the local installed tool version without calling NuGet. Set `DOTNET_SKILLS_SKIP_UPDATE_CHECK=1` or `DOTNET_AGENTS_SKIP_UPDATE_CHECK=1` if you want to suppress automatic update notices during normal command startup.
 
-Catalog releases are published automatically in `.github/workflows/publish-catalog.yml` at `04:00` UTC and include the `catalog-v*` release, GitHub Pages deployment, and NuGet publish for the `dotnet-skills` tool in the same run. Automatic catalog versions use a numeric calendar-plus-daily-index format such as `2026.3.15.0`, where the first UTC-day release is `.0`, the second is `.1`, and so on. The tool reads the newest non-draft `catalog-v*` release by default, and `--catalog-version` is only for intentional pinning.
+Catalog releases are published automatically in `.github/workflows/publish-catalog.yml` at `04:00` UTC and include the `catalog-v*` release, GitHub Pages deployment, and NuGet publish for both `dotnet-skills` and `dotnet-agents` in the same run. Automatic catalog versions use a numeric calendar-plus-daily-index format such as `2026.3.15.0`, where the first UTC-day release is `.0`, the second is `.1`, and so on. `dotnet-skills` reads the newest non-draft `catalog-v*` release by default, and `--catalog-version` is only for intentional pinning.
 
 ## Agent Support
 
@@ -94,9 +100,9 @@ Catalog releases are published automatically in `.github/workflows/publish-catal
 | Codex | `$CODEX_HOME/agents/` (default: `~/.codex/agents/`) | `.codex/agents/` |
 | Junie | `~/.junie/agents/` | `.junie/agents/` |
 
-`dotnet skills agent install --auto` writes only to already existing native agent directories. It does not use `.agents` as a shared agent target; if no native agent directory exists yet, specify `--agent` or `--target`.
+`dotnet agents install --auto` writes only to already existing native agent directories. It does not use `.agents` as a shared agent target; if no native agent directory exists yet, specify `--agent` or `--target`.
 
-`dotnet skills agent ... --target <path>` requires an explicit `--agent` because the generated file format depends on the selected platform.
+`dotnet agents ... --target <path>` requires an explicit `--agent` because the generated file format depends on the selected platform.
 
 When `--agent` is omitted for skill installation, the tool checks for `.codex/`, `.claude/`, `.github/`, `.gemini/`, and `.junie/` directories in that order, installs into every already existing native platform target it finds, and creates `.agents/skills/` only when no native platform folder exists.
 

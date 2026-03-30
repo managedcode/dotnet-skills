@@ -13,44 +13,81 @@ plain_workspace="$workspace_path/plain"
 gemini_workspace="$workspace_path/gemini"
 
 rm -rf "$tool_path" "$skills_path" "$workspace_path"
-mkdir -p "$tool_path" "$skills_path" "$codex_workspace/.codex" "$claude_workspace/.claude" "$hybrid_workspace/.codex" "$hybrid_workspace/.claude" "$shared_workspace/.codex" "$shared_workspace/.claude" "$shared_workspace/.agents" "$plain_workspace" "$gemini_workspace/.gemini"
+mkdir -p \
+  "$tool_path" \
+  "$skills_path" \
+  "$codex_workspace/.codex" \
+  "$claude_workspace/.claude" \
+  "$workspace_path/.claude" \
+  "$hybrid_workspace/.codex" \
+  "$hybrid_workspace/.codex/agents" \
+  "$hybrid_workspace/.claude" \
+  "$hybrid_workspace/.claude/agents" \
+  "$shared_workspace/.codex" \
+  "$shared_workspace/.claude" \
+  "$shared_workspace/.agents" \
+  "$plain_workspace" \
+  "$gemini_workspace/.gemini"
 
 shopt -s nullglob
 if [[ -f "$package_source" ]]; then
-  latest_package="$package_source"
-  package_feed="$(dirname "$latest_package")"
+  package_feed="$(dirname "$package_source")"
 elif [[ -d "$package_source" ]]; then
-  packages=( "$package_source"/dotnet-skills.*.nupkg )
-  if [[ ${#packages[@]} -eq 0 ]]; then
-    echo "No dotnet-skills package found in $package_source" >&2
-    exit 1
-  fi
-
-  latest_package="$(ls -t "${packages[@]}" | head -n 1)"
   package_feed="$package_source"
 else
   echo "Package source must be a .nupkg file or a directory: $package_source" >&2
   exit 1
 fi
 
-package_version="$(basename "$latest_package")"
-package_version="${package_version#dotnet-skills.}"
-package_version="${package_version%.nupkg}"
+resolve_package() {
+  local package_id="$1"
+  local packages=( "$package_feed"/"$package_id".*.nupkg )
+  if [[ ${#packages[@]} -eq 0 ]]; then
+    echo "No $package_id package found in $package_feed" >&2
+    exit 1
+  fi
+
+  ls -t "${packages[@]}" | head -n 1
+}
+
+skills_package="$(resolve_package dotnet-skills)"
+agents_package="$(resolve_package dotnet-agents)"
+
+skills_version="$(basename "$skills_package")"
+skills_version="${skills_version#dotnet-skills.}"
+skills_version="${skills_version%.nupkg}"
+
+agents_version="$(basename "$agents_package")"
+agents_version="${agents_version#dotnet-agents.}"
+agents_version="${agents_version%.nupkg}"
 
 dotnet tool install \
   --tool-path "$tool_path" \
-  --version "$package_version" \
+  --version "$skills_version" \
   dotnet-skills \
+  --add-source "$package_feed"
+
+dotnet tool install \
+  --tool-path "$tool_path" \
+  --version "$agents_version" \
+  dotnet-agents \
   --add-source "$package_feed"
 
 export PATH="$tool_path:$PATH"
 export DOTNET_SKILLS_SKIP_UPDATE_CHECK=1
+export DOTNET_AGENTS_SKIP_UPDATE_CHECK=1
 
 dotnet skills version --no-check > "$skills_path/version.txt"
 grep -q "dotnet-skills" "$skills_path/version.txt"
 
+dotnet agents version --no-check > "$skills_path/agents-version.txt"
+grep -q "dotnet-agents" "$skills_path/agents-version.txt"
+
 dotnet skills list --available-only --target "$skills_path" > "$skills_path/available-list.txt"
 grep -q "dotnet-aspire" "$skills_path/available-list.txt"
+
+dotnet agents list --agent claude --scope project --project-dir "$workspace_path" > "$skills_path/agents-list.txt"
+grep -q "router" "$skills_path/agents-list.txt"
 
 dotnet skills install aspire --target "$skills_path"
 test -f "$skills_path/dotnet-aspire/SKILL.md"
@@ -135,3 +172,30 @@ case "$auto_gemini_target" in
     exit 1
   ;;
 esac
+
+claude_agents_target="$(dotnet agents where --agent claude --scope project --project-dir "$workspace_path")"
+case "$claude_agents_target" in
+  */.claude/agents) ;;
+  *)
+    echo "Unexpected Claude agents target: $claude_agents_target" >&2
+    exit 1
+    ;;
+esac
+
+dotnet agents install router --agent claude --scope project --project-dir "$workspace_path"
+test -f "$workspace_path/.claude/agents/dotnet-router.md"
+dotnet agents remove router --agent claude --scope project --project-dir "$workspace_path"
+test ! -e "$workspace_path/.claude/agents/dotnet-router.md"
+
+auto_agents_target="$(dotnet agents where --project-dir "$hybrid_workspace")"
+case "$auto_agents_target" in
+  */.codex/agents) ;;
+  *)
+    echo "Unexpected auto agents target: $auto_agents_target" >&2
+    exit 1
+    ;;
+esac
+
+dotnet agents install router --auto --scope project --project-dir "$hybrid_workspace"
+test -f "$hybrid_workspace/.codex/agents/dotnet-router.toml"
+test -f "$hybrid_workspace/.claude/agents/dotnet-router.md"

@@ -19,6 +19,13 @@ internal static class Program
 
     private static async Task<int> RunAsync(string[] args)
     {
+        return ToolIdentity.IsAgentFirstTool
+            ? await RunAgentToolAsync(args)
+            : await RunSkillsToolAsync(args);
+    }
+
+    private static async Task<int> RunSkillsToolAsync(string[] args)
+    {
         if (IsInteractiveStartup(args))
         {
             return await RunInteractiveAsync(cachePath: null);
@@ -45,6 +52,35 @@ internal static class Program
             "update" => await RunUpdateAsync(args[1..]),
             "sync" => await RunSyncAsync(args[1..]),
             "where" => await RunWhereAsync(args[1..]),
+            "agent" => await RunAgentAsync(args[1..]),
+            _ => UnknownCommand(command),
+        };
+    }
+
+    private static async Task<int> RunAgentToolAsync(string[] args)
+    {
+        if (IsInteractiveStartup(args))
+        {
+            return await RunAgentListAsync([]);
+        }
+
+        if (IsUsageStartup(args))
+        {
+            return await RunUsageAsync(cachePath: null);
+        }
+
+        var command = args[0];
+        if (IsVersionCommand(command))
+        {
+            return await RunVersionAsync(args[1..]);
+        }
+
+        return command switch
+        {
+            "list" => await RunAgentListAsync(args[1..]),
+            "install" => await RunAgentInstallAsync(args[1..]),
+            "remove" => await RunAgentRemoveAsync(args[1..]),
+            "where" => await RunAgentWhereAsync(args[1..]),
             "agent" => await RunAgentAsync(args[1..]),
             _ => UnknownCommand(command),
         };
@@ -644,7 +680,7 @@ internal static class Program
 
         if (notInstalled.Length > 0)
         {
-            throw new InvalidOperationException($"Skill(s) are not installed in the selected target: {string.Join(", ", notInstalled)}. Use `dotnet skills install ...` first.");
+            throw new InvalidOperationException($"Skill(s) are not installed in the selected target: {string.Join(", ", notInstalled)}. Use `{ToolIdentity.SkillsDisplayCommand} install ...` first.");
         }
 
         return selectedSkills
@@ -1049,7 +1085,7 @@ internal static class Program
 
         if (!removeAll && requestedAgents.Count == 0)
         {
-            throw new InvalidOperationException("Specify one or more agents to remove, or use `dotnet skills agent remove --all`.");
+            throw new InvalidOperationException($"Specify one or more agents to remove, or use `{ToolIdentity.AgentDisplayCommand} remove --all`.");
         }
 
         await MaybeShowToolUpdateAsync(null);
@@ -1071,6 +1107,41 @@ internal static class Program
 
         var summary = installer.Remove(selectedAgents, layout);
         ConsoleUi.RenderAgentRemoveSummary(agentCatalog, layout, selectedAgents, summary);
+        return 0;
+    }
+
+    private static async Task<int> RunAgentWhereAsync(string[] args)
+    {
+        string? targetPath = null;
+        string? projectDirectory = null;
+        var agent = AgentPlatform.Auto;
+        var scope = InstallScope.Project;
+
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--target":
+                    targetPath = ReadValue(args, ++index, "--target");
+                    break;
+                case "--agent":
+                    agent = SkillInstallTarget.ParseAgent(ReadValue(args, ++index, "--agent"));
+                    break;
+                case "--scope":
+                    scope = SkillInstallTarget.ParseScope(ReadValue(args, ++index, "--scope"));
+                    break;
+                case "--project-dir":
+                    projectDirectory = ReadValue(args, ++index, "--project-dir");
+                    break;
+                default:
+                    return UnknownCommand($"where {string.Join(' ', args)}");
+            }
+        }
+
+        await MaybeShowToolUpdateAsync(cachePath: null);
+
+        var layout = AgentInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
+        Console.WriteLine(layout.PrimaryPath);
         return 0;
     }
 }

@@ -34,11 +34,11 @@ internal sealed class GitHubCatalogReleaseClient
         var codexHome = Environment.GetEnvironmentVariable("CODEX_HOME");
         if (!string.IsNullOrWhiteSpace(codexHome))
         {
-            return new DirectoryInfo(Path.Combine(codexHome, "cache", "dotnet-skills"));
+            return new DirectoryInfo(Path.Combine(codexHome, "cache", ToolIdentity.CacheDirectoryName));
         }
 
         var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        return new DirectoryInfo(Path.Combine(userHome, ".codex", "cache", "dotnet-skills"));
+        return new DirectoryInfo(Path.Combine(userHome, ".codex", "cache", ToolIdentity.CacheDirectoryName));
     }
 
     public async Task<SkillManifest> LoadManifestAsync(string? catalogVersion, CancellationToken cancellationToken)
@@ -163,7 +163,7 @@ internal sealed class GitHubCatalogReleaseClient
     {
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dotnet-skills", "0.0.1"));
+        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(ToolIdentity.PackageId, "0.0.1"));
         return httpClient;
     }
 }

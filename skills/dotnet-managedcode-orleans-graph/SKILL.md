@@ -1,7 +1,7 @@
 ---
 name: dotnet-managedcode-orleans-graph
 version: "1.0.1"
-category: "Data, Distributed, and AI"
+category: "Distributed"
 description: "Integrate ManagedCode.Orleans.Graph into an Orleans-based .NET application for graph-oriented relationships, edge management, and traversal logic on top of Orleans grains. Use when the application models graph structures in a distributed Orleans system."
 compatibility: "Requires a .NET application that integrates ManagedCode.Orleans.Graph or evaluates graph-style modeling with Orleans."
 ---

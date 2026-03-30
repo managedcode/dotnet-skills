@@ -632,7 +632,7 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
 def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, dict]) -> str:
     """Render an orchestration agent card."""
     detail_href = f"{root_prefix}{agent['detail_path']}"
-    install_command = f"dotnet skills agent install {agent['short_name']}"
+    install_command = f"dotnet agents install {agent['short_name']}"
     summary = preview_text(agent["description"], limit=150)
     related_skill_chips = []
     visible_linked_skills = agent.get("skills", [])[:2]
@@ -1292,8 +1292,8 @@ def render_agent_detail_page(agent: dict, linked_skills: list[dict], root_prefix
           <div class="sidebar-card">
             <div class="detail-card-label">Install command</div>
             <div class="command-row">
-              <code>dotnet skills agent install {escape_html(agent['short_name'])}</code>
-              <button type="button" class="button button-ghost" data-copy="dotnet skills agent install {escape_html(agent['short_name'])}">Copy</button>
+              <code>dotnet agents install {escape_html(agent['short_name'])}</code>
+              <button type="button" class="button button-ghost" data-copy="dotnet agents install {escape_html(agent['short_name'])}">Copy</button>
             </div>
           </div>
 

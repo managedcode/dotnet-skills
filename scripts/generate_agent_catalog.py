@@ -2,6 +2,7 @@
 """Generate the agents catalog manifest from agent metadata."""
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -108,15 +109,28 @@ def collect_agents() -> list[dict[str, str | list[str]]]:
     return agents
 
 
-def write_manifest(agents: list[dict[str, str | list[str]]]) -> None:
-    MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
-    MANIFEST_PATH.write_text(json.dumps({"agents": agents}, indent=2, sort_keys=False) + "\n")
+def write_manifest(output_path: Path, agents: list[dict[str, str | list[str]]]) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps({"agents": agents}, indent=2, sort_keys=False) + "\n")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=MANIFEST_PATH,
+        help="Write the generated manifest to this path.",
+    )
+    return parser.parse_args()
 
 
 def main() -> int:
+    args = parse_args()
     agents = collect_agents()
-    write_manifest(agents)
-    print(f"Generated agent catalog for {len(agents)} agents.")
+    output_path = args.output.resolve()
+    write_manifest(output_path, agents)
+    print(f"Generated agent catalog for {len(agents)} agents at {output_path}.")
     return 0
 
 

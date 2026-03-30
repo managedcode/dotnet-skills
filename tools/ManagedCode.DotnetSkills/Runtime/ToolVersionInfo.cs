@@ -5,8 +5,6 @@ namespace ManagedCode.DotnetSkills.Runtime;
 
 internal static class ToolVersionInfo
 {
-    public const string PackageId = "dotnet-skills";
-
     public static string CurrentVersion { get; } = ResolveCurrentVersion();
 
     public static NuGetVersion CurrentNuGetVersion { get; } = ParseNuGetVersion(CurrentVersion);
