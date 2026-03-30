@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: tesslio/skill-review@main
       # Optional quality gate (off by default — do not enable unless user asked):
       # with:
