@@ -163,13 +163,13 @@
       "value": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\""
     },
     "agent-framework-docs-tutorials-agents-enable-observability": {
-      "etag": "\"O/6SL6fDshir+qKRrVGU/3UyUWE=\"",
-      "human": "Observability | Microsoft Learn | ETag \"O/6SL6fDshir+qKRrVGU/3UyUWE=\"",
+      "etag": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
+      "human": "Observability | Microsoft Learn | ETag \"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/enable-observability",
       "title": "Observability | Microsoft Learn",
-      "value": "\"O/6SL6fDshir+qKRrVGU/3UyUWE=\""
+      "value": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\""
     },
     "agent-framework-docs-tutorials-agents-function-tools": {
       "etag": "\"DT1lOWIq55dmzO/+AvJ+3T6cIcQ=\"",
@@ -325,13 +325,13 @@
       "value": "\"pWimzSVD0/34WYboKMzWqeRMbVA=\""
     },
     "agent-framework-docs-tutorials-workflows-simple-sequential-workflow": {
-      "etag": "\"Vmfr40id0i63OXAbOUeecl83iwA=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"Vmfr40id0i63OXAbOUeecl83iwA=\"",
+      "etag": "\"APtkvCsV/EnXycybLYirIZO1/aE=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"APtkvCsV/EnXycybLYirIZO1/aE=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/workflows/simple-sequential-workflow",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn",
-      "value": "\"Vmfr40id0i63OXAbOUeecl83iwA=\""
+      "value": "\"APtkvCsV/EnXycybLYirIZO1/aE=\""
     },
     "agent-framework-docs-tutorials-workflows-workflow-builder-with-factories": {
       "etag": "\"HIA9zkvMqoHuc/Mq2fKXFc1R6B8=\"",
@@ -658,13 +658,13 @@
       "value": "\"UMlIRN23iskgL8L+fqk4tT7go5E=\""
     },
     "agent-framework-docs-user-guide-observability": {
-      "etag": "\"O/6SL6fDshir+qKRrVGU/3UyUWE=\"",
-      "human": "Observability | Microsoft Learn | ETag \"O/6SL6fDshir+qKRrVGU/3UyUWE=\"",
+      "etag": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
+      "human": "Observability | Microsoft Learn | ETag \"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/observability",
       "title": "Observability | Microsoft Learn",
-      "value": "\"O/6SL6fDshir+qKRrVGU/3UyUWE=\""
+      "value": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\""
     },
     "agent-framework-docs-user-guide-overview": {
       "etag": "\"RLVvV+jIPjUcyyZ/B16J2Q9Dwvw=\"",
@@ -703,13 +703,13 @@
       "value": "\"7vsUYKJiWMl+yTtGQL9ttPr6U0A=\""
     },
     "agent-framework-docs-user-guide-workflows-core-concepts-events": {
-      "etag": "\"uQ2FgGpMZ9rvoHCAfaFta2MF+sc=\"",
-      "human": "Microsoft Agent Framework Workflows - Events | Microsoft Learn | ETag \"uQ2FgGpMZ9rvoHCAfaFta2MF+sc=\"",
+      "etag": "\"8BWH5O1+ouYzDHdUYhYX3SQbjOw=\"",
+      "human": "Microsoft Agent Framework Workflows - Events | Microsoft Learn | ETag \"8BWH5O1+ouYzDHdUYhYX3SQbjOw=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
+      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/events",
       "title": "Microsoft Agent Framework Workflows - Events | Microsoft Learn",
-      "value": "\"uQ2FgGpMZ9rvoHCAfaFta2MF+sc=\""
+      "value": "\"8BWH5O1+ouYzDHdUYhYX3SQbjOw=\""
     },
     "agent-framework-docs-user-guide-workflows-core-concepts-executors": {
       "etag": "\"WKst4A8nvuPaMYZyabvA/aCN1aM=\"",
@@ -811,13 +811,13 @@
       "value": "\"NangPxOAEx/xmLPSL9gCh6lE6Rg=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-human-in-the-loop": {
-      "etag": "\"1kJsfEIm80OArNlkmmwb2/BdRAQ=\"",
-      "human": "Microsoft Agent Framework Workflows - Human-in-the-loop (HITL) | Microsoft Learn | ETag \"1kJsfEIm80OArNlkmmwb2/BdRAQ=\"",
+      "etag": "\"+/l7+UrgdwQlBQE9HbYiaH5s6CM=\"",
+      "human": "Microsoft Agent Framework Workflows - Human-in-the-loop (HITL) | Microsoft Learn | ETag \"+/l7+UrgdwQlBQE9HbYiaH5s6CM=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
+      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/human-in-the-loop",
       "title": "Microsoft Agent Framework Workflows - Human-in-the-loop (HITL) | Microsoft Learn",
-      "value": "\"1kJsfEIm80OArNlkmmwb2/BdRAQ=\""
+      "value": "\"+/l7+UrgdwQlBQE9HbYiaH5s6CM=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-magentic": {
       "etag": "\"HGYPemT52Av563W3oT2IIDlF0E4=\"",
@@ -829,22 +829,22 @@
       "value": "\"HGYPemT52Av563W3oT2IIDlF0E4=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-overview": {
-      "etag": "\"cty/p/EWUeXgZkSDZ9Mq4/0YoTI=\"",
-      "human": "Workflow orchestrations in Agent Framework | Microsoft Learn | ETag \"cty/p/EWUeXgZkSDZ9Mq4/0YoTI=\"",
+      "etag": "\"kHF7vpZIogcQUhSNT/sqhhCZpcc=\"",
+      "human": "Workflow orchestrations in Agent Framework | Microsoft Learn | ETag \"kHF7vpZIogcQUhSNT/sqhhCZpcc=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
+      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/overview",
       "title": "Workflow orchestrations in Agent Framework | Microsoft Learn",
-      "value": "\"cty/p/EWUeXgZkSDZ9Mq4/0YoTI=\""
+      "value": "\"kHF7vpZIogcQUhSNT/sqhhCZpcc=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-sequential": {
-      "etag": "\"Vmfr40id0i63OXAbOUeecl83iwA=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"Vmfr40id0i63OXAbOUeecl83iwA=\"",
+      "etag": "\"APtkvCsV/EnXycybLYirIZO1/aE=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"APtkvCsV/EnXycybLYirIZO1/aE=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/sequential",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn",
-      "value": "\"Vmfr40id0i63OXAbOUeecl83iwA=\""
+      "value": "\"APtkvCsV/EnXycybLYirIZO1/aE=\""
     },
     "agent-framework-docs-user-guide-workflows-overview": {
       "etag": "\"xC5bnI/CyUF6M/LudvWj1YrUG1w=\"",
@@ -926,20 +926,20 @@
       "value": "\"e11c27083a1c77ee29c24fc54a2f957ef1a4680fd199d6ac6004971196dd3d3f\""
     },
     "aspire-docs": {
-      "etag": "\"NImqlziy4Dzs9nqs9N1uYFQaIvi4xed6bQT+NsA1ALo=\"",
-      "human": "Aspire \u2014 Your stack, streamlined | ETag \"NImqlziy4Dzs9nqs9N1uYFQaIvi4xed6bQT+NsA1ALo=\"",
+      "etag": "\"eLIHd1Hl+fjyka70Bd9dPLL9CK8ALe2zh9q+DMa+Qt0=\"",
+      "human": "Aspire \u2014 Your stack, streamlined | ETag \"eLIHd1Hl+fjyka70Bd9dPLL9CK8ALe2zh9q+DMa+Qt0=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 27 Mar 2026 21:04:12 GMT",
+      "last_modified": "Mon, 30 Mar 2026 17:40:18 GMT",
       "source_url": "https://aspire.dev/",
       "title": "Aspire \u2014 Your stack, streamlined",
-      "value": "\"NImqlziy4Dzs9nqs9N1uYFQaIvi4xed6bQT+NsA1ALo=\""
+      "value": "\"eLIHd1Hl+fjyka70Bd9dPLL9CK8ALe2zh9q+DMa+Qt0=\""
     },
     "aspire-release": {
-      "human": "v13.2.0 (2026-03-23T15:12:31Z)",
+      "human": "v13.2.1 (2026-03-31T05:43:00Z)",
       "kind": "github_release",
-      "published_at": "2026-03-23T15:12:31Z",
-      "source_url": "https://github.com/microsoft/aspire/releases/tag/v13.2.0",
-      "value": "v13.2.0"
+      "published_at": "2026-03-31T05:43:00Z",
+      "source_url": "https://github.com/microsoft/aspire/releases/tag/v13.2.1",
+      "value": "v13.2.1"
     },
     "aspnetcore-overview-docs": {
       "etag": "\"goDKkFLj2zmq1cmpvUkhQHGHIdk=\"",
@@ -972,11 +972,11 @@
       "value": "2.51.0"
     },
     "biome-release": {
-      "human": "@biomejs/biome@2.4.9 (2026-03-25T12:38:52Z)",
+      "human": "@biomejs/biome@2.4.10 (2026-03-30T16:11:39Z)",
       "kind": "github_release",
-      "published_at": "2026-03-25T12:38:52Z",
-      "source_url": "https://github.com/biomejs/biome/releases/tag/%40biomejs/biome%402.4.9",
-      "value": "@biomejs/biome@2.4.9"
+      "published_at": "2026-03-30T16:11:39Z",
+      "source_url": "https://github.com/biomejs/biome/releases/tag/%40biomejs/biome%402.4.10",
+      "value": "@biomejs/biome@2.4.10"
     },
     "chous-release": {
       "human": "v0.1.4 (2026-01-05T18:05:24Z)",
@@ -1676,13 +1676,13 @@
       "value": "\"2C/YLa0YDurWrG4ViWOvO2QFabU=\""
     },
     "wpf-overview-docs": {
-      "etag": "\"s9VDfiHZ5RToqkuDwqfjDW8KxCU=\"",
-      "human": "What is Windows Presentation Foundation - WPF | Microsoft Learn | ETag \"s9VDfiHZ5RToqkuDwqfjDW8KxCU=\"",
+      "etag": "\"68ZivNKC8bqASi3DEdyE1n4CS6M=\"",
+      "human": "What is Windows Presentation Foundation - WPF | Microsoft Learn | ETag \"68ZivNKC8bqASi3DEdyE1n4CS6M=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 27 Aug 2025 09:10:10 GMT",
+      "last_modified": "Mon, 30 Mar 2026 14:53:56 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/desktop/wpf/overview/",
       "title": "What is Windows Presentation Foundation - WPF | Microsoft Learn",
-      "value": "\"s9VDfiHZ5RToqkuDwqfjDW8KxCU=\""
+      "value": "\"68ZivNKC8bqASi3DEdyE1n4CS6M=\""
     }
   }
 }
