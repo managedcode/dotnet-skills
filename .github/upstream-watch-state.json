@@ -1,938 +1,938 @@
 {
   "watches": {
     "agent-framework-docs-integrations-ag-ui": {
-      "etag": "\"Xt8IuvVvUvQUrdshcbBF10zCuqs=\"",
-      "human": "AG-UI Integration with Agent Framework | Microsoft Learn | ETag \"Xt8IuvVvUvQUrdshcbBF10zCuqs=\"",
+      "etag": "\"F5viFfezfrEniNYtlDjgF3dtjzQ=\"",
+      "human": "AG-UI Integration with Agent Framework | Microsoft Learn | ETag \"F5viFfezfrEniNYtlDjgF3dtjzQ=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/",
       "title": "AG-UI Integration with Agent Framework | Microsoft Learn",
-      "value": "\"Xt8IuvVvUvQUrdshcbBF10zCuqs=\""
+      "value": "\"F5viFfezfrEniNYtlDjgF3dtjzQ=\""
     },
     "agent-framework-docs-integrations-ag-ui-backend-tool-rendering": {
-      "etag": "\"OC+DFzPt0Ta2uCIQW67Ze14aOvY=\"",
-      "human": "Backend Tool Rendering with AG-UI | Microsoft Learn | ETag \"OC+DFzPt0Ta2uCIQW67Ze14aOvY=\"",
+      "etag": "\"nT/wtO4dBjB6H9ggRtlwtmwgVNs=\"",
+      "human": "Backend Tool Rendering with AG-UI | Microsoft Learn | ETag \"nT/wtO4dBjB6H9ggRtlwtmwgVNs=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/backend-tool-rendering",
       "title": "Backend Tool Rendering with AG-UI | Microsoft Learn",
-      "value": "\"OC+DFzPt0Ta2uCIQW67Ze14aOvY=\""
+      "value": "\"nT/wtO4dBjB6H9ggRtlwtmwgVNs=\""
     },
     "agent-framework-docs-integrations-ag-ui-frontend-tools": {
-      "etag": "\"w5S/BBnaJ9HS7IrylqGX4Hti3bU=\"",
-      "human": "Frontend Tool Rendering with AG-UI | Microsoft Learn | ETag \"w5S/BBnaJ9HS7IrylqGX4Hti3bU=\"",
+      "etag": "\"VT7Dnx5jZPkdvnRIpqurX6bb+4c=\"",
+      "human": "Frontend Tool Rendering with AG-UI | Microsoft Learn | ETag \"VT7Dnx5jZPkdvnRIpqurX6bb+4c=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/frontend-tools",
       "title": "Frontend Tool Rendering with AG-UI | Microsoft Learn",
-      "value": "\"w5S/BBnaJ9HS7IrylqGX4Hti3bU=\""
+      "value": "\"VT7Dnx5jZPkdvnRIpqurX6bb+4c=\""
     },
     "agent-framework-docs-integrations-ag-ui-getting-started": {
-      "etag": "\"M+oy8J/BaoleWOPGg9dv75jProI=\"",
-      "human": "Getting Started with AG-UI | Microsoft Learn | ETag \"M+oy8J/BaoleWOPGg9dv75jProI=\"",
+      "etag": "\"UtN/7ShBW1KNyaYmN9ygZooLVws=\"",
+      "human": "Getting Started with AG-UI | Microsoft Learn | ETag \"UtN/7ShBW1KNyaYmN9ygZooLVws=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/getting-started",
       "title": "Getting Started with AG-UI | Microsoft Learn",
-      "value": "\"M+oy8J/BaoleWOPGg9dv75jProI=\""
+      "value": "\"UtN/7ShBW1KNyaYmN9ygZooLVws=\""
     },
     "agent-framework-docs-integrations-ag-ui-human-in-the-loop": {
-      "etag": "\"rOERnMl8F4zK4LsYTzRx4Nc3rTQ=\"",
-      "human": "Human-in-the-Loop with AG-UI | Microsoft Learn | ETag \"rOERnMl8F4zK4LsYTzRx4Nc3rTQ=\"",
+      "etag": "\"nixZUsFZKMwHrepPlnnpUNvTjSY=\"",
+      "human": "Human-in-the-Loop with AG-UI | Microsoft Learn | ETag \"nixZUsFZKMwHrepPlnnpUNvTjSY=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/human-in-the-loop",
       "title": "Human-in-the-Loop with AG-UI | Microsoft Learn",
-      "value": "\"rOERnMl8F4zK4LsYTzRx4Nc3rTQ=\""
+      "value": "\"nixZUsFZKMwHrepPlnnpUNvTjSY=\""
     },
     "agent-framework-docs-integrations-ag-ui-security-considerations": {
-      "etag": "\"Ero0Jtz3JWr/pnHBJIG4guXnZUc=\"",
-      "human": "Security Considerations for AG-UI | Microsoft Learn | ETag \"Ero0Jtz3JWr/pnHBJIG4guXnZUc=\"",
+      "etag": "\"B9Njany//77wyITXD8bycejmMq8=\"",
+      "human": "Security Considerations for AG-UI | Microsoft Learn | ETag \"B9Njany//77wyITXD8bycejmMq8=\"",
       "kind": "http_document",
       "last_modified": "Wed, 28 Jan 2026 16:46:04 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/security-considerations",
       "title": "Security Considerations for AG-UI | Microsoft Learn",
-      "value": "\"Ero0Jtz3JWr/pnHBJIG4guXnZUc=\""
+      "value": "\"B9Njany//77wyITXD8bycejmMq8=\""
     },
     "agent-framework-docs-integrations-ag-ui-state-management": {
-      "etag": "\"Tztr1KNsqy3ZIcnEX5H+qO3/QKM=\"",
-      "human": "State Management with AG-UI | Microsoft Learn | ETag \"Tztr1KNsqy3ZIcnEX5H+qO3/QKM=\"",
+      "etag": "\"AaXIdRQw6vH08G5ukHoa6f1cMys=\"",
+      "human": "State Management with AG-UI | Microsoft Learn | ETag \"AaXIdRQw6vH08G5ukHoa6f1cMys=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/state-management",
       "title": "State Management with AG-UI | Microsoft Learn",
-      "value": "\"Tztr1KNsqy3ZIcnEX5H+qO3/QKM=\""
+      "value": "\"AaXIdRQw6vH08G5ukHoa6f1cMys=\""
     },
     "agent-framework-docs-integrations-ag-ui-testing-with-dojo": {
-      "etag": "\"rdZEoCcoogOiOOPdTaV+tZLmegw=\"",
-      "human": "Testing with AG-UI Dojo | Microsoft Learn | ETag \"rdZEoCcoogOiOOPdTaV+tZLmegw=\"",
+      "etag": "\"boTKe5U7iVlAbRZpKeBNCIZLwnY=\"",
+      "human": "Testing with AG-UI Dojo | Microsoft Learn | ETag \"boTKe5U7iVlAbRZpKeBNCIZLwnY=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 11 Feb 2026 00:40:58 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/testing-with-dojo",
       "title": "Testing with AG-UI Dojo | Microsoft Learn",
-      "value": "\"rdZEoCcoogOiOOPdTaV+tZLmegw=\""
+      "value": "\"boTKe5U7iVlAbRZpKeBNCIZLwnY=\""
     },
     "agent-framework-docs-migration-guide-from-autogen": {
-      "etag": "\"XohH/tZ6iBekelsiV1hvEGWPNqE=\"",
-      "human": "AutoGen to Microsoft Agent Framework Migration Guide | Microsoft Learn | ETag \"XohH/tZ6iBekelsiV1hvEGWPNqE=\"",
+      "etag": "\"f1GgsnUoLZnZnRNjVWBrMJuGT5Q=\"",
+      "human": "AutoGen to Microsoft Agent Framework Migration Guide | Microsoft Learn | ETag \"f1GgsnUoLZnZnRNjVWBrMJuGT5Q=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/migration-guide/from-autogen/",
       "title": "AutoGen to Microsoft Agent Framework Migration Guide | Microsoft Learn",
-      "value": "\"XohH/tZ6iBekelsiV1hvEGWPNqE=\""
+      "value": "\"f1GgsnUoLZnZnRNjVWBrMJuGT5Q=\""
     },
     "agent-framework-docs-migration-guide-from-semantic-kernel": {
-      "etag": "\"XryLnHDS1ntKiBt0trcK3tZuFkc=\"",
-      "human": "Semantic Kernel to Microsoft Agent Framework Migration Guide | Microsoft Learn | ETag \"XryLnHDS1ntKiBt0trcK3tZuFkc=\"",
+      "etag": "\"aiAuAN30q+EDbo9loZYEcMIi1gY=\"",
+      "human": "Semantic Kernel to Microsoft Agent Framework Migration Guide | Microsoft Learn | ETag \"aiAuAN30q+EDbo9loZYEcMIi1gY=\"",
       "kind": "http_document",
       "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/migration-guide/from-semantic-kernel/",
       "title": "Semantic Kernel to Microsoft Agent Framework Migration Guide | Microsoft Learn",
-      "value": "\"XryLnHDS1ntKiBt0trcK3tZuFkc=\""
+      "value": "\"aiAuAN30q+EDbo9loZYEcMIi1gY=\""
     },
     "agent-framework-docs-migration-guide-from-semantic-kernel-samples": {
-      "etag": "\"ty/fNNp9C/78YBpadDiIS+EIII4=\"",
-      "human": "Semantic Kernel to Microsoft Agent Framework Migration Samples | Microsoft Learn | ETag \"ty/fNNp9C/78YBpadDiIS+EIII4=\"",
+      "etag": "\"yoNFSErATjp5NP2dY0YWiKWVl2w=\"",
+      "human": "Semantic Kernel to Microsoft Agent Framework Migration Samples | Microsoft Learn | ETag \"yoNFSErATjp5NP2dY0YWiKWVl2w=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/migration-guide/from-semantic-kernel/samples",
       "title": "Semantic Kernel to Microsoft Agent Framework Migration Samples | Microsoft Learn",
-      "value": "\"ty/fNNp9C/78YBpadDiIS+EIII4=\""
+      "value": "\"yoNFSErATjp5NP2dY0YWiKWVl2w=\""
     },
     "agent-framework-docs-overview": {
-      "etag": "\"RLVvV+jIPjUcyyZ/B16J2Q9Dwvw=\"",
-      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"RLVvV+jIPjUcyyZ/B16J2Q9Dwvw=\"",
+      "etag": "\"ocv+VNMkrxlfGiRd9qQ7lrAUSVE=\"",
+      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"ocv+VNMkrxlfGiRd9qQ7lrAUSVE=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 20 Feb 2026 16:00:19 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/overview/",
       "title": "Microsoft Agent Framework Overview | Microsoft Learn",
-      "value": "\"RLVvV+jIPjUcyyZ/B16J2Q9Dwvw=\""
+      "value": "\"ocv+VNMkrxlfGiRd9qQ7lrAUSVE=\""
     },
     "agent-framework-docs-support": {
-      "etag": "\"Gtf2KhienlfYs/uJYg8A78fT0TE=\"",
-      "human": "Support for Agent Framework | Microsoft Learn | ETag \"Gtf2KhienlfYs/uJYg8A78fT0TE=\"",
+      "etag": "\"6eDFUl+Ji4AwpE3hyTzNvO+DonQ=\"",
+      "human": "Support for Agent Framework | Microsoft Learn | ETag \"6eDFUl+Ji4AwpE3hyTzNvO+DonQ=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/support/",
       "title": "Support for Agent Framework | Microsoft Learn",
-      "value": "\"Gtf2KhienlfYs/uJYg8A78fT0TE=\""
+      "value": "\"6eDFUl+Ji4AwpE3hyTzNvO+DonQ=\""
     },
     "agent-framework-docs-support-faq": {
-      "etag": "\"oi7tXQd460XCcHh0KktR3HtcykE=\"",
-      "human": "Frequently Asked Questions | Microsoft Learn | ETag \"oi7tXQd460XCcHh0KktR3HtcykE=\"",
+      "etag": "\"V8bQ4jyQbYvNbBrZ1wBEt703+KM=\"",
+      "human": "Frequently Asked Questions | Microsoft Learn | ETag \"V8bQ4jyQbYvNbBrZ1wBEt703+KM=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/support/faq",
       "title": "Frequently Asked Questions | Microsoft Learn",
-      "value": "\"oi7tXQd460XCcHh0KktR3HtcykE=\""
+      "value": "\"V8bQ4jyQbYvNbBrZ1wBEt703+KM=\""
     },
     "agent-framework-docs-support-troubleshooting": {
-      "etag": "\"RSY8y7W4yfaRuIuXRzgETVgGoeQ=\"",
-      "human": "Troubleshooting | Microsoft Learn | ETag \"RSY8y7W4yfaRuIuXRzgETVgGoeQ=\"",
+      "etag": "\"ssDND8M35exDkcO4PiHUfK7qCZI=\"",
+      "human": "Troubleshooting | Microsoft Learn | ETag \"ssDND8M35exDkcO4PiHUfK7qCZI=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/support/troubleshooting",
       "title": "Troubleshooting | Microsoft Learn",
-      "value": "\"RSY8y7W4yfaRuIuXRzgETVgGoeQ=\""
+      "value": "\"ssDND8M35exDkcO4PiHUfK7qCZI=\""
     },
     "agent-framework-docs-support-upgrade": {
-      "etag": "\"n80cUKf0lzuY3WCZxm4ItyTZh3Q=\"",
-      "human": "Upgrade guides for Agent Framework | Microsoft Learn | ETag \"n80cUKf0lzuY3WCZxm4ItyTZh3Q=\"",
+      "etag": "\"gJJyGaOIiKW9OaEeAoCoSUCZ3jY=\"",
+      "human": "Upgrade guides for Agent Framework | Microsoft Learn | ETag \"gJJyGaOIiKW9OaEeAoCoSUCZ3jY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/support/upgrade/",
       "title": "Upgrade guides for Agent Framework | Microsoft Learn",
-      "value": "\"n80cUKf0lzuY3WCZxm4ItyTZh3Q=\""
+      "value": "\"gJJyGaOIiKW9OaEeAoCoSUCZ3jY=\""
     },
     "agent-framework-docs-tutorials-agents-agent-as-mcp-tool": {
-      "etag": "\"UMlIRN23iskgL8L+fqk4tT7go5E=\"",
-      "human": "MCP and Foundry Agents | Microsoft Learn | ETag \"UMlIRN23iskgL8L+fqk4tT7go5E=\"",
+      "etag": "\"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\"",
+      "human": "MCP and Foundry Agents | Microsoft Learn | ETag \"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/agent-as-mcp-tool",
       "title": "MCP and Foundry Agents | Microsoft Learn",
-      "value": "\"UMlIRN23iskgL8L+fqk4tT7go5E=\""
+      "value": "\"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\""
     },
     "agent-framework-docs-tutorials-agents-create-and-run-durable-agent": {
-      "etag": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
-      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
+      "etag": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
+      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/create-and-run-durable-agent",
       "title": "Azure Functions (Durable) | Microsoft Learn",
-      "value": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\""
+      "value": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\""
     },
     "agent-framework-docs-tutorials-agents-enable-observability": {
-      "etag": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
-      "human": "Observability | Microsoft Learn | ETag \"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
+      "etag": "\"d02YiN7U87LLOlx+p3XgLxIdNMk=\"",
+      "human": "Observability | Microsoft Learn | ETag \"d02YiN7U87LLOlx+p3XgLxIdNMk=\"",
       "kind": "http_document",
       "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/enable-observability",
       "title": "Observability | Microsoft Learn",
-      "value": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\""
+      "value": "\"d02YiN7U87LLOlx+p3XgLxIdNMk=\""
     },
     "agent-framework-docs-tutorials-agents-function-tools": {
-      "etag": "\"DT1lOWIq55dmzO/+AvJ+3T6cIcQ=\"",
-      "human": "Using function tools with an agent | Microsoft Learn | ETag \"DT1lOWIq55dmzO/+AvJ+3T6cIcQ=\"",
+      "etag": "\"yhcK6AAbD9D+Hq+bCtBWOXS/Ew0=\"",
+      "human": "Using function tools with an agent | Microsoft Learn | ETag \"yhcK6AAbD9D+Hq+bCtBWOXS/Ew0=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:08:20 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:43:42 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/agents/tools/function-tools",
       "title": "Using function tools with an agent | Microsoft Learn",
-      "value": "\"DT1lOWIq55dmzO/+AvJ+3T6cIcQ=\""
+      "value": "\"yhcK6AAbD9D+Hq+bCtBWOXS/Ew0=\""
     },
     "agent-framework-docs-tutorials-agents-function-tools-approvals": {
-      "etag": "\"Ex+lY2fL6BoEl8+AYWE/01rRSIQ=\"",
-      "human": "Using function tools with human in the loop approvals | Microsoft Learn | ETag \"Ex+lY2fL6BoEl8+AYWE/01rRSIQ=\"",
+      "etag": "\"sCXfqbjm/URE5uMizGT83EiC7Jg=\"",
+      "human": "Using function tools with human in the loop approvals | Microsoft Learn | ETag \"sCXfqbjm/URE5uMizGT83EiC7Jg=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/function-tools-approvals",
       "title": "Using function tools with human in the loop approvals | Microsoft Learn",
-      "value": "\"Ex+lY2fL6BoEl8+AYWE/01rRSIQ=\""
+      "value": "\"sCXfqbjm/URE5uMizGT83EiC7Jg=\""
     },
     "agent-framework-docs-tutorials-agents-images": {
-      "etag": "\"VUHW0LvXnXFNlufhlimgWxpBf1E=\"",
-      "human": "Using images with an agent | Microsoft Learn | ETag \"VUHW0LvXnXFNlufhlimgWxpBf1E=\"",
+      "etag": "\"XdzTy/Fs+yUDStLutlnpADxnEdo=\"",
+      "human": "Using images with an agent | Microsoft Learn | ETag \"XdzTy/Fs+yUDStLutlnpADxnEdo=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/images",
       "title": "Using images with an agent | Microsoft Learn",
-      "value": "\"VUHW0LvXnXFNlufhlimgWxpBf1E=\""
+      "value": "\"XdzTy/Fs+yUDStLutlnpADxnEdo=\""
     },
     "agent-framework-docs-tutorials-agents-memory": {
-      "etag": "\"bZVoYhfSpDMXFpPpV43cKzDsIyY=\"",
-      "human": "Step 4: Memory & Persistence | Microsoft Learn | ETag \"bZVoYhfSpDMXFpPpV43cKzDsIyY=\"",
+      "etag": "\"3n1mxL1SC4KtT+Y8MzGPmjeJhaU=\"",
+      "human": "Step 4: Memory & Persistence | Microsoft Learn | ETag \"3n1mxL1SC4KtT+Y8MzGPmjeJhaU=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:08:20 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:43:42 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/memory",
       "title": "Step 4: Memory & Persistence | Microsoft Learn",
-      "value": "\"bZVoYhfSpDMXFpPpV43cKzDsIyY=\""
+      "value": "\"3n1mxL1SC4KtT+Y8MzGPmjeJhaU=\""
     },
     "agent-framework-docs-tutorials-agents-multi-turn-conversation": {
-      "etag": "\"6dakrP70trNUS/K542xd8MS14f0=\"",
-      "human": "Session | Microsoft Learn | ETag \"6dakrP70trNUS/K542xd8MS14f0=\"",
+      "etag": "\"NIIY650rv45fFH8zWSWuPadoqqI=\"",
+      "human": "Session | Microsoft Learn | ETag \"NIIY650rv45fFH8zWSWuPadoqqI=\"",
       "kind": "http_document",
       "last_modified": "Fri, 20 Feb 2026 15:37:58 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/multi-turn-conversation",
       "title": "Session | Microsoft Learn",
-      "value": "\"6dakrP70trNUS/K542xd8MS14f0=\""
+      "value": "\"NIIY650rv45fFH8zWSWuPadoqqI=\""
     },
     "agent-framework-docs-tutorials-agents-orchestrate-durable-agents": {
-      "etag": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
-      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
+      "etag": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
+      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/orchestrate-durable-agents",
       "title": "Azure Functions (Durable) | Microsoft Learn",
-      "value": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\""
+      "value": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\""
     },
     "agent-framework-docs-tutorials-agents-persisted-conversation": {
-      "etag": "\"tBDOzCGqNwdrQ7BFF1NouRavjy0=\"",
-      "human": "Storage | Microsoft Learn | ETag \"tBDOzCGqNwdrQ7BFF1NouRavjy0=\"",
+      "etag": "\"sqCCi8/Jo2W6MkZXC9pey1N03nU=\"",
+      "human": "Storage | Microsoft Learn | ETag \"sqCCi8/Jo2W6MkZXC9pey1N03nU=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/persisted-conversation",
       "title": "Storage | Microsoft Learn",
-      "value": "\"tBDOzCGqNwdrQ7BFF1NouRavjy0=\""
+      "value": "\"sqCCi8/Jo2W6MkZXC9pey1N03nU=\""
     },
     "agent-framework-docs-tutorials-agents-run-agent": {
-      "etag": "\"Ux7ReWtjEja80SOxWOwAiskKPoo=\"",
-      "human": "Running Agents | Microsoft Learn | ETag \"Ux7ReWtjEja80SOxWOwAiskKPoo=\"",
+      "etag": "\"kgdtmRL4vkCr3NS59jnkR5wXTK0=\"",
+      "human": "Running Agents | Microsoft Learn | ETag \"kgdtmRL4vkCr3NS59jnkR5wXTK0=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Mar 2026 11:30:28 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/run-agent",
       "title": "Running Agents | Microsoft Learn",
-      "value": "\"Ux7ReWtjEja80SOxWOwAiskKPoo=\""
+      "value": "\"kgdtmRL4vkCr3NS59jnkR5wXTK0=\""
     },
     "agent-framework-docs-tutorials-agents-structured-output": {
-      "etag": "\"Bih2JiIVzwIAQwoiHQqyo3oonZw=\"",
-      "human": "Producing Structured Output with agents | Microsoft Learn | ETag \"Bih2JiIVzwIAQwoiHQqyo3oonZw=\"",
+      "etag": "\"VXb0oKZRCRw8qyRBPh+GNQs8jSs=\"",
+      "human": "Producing Structured Output with agents | Microsoft Learn | ETag \"VXb0oKZRCRw8qyRBPh+GNQs8jSs=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Feb 2026 01:47:35 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/structured-output",
       "title": "Producing Structured Output with agents | Microsoft Learn",
-      "value": "\"Bih2JiIVzwIAQwoiHQqyo3oonZw=\""
+      "value": "\"VXb0oKZRCRw8qyRBPh+GNQs8jSs=\""
     },
     "agent-framework-docs-tutorials-agents-third-party-chat-history-storage": {
-      "etag": "\"tBDOzCGqNwdrQ7BFF1NouRavjy0=\"",
-      "human": "Storage | Microsoft Learn | ETag \"tBDOzCGqNwdrQ7BFF1NouRavjy0=\"",
+      "etag": "\"sqCCi8/Jo2W6MkZXC9pey1N03nU=\"",
+      "human": "Storage | Microsoft Learn | ETag \"sqCCi8/Jo2W6MkZXC9pey1N03nU=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/third-party-chat-history-storage",
       "title": "Storage | Microsoft Learn",
-      "value": "\"tBDOzCGqNwdrQ7BFF1NouRavjy0=\""
+      "value": "\"sqCCi8/Jo2W6MkZXC9pey1N03nU=\""
     },
     "agent-framework-docs-tutorials-overview": {
-      "etag": "\"LW0NKRYxutB0xXyUxwj+SIhG5y8=\"",
-      "human": "Step 1: Your First Agent | Microsoft Learn | ETag \"LW0NKRYxutB0xXyUxwj+SIhG5y8=\"",
+      "etag": "\"4xxoM7uztRb9zp8UMrzxwcM6jKM=\"",
+      "human": "Step 1: Your First Agent | Microsoft Learn | ETag \"4xxoM7uztRb9zp8UMrzxwcM6jKM=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:08:20 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/overview",
       "title": "Step 1: Your First Agent | Microsoft Learn",
-      "value": "\"LW0NKRYxutB0xXyUxwj+SIhG5y8=\""
+      "value": "\"4xxoM7uztRb9zp8UMrzxwcM6jKM=\""
     },
     "agent-framework-docs-tutorials-plugins-use-purview-with-agent-framework-sdk": {
-      "etag": "\"rhTAq/GFP6xOB+WGaiJox4EY1TI=\"",
-      "human": "Use Microsoft Purview SDK with Agent Framework | Microsoft Learn | ETag \"rhTAq/GFP6xOB+WGaiJox4EY1TI=\"",
+      "etag": "\"DK+5Sw+yUckwt3C7w9DLmNMe0z8=\"",
+      "human": "Use Microsoft Purview SDK with Agent Framework | Microsoft Learn | ETag \"DK+5Sw+yUckwt3C7w9DLmNMe0z8=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Feb 2026 01:47:35 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/plugins/use-purview-with-agent-framework-sdk",
       "title": "Use Microsoft Purview SDK with Agent Framework | Microsoft Learn",
-      "value": "\"rhTAq/GFP6xOB+WGaiJox4EY1TI=\""
+      "value": "\"DK+5Sw+yUckwt3C7w9DLmNMe0z8=\""
     },
     "agent-framework-docs-tutorials-quick-start": {
-      "etag": "\"LW0NKRYxutB0xXyUxwj+SIhG5y8=\"",
-      "human": "Step 1: Your First Agent | Microsoft Learn | ETag \"LW0NKRYxutB0xXyUxwj+SIhG5y8=\"",
+      "etag": "\"4xxoM7uztRb9zp8UMrzxwcM6jKM=\"",
+      "human": "Step 1: Your First Agent | Microsoft Learn | ETag \"4xxoM7uztRb9zp8UMrzxwcM6jKM=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:08:20 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/quick-start",
       "title": "Step 1: Your First Agent | Microsoft Learn",
-      "value": "\"LW0NKRYxutB0xXyUxwj+SIhG5y8=\""
+      "value": "\"4xxoM7uztRb9zp8UMrzxwcM6jKM=\""
     },
     "agent-framework-docs-tutorials-workflows-agents-in-workflows": {
-      "etag": "\"l4szHqG7YVSA7UY0IRO+hXM3gro=\"",
-      "human": "Agents in Workflows | Microsoft Learn | ETag \"l4szHqG7YVSA7UY0IRO+hXM3gro=\"",
+      "etag": "\"YqZAFJiFVy5JSsDnWiKnIQGbLV4=\"",
+      "human": "Agents in Workflows | Microsoft Learn | ETag \"YqZAFJiFVy5JSsDnWiKnIQGbLV4=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/workflows/agents-in-workflows",
       "title": "Agents in Workflows | Microsoft Learn",
-      "value": "\"l4szHqG7YVSA7UY0IRO+hXM3gro=\""
+      "value": "\"YqZAFJiFVy5JSsDnWiKnIQGbLV4=\""
     },
     "agent-framework-docs-tutorials-workflows-checkpointing-and-resuming": {
-      "etag": "\"V5w+F2OfLkCcaPLAeffpwLifVpg=\"",
-      "human": "Microsoft Agent Framework Workflows - Checkpoints | Microsoft Learn | ETag \"V5w+F2OfLkCcaPLAeffpwLifVpg=\"",
+      "etag": "\"9YO+PzQBofFUtfnAovQM5SDWiPU=\"",
+      "human": "Microsoft Agent Framework Workflows - Checkpoints | Microsoft Learn | ETag \"9YO+PzQBofFUtfnAovQM5SDWiPU=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/workflows/checkpointing-and-resuming",
       "title": "Microsoft Agent Framework Workflows - Checkpoints | Microsoft Learn",
-      "value": "\"V5w+F2OfLkCcaPLAeffpwLifVpg=\""
+      "value": "\"9YO+PzQBofFUtfnAovQM5SDWiPU=\""
     },
     "agent-framework-docs-tutorials-workflows-requests-and-responses": {
-      "etag": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
-      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
+      "etag": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
+      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/workflows/requests-and-responses",
       "title": "Microsoft Agent Framework Workflows - State | Microsoft Learn",
-      "value": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\""
+      "value": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\""
     },
     "agent-framework-docs-tutorials-workflows-simple-concurrent-workflow": {
-      "etag": "\"pWimzSVD0/34WYboKMzWqeRMbVA=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Concurrent | Microsoft Learn | ETag \"pWimzSVD0/34WYboKMzWqeRMbVA=\"",
+      "etag": "\"TwVeVnHD0kfQEThD1quOjGxeaYs=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Concurrent | Microsoft Learn | ETag \"TwVeVnHD0kfQEThD1quOjGxeaYs=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/workflows/simple-concurrent-workflow",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Concurrent | Microsoft Learn",
-      "value": "\"pWimzSVD0/34WYboKMzWqeRMbVA=\""
+      "value": "\"TwVeVnHD0kfQEThD1quOjGxeaYs=\""
     },
     "agent-framework-docs-tutorials-workflows-simple-sequential-workflow": {
-      "etag": "\"APtkvCsV/EnXycybLYirIZO1/aE=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"APtkvCsV/EnXycybLYirIZO1/aE=\"",
+      "etag": "\"eHtn85EeUlotv+YXhQDelhOy+nE=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"eHtn85EeUlotv+YXhQDelhOy+nE=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/workflows/simple-sequential-workflow",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn",
-      "value": "\"APtkvCsV/EnXycybLYirIZO1/aE=\""
+      "value": "\"eHtn85EeUlotv+YXhQDelhOy+nE=\""
     },
     "agent-framework-docs-tutorials-workflows-workflow-builder-with-factories": {
-      "etag": "\"HIA9zkvMqoHuc/Mq2fKXFc1R6B8=\"",
-      "human": "Microsoft Agent Framework Workflows - Workflow Builder & Execution | Microsoft Learn | ETag \"HIA9zkvMqoHuc/Mq2fKXFc1R6B8=\"",
+      "etag": "\"h2VdlVI0J4T3bWL5+1DZVE1gbsQ=\"",
+      "human": "Microsoft Agent Framework Workflows - Workflow Builder & Execution | Microsoft Learn | ETag \"h2VdlVI0J4T3bWL5+1DZVE1gbsQ=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/workflows/workflows",
       "title": "Microsoft Agent Framework Workflows - Workflow Builder & Execution | Microsoft Learn",
-      "value": "\"HIA9zkvMqoHuc/Mq2fKXFc1R6B8=\""
+      "value": "\"h2VdlVI0J4T3bWL5+1DZVE1gbsQ=\""
     },
     "agent-framework-docs-tutorials-workflows-workflow-with-branching-logic": {
-      "etag": "\"7vsUYKJiWMl+yTtGQL9ttPr6U0A=\"",
-      "human": "Microsoft Agent Framework Workflows - Edges | Microsoft Learn | ETag \"7vsUYKJiWMl+yTtGQL9ttPr6U0A=\"",
+      "etag": "\"3H27SJc2LCPI5P6qG4L83P69N/Q=\"",
+      "human": "Microsoft Agent Framework Workflows - Edges | Microsoft Learn | ETag \"3H27SJc2LCPI5P6qG4L83P69N/Q=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/workflows/workflow-with-branching-logic",
       "title": "Microsoft Agent Framework Workflows - Edges | Microsoft Learn",
-      "value": "\"7vsUYKJiWMl+yTtGQL9ttPr6U0A=\""
+      "value": "\"3H27SJc2LCPI5P6qG4L83P69N/Q=\""
     },
     "agent-framework-docs-user-guide-agents-agent-background-responses": {
-      "etag": "\"o8fqcP2pidEhvlLDMdUXBY1ZdsQ=\"",
-      "human": "Agent Background Responses | Microsoft Learn | ETag \"o8fqcP2pidEhvlLDMdUXBY1ZdsQ=\"",
+      "etag": "\"PwkWhbQN/3abw/eJzsLpmBRRdfU=\"",
+      "human": "Agent Background Responses | Microsoft Learn | ETag \"PwkWhbQN/3abw/eJzsLpmBRRdfU=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-background-responses",
       "title": "Agent Background Responses | Microsoft Learn",
-      "value": "\"o8fqcP2pidEhvlLDMdUXBY1ZdsQ=\""
+      "value": "\"PwkWhbQN/3abw/eJzsLpmBRRdfU=\""
     },
     "agent-framework-docs-user-guide-agents-agent-memory": {
-      "etag": "\"bd5LZyP0gbUyIWg5KRGg+Iwkxgk=\"",
-      "human": "RAG | Microsoft Learn | ETag \"bd5LZyP0gbUyIWg5KRGg+Iwkxgk=\"",
+      "etag": "\"M01sghroIKzwFU9ADXoqW3w43oQ=\"",
+      "human": "RAG | Microsoft Learn | ETag \"M01sghroIKzwFU9ADXoqW3w43oQ=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 20 Feb 2026 15:37:58 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-memory",
       "title": "RAG | Microsoft Learn",
-      "value": "\"bd5LZyP0gbUyIWg5KRGg+Iwkxgk=\""
+      "value": "\"M01sghroIKzwFU9ADXoqW3w43oQ=\""
     },
     "agent-framework-docs-user-guide-agents-agent-middleware": {
-      "etag": "\"xcpvOlWoJuBh37U/nroYwiQqtGo=\"",
-      "human": "Agent Middleware | Microsoft Learn | ETag \"xcpvOlWoJuBh37U/nroYwiQqtGo=\"",
+      "etag": "\"YdAGt4QjehdLaCbQ+0Yibb1/qvA=\"",
+      "human": "Agent Middleware | Microsoft Learn | ETag \"YdAGt4QjehdLaCbQ+0Yibb1/qvA=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/agents/middleware/",
       "title": "Agent Middleware | Microsoft Learn",
-      "value": "\"xcpvOlWoJuBh37U/nroYwiQqtGo=\""
+      "value": "\"YdAGt4QjehdLaCbQ+0Yibb1/qvA=\""
     },
     "agent-framework-docs-user-guide-agents-agent-rag": {
-      "etag": "\"bd5LZyP0gbUyIWg5KRGg+Iwkxgk=\"",
-      "human": "RAG | Microsoft Learn | ETag \"bd5LZyP0gbUyIWg5KRGg+Iwkxgk=\"",
+      "etag": "\"M01sghroIKzwFU9ADXoqW3w43oQ=\"",
+      "human": "RAG | Microsoft Learn | ETag \"M01sghroIKzwFU9ADXoqW3w43oQ=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 20 Feb 2026 15:37:58 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-rag",
       "title": "RAG | Microsoft Learn",
-      "value": "\"bd5LZyP0gbUyIWg5KRGg+Iwkxgk=\""
+      "value": "\"M01sghroIKzwFU9ADXoqW3w43oQ=\""
     },
     "agent-framework-docs-user-guide-agents-agent-tools": {
-      "etag": "\"25l5EOM4vy8njNfe5gN2prMqnAI=\"",
-      "human": "Tools Overview | Microsoft Learn | ETag \"25l5EOM4vy8njNfe5gN2prMqnAI=\"",
+      "etag": "\"bRvzcSSPsK33JQ9WTkULWJtOxxM=\"",
+      "human": "Tools Overview | Microsoft Learn | ETag \"bRvzcSSPsK33JQ9WTkULWJtOxxM=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-tools",
       "title": "Tools Overview | Microsoft Learn",
-      "value": "\"25l5EOM4vy8njNfe5gN2prMqnAI=\""
+      "value": "\"bRvzcSSPsK33JQ9WTkULWJtOxxM=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types": {
-      "etag": "\"9qm0lKUcR2nL3h1nHGJbggZ3Llg=\"",
-      "human": "Providers Overview | Microsoft Learn | ETag \"9qm0lKUcR2nL3h1nHGJbggZ3Llg=\"",
+      "etag": "\"SB0hWhTWlVPfBb6wdqJBvhmJW40=\"",
+      "human": "Providers Overview | Microsoft Learn | ETag \"SB0hWhTWlVPfBb6wdqJBvhmJW40=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/",
       "title": "Providers Overview | Microsoft Learn",
-      "value": "\"9qm0lKUcR2nL3h1nHGJbggZ3Llg=\""
+      "value": "\"SB0hWhTWlVPfBb6wdqJBvhmJW40=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-a2a-agent": {
-      "etag": "\"YF5c9lJAh/RZyKkXJYMZNyBeoUw=\"",
-      "human": "A2A Integration | Microsoft Learn | ETag \"YF5c9lJAh/RZyKkXJYMZNyBeoUw=\"",
+      "etag": "\"3nON2YylozfjbjrdXUw6FQkFO0c=\"",
+      "human": "A2A Integration | Microsoft Learn | ETag \"3nON2YylozfjbjrdXUw6FQkFO0c=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/a2a-agent",
       "title": "A2A Integration | Microsoft Learn",
-      "value": "\"YF5c9lJAh/RZyKkXJYMZNyBeoUw=\""
+      "value": "\"3nON2YylozfjbjrdXUw6FQkFO0c=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-anthropic-agent": {
-      "etag": "\"x4UQc5THWweMv1Hr2eUjeRE6d08=\"",
-      "human": "Anthropic Agents | Microsoft Learn | ETag \"x4UQc5THWweMv1Hr2eUjeRE6d08=\"",
+      "etag": "\"Dyo8hoSQZF5Wn7P5BFfO1mul8TE=\"",
+      "human": "Anthropic Agents | Microsoft Learn | ETag \"Dyo8hoSQZF5Wn7P5BFfO1mul8TE=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/anthropic-agent",
       "title": "Anthropic Agents | Microsoft Learn",
-      "value": "\"x4UQc5THWweMv1Hr2eUjeRE6d08=\""
+      "value": "\"Dyo8hoSQZF5Wn7P5BFfO1mul8TE=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-agent": {
-      "etag": "\"nHpGKHsr8ovtf9URdKK791Yz4uQ=\"",
-      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"nHpGKHsr8ovtf9URdKK791Yz4uQ=\"",
+      "etag": "\"KxctU7RQaOou4uMXoDMc8WNn7Kk=\"",
+      "human": "Microsoft Foundry | Microsoft Learn | ETag \"KxctU7RQaOou4uMXoDMc8WNn7Kk=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-agent",
-      "title": "Microsoft Foundry Agents | Microsoft Learn",
-      "value": "\"nHpGKHsr8ovtf9URdKK791Yz4uQ=\""
+      "title": "Microsoft Foundry | Microsoft Learn",
+      "value": "\"KxctU7RQaOou4uMXoDMc8WNn7Kk=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-models-chat-completion-agent": {
-      "etag": "\"nHpGKHsr8ovtf9URdKK791Yz4uQ=\"",
-      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"nHpGKHsr8ovtf9URdKK791Yz4uQ=\"",
+      "etag": "\"KxctU7RQaOou4uMXoDMc8WNn7Kk=\"",
+      "human": "Microsoft Foundry | Microsoft Learn | ETag \"KxctU7RQaOou4uMXoDMc8WNn7Kk=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-models-chat-completion-agent",
-      "title": "Microsoft Foundry Agents | Microsoft Learn",
-      "value": "\"nHpGKHsr8ovtf9URdKK791Yz4uQ=\""
+      "title": "Microsoft Foundry | Microsoft Learn",
+      "value": "\"KxctU7RQaOou4uMXoDMc8WNn7Kk=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-models-responses-agent": {
-      "etag": "\"nHpGKHsr8ovtf9URdKK791Yz4uQ=\"",
-      "human": "Microsoft Foundry Agents | Microsoft Learn | ETag \"nHpGKHsr8ovtf9URdKK791Yz4uQ=\"",
+      "etag": "\"KxctU7RQaOou4uMXoDMc8WNn7Kk=\"",
+      "human": "Microsoft Foundry | Microsoft Learn | ETag \"KxctU7RQaOou4uMXoDMc8WNn7Kk=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-models-responses-agent",
-      "title": "Microsoft Foundry Agents | Microsoft Learn",
-      "value": "\"nHpGKHsr8ovtf9URdKK791Yz4uQ=\""
+      "title": "Microsoft Foundry | Microsoft Learn",
+      "value": "\"KxctU7RQaOou4uMXoDMc8WNn7Kk=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-openai-chat-completion-agent": {
-      "etag": "\"JtwU1cBLxWntL+Ww2SbLMQ+SZkw=\"",
-      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"JtwU1cBLxWntL+Ww2SbLMQ+SZkw=\"",
+      "etag": "\"8+mEuwHxM4qqlyGlmV3kiz18HLA=\"",
+      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"8+mEuwHxM4qqlyGlmV3kiz18HLA=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-openai-chat-completion-agent",
       "title": "Azure OpenAI Agents | Microsoft Learn",
-      "value": "\"JtwU1cBLxWntL+Ww2SbLMQ+SZkw=\""
+      "value": "\"8+mEuwHxM4qqlyGlmV3kiz18HLA=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-azure-openai-responses-agent": {
-      "etag": "\"JtwU1cBLxWntL+Ww2SbLMQ+SZkw=\"",
-      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"JtwU1cBLxWntL+Ww2SbLMQ+SZkw=\"",
+      "etag": "\"8+mEuwHxM4qqlyGlmV3kiz18HLA=\"",
+      "human": "Azure OpenAI Agents | Microsoft Learn | ETag \"8+mEuwHxM4qqlyGlmV3kiz18HLA=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 20 Mar 2026 09:07:47 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-openai-responses-agent",
       "title": "Azure OpenAI Agents | Microsoft Learn",
-      "value": "\"JtwU1cBLxWntL+Ww2SbLMQ+SZkw=\""
+      "value": "\"8+mEuwHxM4qqlyGlmV3kiz18HLA=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-chat-client-agent": {
-      "etag": "\"2k0PHWe97J4mMA/JO1a3QcP3rhA=\"",
-      "human": "Custom Agents | Microsoft Learn | ETag \"2k0PHWe97J4mMA/JO1a3QcP3rhA=\"",
+      "etag": "\"y96Q0mzVkY0uPwkJwgqhFxNwD24=\"",
+      "human": "Custom Agents | Microsoft Learn | ETag \"y96Q0mzVkY0uPwkJwgqhFxNwD24=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/chat-client-agent",
       "title": "Custom Agents | Microsoft Learn",
-      "value": "\"2k0PHWe97J4mMA/JO1a3QcP3rhA=\""
+      "value": "\"y96Q0mzVkY0uPwkJwgqhFxNwD24=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-custom-agent": {
-      "etag": "\"2k0PHWe97J4mMA/JO1a3QcP3rhA=\"",
-      "human": "Custom Agents | Microsoft Learn | ETag \"2k0PHWe97J4mMA/JO1a3QcP3rhA=\"",
+      "etag": "\"y96Q0mzVkY0uPwkJwgqhFxNwD24=\"",
+      "human": "Custom Agents | Microsoft Learn | ETag \"y96Q0mzVkY0uPwkJwgqhFxNwD24=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/custom-agent",
       "title": "Custom Agents | Microsoft Learn",
-      "value": "\"2k0PHWe97J4mMA/JO1a3QcP3rhA=\""
+      "value": "\"y96Q0mzVkY0uPwkJwgqhFxNwD24=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-durable-agent-create-durable-agent": {
-      "etag": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
-      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
+      "etag": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
+      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/durable-agent/create-durable-agent",
       "title": "Azure Functions (Durable) | Microsoft Learn",
-      "value": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\""
+      "value": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-durable-agent-features": {
-      "etag": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
-      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"E5HDwT+FlSxjvuZJAIy6tykoRX4=\"",
+      "etag": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
+      "human": "Azure Functions (Durable) | Microsoft Learn | ETag \"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/durable-agent/features",
       "title": "Azure Functions (Durable) | Microsoft Learn",
-      "value": "\"E5HDwT+FlSxjvuZJAIy6tykoRX4=\""
+      "value": "\"oK4zF6cn6MkR0Mxpfy3aYLLsdt8=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-openai-assistants-agent": {
-      "etag": "\"IMrllfZ6S6LccMPEyf1ldW4rC6I=\"",
-      "human": "OpenAI Agents | Microsoft Learn | ETag \"IMrllfZ6S6LccMPEyf1ldW4rC6I=\"",
+      "etag": "\"05NXotqJo2rtj+Cm4io5/+aOZyo=\"",
+      "human": "OpenAI Agents | Microsoft Learn | ETag \"05NXotqJo2rtj+Cm4io5/+aOZyo=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/openai-assistants-agent",
       "title": "OpenAI Agents | Microsoft Learn",
-      "value": "\"IMrllfZ6S6LccMPEyf1ldW4rC6I=\""
+      "value": "\"05NXotqJo2rtj+Cm4io5/+aOZyo=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-openai-chat-completion-agent": {
-      "etag": "\"IMrllfZ6S6LccMPEyf1ldW4rC6I=\"",
-      "human": "OpenAI Agents | Microsoft Learn | ETag \"IMrllfZ6S6LccMPEyf1ldW4rC6I=\"",
+      "etag": "\"05NXotqJo2rtj+Cm4io5/+aOZyo=\"",
+      "human": "OpenAI Agents | Microsoft Learn | ETag \"05NXotqJo2rtj+Cm4io5/+aOZyo=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/openai-chat-completion-agent",
       "title": "OpenAI Agents | Microsoft Learn",
-      "value": "\"IMrllfZ6S6LccMPEyf1ldW4rC6I=\""
+      "value": "\"05NXotqJo2rtj+Cm4io5/+aOZyo=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-openai-responses-agent": {
-      "etag": "\"IMrllfZ6S6LccMPEyf1ldW4rC6I=\"",
-      "human": "OpenAI Agents | Microsoft Learn | ETag \"IMrllfZ6S6LccMPEyf1ldW4rC6I=\"",
+      "etag": "\"05NXotqJo2rtj+Cm4io5/+aOZyo=\"",
+      "human": "OpenAI Agents | Microsoft Learn | ETag \"05NXotqJo2rtj+Cm4io5/+aOZyo=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/openai-responses-agent",
       "title": "OpenAI Agents | Microsoft Learn",
-      "value": "\"IMrllfZ6S6LccMPEyf1ldW4rC6I=\""
+      "value": "\"05NXotqJo2rtj+Cm4io5/+aOZyo=\""
     },
     "agent-framework-docs-user-guide-agents-multi-turn-conversation": {
-      "etag": "\"6dakrP70trNUS/K542xd8MS14f0=\"",
-      "human": "Session | Microsoft Learn | ETag \"6dakrP70trNUS/K542xd8MS14f0=\"",
+      "etag": "\"NIIY650rv45fFH8zWSWuPadoqqI=\"",
+      "human": "Session | Microsoft Learn | ETag \"NIIY650rv45fFH8zWSWuPadoqqI=\"",
       "kind": "http_document",
       "last_modified": "Fri, 20 Feb 2026 15:37:58 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/multi-turn-conversation",
       "title": "Session | Microsoft Learn",
-      "value": "\"6dakrP70trNUS/K542xd8MS14f0=\""
+      "value": "\"NIIY650rv45fFH8zWSWuPadoqqI=\""
     },
     "agent-framework-docs-user-guide-agents-running-agents": {
-      "etag": "\"Ux7ReWtjEja80SOxWOwAiskKPoo=\"",
-      "human": "Running Agents | Microsoft Learn | ETag \"Ux7ReWtjEja80SOxWOwAiskKPoo=\"",
+      "etag": "\"kgdtmRL4vkCr3NS59jnkR5wXTK0=\"",
+      "human": "Running Agents | Microsoft Learn | ETag \"kgdtmRL4vkCr3NS59jnkR5wXTK0=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Mar 2026 11:30:28 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/running-agents",
       "title": "Running Agents | Microsoft Learn",
-      "value": "\"Ux7ReWtjEja80SOxWOwAiskKPoo=\""
+      "value": "\"kgdtmRL4vkCr3NS59jnkR5wXTK0=\""
     },
     "agent-framework-docs-user-guide-devui": {
-      "etag": "\"jK5GzB4udJ/ha2NPm9JMVD9sOM0=\"",
-      "human": "DevUI Overview | Microsoft Learn | ETag \"jK5GzB4udJ/ha2NPm9JMVD9sOM0=\"",
+      "etag": "\"afaOAVqEzXFCxTXHNih1sWybRaY=\"",
+      "human": "DevUI Overview | Microsoft Learn | ETag \"afaOAVqEzXFCxTXHNih1sWybRaY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/devui/",
       "title": "DevUI Overview | Microsoft Learn",
-      "value": "\"jK5GzB4udJ/ha2NPm9JMVD9sOM0=\""
+      "value": "\"afaOAVqEzXFCxTXHNih1sWybRaY=\""
     },
     "agent-framework-docs-user-guide-devui-api-reference": {
-      "etag": "\"B9b7Elo/k8edzI3Yl5V8eTvTQQw=\"",
-      "human": "DevUI API Reference | Microsoft Learn | ETag \"B9b7Elo/k8edzI3Yl5V8eTvTQQw=\"",
+      "etag": "\"G4p/K7aDPm84hGw81ElXOnxaVrk=\"",
+      "human": "DevUI API Reference | Microsoft Learn | ETag \"G4p/K7aDPm84hGw81ElXOnxaVrk=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/devui/api-reference",
       "title": "DevUI API Reference | Microsoft Learn",
-      "value": "\"B9b7Elo/k8edzI3Yl5V8eTvTQQw=\""
+      "value": "\"G4p/K7aDPm84hGw81ElXOnxaVrk=\""
     },
     "agent-framework-docs-user-guide-devui-directory-discovery": {
-      "etag": "\"YaNZ9t/lNgcfFhky6SmPDfJdxoI=\"",
-      "human": "DevUI Directory Discovery | Microsoft Learn | ETag \"YaNZ9t/lNgcfFhky6SmPDfJdxoI=\"",
+      "etag": "\"IL1XEYLQ79nzwLXSCc/9U5ss8oU=\"",
+      "human": "DevUI Directory Discovery | Microsoft Learn | ETag \"IL1XEYLQ79nzwLXSCc/9U5ss8oU=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/devui/directory-discovery",
       "title": "DevUI Directory Discovery | Microsoft Learn",
-      "value": "\"YaNZ9t/lNgcfFhky6SmPDfJdxoI=\""
+      "value": "\"IL1XEYLQ79nzwLXSCc/9U5ss8oU=\""
     },
     "agent-framework-docs-user-guide-devui-samples": {
-      "etag": "\"+S+SBIEDf8BVtITnIAk4yFNoDsk=\"",
-      "human": "DevUI Samples | Microsoft Learn | ETag \"+S+SBIEDf8BVtITnIAk4yFNoDsk=\"",
+      "etag": "\"MyfstielyfekcAPfsP39R1G93AE=\"",
+      "human": "DevUI Samples | Microsoft Learn | ETag \"MyfstielyfekcAPfsP39R1G93AE=\"",
       "kind": "http_document",
       "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/devui/samples",
       "title": "DevUI Samples | Microsoft Learn",
-      "value": "\"+S+SBIEDf8BVtITnIAk4yFNoDsk=\""
+      "value": "\"MyfstielyfekcAPfsP39R1G93AE=\""
     },
     "agent-framework-docs-user-guide-devui-security": {
-      "etag": "\"/xKrdzIIWgNjVAN2aEXhZjS7gvg=\"",
-      "human": "DevUI Security & Deployment | Microsoft Learn | ETag \"/xKrdzIIWgNjVAN2aEXhZjS7gvg=\"",
+      "etag": "\"PHyXrzUq64wVnA37OF4wQFWFEXs=\"",
+      "human": "DevUI Security & Deployment | Microsoft Learn | ETag \"PHyXrzUq64wVnA37OF4wQFWFEXs=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/devui/security",
       "title": "DevUI Security & Deployment | Microsoft Learn",
-      "value": "\"/xKrdzIIWgNjVAN2aEXhZjS7gvg=\""
+      "value": "\"PHyXrzUq64wVnA37OF4wQFWFEXs=\""
     },
     "agent-framework-docs-user-guide-devui-tracing": {
-      "etag": "\"i56daORbR0rqMlNcg/AR3ODKzRE=\"",
-      "human": "DevUI Tracing & Observability | Microsoft Learn | ETag \"i56daORbR0rqMlNcg/AR3ODKzRE=\"",
+      "etag": "\"DcV3eZm7mT9Mpu4mAYWwtcaiTtA=\"",
+      "human": "DevUI Tracing & Observability | Microsoft Learn | ETag \"DcV3eZm7mT9Mpu4mAYWwtcaiTtA=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/devui/tracing",
       "title": "DevUI Tracing & Observability | Microsoft Learn",
-      "value": "\"i56daORbR0rqMlNcg/AR3ODKzRE=\""
+      "value": "\"DcV3eZm7mT9Mpu4mAYWwtcaiTtA=\""
     },
     "agent-framework-docs-user-guide-hosting": {
-      "etag": "\"AdEGtHins0vGMOT1C2lhhc/lBeE=\"",
-      "human": "Agent Framework Integrations | Microsoft Learn | ETag \"AdEGtHins0vGMOT1C2lhhc/lBeE=\"",
+      "etag": "\"26MtpAEoweoQXtSJxla/CQ8EQ2c=\"",
+      "human": "Agent Framework Integrations | Microsoft Learn | ETag \"26MtpAEoweoQXtSJxla/CQ8EQ2c=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/hosting/",
       "title": "Agent Framework Integrations | Microsoft Learn",
-      "value": "\"AdEGtHins0vGMOT1C2lhhc/lBeE=\""
+      "value": "\"26MtpAEoweoQXtSJxla/CQ8EQ2c=\""
     },
     "agent-framework-docs-user-guide-hosting-agent-to-agent-integration": {
-      "etag": "\"YF5c9lJAh/RZyKkXJYMZNyBeoUw=\"",
-      "human": "A2A Integration | Microsoft Learn | ETag \"YF5c9lJAh/RZyKkXJYMZNyBeoUw=\"",
+      "etag": "\"3nON2YylozfjbjrdXUw6FQkFO0c=\"",
+      "human": "A2A Integration | Microsoft Learn | ETag \"3nON2YylozfjbjrdXUw6FQkFO0c=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 18:42:25 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/hosting/agent-to-agent-integration",
       "title": "A2A Integration | Microsoft Learn",
-      "value": "\"YF5c9lJAh/RZyKkXJYMZNyBeoUw=\""
+      "value": "\"3nON2YylozfjbjrdXUw6FQkFO0c=\""
     },
     "agent-framework-docs-user-guide-hosting-openai-integration": {
-      "etag": "\"F0uAmjaaiHupoFfzoE5oZUV+gNM=\"",
-      "human": "OpenAI Integration | Microsoft Learn | ETag \"F0uAmjaaiHupoFfzoE5oZUV+gNM=\"",
+      "etag": "\"XIpUz2VfMEHxnrpyKnXbV/4Gnlc=\"",
+      "human": "OpenAI Integration | Microsoft Learn | ETag \"XIpUz2VfMEHxnrpyKnXbV/4Gnlc=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 23 Feb 2026 23:55:43 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/hosting/openai-integration",
       "title": "OpenAI Integration | Microsoft Learn",
-      "value": "\"F0uAmjaaiHupoFfzoE5oZUV+gNM=\""
+      "value": "\"XIpUz2VfMEHxnrpyKnXbV/4Gnlc=\""
     },
     "agent-framework-docs-user-guide-model-context-protocol": {
-      "etag": "\"UMlIRN23iskgL8L+fqk4tT7go5E=\"",
-      "human": "MCP and Foundry Agents | Microsoft Learn | ETag \"UMlIRN23iskgL8L+fqk4tT7go5E=\"",
+      "etag": "\"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\"",
+      "human": "MCP and Foundry Agents | Microsoft Learn | ETag \"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/model-context-protocol/",
       "title": "MCP and Foundry Agents | Microsoft Learn",
-      "value": "\"UMlIRN23iskgL8L+fqk4tT7go5E=\""
+      "value": "\"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\""
     },
     "agent-framework-docs-user-guide-model-context-protocol-using-mcp-tools": {
-      "etag": "\"5M58tZZQ30NB7qKxrHJXicMdK98=\"",
-      "human": "Using MCP Tools | Microsoft Learn | ETag \"5M58tZZQ30NB7qKxrHJXicMdK98=\"",
+      "etag": "\"2OcvmztJeYTWwyOMoXYZCsyff4I=\"",
+      "human": "Using MCP Tools | Microsoft Learn | ETag \"2OcvmztJeYTWwyOMoXYZCsyff4I=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/model-context-protocol/using-mcp-tools",
       "title": "Using MCP Tools | Microsoft Learn",
-      "value": "\"5M58tZZQ30NB7qKxrHJXicMdK98=\""
+      "value": "\"2OcvmztJeYTWwyOMoXYZCsyff4I=\""
     },
     "agent-framework-docs-user-guide-model-context-protocol-using-mcp-with-foundry-agents": {
-      "etag": "\"UMlIRN23iskgL8L+fqk4tT7go5E=\"",
-      "human": "MCP and Foundry Agents | Microsoft Learn | ETag \"UMlIRN23iskgL8L+fqk4tT7go5E=\"",
+      "etag": "\"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\"",
+      "human": "MCP and Foundry Agents | Microsoft Learn | ETag \"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/model-context-protocol/using-mcp-with-foundry-agents",
       "title": "MCP and Foundry Agents | Microsoft Learn",
-      "value": "\"UMlIRN23iskgL8L+fqk4tT7go5E=\""
+      "value": "\"J/5OfALK0bcoYbA0oD1MT4O+Mcw=\""
     },
     "agent-framework-docs-user-guide-observability": {
-      "etag": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
-      "human": "Observability | Microsoft Learn | ETag \"+r72zKcao2d/39CmOvbnW/IOs0A=\"",
+      "etag": "\"d02YiN7U87LLOlx+p3XgLxIdNMk=\"",
+      "human": "Observability | Microsoft Learn | ETag \"d02YiN7U87LLOlx+p3XgLxIdNMk=\"",
       "kind": "http_document",
       "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/observability",
       "title": "Observability | Microsoft Learn",
-      "value": "\"+r72zKcao2d/39CmOvbnW/IOs0A=\""
+      "value": "\"d02YiN7U87LLOlx+p3XgLxIdNMk=\""
     },
     "agent-framework-docs-user-guide-overview": {
-      "etag": "\"RLVvV+jIPjUcyyZ/B16J2Q9Dwvw=\"",
-      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"RLVvV+jIPjUcyyZ/B16J2Q9Dwvw=\"",
+      "etag": "\"ocv+VNMkrxlfGiRd9qQ7lrAUSVE=\"",
+      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"ocv+VNMkrxlfGiRd9qQ7lrAUSVE=\"",
       "kind": "http_document",
-      "last_modified": "Fri, 20 Feb 2026 16:00:19 GMT",
+      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/overview",
       "title": "Microsoft Agent Framework Overview | Microsoft Learn",
-      "value": "\"RLVvV+jIPjUcyyZ/B16J2Q9Dwvw=\""
+      "value": "\"ocv+VNMkrxlfGiRd9qQ7lrAUSVE=\""
     },
     "agent-framework-docs-user-guide-workflows-as-agents": {
-      "etag": "\"MGYVr+dabgiutdNKY2Z/evTswd0=\"",
-      "human": "Microsoft Agent Framework Workflows - Using Workflows as Agents | Microsoft Learn | ETag \"MGYVr+dabgiutdNKY2Z/evTswd0=\"",
+      "etag": "\"HhC5BvlKS/viMQm7MhFSpa+Zai4=\"",
+      "human": "Microsoft Agent Framework Workflows - Using Workflows as Agents | Microsoft Learn | ETag \"HhC5BvlKS/viMQm7MhFSpa+Zai4=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 12 Mar 2026 00:48:46 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/as-agents",
       "title": "Microsoft Agent Framework Workflows - Using Workflows as Agents | Microsoft Learn",
-      "value": "\"MGYVr+dabgiutdNKY2Z/evTswd0=\""
+      "value": "\"HhC5BvlKS/viMQm7MhFSpa+Zai4=\""
     },
     "agent-framework-docs-user-guide-workflows-checkpoints": {
-      "etag": "\"V5w+F2OfLkCcaPLAeffpwLifVpg=\"",
-      "human": "Microsoft Agent Framework Workflows - Checkpoints | Microsoft Learn | ETag \"V5w+F2OfLkCcaPLAeffpwLifVpg=\"",
+      "etag": "\"9YO+PzQBofFUtfnAovQM5SDWiPU=\"",
+      "human": "Microsoft Agent Framework Workflows - Checkpoints | Microsoft Learn | ETag \"9YO+PzQBofFUtfnAovQM5SDWiPU=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/checkpoints",
       "title": "Microsoft Agent Framework Workflows - Checkpoints | Microsoft Learn",
-      "value": "\"V5w+F2OfLkCcaPLAeffpwLifVpg=\""
+      "value": "\"9YO+PzQBofFUtfnAovQM5SDWiPU=\""
     },
     "agent-framework-docs-user-guide-workflows-core-concepts-edges": {
-      "etag": "\"7vsUYKJiWMl+yTtGQL9ttPr6U0A=\"",
-      "human": "Microsoft Agent Framework Workflows - Edges | Microsoft Learn | ETag \"7vsUYKJiWMl+yTtGQL9ttPr6U0A=\"",
+      "etag": "\"3H27SJc2LCPI5P6qG4L83P69N/Q=\"",
+      "human": "Microsoft Agent Framework Workflows - Edges | Microsoft Learn | ETag \"3H27SJc2LCPI5P6qG4L83P69N/Q=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/edges",
       "title": "Microsoft Agent Framework Workflows - Edges | Microsoft Learn",
-      "value": "\"7vsUYKJiWMl+yTtGQL9ttPr6U0A=\""
+      "value": "\"3H27SJc2LCPI5P6qG4L83P69N/Q=\""
     },
     "agent-framework-docs-user-guide-workflows-core-concepts-events": {
-      "etag": "\"8BWH5O1+ouYzDHdUYhYX3SQbjOw=\"",
-      "human": "Microsoft Agent Framework Workflows - Events | Microsoft Learn | ETag \"8BWH5O1+ouYzDHdUYhYX3SQbjOw=\"",
+      "etag": "\"XvxAcbw5Uv9mrlMoUQgfecf2b24=\"",
+      "human": "Microsoft Agent Framework Workflows - Events | Microsoft Learn | ETag \"XvxAcbw5Uv9mrlMoUQgfecf2b24=\"",
       "kind": "http_document",
       "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/events",
       "title": "Microsoft Agent Framework Workflows - Events | Microsoft Learn",
-      "value": "\"8BWH5O1+ouYzDHdUYhYX3SQbjOw=\""
+      "value": "\"XvxAcbw5Uv9mrlMoUQgfecf2b24=\""
     },
     "agent-framework-docs-user-guide-workflows-core-concepts-executors": {
-      "etag": "\"WKst4A8nvuPaMYZyabvA/aCN1aM=\"",
-      "human": "Microsoft Agent Framework Workflows - Executors | Microsoft Learn | ETag \"WKst4A8nvuPaMYZyabvA/aCN1aM=\"",
+      "etag": "\"VxXnWpqxwYRRDqEYCZS3S6z9Ubk=\"",
+      "human": "Microsoft Agent Framework Workflows - Executors | Microsoft Learn | ETag \"VxXnWpqxwYRRDqEYCZS3S6z9Ubk=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/executors",
       "title": "Microsoft Agent Framework Workflows - Executors | Microsoft Learn",
-      "value": "\"WKst4A8nvuPaMYZyabvA/aCN1aM=\""
+      "value": "\"VxXnWpqxwYRRDqEYCZS3S6z9Ubk=\""
     },
     "agent-framework-docs-user-guide-workflows-core-concepts-overview": {
-      "etag": "\"xC5bnI/CyUF6M/LudvWj1YrUG1w=\"",
-      "human": "Microsoft Agent Framework Workflows | Microsoft Learn | ETag \"xC5bnI/CyUF6M/LudvWj1YrUG1w=\"",
+      "etag": "\"XcQdOaq31Y49e2GOn2q99I+JK5E=\"",
+      "human": "Microsoft Agent Framework Workflows | Microsoft Learn | ETag \"XcQdOaq31Y49e2GOn2q99I+JK5E=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/overview",
       "title": "Microsoft Agent Framework Workflows | Microsoft Learn",
-      "value": "\"xC5bnI/CyUF6M/LudvWj1YrUG1w=\""
+      "value": "\"XcQdOaq31Y49e2GOn2q99I+JK5E=\""
     },
     "agent-framework-docs-user-guide-workflows-core-concepts-workflows": {
-      "etag": "\"HIA9zkvMqoHuc/Mq2fKXFc1R6B8=\"",
-      "human": "Microsoft Agent Framework Workflows - Workflow Builder & Execution | Microsoft Learn | ETag \"HIA9zkvMqoHuc/Mq2fKXFc1R6B8=\"",
+      "etag": "\"h2VdlVI0J4T3bWL5+1DZVE1gbsQ=\"",
+      "human": "Microsoft Agent Framework Workflows - Workflow Builder & Execution | Microsoft Learn | ETag \"h2VdlVI0J4T3bWL5+1DZVE1gbsQ=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/workflows",
       "title": "Microsoft Agent Framework Workflows - Workflow Builder & Execution | Microsoft Learn",
-      "value": "\"HIA9zkvMqoHuc/Mq2fKXFc1R6B8=\""
+      "value": "\"h2VdlVI0J4T3bWL5+1DZVE1gbsQ=\""
     },
     "agent-framework-docs-user-guide-workflows-declarative-workflows": {
-      "etag": "\"CIVprEVCln+zsx2M76sqGwadlI4=\"",
-      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"CIVprEVCln+zsx2M76sqGwadlI4=\"",
+      "etag": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
+      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 12 Mar 2026 00:48:46 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows",
       "title": "Declarative Workflows - Overview | Microsoft Learn",
-      "value": "\"CIVprEVCln+zsx2M76sqGwadlI4=\""
+      "value": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\""
     },
     "agent-framework-docs-user-guide-workflows-declarative-workflows-actions-reference": {
-      "etag": "\"CIVprEVCln+zsx2M76sqGwadlI4=\"",
-      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"CIVprEVCln+zsx2M76sqGwadlI4=\"",
+      "etag": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
+      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 12 Mar 2026 00:48:46 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows/actions-reference",
       "title": "Declarative Workflows - Overview | Microsoft Learn",
-      "value": "\"CIVprEVCln+zsx2M76sqGwadlI4=\""
+      "value": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\""
     },
     "agent-framework-docs-user-guide-workflows-declarative-workflows-advanced-patterns": {
-      "etag": "\"CIVprEVCln+zsx2M76sqGwadlI4=\"",
-      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"CIVprEVCln+zsx2M76sqGwadlI4=\"",
+      "etag": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
+      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 12 Mar 2026 00:48:46 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows/advanced-patterns",
       "title": "Declarative Workflows - Overview | Microsoft Learn",
-      "value": "\"CIVprEVCln+zsx2M76sqGwadlI4=\""
+      "value": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\""
     },
     "agent-framework-docs-user-guide-workflows-declarative-workflows-expressions": {
-      "etag": "\"CIVprEVCln+zsx2M76sqGwadlI4=\"",
-      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"CIVprEVCln+zsx2M76sqGwadlI4=\"",
+      "etag": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
+      "human": "Declarative Workflows - Overview | Microsoft Learn | ETag \"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 12 Mar 2026 00:48:46 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows/expressions",
       "title": "Declarative Workflows - Overview | Microsoft Learn",
-      "value": "\"CIVprEVCln+zsx2M76sqGwadlI4=\""
+      "value": "\"xbvd1gEpvAS7AhmcRYkeTZ3GZmk=\""
     },
     "agent-framework-docs-user-guide-workflows-observability": {
-      "etag": "\"2GQK7iyBVQs3E3E9eWqcVGCv+Hs=\"",
-      "human": "Microsoft Agent Framework Workflows - Observability | Microsoft Learn | ETag \"2GQK7iyBVQs3E3E9eWqcVGCv+Hs=\"",
+      "etag": "\"esKjuwaUGcljiSutLzTotOwgh8E=\"",
+      "human": "Microsoft Agent Framework Workflows - Observability | Microsoft Learn | ETag \"esKjuwaUGcljiSutLzTotOwgh8E=\"",
       "kind": "http_document",
       "last_modified": "Thu, 12 Mar 2026 00:48:46 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/observability",
       "title": "Microsoft Agent Framework Workflows - Observability | Microsoft Learn",
-      "value": "\"2GQK7iyBVQs3E3E9eWqcVGCv+Hs=\""
+      "value": "\"esKjuwaUGcljiSutLzTotOwgh8E=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-concurrent": {
-      "etag": "\"pWimzSVD0/34WYboKMzWqeRMbVA=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Concurrent | Microsoft Learn | ETag \"pWimzSVD0/34WYboKMzWqeRMbVA=\"",
+      "etag": "\"TwVeVnHD0kfQEThD1quOjGxeaYs=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Concurrent | Microsoft Learn | ETag \"TwVeVnHD0kfQEThD1quOjGxeaYs=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/concurrent",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Concurrent | Microsoft Learn",
-      "value": "\"pWimzSVD0/34WYboKMzWqeRMbVA=\""
+      "value": "\"TwVeVnHD0kfQEThD1quOjGxeaYs=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-group-chat": {
-      "etag": "\"8Vgte8ywCaKRkKebJUOjsmdccrA=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Group Chat | Microsoft Learn | ETag \"8Vgte8ywCaKRkKebJUOjsmdccrA=\"",
+      "etag": "\"oZhXyd8/8ZrBW9bv1M1Li84RGI4=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Group Chat | Microsoft Learn | ETag \"oZhXyd8/8ZrBW9bv1M1Li84RGI4=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/group-chat",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Group Chat | Microsoft Learn",
-      "value": "\"8Vgte8ywCaKRkKebJUOjsmdccrA=\""
+      "value": "\"oZhXyd8/8ZrBW9bv1M1Li84RGI4=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-handoff": {
-      "etag": "\"NangPxOAEx/xmLPSL9gCh6lE6Rg=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Handoff | Microsoft Learn | ETag \"NangPxOAEx/xmLPSL9gCh6lE6Rg=\"",
+      "etag": "\"68Jt4tfExOlltz1ilR0WXe/2ya0=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Handoff | Microsoft Learn | ETag \"68Jt4tfExOlltz1ilR0WXe/2ya0=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/handoff",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Handoff | Microsoft Learn",
-      "value": "\"NangPxOAEx/xmLPSL9gCh6lE6Rg=\""
+      "value": "\"68Jt4tfExOlltz1ilR0WXe/2ya0=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-human-in-the-loop": {
-      "etag": "\"+/l7+UrgdwQlBQE9HbYiaH5s6CM=\"",
-      "human": "Microsoft Agent Framework Workflows - Human-in-the-loop (HITL) | Microsoft Learn | ETag \"+/l7+UrgdwQlBQE9HbYiaH5s6CM=\"",
+      "etag": "\"SKZzaKFm4GLtCluB59iZFTgQhjM=\"",
+      "human": "Microsoft Agent Framework Workflows - Human-in-the-loop (HITL) | Microsoft Learn | ETag \"SKZzaKFm4GLtCluB59iZFTgQhjM=\"",
       "kind": "http_document",
       "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/human-in-the-loop",
       "title": "Microsoft Agent Framework Workflows - Human-in-the-loop (HITL) | Microsoft Learn",
-      "value": "\"+/l7+UrgdwQlBQE9HbYiaH5s6CM=\""
+      "value": "\"SKZzaKFm4GLtCluB59iZFTgQhjM=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-magentic": {
-      "etag": "\"HGYPemT52Av563W3oT2IIDlF0E4=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Magentic | Microsoft Learn | ETag \"HGYPemT52Av563W3oT2IIDlF0E4=\"",
+      "etag": "\"Vcuu4okYYj4C41DVp1BtlwAiTzE=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Magentic | Microsoft Learn | ETag \"Vcuu4okYYj4C41DVp1BtlwAiTzE=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 17 Mar 2026 00:28:33 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/magentic",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Magentic | Microsoft Learn",
-      "value": "\"HGYPemT52Av563W3oT2IIDlF0E4=\""
+      "value": "\"Vcuu4okYYj4C41DVp1BtlwAiTzE=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-overview": {
-      "etag": "\"kHF7vpZIogcQUhSNT/sqhhCZpcc=\"",
-      "human": "Workflow orchestrations in Agent Framework | Microsoft Learn | ETag \"kHF7vpZIogcQUhSNT/sqhhCZpcc=\"",
+      "etag": "\"imGDDXiPW8GBVX30R+ha1SFfhQw=\"",
+      "human": "Workflow orchestrations in Agent Framework | Microsoft Learn | ETag \"imGDDXiPW8GBVX30R+ha1SFfhQw=\"",
       "kind": "http_document",
       "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/overview",
       "title": "Workflow orchestrations in Agent Framework | Microsoft Learn",
-      "value": "\"kHF7vpZIogcQUhSNT/sqhhCZpcc=\""
+      "value": "\"imGDDXiPW8GBVX30R+ha1SFfhQw=\""
     },
     "agent-framework-docs-user-guide-workflows-orchestrations-sequential": {
-      "etag": "\"APtkvCsV/EnXycybLYirIZO1/aE=\"",
-      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"APtkvCsV/EnXycybLYirIZO1/aE=\"",
+      "etag": "\"eHtn85EeUlotv+YXhQDelhOy+nE=\"",
+      "human": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn | ETag \"eHtn85EeUlotv+YXhQDelhOy+nE=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 31 Mar 2026 00:20:12 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/sequential",
       "title": "Microsoft Agent Framework Workflows Orchestrations - Sequential | Microsoft Learn",
-      "value": "\"APtkvCsV/EnXycybLYirIZO1/aE=\""
+      "value": "\"eHtn85EeUlotv+YXhQDelhOy+nE=\""
     },
     "agent-framework-docs-user-guide-workflows-overview": {
-      "etag": "\"xC5bnI/CyUF6M/LudvWj1YrUG1w=\"",
-      "human": "Microsoft Agent Framework Workflows | Microsoft Learn | ETag \"xC5bnI/CyUF6M/LudvWj1YrUG1w=\"",
+      "etag": "\"XcQdOaq31Y49e2GOn2q99I+JK5E=\"",
+      "human": "Microsoft Agent Framework Workflows | Microsoft Learn | ETag \"XcQdOaq31Y49e2GOn2q99I+JK5E=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/overview",
       "title": "Microsoft Agent Framework Workflows | Microsoft Learn",
-      "value": "\"xC5bnI/CyUF6M/LudvWj1YrUG1w=\""
+      "value": "\"XcQdOaq31Y49e2GOn2q99I+JK5E=\""
     },
     "agent-framework-docs-user-guide-workflows-requests-and-responses": {
-      "etag": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
-      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
+      "etag": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
+      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/requests-and-responses",
       "title": "Microsoft Agent Framework Workflows - State | Microsoft Learn",
-      "value": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\""
+      "value": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\""
     },
     "agent-framework-docs-user-guide-workflows-shared-states": {
-      "etag": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
-      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
+      "etag": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
+      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/workflows/state",
       "title": "Microsoft Agent Framework Workflows - State | Microsoft Learn",
-      "value": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\""
+      "value": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\""
     },
     "agent-framework-docs-user-guide-workflows-state-isolation": {
-      "etag": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
-      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\"",
+      "etag": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
+      "human": "Microsoft Agent Framework Workflows - State | Microsoft Learn | ETag \"VFfmaWnowVrmbc5eU7158O0nGVY=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 26 Mar 2026 02:09:02 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/state-isolation",
       "title": "Microsoft Agent Framework Workflows - State | Microsoft Learn",
-      "value": "\"VG/yPSJNgnyOeNTSrUO8WPn7kH4=\""
+      "value": "\"VFfmaWnowVrmbc5eU7158O0nGVY=\""
     },
     "agent-framework-docs-user-guide-workflows-using-agents": {
-      "etag": "\"l4szHqG7YVSA7UY0IRO+hXM3gro=\"",
-      "human": "Agents in Workflows | Microsoft Learn | ETag \"l4szHqG7YVSA7UY0IRO+hXM3gro=\"",
+      "etag": "\"YqZAFJiFVy5JSsDnWiKnIQGbLV4=\"",
+      "human": "Agents in Workflows | Microsoft Learn | ETag \"YqZAFJiFVy5JSsDnWiKnIQGbLV4=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 11 Mar 2026 19:17:18 GMT",
+      "last_modified": "Tue, 31 Mar 2026 11:38:33 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/using-agents",
       "title": "Agents in Workflows | Microsoft Learn",
-      "value": "\"l4szHqG7YVSA7UY0IRO+hXM3gro=\""
+      "value": "\"YqZAFJiFVy5JSsDnWiKnIQGbLV4=\""
     },
     "agent-framework-docs-user-guide-workflows-visualization": {
-      "etag": "\"ZZXS+8K7sQKYiO1wStdvRaCEQyQ=\"",
-      "human": "Microsoft Agent Framework Workflows - Visualization | Microsoft Learn | ETag \"ZZXS+8K7sQKYiO1wStdvRaCEQyQ=\"",
+      "etag": "\"Bd2yTdDh/TrBRQxo99uGsEdwzmI=\"",
+      "human": "Microsoft Agent Framework Workflows - Visualization | Microsoft Learn | ETag \"Bd2yTdDh/TrBRQxo99uGsEdwzmI=\"",
       "kind": "http_document",
       "last_modified": "Thu, 12 Mar 2026 00:48:46 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/workflows/visualization",
       "title": "Microsoft Agent Framework Workflows - Visualization | Microsoft Learn",
-      "value": "\"ZZXS+8K7sQKYiO1wStdvRaCEQyQ=\""
+      "value": "\"Bd2yTdDh/TrBRQxo99uGsEdwzmI=\""
     },
     "agent-framework-dotnet-api-reference": {
-      "etag": "\"mOPbrDpNTvtW6PXkCEBj6gfBlDA=\"",
-      "human": "Microsoft.Agents.AI Namespace | Microsoft Learn | ETag \"mOPbrDpNTvtW6PXkCEBj6gfBlDA=\"",
+      "etag": "\"nEXbWGfdAYgZuiZJkUyMZzPTH0s=\"",
+      "human": "Microsoft.Agents.AI Namespace | Microsoft Learn | ETag \"nEXbWGfdAYgZuiZJkUyMZzPTH0s=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Feb 2026 21:18:51 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/api/microsoft.agents.ai",
       "title": "Microsoft.Agents.AI Namespace | Microsoft Learn",
-      "value": "\"mOPbrDpNTvtW6PXkCEBj6gfBlDA=\""
+      "value": "\"nEXbWGfdAYgZuiZJkUyMZzPTH0s=\""
     },
     "agent-framework-release": {
-      "human": "dotnet-1.0.0-rc4 (2026-03-11T22:58:44Z)",
+      "human": "dotnet-1.0.0-rc5 (2026-04-01T19:13:13Z)",
       "kind": "github_release",
-      "published_at": "2026-03-11T22:58:44Z",
-      "source_url": "https://github.com/microsoft/agent-framework/releases/tag/dotnet-1.0.0-rc4",
-      "value": "dotnet-1.0.0-rc4"
+      "published_at": "2026-04-01T19:13:13Z",
+      "source_url": "https://github.com/microsoft/agent-framework/releases/tag/dotnet-1.0.0-rc5",
+      "value": "dotnet-1.0.0-rc5"
     },
     "aspire-community-toolkit-docs": {
-      "etag": "\"e11c27083a1c77ee29c24fc54a2f957ef1a4680fd199d6ac6004971196dd3d3f\"",
-      "human": "ETag \"e11c27083a1c77ee29c24fc54a2f957ef1a4680fd199d6ac6004971196dd3d3f\"",
+      "etag": "\"74526ca224c20abf7e3911c3e990508113194d644b2c99db04049eaeaf02c82c\"",
+      "human": "ETag \"74526ca224c20abf7e3911c3e990508113194d644b2c99db04049eaeaf02c82c\"",
       "kind": "http_document",
       "last_modified": null,
       "source_url": "https://raw.githubusercontent.com/CommunityToolkit/Aspire/main/README.md",
       "title": null,
-      "value": "\"e11c27083a1c77ee29c24fc54a2f957ef1a4680fd199d6ac6004971196dd3d3f\""
+      "value": "\"74526ca224c20abf7e3911c3e990508113194d644b2c99db04049eaeaf02c82c\""
     },
     "aspire-docs": {
-      "etag": "\"eLIHd1Hl+fjyka70Bd9dPLL9CK8ALe2zh9q+DMa+Qt0=\"",
-      "human": "Aspire \u2014 Your stack, streamlined | ETag \"eLIHd1Hl+fjyka70Bd9dPLL9CK8ALe2zh9q+DMa+Qt0=\"",
+      "etag": "\"9N6XMJ90iNIDGf5PN4vcBuSvaw5yCbxXalyGXcE0XX4=\"",
+      "human": "Aspire \u2014 Your stack, streamlined | ETag \"9N6XMJ90iNIDGf5PN4vcBuSvaw5yCbxXalyGXcE0XX4=\"",
       "kind": "http_document",
-      "last_modified": "Mon, 30 Mar 2026 17:40:18 GMT",
+      "last_modified": "Wed, 01 Apr 2026 15:14:18 GMT",
       "source_url": "https://aspire.dev/",
       "title": "Aspire \u2014 Your stack, streamlined",
-      "value": "\"eLIHd1Hl+fjyka70Bd9dPLL9CK8ALe2zh9q+DMa+Qt0=\""
+      "value": "\"9N6XMJ90iNIDGf5PN4vcBuSvaw5yCbxXalyGXcE0XX4=\""
     },
     "aspire-release": {
       "human": "v13.2.1 (2026-03-31T05:43:00Z)",
@@ -942,13 +942,13 @@
       "value": "v13.2.1"
     },
     "aspnetcore-overview-docs": {
-      "etag": "\"goDKkFLj2zmq1cmpvUkhQHGHIdk=\"",
-      "human": "Overview of ASP.NET Core | Microsoft Learn | ETag \"goDKkFLj2zmq1cmpvUkhQHGHIdk=\"",
+      "etag": "\"Mji1NqFrbGLaRxTH9/srMVEXM08=\"",
+      "human": "Overview of ASP.NET Core | Microsoft Learn | ETag \"Mji1NqFrbGLaRxTH9/srMVEXM08=\"",
       "kind": "http_document",
       "last_modified": "Thu, 22 Jan 2026 23:58:06 GMT",
       "source_url": "https://learn.microsoft.com/aspnet/core/overview?view=aspnetcore-10.0",
       "title": "Overview of ASP.NET Core | Microsoft Learn",
-      "value": "\"goDKkFLj2zmq1cmpvUkhQHGHIdk=\""
+      "value": "\"Mji1NqFrbGLaRxTH9/srMVEXM08=\""
     },
     "aspnetcore-release": {
       "human": "v9.0.14 (2026-03-10T20:18:56Z)",
@@ -993,436 +993,436 @@
       "value": "v13.1.1"
     },
     "dotnet-ai-docs-azure-ai-services-authentication": {
-      "etag": "\"PhGXgR5vUEt3FWYQNgay+3uDBhg=\"",
-      "human": "Authenticate to Azure OpenAI using .NET - .NET | Microsoft Learn | ETag \"PhGXgR5vUEt3FWYQNgay+3uDBhg=\"",
+      "etag": "\"V4esYnsLKjJ7j3/92k5foSagPC8=\"",
+      "human": "Authenticate to Azure OpenAI using .NET - .NET | Microsoft Learn | ETag \"V4esYnsLKjJ7j3/92k5foSagPC8=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/azure-ai-services-authentication",
       "title": "Authenticate to Azure OpenAI using .NET - .NET | Microsoft Learn",
-      "value": "\"PhGXgR5vUEt3FWYQNgay+3uDBhg=\""
+      "value": "\"V4esYnsLKjJ7j3/92k5foSagPC8=\""
     },
     "dotnet-ai-docs-conceptual-agents": {
-      "etag": "\"oxABd/GL4+8q+KReq5FU2OKr0yk=\"",
-      "human": "Agents - .NET | Microsoft Learn | ETag \"oxABd/GL4+8q+KReq5FU2OKr0yk=\"",
+      "etag": "\"VWYjGIGlL9vRCWDl4P+JFSTyMy4=\"",
+      "human": "Agents - .NET | Microsoft Learn | ETag \"VWYjGIGlL9vRCWDl4P+JFSTyMy4=\"",
       "kind": "http_document",
       "last_modified": "Fri, 12 Dec 2025 08:22:44 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/agents",
       "title": "Agents - .NET | Microsoft Learn",
-      "value": "\"oxABd/GL4+8q+KReq5FU2OKr0yk=\""
+      "value": "\"VWYjGIGlL9vRCWDl4P+JFSTyMy4=\""
     },
     "dotnet-ai-docs-conceptual-ai-tools": {
-      "etag": "\"X+BWnhdZ1PkKe3aBlFhaWaKWi+M=\"",
-      "human": "AI tool calling - .NET | Microsoft Learn | ETag \"X+BWnhdZ1PkKe3aBlFhaWaKWi+M=\"",
+      "etag": "\"T4IDU0Wf9kYpg5hdPxAWyFPCNpQ=\"",
+      "human": "AI tool calling - .NET | Microsoft Learn | ETag \"T4IDU0Wf9kYpg5hdPxAWyFPCNpQ=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 00:29:58 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/ai-tools",
       "title": "AI tool calling - .NET | Microsoft Learn",
-      "value": "\"X+BWnhdZ1PkKe3aBlFhaWaKWi+M=\""
+      "value": "\"T4IDU0Wf9kYpg5hdPxAWyFPCNpQ=\""
     },
     "dotnet-ai-docs-conceptual-chain-of-thought-prompting": {
-      "etag": "\"kR+a2W6SFbilo9QzTxVuBmBweog=\"",
-      "human": "Chain of thought prompting - .NET | Microsoft Learn | ETag \"kR+a2W6SFbilo9QzTxVuBmBweog=\"",
+      "etag": "\"tjqtXLxIkYDWnuFAI6dJeLbS8OA=\"",
+      "human": "Chain of thought prompting - .NET | Microsoft Learn | ETag \"tjqtXLxIkYDWnuFAI6dJeLbS8OA=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/chain-of-thought-prompting",
       "title": "Chain of thought prompting - .NET | Microsoft Learn",
-      "value": "\"kR+a2W6SFbilo9QzTxVuBmBweog=\""
+      "value": "\"tjqtXLxIkYDWnuFAI6dJeLbS8OA=\""
     },
     "dotnet-ai-docs-conceptual-data-ingestion": {
-      "etag": "\"EX9J3RVDRlpHJKDOK3+sJYekP7Q=\"",
-      "human": "Data ingestion - .NET | Microsoft Learn | ETag \"EX9J3RVDRlpHJKDOK3+sJYekP7Q=\"",
+      "etag": "\"+Zpyq7jT+4rS+Pt8x+WcnXUYQA4=\"",
+      "human": "Data ingestion - .NET | Microsoft Learn | ETag \"+Zpyq7jT+4rS+Pt8x+WcnXUYQA4=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/data-ingestion",
       "title": "Data ingestion - .NET | Microsoft Learn",
-      "value": "\"EX9J3RVDRlpHJKDOK3+sJYekP7Q=\""
+      "value": "\"+Zpyq7jT+4rS+Pt8x+WcnXUYQA4=\""
     },
     "dotnet-ai-docs-conceptual-embeddings": {
-      "etag": "\"pjGBbkU2uOUyiPa3OjOGX6sFE3A=\"",
-      "human": "How Embeddings Extend Your AI Model's Reach - .NET | Microsoft Learn | ETag \"pjGBbkU2uOUyiPa3OjOGX6sFE3A=\"",
+      "etag": "\"pgw2PTGHc8wCrm3oQrRSNltscnA=\"",
+      "human": "How Embeddings Extend Your AI Model's Reach - .NET | Microsoft Learn | ETag \"pgw2PTGHc8wCrm3oQrRSNltscnA=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/embeddings",
       "title": "How Embeddings Extend Your AI Model's Reach - .NET | Microsoft Learn",
-      "value": "\"pjGBbkU2uOUyiPa3OjOGX6sFE3A=\""
+      "value": "\"pgw2PTGHc8wCrm3oQrRSNltscnA=\""
     },
     "dotnet-ai-docs-conceptual-how-genai-and-llms-work": {
-      "etag": "\"0CNRKR7yKvNcSbH/Ay6teOzUrQE=\"",
-      "human": "How Generative AI and LLMs work - .NET | Microsoft Learn | ETag \"0CNRKR7yKvNcSbH/Ay6teOzUrQE=\"",
+      "etag": "\"rvEtwV8zMvJ360rnoBA33UiTEeE=\"",
+      "human": "How Generative AI and LLMs work - .NET | Microsoft Learn | ETag \"rvEtwV8zMvJ360rnoBA33UiTEeE=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/how-genai-and-llms-work",
       "title": "How Generative AI and LLMs work - .NET | Microsoft Learn",
-      "value": "\"0CNRKR7yKvNcSbH/Ay6teOzUrQE=\""
+      "value": "\"rvEtwV8zMvJ360rnoBA33UiTEeE=\""
     },
     "dotnet-ai-docs-conceptual-prompt-engineering-dotnet": {
-      "etag": "\"xXNZ2WooRmAZpS03FKnWKvRWQAc=\"",
-      "human": "Prompt engineering concepts - .NET | Microsoft Learn | ETag \"xXNZ2WooRmAZpS03FKnWKvRWQAc=\"",
+      "etag": "\"Yflg49LDh0FgJpEUTu/sSOj9tso=\"",
+      "human": "Prompt engineering concepts - .NET | Microsoft Learn | ETag \"Yflg49LDh0FgJpEUTu/sSOj9tso=\"",
       "kind": "http_document",
       "last_modified": "Wed, 25 Mar 2026 12:30:33 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/prompt-engineering-dotnet",
       "title": "Prompt engineering concepts - .NET | Microsoft Learn",
-      "value": "\"xXNZ2WooRmAZpS03FKnWKvRWQAc=\""
+      "value": "\"Yflg49LDh0FgJpEUTu/sSOj9tso=\""
     },
     "dotnet-ai-docs-conceptual-rag": {
-      "etag": "\"+SGw/qz3CDJ1zOqrijkGuSd6F98=\"",
-      "human": "Integrate Your Data into AI Apps with Retrieval-Augmented Generation - .NET | Microsoft Learn | ETag \"+SGw/qz3CDJ1zOqrijkGuSd6F98=\"",
+      "etag": "\"vPav15mG0NTX9wVJbttvWL2URBg=\"",
+      "human": "Integrate Your Data into AI Apps with Retrieval-Augmented Generation - .NET | Microsoft Learn | ETag \"vPav15mG0NTX9wVJbttvWL2URBg=\"",
       "kind": "http_document",
       "last_modified": "Fri, 12 Dec 2025 08:22:44 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/rag",
       "title": "Integrate Your Data into AI Apps with Retrieval-Augmented Generation - .NET | Microsoft Learn",
-      "value": "\"+SGw/qz3CDJ1zOqrijkGuSd6F98=\""
+      "value": "\"vPav15mG0NTX9wVJbttvWL2URBg=\""
     },
     "dotnet-ai-docs-conceptual-understanding-tokens": {
-      "etag": "\"6nrhlO8kF9kAohVvkSEFurM4mz4=\"",
-      "human": "Understanding tokens - .NET | Microsoft Learn | ETag \"6nrhlO8kF9kAohVvkSEFurM4mz4=\"",
+      "etag": "\"tm7VubwGHUINJhsL4ZcZXwCY584=\"",
+      "human": "Understanding tokens - .NET | Microsoft Learn | ETag \"tm7VubwGHUINJhsL4ZcZXwCY584=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/understanding-tokens",
       "title": "Understanding tokens - .NET | Microsoft Learn",
-      "value": "\"6nrhlO8kF9kAohVvkSEFurM4mz4=\""
+      "value": "\"tm7VubwGHUINJhsL4ZcZXwCY584=\""
     },
     "dotnet-ai-docs-conceptual-vector-databases": {
-      "etag": "\"Fqybc/G0cIKZMiDOgDjddveB4OM=\"",
-      "human": "Vector databases for .NET AI apps - .NET | Microsoft Learn | ETag \"Fqybc/G0cIKZMiDOgDjddveB4OM=\"",
+      "etag": "\"ts8Ytig0XO+LrrAZNkkW+jwxl6w=\"",
+      "human": "Vector databases for .NET AI apps - .NET | Microsoft Learn | ETag \"ts8Ytig0XO+LrrAZNkkW+jwxl6w=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/vector-databases",
       "title": "Vector databases for .NET AI apps - .NET | Microsoft Learn",
-      "value": "\"Fqybc/G0cIKZMiDOgDjddveB4OM=\""
+      "value": "\"ts8Ytig0XO+LrrAZNkkW+jwxl6w=\""
     },
     "dotnet-ai-docs-conceptual-zero-shot-learning": {
-      "etag": "\"J8zV56/MemMc37XPrMQkMcHE1as=\"",
-      "human": "Zero-shot and few-shot learning - .NET | Microsoft Learn | ETag \"J8zV56/MemMc37XPrMQkMcHE1as=\"",
+      "etag": "\"tHswtCB5WezMvCudeBrFShoH7TY=\"",
+      "human": "Zero-shot and few-shot learning - .NET | Microsoft Learn | ETag \"tHswtCB5WezMvCudeBrFShoH7TY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/conceptual/zero-shot-learning",
       "title": "Zero-shot and few-shot learning - .NET | Microsoft Learn",
-      "value": "\"J8zV56/MemMc37XPrMQkMcHE1as=\""
+      "value": "\"tHswtCB5WezMvCudeBrFShoH7TY=\""
     },
     "dotnet-ai-docs-dotnet-ai-ecosystem": {
-      "etag": "\"t/W8OXSrfxUdg0ROiH9wFhcrhOc=\"",
-      "human": ".NET + AI ecosystem tools and SDKs - .NET | Microsoft Learn | ETag \"t/W8OXSrfxUdg0ROiH9wFhcrhOc=\"",
+      "etag": "\"i5254ejt9hYfSPBXYt26hLemPag=\"",
+      "human": ".NET + AI ecosystem tools and SDKs - .NET | Microsoft Learn | ETag \"i5254ejt9hYfSPBXYt26hLemPag=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/dotnet-ai-ecosystem",
       "title": ".NET + AI ecosystem tools and SDKs - .NET | Microsoft Learn",
-      "value": "\"t/W8OXSrfxUdg0ROiH9wFhcrhOc=\""
+      "value": "\"i5254ejt9hYfSPBXYt26hLemPag=\""
     },
     "dotnet-ai-docs-evaluation-evaluate-ai-response": {
-      "etag": "\"nOggLekZYnh7Cfr2sXVs/rYtZwU=\"",
-      "human": "Quickstart - Evaluate the quality of a model's response - .NET | Microsoft Learn | ETag \"nOggLekZYnh7Cfr2sXVs/rYtZwU=\"",
+      "etag": "\"F1kSxjiSFKyr9jehksB3pebV+aw=\"",
+      "human": "Quickstart - Evaluate the quality of a model's response - .NET | Microsoft Learn | ETag \"F1kSxjiSFKyr9jehksB3pebV+aw=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/evaluation/evaluate-ai-response",
       "title": "Quickstart - Evaluate the quality of a model's response - .NET | Microsoft Learn",
-      "value": "\"nOggLekZYnh7Cfr2sXVs/rYtZwU=\""
+      "value": "\"F1kSxjiSFKyr9jehksB3pebV+aw=\""
     },
     "dotnet-ai-docs-evaluation-evaluate-safety": {
-      "etag": "\"vhpT73ZBoMV6mklqkZXVMQ2l41I=\"",
-      "human": "Tutorial - Evaluate response safety with caching and reporting - .NET | Microsoft Learn | ETag \"vhpT73ZBoMV6mklqkZXVMQ2l41I=\"",
+      "etag": "\"MdrlKlpwwTv3Vw2VyFRdV7vR6As=\"",
+      "human": "Tutorial - Evaluate response safety with caching and reporting - .NET | Microsoft Learn | ETag \"MdrlKlpwwTv3Vw2VyFRdV7vR6As=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/evaluation/evaluate-safety",
       "title": "Tutorial - Evaluate response safety with caching and reporting - .NET | Microsoft Learn",
-      "value": "\"vhpT73ZBoMV6mklqkZXVMQ2l41I=\""
+      "value": "\"MdrlKlpwwTv3Vw2VyFRdV7vR6As=\""
     },
     "dotnet-ai-docs-evaluation-evaluate-with-reporting": {
-      "etag": "\"R9WSC/j98ynp/iBH5LVahK0Xoe4=\"",
-      "human": "Tutorial - Evaluate response quality with caching and reporting - .NET | Microsoft Learn | ETag \"R9WSC/j98ynp/iBH5LVahK0Xoe4=\"",
+      "etag": "\"V47saNCAbLLQqSY+1gmHA23IxP8=\"",
+      "human": "Tutorial - Evaluate response quality with caching and reporting - .NET | Microsoft Learn | ETag \"V47saNCAbLLQqSY+1gmHA23IxP8=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/evaluation/evaluate-with-reporting",
       "title": "Tutorial - Evaluate response quality with caching and reporting - .NET | Microsoft Learn",
-      "value": "\"R9WSC/j98ynp/iBH5LVahK0Xoe4=\""
+      "value": "\"V47saNCAbLLQqSY+1gmHA23IxP8=\""
     },
     "dotnet-ai-docs-evaluation-libraries": {
-      "etag": "\"dTfWqDQ+tZodCcpDOJdnGc5y7UU=\"",
-      "human": "The Microsoft.Extensions.AI.Evaluation libraries - .NET | Microsoft Learn | ETag \"dTfWqDQ+tZodCcpDOJdnGc5y7UU=\"",
+      "etag": "\"dr/KiohgkWunzUfJfO+Meo6p78c=\"",
+      "human": "The Microsoft.Extensions.AI.Evaluation libraries - .NET | Microsoft Learn | ETag \"dr/KiohgkWunzUfJfO+Meo6p78c=\"",
       "kind": "http_document",
       "last_modified": "Wed, 25 Feb 2026 19:00:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/evaluation/libraries",
       "title": "The Microsoft.Extensions.AI.Evaluation libraries - .NET | Microsoft Learn",
-      "value": "\"dTfWqDQ+tZodCcpDOJdnGc5y7UU=\""
+      "value": "\"dr/KiohgkWunzUfJfO+Meo6p78c=\""
     },
     "dotnet-ai-docs-evaluation-responsible-ai": {
-      "etag": "\"n4abkYFvkfdrw5fGLIzA40tdI+E=\"",
-      "human": "Responsible AI with .NET - .NET | Microsoft Learn | ETag \"n4abkYFvkfdrw5fGLIzA40tdI+E=\"",
+      "etag": "\"dLaA35ttsa5uVg7uTFe9i1eE1kk=\"",
+      "human": "Responsible AI with .NET - .NET | Microsoft Learn | ETag \"dLaA35ttsa5uVg7uTFe9i1eE1kk=\"",
       "kind": "http_document",
       "last_modified": "Wed, 25 Feb 2026 19:00:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/evaluation/responsible-ai",
       "title": "Responsible AI with .NET - .NET | Microsoft Learn",
-      "value": "\"n4abkYFvkfdrw5fGLIzA40tdI+E=\""
+      "value": "\"dLaA35ttsa5uVg7uTFe9i1eE1kk=\""
     },
     "dotnet-ai-docs-get-started-app-chat-scaling-with-azure-container-apps": {
-      "etag": "\"ySNnP48b+NUmPtEToQJbmce+wI4=\"",
-      "human": "Scale Azure OpenAI for .NET chat sample using RAG - .NET | Microsoft Learn | ETag \"ySNnP48b+NUmPtEToQJbmce+wI4=\"",
+      "etag": "\"tSdGosaOwGnY/1ojpLotWI0K0PA=\"",
+      "human": "Scale Azure OpenAI for .NET chat sample using RAG - .NET | Microsoft Learn | ETag \"tSdGosaOwGnY/1ojpLotWI0K0PA=\"",
       "kind": "http_document",
       "last_modified": "Fri, 20 Mar 2026 17:29:45 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/get-started-app-chat-scaling-with-azure-container-apps",
       "title": "Scale Azure OpenAI for .NET chat sample using RAG - .NET | Microsoft Learn",
-      "value": "\"ySNnP48b+NUmPtEToQJbmce+wI4=\""
+      "value": "\"tSdGosaOwGnY/1ojpLotWI0K0PA=\""
     },
     "dotnet-ai-docs-get-started-app-chat-template": {
-      "etag": "\"2DvRsn/BUdIemGw9HkT5i+EU2pg=\"",
-      "human": "Get started with the 'chat using your own data sample' for .NET - .NET | Microsoft Learn | ETag \"2DvRsn/BUdIemGw9HkT5i+EU2pg=\"",
+      "etag": "\"GvhBGh9vNb1NKPtf6wD1RscHYEY=\"",
+      "human": "Get started with the 'chat using your own data sample' for .NET - .NET | Microsoft Learn | ETag \"GvhBGh9vNb1NKPtf6wD1RscHYEY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/get-started-app-chat-template",
       "title": "Get started with the 'chat using your own data sample' for .NET - .NET | Microsoft Learn",
-      "value": "\"2DvRsn/BUdIemGw9HkT5i+EU2pg=\""
+      "value": "\"GvhBGh9vNb1NKPtf6wD1RscHYEY=\""
     },
     "dotnet-ai-docs-get-started-mcp": {
-      "etag": "\"SOh6NsNnj++dSdHKbH7cqG+Sh0o=\"",
-      "human": "Get started with .NET AI and MCP - .NET | Microsoft Learn | ETag \"SOh6NsNnj++dSdHKbH7cqG+Sh0o=\"",
+      "etag": "\"YxEHw2+HGj+8/ASafe4/SUJnGHg=\"",
+      "human": "Get started with .NET AI and MCP - .NET | Microsoft Learn | ETag \"YxEHw2+HGj+8/ASafe4/SUJnGHg=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Feb 2026 08:25:16 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/get-started-mcp",
       "title": "Get started with .NET AI and MCP - .NET | Microsoft Learn",
-      "value": "\"SOh6NsNnj++dSdHKbH7cqG+Sh0o=\""
+      "value": "\"YxEHw2+HGj+8/ASafe4/SUJnGHg=\""
     },
     "dotnet-ai-docs-how-to-access-data-in-functions": {
-      "etag": "\"AgBOdFftBWhwGhJYbJxRMLoukNo=\"",
-      "human": "Access data in AI functions - .NET | Microsoft Learn | ETag \"AgBOdFftBWhwGhJYbJxRMLoukNo=\"",
+      "etag": "\"Hj+3OBHhdm/aOotT5f2WJv5xB2g=\"",
+      "human": "Access data in AI functions - .NET | Microsoft Learn | ETag \"Hj+3OBHhdm/aOotT5f2WJv5xB2g=\"",
       "kind": "http_document",
       "last_modified": "Mon, 23 Feb 2026 19:55:59 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/how-to/access-data-in-functions",
       "title": "Access data in AI functions - .NET | Microsoft Learn",
-      "value": "\"AgBOdFftBWhwGhJYbJxRMLoukNo=\""
+      "value": "\"Hj+3OBHhdm/aOotT5f2WJv5xB2g=\""
     },
     "dotnet-ai-docs-how-to-app-service-aoai-auth": {
-      "etag": "\"keqNzNvvlSjPvAIu1dcLA4JNJr4=\"",
-      "human": "Authenticate an Azure hosted .NET app to Azure OpenAI using Microsoft Entra ID - .NET | Microsoft Learn | ETag \"keqNzNvvlSjPvAIu1dcLA4JNJr4=\"",
+      "etag": "\"9CYtf4cQ6bTxh9Ovvb9/6LpUfVs=\"",
+      "human": "Authenticate an Azure hosted .NET app to Azure OpenAI using Microsoft Entra ID - .NET | Microsoft Learn | ETag \"9CYtf4cQ6bTxh9Ovvb9/6LpUfVs=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/how-to/app-service-aoai-auth",
       "title": "Authenticate an Azure hosted .NET app to Azure OpenAI using Microsoft Entra ID - .NET | Microsoft Learn",
-      "value": "\"keqNzNvvlSjPvAIu1dcLA4JNJr4=\""
+      "value": "\"9CYtf4cQ6bTxh9Ovvb9/6LpUfVs=\""
     },
     "dotnet-ai-docs-how-to-content-filtering": {
-      "etag": "\"wJyN8/pyAsGgU/+OWRshJDuhDNU=\"",
-      "human": "Manage Azure OpenAI content filtering in a .NET app - .NET | Microsoft Learn | ETag \"wJyN8/pyAsGgU/+OWRshJDuhDNU=\"",
+      "etag": "\"KnyrbudcUWvEMyB9UklJjf9YlsY=\"",
+      "human": "Manage Azure OpenAI content filtering in a .NET app - .NET | Microsoft Learn | ETag \"KnyrbudcUWvEMyB9UklJjf9YlsY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/how-to/content-filtering",
       "title": "Manage Azure OpenAI content filtering in a .NET app - .NET | Microsoft Learn",
-      "value": "\"wJyN8/pyAsGgU/+OWRshJDuhDNU=\""
+      "value": "\"KnyrbudcUWvEMyB9UklJjf9YlsY=\""
     },
     "dotnet-ai-docs-how-to-handle-invalid-tool-input": {
-      "etag": "\"G2yLiWdHMy4uo8nY28QiEN3de+o=\"",
-      "human": "Handle invalid function input from AI models - .NET | Microsoft Learn | ETag \"G2yLiWdHMy4uo8nY28QiEN3de+o=\"",
+      "etag": "\"/yav+TB3/AAvntW1caARTEdueao=\"",
+      "human": "Handle invalid function input from AI models - .NET | Microsoft Learn | ETag \"/yav+TB3/AAvntW1caARTEdueao=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:08:52 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/how-to/handle-invalid-tool-input",
       "title": "Handle invalid function input from AI models - .NET | Microsoft Learn",
-      "value": "\"G2yLiWdHMy4uo8nY28QiEN3de+o=\""
+      "value": "\"/yav+TB3/AAvntW1caARTEdueao=\""
     },
     "dotnet-ai-docs-how-to-use-tokenizers": {
-      "etag": "\"EgIabvEcfVxwK/iqw/q8Ott/5as=\"",
-      "human": "Use Microsoft.ML.Tokenizers for text tokenization - .NET | Microsoft Learn | ETag \"EgIabvEcfVxwK/iqw/q8Ott/5as=\"",
+      "etag": "\"1JjI6GnOTYA57kX6iJnTigVzGtg=\"",
+      "human": "Use Microsoft.ML.Tokenizers for text tokenization - .NET | Microsoft Learn | ETag \"1JjI6GnOTYA57kX6iJnTigVzGtg=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:08:52 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/how-to/use-tokenizers",
       "title": "Use Microsoft.ML.Tokenizers for text tokenization - .NET | Microsoft Learn",
-      "value": "\"EgIabvEcfVxwK/iqw/q8Ott/5as=\""
+      "value": "\"1JjI6GnOTYA57kX6iJnTigVzGtg=\""
     },
     "dotnet-ai-docs-ichatclient": {
-      "etag": "\"g+/VhAIGUWAbXlF6c5hca0gOzOw=\"",
-      "human": "Use the IChatClient interface - .NET | Microsoft Learn | ETag \"g+/VhAIGUWAbXlF6c5hca0gOzOw=\"",
+      "etag": "\"DLKjoBZoIUzuE54DCSH3hYcOfL4=\"",
+      "human": "Use the IChatClient interface - .NET | Microsoft Learn | ETag \"DLKjoBZoIUzuE54DCSH3hYcOfL4=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/ichatclient",
       "title": "Use the IChatClient interface - .NET | Microsoft Learn",
-      "value": "\"g+/VhAIGUWAbXlF6c5hca0gOzOw=\""
+      "value": "\"DLKjoBZoIUzuE54DCSH3hYcOfL4=\""
     },
     "dotnet-ai-docs-iembeddinggenerator": {
-      "etag": "\"IS5PkrsCNpxD0Kmlo4sDq0s7Acg=\"",
-      "human": "Use the IEmbeddingGenerator interface - .NET | Microsoft Learn | ETag \"IS5PkrsCNpxD0Kmlo4sDq0s7Acg=\"",
+      "etag": "\"ZGegZCiaLjQeTD5u37a1ofN/6Qc=\"",
+      "human": "Use the IEmbeddingGenerator interface - .NET | Microsoft Learn | ETag \"ZGegZCiaLjQeTD5u37a1ofN/6Qc=\"",
       "kind": "http_document",
       "last_modified": "Mon, 23 Feb 2026 19:56:03 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/iembeddinggenerator",
       "title": "Use the IEmbeddingGenerator interface - .NET | Microsoft Learn",
-      "value": "\"IS5PkrsCNpxD0Kmlo4sDq0s7Acg=\""
+      "value": "\"ZGegZCiaLjQeTD5u37a1ofN/6Qc=\""
     },
     "dotnet-ai-docs-overview": {
-      "etag": "\"7Vvba6ed7YNz3Py/AyaUsOdIrCE=\"",
-      "human": "Develop .NET apps with AI features - .NET | Microsoft Learn | ETag \"7Vvba6ed7YNz3Py/AyaUsOdIrCE=\"",
+      "etag": "\"rmEXXs5/jjqFtO3sfyxNbtCgxb8=\"",
+      "human": "Develop .NET apps with AI features - .NET | Microsoft Learn | ETag \"rmEXXs5/jjqFtO3sfyxNbtCgxb8=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/overview",
       "title": "Develop .NET apps with AI features - .NET | Microsoft Learn",
-      "value": "\"7Vvba6ed7YNz3Py/AyaUsOdIrCE=\""
+      "value": "\"rmEXXs5/jjqFtO3sfyxNbtCgxb8=\""
     },
     "dotnet-ai-docs-quickstarts-ai-templates": {
-      "etag": "\"cny4B7T3LlSCO+GLPW74r7skxQg=\"",
-      "human": "Quickstart - Create a .NET AI app using the AI app template - .NET | Microsoft Learn | ETag \"cny4B7T3LlSCO+GLPW74r7skxQg=\"",
+      "etag": "\"3N72EyjydEhjpJkUurxF6IefWE0=\"",
+      "human": "Quickstart - Create a .NET AI app using the AI app template - .NET | Microsoft Learn | ETag \"3N72EyjydEhjpJkUurxF6IefWE0=\"",
       "kind": "http_document",
       "last_modified": "Fri, 06 Mar 2026 22:03:39 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/ai-templates",
       "title": "Quickstart - Create a .NET AI app using the AI app template - .NET | Microsoft Learn",
-      "value": "\"cny4B7T3LlSCO+GLPW74r7skxQg=\""
+      "value": "\"3N72EyjydEhjpJkUurxF6IefWE0=\""
     },
     "dotnet-ai-docs-quickstarts-build-chat-app": {
-      "etag": "\"7rtHA3ol6FANqj+gdxVoZ9h/7Y0=\"",
-      "human": "Quickstart - Build an AI chat app with .NET - .NET | Microsoft Learn | ETag \"7rtHA3ol6FANqj+gdxVoZ9h/7Y0=\"",
+      "etag": "\"ZhsCKs2cKA7J9Knz37YCk8tCcQ0=\"",
+      "human": "Quickstart - Build an AI chat app with .NET - .NET | Microsoft Learn | ETag \"ZhsCKs2cKA7J9Knz37YCk8tCcQ0=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 00:29:58 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-chat-app",
       "title": "Quickstart - Build an AI chat app with .NET - .NET | Microsoft Learn",
-      "value": "\"7rtHA3ol6FANqj+gdxVoZ9h/7Y0=\""
+      "value": "\"ZhsCKs2cKA7J9Knz37YCk8tCcQ0=\""
     },
     "dotnet-ai-docs-quickstarts-build-mcp-client": {
-      "etag": "\"49cR5xdzeKP79yoAbqwZeaM/lLo=\"",
-      "human": "Quickstart - Create a minimal MCP client using .NET - .NET | Microsoft Learn | ETag \"49cR5xdzeKP79yoAbqwZeaM/lLo=\"",
+      "etag": "\"DQnHCEMXR+ZMGv5JqFU/iYM86xo=\"",
+      "human": "Quickstart - Create a minimal MCP client using .NET - .NET | Microsoft Learn | ETag \"DQnHCEMXR+ZMGv5JqFU/iYM86xo=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:15:23 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-mcp-client",
       "title": "Quickstart - Create a minimal MCP client using .NET - .NET | Microsoft Learn",
-      "value": "\"49cR5xdzeKP79yoAbqwZeaM/lLo=\""
+      "value": "\"DQnHCEMXR+ZMGv5JqFU/iYM86xo=\""
     },
     "dotnet-ai-docs-quickstarts-build-mcp-server": {
-      "etag": "\"t/Losp56JnMFsy+ZssIi4luXRBE=\"",
-      "human": "Quickstart - Create a minimal MCP server and publish to NuGet - .NET | Microsoft Learn | ETag \"t/Losp56JnMFsy+ZssIi4luXRBE=\"",
+      "etag": "\"aNudlGbdTUaVXLrsNrvfc7hnDUQ=\"",
+      "human": "Quickstart - Create a minimal MCP server and publish to NuGet - .NET | Microsoft Learn | ETag \"aNudlGbdTUaVXLrsNrvfc7hnDUQ=\"",
       "kind": "http_document",
       "last_modified": "Fri, 06 Mar 2026 22:03:39 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-mcp-server",
       "title": "Quickstart - Create a minimal MCP server and publish to NuGet - .NET | Microsoft Learn",
-      "value": "\"t/Losp56JnMFsy+ZssIi4luXRBE=\""
+      "value": "\"aNudlGbdTUaVXLrsNrvfc7hnDUQ=\""
     },
     "dotnet-ai-docs-quickstarts-build-vector-search-app": {
-      "etag": "\"GtUd2/emsPlS2jwdxrxLl0KS1j8=\"",
-      "human": "Quickstart - Build a minimal .NET AI RAG app - .NET | Microsoft Learn | ETag \"GtUd2/emsPlS2jwdxrxLl0KS1j8=\"",
+      "etag": "\"kwlVvArzcIP1EOfJOqyK4M1ChCo=\"",
+      "human": "Quickstart - Build a minimal .NET AI RAG app - .NET | Microsoft Learn | ETag \"kwlVvArzcIP1EOfJOqyK4M1ChCo=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-vector-search-app",
       "title": "Quickstart - Build a minimal .NET AI RAG app - .NET | Microsoft Learn",
-      "value": "\"GtUd2/emsPlS2jwdxrxLl0KS1j8=\""
+      "value": "\"kwlVvArzcIP1EOfJOqyK4M1ChCo=\""
     },
     "dotnet-ai-docs-quickstarts-chat-local-model": {
-      "etag": "\"cef0XRWMTmSn+RvRJTuO30zjasg=\"",
-      "human": "Quickstart - Connect to and chat with a local AI using .NET - .NET | Microsoft Learn | ETag \"cef0XRWMTmSn+RvRJTuO30zjasg=\"",
+      "etag": "\"g1WODo0csXbpkbwcZbp/UV+4ItM=\"",
+      "human": "Quickstart - Connect to and chat with a local AI using .NET - .NET | Microsoft Learn | ETag \"g1WODo0csXbpkbwcZbp/UV+4ItM=\"",
       "kind": "http_document",
       "last_modified": "Fri, 06 Mar 2026 22:03:39 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/chat-local-model",
       "title": "Quickstart - Connect to and chat with a local AI using .NET - .NET | Microsoft Learn",
-      "value": "\"cef0XRWMTmSn+RvRJTuO30zjasg=\""
+      "value": "\"g1WODo0csXbpkbwcZbp/UV+4ItM=\""
     },
     "dotnet-ai-docs-quickstarts-create-assistant": {
-      "etag": "\"zShpSVtXVP21hQ2O2mPeWa3Kcig=\"",
-      "human": "Quickstart - Create a minimal AI assistant using .NET - .NET | Microsoft Learn | ETag \"zShpSVtXVP21hQ2O2mPeWa3Kcig=\"",
+      "etag": "\"j//QSs2VsbbswRddoWQUJncpTXg=\"",
+      "human": "Quickstart - Create a minimal AI assistant using .NET - .NET | Microsoft Learn | ETag \"j//QSs2VsbbswRddoWQUJncpTXg=\"",
       "kind": "http_document",
       "last_modified": "Fri, 06 Mar 2026 22:03:38 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/create-assistant",
       "title": "Quickstart - Create a minimal AI assistant using .NET - .NET | Microsoft Learn",
-      "value": "\"zShpSVtXVP21hQ2O2mPeWa3Kcig=\""
+      "value": "\"j//QSs2VsbbswRddoWQUJncpTXg=\""
     },
     "dotnet-ai-docs-quickstarts-generate-images": {
-      "etag": "\"9DpVALzIu8nMQIlWOoAgYK/at0o=\"",
-      "human": "Quickstart - Generate images using OpenAI.Images.ImageClient - .NET | Microsoft Learn | ETag \"9DpVALzIu8nMQIlWOoAgYK/at0o=\"",
+      "etag": "\"fRMFjiJ+gs6tNMvPi7pUz3hsr30=\"",
+      "human": "Quickstart - Generate images using OpenAI.Images.ImageClient - .NET | Microsoft Learn | ETag \"fRMFjiJ+gs6tNMvPi7pUz3hsr30=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 00:29:58 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/generate-images",
       "title": "Quickstart - Generate images using OpenAI.Images.ImageClient - .NET | Microsoft Learn",
-      "value": "\"9DpVALzIu8nMQIlWOoAgYK/at0o=\""
+      "value": "\"fRMFjiJ+gs6tNMvPi7pUz3hsr30=\""
     },
     "dotnet-ai-docs-quickstarts-process-data": {
-      "etag": "\"/9w2fR8dQTTMT42Ihevd4bW9Qb4=\"",
-      "human": "Quickstart - Process custom data for AI - .NET | Microsoft Learn | ETag \"/9w2fR8dQTTMT42Ihevd4bW9Qb4=\"",
+      "etag": "\"MhlLesB4TUeAZ5ilAoH9p4GrTjs=\"",
+      "human": "Quickstart - Process custom data for AI - .NET | Microsoft Learn | ETag \"MhlLesB4TUeAZ5ilAoH9p4GrTjs=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/process-data",
       "title": "Quickstart - Process custom data for AI - .NET | Microsoft Learn",
-      "value": "\"/9w2fR8dQTTMT42Ihevd4bW9Qb4=\""
+      "value": "\"MhlLesB4TUeAZ5ilAoH9p4GrTjs=\""
     },
     "dotnet-ai-docs-quickstarts-prompt-model": {
-      "etag": "\"fUUn/gplMbDawEWZo1FkIKiDtjM=\"",
-      "human": "Quickstart - Connect to and prompt an AI model with .NET - .NET | Microsoft Learn | ETag \"fUUn/gplMbDawEWZo1FkIKiDtjM=\"",
+      "etag": "\"c0LO+37i08PzPwR05f6uMBjUGG8=\"",
+      "human": "Quickstart - Connect to and prompt an AI model with .NET - .NET | Microsoft Learn | ETag \"c0LO+37i08PzPwR05f6uMBjUGG8=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 00:29:58 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/prompt-model",
       "title": "Quickstart - Connect to and prompt an AI model with .NET - .NET | Microsoft Learn",
-      "value": "\"fUUn/gplMbDawEWZo1FkIKiDtjM=\""
+      "value": "\"c0LO+37i08PzPwR05f6uMBjUGG8=\""
     },
     "dotnet-ai-docs-quickstarts-publish-mcp-registry": {
-      "etag": "\"0184r+sfKT0Uda8Bz8ucQvzBGlE=\"",
-      "human": "Quickstart - Publish a .NET MCP server to the MCP Registry - .NET | Microsoft Learn | ETag \"0184r+sfKT0Uda8Bz8ucQvzBGlE=\"",
+      "etag": "\"Vci5KQHnReXTivpvQDRao5Q+bhY=\"",
+      "human": "Quickstart - Publish a .NET MCP server to the MCP Registry - .NET | Microsoft Learn | ETag \"Vci5KQHnReXTivpvQDRao5Q+bhY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 06 Mar 2026 22:03:39 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/publish-mcp-registry",
       "title": "Quickstart - Publish a .NET MCP server to the MCP Registry - .NET | Microsoft Learn",
-      "value": "\"0184r+sfKT0Uda8Bz8ucQvzBGlE=\""
+      "value": "\"Vci5KQHnReXTivpvQDRao5Q+bhY=\""
     },
     "dotnet-ai-docs-quickstarts-structured-output": {
-      "etag": "\"ejU0s6IcTM0PaBq0wgOCEQpQscc=\"",
-      "human": "Quickstart - Request a response with structured output - .NET | Microsoft Learn | ETag \"ejU0s6IcTM0PaBq0wgOCEQpQscc=\"",
+      "etag": "\"XVuZEuuCPYOxpja4syCc/GeEIaQ=\"",
+      "human": "Quickstart - Request a response with structured output - .NET | Microsoft Learn | ETag \"XVuZEuuCPYOxpja4syCc/GeEIaQ=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/structured-output",
       "title": "Quickstart - Request a response with structured output - .NET | Microsoft Learn",
-      "value": "\"ejU0s6IcTM0PaBq0wgOCEQpQscc=\""
+      "value": "\"XVuZEuuCPYOxpja4syCc/GeEIaQ=\""
     },
     "dotnet-ai-docs-quickstarts-text-to-image": {
-      "etag": "\"kCCHc4k/8ogxJOIDpKtxqCfl690=\"",
-      "human": "Quickstart - Generate images from text using AI - .NET | Microsoft Learn | ETag \"kCCHc4k/8ogxJOIDpKtxqCfl690=\"",
+      "etag": "\"lhB+hcQJ6u/2WX0yE3yNAsUIFSY=\"",
+      "human": "Quickstart - Generate images from text using AI - .NET | Microsoft Learn | ETag \"lhB+hcQJ6u/2WX0yE3yNAsUIFSY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 17:50:04 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/text-to-image",
       "title": "Quickstart - Generate images from text using AI - .NET | Microsoft Learn",
-      "value": "\"kCCHc4k/8ogxJOIDpKtxqCfl690=\""
+      "value": "\"lhB+hcQJ6u/2WX0yE3yNAsUIFSY=\""
     },
     "dotnet-ai-docs-quickstarts-use-function-calling": {
-      "etag": "\"GvH7FhZ7rtGX88sxC3tnri/Lv8g=\"",
-      "human": "Quickstart - Extend OpenAI using functions and execute a local function with .NET - .NET | Microsoft Learn | ETag \"GvH7FhZ7rtGX88sxC3tnri/Lv8g=\"",
+      "etag": "\"V2eXxZQUxauHC08a1z00MUeIJGI=\"",
+      "human": "Quickstart - Extend OpenAI using functions and execute a local function with .NET - .NET | Microsoft Learn | ETag \"V2eXxZQUxauHC08a1z00MUeIJGI=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Mar 2026 19:08:52 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/quickstarts/use-function-calling",
       "title": "Quickstart - Extend OpenAI using functions and execute a local function with .NET - .NET | Microsoft Learn",
-      "value": "\"GvH7FhZ7rtGX88sxC3tnri/Lv8g=\""
+      "value": "\"V2eXxZQUxauHC08a1z00MUeIJGI=\""
     },
     "dotnet-ai-docs-resources-azure-ai": {
-      "etag": "\"Tw5GRXNBc9/r94vKW0D2sLHUzdw=\"",
-      "human": "Azure AI learning resources - .NET | Microsoft Learn | ETag \"Tw5GRXNBc9/r94vKW0D2sLHUzdw=\"",
+      "etag": "\"ky0O8er0GYqgvOQL+9YUDytSLVg=\"",
+      "human": "Azure AI learning resources - .NET | Microsoft Learn | ETag \"ky0O8er0GYqgvOQL+9YUDytSLVg=\"",
       "kind": "http_document",
       "last_modified": "Fri, 20 Mar 2026 17:29:45 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/resources/azure-ai",
       "title": "Azure AI learning resources - .NET | Microsoft Learn",
-      "value": "\"Tw5GRXNBc9/r94vKW0D2sLHUzdw=\""
+      "value": "\"ky0O8er0GYqgvOQL+9YUDytSLVg=\""
     },
     "dotnet-ai-docs-resources-get-started": {
-      "etag": "\"nzFDc2tBroZkkW+tpOjAMFMrwQ8=\"",
-      "human": "Learning resources to get started with AI in .NET - .NET | Microsoft Learn | ETag \"nzFDc2tBroZkkW+tpOjAMFMrwQ8=\"",
+      "etag": "\"AoS4go4k3NLtA0rsTbd6QBUHoC4=\"",
+      "human": "Learning resources to get started with AI in .NET - .NET | Microsoft Learn | ETag \"AoS4go4k3NLtA0rsTbd6QBUHoC4=\"",
       "kind": "http_document",
       "last_modified": "Wed, 17 Sep 2025 10:25:55 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/resources/get-started",
       "title": "Learning resources to get started with AI in .NET - .NET | Microsoft Learn",
-      "value": "\"nzFDc2tBroZkkW+tpOjAMFMrwQ8=\""
+      "value": "\"AoS4go4k3NLtA0rsTbd6QBUHoC4=\""
     },
     "dotnet-ai-docs-resources-mcp-servers": {
-      "etag": "\"Qi8HaPqaNpMbxAn4Darsn6YMJj4=\"",
-      "human": "MCP server learning resources - .NET | Microsoft Learn | ETag \"Qi8HaPqaNpMbxAn4Darsn6YMJj4=\"",
+      "etag": "\"xijy8pPn9JYQi/7ddRFKcrqb4O8=\"",
+      "human": "MCP server learning resources - .NET | Microsoft Learn | ETag \"xijy8pPn9JYQi/7ddRFKcrqb4O8=\"",
       "kind": "http_document",
       "last_modified": "Wed, 25 Feb 2026 19:00:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/resources/mcp-servers",
       "title": "MCP server learning resources - .NET | Microsoft Learn",
-      "value": "\"Qi8HaPqaNpMbxAn4Darsn6YMJj4=\""
+      "value": "\"xijy8pPn9JYQi/7ddRFKcrqb4O8=\""
     },
     "dotnet-ai-docs-tutorials-tutorial-ai-vector-search": {
-      "etag": "\"lphI1nE+1QP+Qv9Ni/UoovfP2nU=\"",
-      "human": "Tutorial - Integrate OpenAI with the RAG pattern and vector search using Azure Cosmos DB for MongoDB - .NET | Microsoft Learn | ETag \"lphI1nE+1QP+Qv9Ni/UoovfP2nU=\"",
+      "etag": "\"WBYrrNdfV7GZOPeDwRZHrlB9FJc=\"",
+      "human": "Tutorial - Integrate OpenAI with the RAG pattern and vector search using Azure Cosmos DB for MongoDB - .NET | Microsoft Learn | ETag \"WBYrrNdfV7GZOPeDwRZHrlB9FJc=\"",
       "kind": "http_document",
       "last_modified": "Thu, 26 Mar 2026 18:29:18 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/tutorials/tutorial-ai-vector-search",
       "title": "Tutorial - Integrate OpenAI with the RAG pattern and vector search using Azure Cosmos DB for MongoDB - .NET | Microsoft Learn",
-      "value": "\"lphI1nE+1QP+Qv9Ni/UoovfP2nU=\""
+      "value": "\"WBYrrNdfV7GZOPeDwRZHrlB9FJc=\""
     },
     "dotnet-core-apps-docs": {
-      "etag": "\"I57qEgFd1nje85zPGMWsM0tlNY8=\"",
-      "human": "Build apps with .NET - .NET | Microsoft Learn | ETag \"I57qEgFd1nje85zPGMWsM0tlNY8=\"",
+      "etag": "\"6OXzQE+lZt/+T+mk2FoUEXGhtNg=\"",
+      "human": "Build apps with .NET - .NET | Microsoft Learn | ETag \"6OXzQE+lZt/+T+mk2FoUEXGhtNg=\"",
       "kind": "http_document",
       "last_modified": "Wed, 04 Mar 2026 23:12:14 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/core/apps",
       "title": "Build apps with .NET - .NET | Microsoft Learn",
-      "value": "\"I57qEgFd1nje85zPGMWsM0tlNY8=\""
+      "value": "\"6OXzQE+lZt/+T+mk2FoUEXGhtNg=\""
     },
     "dotnet-maui-release": {
       "human": "10.0.51 (2026-03-25T20:52:57Z)",
@@ -1446,13 +1446,13 @@
       "value": "v10.0.200"
     },
     "ef-compare-docs": {
-      "etag": "\"0GflaBNkzzsLtIs72BR1hcNZORE=\"",
-      "human": "Compare EF6 and EF Core | Microsoft Learn | ETag \"0GflaBNkzzsLtIs72BR1hcNZORE=\"",
+      "etag": "\"KnzL860okkS6hjzEOcQTt7jTpI8=\"",
+      "human": "Compare EF6 and EF Core | Microsoft Learn | ETag \"KnzL860okkS6hjzEOcQTt7jTpI8=\"",
       "kind": "http_document",
       "last_modified": "Fri, 27 Mar 2026 11:01:25 GMT",
       "source_url": "https://learn.microsoft.com/ef/efcore-and-ef6/",
       "title": "Compare EF6 and EF Core | Microsoft Learn",
-      "value": "\"0GflaBNkzzsLtIs72BR1hcNZORE=\""
+      "value": "\"KnzL860okkS6hjzEOcQTt7jTpI8=\""
     },
     "efcore-release": {
       "human": "v9.0.14 (2026-03-10T20:19:18Z)",
@@ -1469,31 +1469,31 @@
       "value": "v10.1.0"
     },
     "extensions-ai-api-reference": {
-      "etag": "\"60X+jqvwl5e9IaXvNfjOyWSMmyk=\"",
-      "human": "Microsoft.Extensions.AI Namespace | Microsoft Learn | ETag \"60X+jqvwl5e9IaXvNfjOyWSMmyk=\"",
+      "etag": "\"4/SFFNgTyeeBBpZBXkMeuckq5kc=\"",
+      "human": "Microsoft.Extensions.AI Namespace | Microsoft Learn | ETag \"4/SFFNgTyeeBBpZBXkMeuckq5kc=\"",
       "kind": "http_document",
       "last_modified": "Fri, 13 Mar 2026 16:00:41 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/api/microsoft.extensions.ai",
       "title": "Microsoft.Extensions.AI Namespace | Microsoft Learn",
-      "value": "\"60X+jqvwl5e9IaXvNfjOyWSMmyk=\""
+      "value": "\"4/SFFNgTyeeBBpZBXkMeuckq5kc=\""
     },
     "extensions-ai-docs": {
-      "etag": "\"jSzJNRKabV3N5CLE+8+sDtzH9Go=\"",
-      "human": "Microsoft.Extensions.AI libraries - .NET | Microsoft Learn | ETag \"jSzJNRKabV3N5CLE+8+sDtzH9Go=\"",
+      "etag": "\"k7iL5OEC5EUQPIw8PrdfwcfplII=\"",
+      "human": "Microsoft.Extensions.AI libraries - .NET | Microsoft Learn | ETag \"k7iL5OEC5EUQPIw8PrdfwcfplII=\"",
       "kind": "http_document",
       "last_modified": "Mon, 23 Feb 2026 19:56:05 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/ai/microsoft-extensions-ai",
       "title": "Microsoft.Extensions.AI libraries - .NET | Microsoft Learn",
-      "value": "\"jSzJNRKabV3N5CLE+8+sDtzH9Go=\""
+      "value": "\"k7iL5OEC5EUQPIw8PrdfwcfplII=\""
     },
     "extensions-data-ingestion-api-reference": {
-      "etag": "\"ANl79ELOoIq6KXEy402XviurhhM=\"",
-      "human": "Microsoft.Extensions.DataIngestion Namespace | Microsoft Learn | ETag \"ANl79ELOoIq6KXEy402XviurhhM=\"",
+      "etag": "\"4dO3KrX79Z71AwfQnYinpY/2Ocg=\"",
+      "human": "Microsoft.Extensions.DataIngestion Namespace | Microsoft Learn | ETag \"4dO3KrX79Z71AwfQnYinpY/2Ocg=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Feb 2026 22:37:12 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/api/microsoft.extensions.dataingestion",
       "title": "Microsoft.Extensions.DataIngestion Namespace | Microsoft Learn",
-      "value": "\"ANl79ELOoIq6KXEy402XviurhhM=\""
+      "value": "\"4dO3KrX79Z71AwfQnYinpY/2Ocg=\""
     },
     "extensions-release": {
       "human": "v10.4.1 (2026-03-18T21:03:33Z)",
@@ -1503,13 +1503,13 @@
       "value": "v10.4.1"
     },
     "extensions-vector-data-api-reference": {
-      "etag": "\"Z0lgM5CSYshAjZak1t3W+8KQoMg=\"",
-      "human": "Microsoft.Extensions.VectorData Namespace | Microsoft Learn | ETag \"Z0lgM5CSYshAjZak1t3W+8KQoMg=\"",
+      "etag": "\"3h/HIFu5df9DvXZos81Bp563AAA=\"",
+      "human": "Microsoft.Extensions.VectorData Namespace | Microsoft Learn | ETag \"3h/HIFu5df9DvXZos81Bp563AAA=\"",
       "kind": "http_document",
       "last_modified": "Wed, 11 Feb 2026 22:32:21 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/api/microsoft.extensions.vectordata",
       "title": "Microsoft.Extensions.VectorData Namespace | Microsoft Learn",
-      "value": "\"Z0lgM5CSYshAjZak1t3W+8KQoMg=\""
+      "value": "\"3h/HIFu5df9DvXZos81Bp563AAA=\""
     },
     "htmlhint-release": {
       "human": "v1.9.2 (2026-03-05T09:18:23Z)",
@@ -1554,27 +1554,27 @@
       "value": "v9.0.0"
     },
     "managedcode-orleans-signalr-release": {
-      "human": "v10.0.5 (2026-02-10T14:04:37Z)",
+      "human": "v10.1.0 (2026-04-02T07:08:19Z)",
       "kind": "github_release",
-      "published_at": "2026-02-10T14:04:37Z",
-      "source_url": "https://github.com/managedcode/Orleans.SignalR/releases/tag/v10.0.5",
-      "value": "v10.0.5"
+      "published_at": "2026-04-02T07:08:19Z",
+      "source_url": "https://github.com/managedcode/Orleans.SignalR/releases/tag/v10.1.0",
+      "value": "v10.1.0"
     },
     "managedcode-storage-release": {
-      "human": "v10.0.3 (2026-03-13T20:36:19Z)",
+      "human": "v10.0.5 (2026-04-01T13:40:17Z)",
       "kind": "github_release",
-      "published_at": "2026-03-13T20:36:19Z",
-      "source_url": "https://github.com/managedcode/Storage/releases/tag/v10.0.3",
-      "value": "v10.0.3"
+      "published_at": "2026-04-01T13:40:17Z",
+      "source_url": "https://github.com/managedcode/Storage/releases/tag/v10.0.5",
+      "value": "v10.0.5"
     },
     "maui-overview-docs": {
-      "etag": "\"Zp/JMhZcVJA8c21zoKjcmul0N9o=\"",
-      "human": "What is .NET MAUI? - .NET MAUI | Microsoft Learn | ETag \"Zp/JMhZcVJA8c21zoKjcmul0N9o=\"",
+      "etag": "\"SbOmBbiz7cnZ1VqF9AZxN8oXP4g=\"",
+      "human": "What is .NET MAUI? - .NET MAUI | Microsoft Learn | ETag \"SbOmBbiz7cnZ1VqF9AZxN8oXP4g=\"",
       "kind": "http_document",
-      "last_modified": "Tue, 06 Jan 2026 08:14:09 GMT",
+      "last_modified": "Tue, 31 Mar 2026 08:03:24 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/maui/what-is-maui?view=net-maui-10.0",
       "title": "What is .NET MAUI? - .NET MAUI | Microsoft Learn",
-      "value": "\"Zp/JMhZcVJA8c21zoKjcmul0N9o=\""
+      "value": "\"SbOmBbiz7cnZ1VqF9AZxN8oXP4g=\""
     },
     "mcaf-managed-code-com-root-docs": {
       "etag": "\"69b7d818-94f0\"",
@@ -1616,13 +1616,13 @@
       "value": "v5.0.0"
     },
     "orleans-docs": {
-      "etag": "\"UISw2gup3E2WNNc/rjHFHNQ1TDs=\"",
-      "human": "Microsoft Orleans documentation - .NET | Microsoft Learn | ETag \"UISw2gup3E2WNNc/rjHFHNQ1TDs=\"",
+      "etag": "\"A3fopT1NsLD/mmDiRgoGwDqB+NY=\"",
+      "human": "Microsoft Orleans documentation - .NET | Microsoft Learn | ETag \"A3fopT1NsLD/mmDiRgoGwDqB+NY=\"",
       "kind": "http_document",
       "last_modified": "Fri, 23 Jan 2026 02:05:22 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/orleans/",
       "title": "Microsoft Orleans documentation - .NET | Microsoft Learn",
-      "value": "\"UISw2gup3E2WNNc/rjHFHNQ1TDs=\""
+      "value": "\"A3fopT1NsLD/mmDiRgoGwDqB+NY=\""
     },
     "orleans-release": {
       "human": "v10.0.1 (2026-02-07T00:45:00Z)",
@@ -1639,11 +1639,11 @@
       "value": "dotnet-1.74.0"
     },
     "sonarjs-release": {
-      "human": "12.2.0.39785 (2026-03-26T08:53:38Z)",
+      "human": "12.3.0.39932 (2026-04-01T10:31:10Z)",
       "kind": "github_release",
-      "published_at": "2026-03-26T08:53:38Z",
-      "source_url": "https://github.com/SonarSource/SonarJS/releases/tag/12.2.0.39785",
-      "value": "12.2.0.39785"
+      "published_at": "2026-04-01T10:31:10Z",
+      "source_url": "https://github.com/SonarSource/SonarJS/releases/tag/12.3.0.39932",
+      "value": "12.3.0.39932"
     },
     "stylelint-release": {
       "human": "17.6.0 (2026-03-26T09:39:45Z)",
@@ -1667,22 +1667,22 @@
       "value": "v1.8.6"
     },
     "winforms-overview-docs": {
-      "etag": "\"2C/YLa0YDurWrG4ViWOvO2QFabU=\"",
-      "human": "What is Windows Forms - Windows Forms | Microsoft Learn | ETag \"2C/YLa0YDurWrG4ViWOvO2QFabU=\"",
+      "etag": "\"R1KcjXYDRrK186UAyXAl8ThmUdM=\"",
+      "human": "What is Windows Forms - Windows Forms | Microsoft Learn | ETag \"R1KcjXYDRrK186UAyXAl8ThmUdM=\"",
       "kind": "http_document",
       "last_modified": "Wed, 27 Aug 2025 09:10:11 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/desktop/winforms/overview/",
       "title": "What is Windows Forms - Windows Forms | Microsoft Learn",
-      "value": "\"2C/YLa0YDurWrG4ViWOvO2QFabU=\""
+      "value": "\"R1KcjXYDRrK186UAyXAl8ThmUdM=\""
     },
     "wpf-overview-docs": {
-      "etag": "\"68ZivNKC8bqASi3DEdyE1n4CS6M=\"",
-      "human": "What is Windows Presentation Foundation - WPF | Microsoft Learn | ETag \"68ZivNKC8bqASi3DEdyE1n4CS6M=\"",
+      "etag": "\"LG/uoPIaPODjY1mU+wPZPQ1OG18=\"",
+      "human": "What is Windows Presentation Foundation - WPF | Microsoft Learn | ETag \"LG/uoPIaPODjY1mU+wPZPQ1OG18=\"",
       "kind": "http_document",
       "last_modified": "Mon, 30 Mar 2026 14:53:56 GMT",
       "source_url": "https://learn.microsoft.com/dotnet/desktop/wpf/overview/",
       "title": "What is Windows Presentation Foundation - WPF | Microsoft Learn",
-      "value": "\"68ZivNKC8bqASi3DEdyE1n4CS6M=\""
+      "value": "\"LG/uoPIaPODjY1mU+wPZPQ1OG18=\""
     }
   }
 }
