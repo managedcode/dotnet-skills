@@ -1462,11 +1462,11 @@
       "value": "v9.0.14"
     },
     "eslint-release": {
-      "human": "v10.1.0 (2026-03-20T15:31:47Z)",
+      "human": "v10.2.0 (2026-04-03T20:36:28Z)",
       "kind": "github_release",
-      "published_at": "2026-03-20T15:31:47Z",
-      "source_url": "https://github.com/eslint/eslint/releases/tag/v10.1.0",
-      "value": "v10.1.0"
+      "published_at": "2026-04-03T20:36:28Z",
+      "source_url": "https://github.com/eslint/eslint/releases/tag/v10.2.0",
+      "value": "v10.2.0"
     },
     "extensions-ai-api-reference": {
       "etag": "\"qjBtOyarZNrvzEcKIr4xU6GAqKU=\"",
