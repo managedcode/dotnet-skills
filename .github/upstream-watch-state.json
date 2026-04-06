@@ -1526,11 +1526,11 @@
       "value": "v10.0.1"
     },
     "managedcode-markitdown-release": {
-      "human": "v10.0.6 (2026-02-23T20:05:04Z)",
+      "human": "v10.0.7 (2026-04-05T18:45:18Z)",
       "kind": "github_release",
-      "published_at": "2026-02-23T20:05:04Z",
-      "source_url": "https://github.com/managedcode/markitdown/releases/tag/v10.0.6",
-      "value": "v10.0.6"
+      "published_at": "2026-04-05T18:45:18Z",
+      "source_url": "https://github.com/managedcode/markitdown/releases/tag/v10.0.7",
+      "value": "v10.0.7"
     },
     "managedcode-mcaf-release": {
       "human": "v1.2.63 (2026-03-16T10:14:50Z)",
