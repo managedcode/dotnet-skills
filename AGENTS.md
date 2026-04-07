@@ -476,8 +476,11 @@ When adding a documentation watch:
 - Watch stable, meaningful overview pages, not random transient pages.
 - Prefer official Microsoft Learn URLs that define platform or framework guidance.
 - Keep issue fan-out reviewable. Upstream-watch automation must track one open maintenance issue per library or skill group, not one permanently open issue per individual documentation page when those pages roll up to the same library refresh.
-- When another upstream change arrives for a library or skill group that already has an open upstream-watch issue, update that existing issue and append the new watch detail instead of creating another open issue.
+- When another upstream change arrives for a library or skill group that already has an open upstream-watch issue, carry the pending watch context forward into the replacement issue so the new issue starts with the full current upstream state.
 - Upstream-watch issue discovery must paginate across the full matching issue set before deciding whether an issue already exists. Do not assume the first page of GitHub issues is sufficient for deduplication or repair.
+- Upstream-watch automation must be issue-driven and must not create `catalog-v*` releases or any other user-facing release noise just because machine-maintained watch state changed.
+- Do not commit routine upstream-watch state refreshes to `main`. Persist automation state in a non-release-triggering channel so scheduled watch runs can open or rotate issues without manufacturing empty catalog releases.
+- When a new upstream event arrives for a library or skill group that already has an open upstream-watch issue, create a fresh issue for the new event and close the older open issue as superseded by the newer one.
 
 ## State File Rules
 
@@ -485,6 +488,8 @@ When adding a documentation watch:
 
 Rules:
 
+- Treat the checked-in `.github/upstream-watch-state.json` file as a bootstrap baseline and local fallback, not as a daily-updated commit log on `main`.
+- Scheduled automation may restore and save runtime watch state outside tracked files, but it must not push routine state refresh commits to the default branch.
 - Do not hand-edit it unless there is a repository emergency.
 - To validate watch config structure without contacting upstream sources, run:
 

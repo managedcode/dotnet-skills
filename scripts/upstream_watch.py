@@ -655,8 +655,9 @@ def issue_body(
     return "\n".join(lines)
 
 
-def refresh_comment(
+def superseded_comment(
     *,
+    replacement_issue_number: int,
     issue_key: str,
     watch: dict[str, Any],
     existing_watch_snapshot: dict[str, Any] | None,
@@ -670,18 +671,18 @@ def refresh_comment(
         previous_value = old_snapshot.get("value")
 
     lines = [
-        "Automation detected another upstream change for this skill group.",
+        "Automation closed this upstream-watch issue because a newer upstream event superseded it.",
         "",
+        f"- Replacement issue: #{replacement_issue_number}",
         f"- Issue key: `{issue_key}`",
         f"- Watch id: `{watch['id']}`",
         f"- Watch: **{watch['name']}**",
-        f"- Change type: `{'updated-watch' if existing_watch_snapshot else 'new-watch'}`",
     ]
     if previous_value:
-        lines.append(f"- Previous value: `{previous_value}`")
+        lines.append(f"- Previous tracked value: `{previous_value}`")
     lines.extend(
         [
-            f"- Current value: `{new_snapshot['value']}`",
+            f"- New detected value: `{new_snapshot['value']}`",
             f"- Source: {new_snapshot['source_url']}",
         ]
     )
@@ -706,12 +707,12 @@ def ensure_labels(repo: str, token: str, labels: list[dict[str, str]], dry_run: 
         )
 
 
-def list_open_issues(repo: str, token: str, watch_label: str) -> list[dict[str, Any]]:
+def list_labeled_issues(repo: str, token: str, watch_label: str, *, state: str) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     page = 1
     while True:
         batch = gh_api(
-            f"/repos/{repo}/issues?state=open&labels={watch_label}&per_page=100&page={page}",
+            f"/repos/{repo}/issues?state={state}&labels={watch_label}&per_page=100&page={page}",
             token=token,
         )
         if not isinstance(batch, list):
@@ -723,15 +724,16 @@ def list_open_issues(repo: str, token: str, watch_label: str) -> list[dict[str, 
     return issues
 
 
-def choose_canonical_issue(issues: list[dict[str, Any]]) -> dict[str, Any]:
-    return max(
-        issues,
-        key=lambda issue: (
-            issue.get("updated_at") or "",
-            issue.get("created_at") or "",
-            issue.get("number") or 0,
-        ),
+def issue_sort_key(issue: dict[str, Any]) -> tuple[Any, ...]:
+    return (
+        issue.get("number") or 0,
+        issue.get("updated_at") or "",
+        issue.get("created_at") or "",
     )
+
+
+def choose_canonical_issue(issues: list[dict[str, Any]]) -> dict[str, Any]:
+    return max(issues, key=issue_sort_key)
 
 
 def load_open_issue_groups(
@@ -743,7 +745,7 @@ def load_open_issue_groups(
     state_watches: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
     groups: dict[str, dict[str, Any]] = {}
-    for issue in list_open_issues(repo, token, watch_label):
+    for issue in list_labeled_issues(repo, token, watch_label, state="open"):
         parsed = parse_open_issue(issue, watch_index=watch_index, state_watches=state_watches)
         if not parsed:
             continue
@@ -755,6 +757,7 @@ def load_open_issue_groups(
                 "issues": [],
                 "pending_watches": {},
                 "skills": [],
+                "fresh": False,
             },
         )
         group["issues"].append(issue)
@@ -770,6 +773,34 @@ def load_open_issue_groups(
                 group["pending_watches"][watch_id] = snapshot
 
     return groups
+
+
+def load_historical_watch_snapshots(
+    *,
+    repo: str,
+    token: str,
+    watch_label: str,
+    watch_index: dict[str, dict[str, Any]],
+    state_watches: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    historical: dict[str, dict[str, Any]] = {}
+    seen_issue_numbers: dict[str, int] = {}
+
+    for issue in list_labeled_issues(repo, token, watch_label, state="all"):
+        parsed = parse_open_issue(issue, watch_index=watch_index, state_watches=state_watches)
+        if not parsed:
+            continue
+
+        _, _, pending_watches = parsed
+        issue_number = issue.get("number") or 0
+        for watch_id, snapshot in pending_watches.items():
+            previous_issue_number = seen_issue_numbers.get(watch_id, -1)
+            if issue_number <= previous_issue_number:
+                continue
+            seen_issue_numbers[watch_id] = issue_number
+            historical[watch_id] = minimal_snapshot(snapshot)
+
+    return historical
 
 
 def close_duplicate_issue(repo: str, token: str, issue_number: int, canonical_number: int) -> None:
@@ -830,6 +861,7 @@ def reconcile_open_issues(
                 "pending_watches": pending_watches,
                 "skills": skills,
                 "issue_name": issue_name,
+                "fresh": False,
             }
             stats["groups"] += 1
             continue
@@ -854,13 +886,14 @@ def reconcile_open_issues(
             "pending_watches": pending_watches,
             "skills": skills,
             "issue_name": issue_name,
+            "fresh": False,
         }
         stats["groups"] += 1
 
     return normalized, stats
 
 
-def upsert_issue(
+def rotate_issue(
     *,
     repo: str,
     token: str,
@@ -889,28 +922,18 @@ def upsert_issue(
     )
 
     if dry_run:
-        action = "update" if existing_group else "create"
+        if existing_group and not existing_group.get("fresh"):
+            action = "rotate"
+        elif existing_group:
+            action = "amend"
+        else:
+            action = "create"
         print(f"[dry-run] Would {action} issue for {watch['id']} via {issue_key}: {title}")
         return action
 
-    if existing_group:
-        existing_issue = existing_group["issue"]
-        gh_api(
-            f"/repos/{repo}/issues/{existing_issue['number']}/comments",
-            token=token,
-            method="POST",
-            data={
-                "body": refresh_comment(
-                    issue_key=issue_key,
-                    watch=watch,
-                    existing_watch_snapshot=existing_watch_snapshot,
-                    old_snapshot=old_snapshot,
-                    new_snapshot=new_snapshot,
-                )
-            },
-        )
+    if existing_group and existing_group.get("fresh"):
         updated = gh_api(
-            f"/repos/{repo}/issues/{existing_issue['number']}",
+            f"/repos/{repo}/issues/{existing_group['issue']['number']}",
             token=token,
             method="PATCH",
             data={"title": title, "body": body},
@@ -920,8 +943,9 @@ def upsert_issue(
             "pending_watches": pending_watches,
             "skills": skills,
             "issue_name": issue_name,
+            "fresh": True,
         }
-        return "update"
+        return "amend"
 
     created = gh_api(
         f"/repos/{repo}/issues",
@@ -929,13 +953,41 @@ def upsert_issue(
         method="POST",
         data={"title": title, "body": body, "labels": labels},
     )
+
+    action = "create"
+    if existing_group:
+        existing_issue = existing_group["issue"]
+        gh_api(
+            f"/repos/{repo}/issues/{existing_issue['number']}/comments",
+            token=token,
+            method="POST",
+            data={
+                "body": superseded_comment(
+                    replacement_issue_number=created["number"],
+                    issue_key=issue_key,
+                    watch=watch,
+                    existing_watch_snapshot=existing_watch_snapshot,
+                    old_snapshot=old_snapshot,
+                    new_snapshot=new_snapshot,
+                )
+            },
+        )
+        gh_api(
+            f"/repos/{repo}/issues/{existing_issue['number']}",
+            token=token,
+            method="PATCH",
+            data={"state": "closed"},
+        )
+        action = "rotate"
+
     open_issue_groups[issue_key] = {
         "issue": created,
         "pending_watches": pending_watches,
         "skills": skills,
         "issue_name": issue_name,
+        "fresh": True,
     }
-    return "create"
+    return action
 
 
 def write_summary(lines: list[str]) -> None:
@@ -1003,6 +1055,14 @@ def main() -> int:
         if not args.dry_run and not args.sync_state_only:
             ensure_labels(repo, token, config.get("labels", []), dry_run=False)
 
+        historical_watches = load_historical_watch_snapshots(
+            repo=repo,
+            token=token,
+            watch_label=watch_label,
+            watch_index=watch_index,
+            state_watches=prior_watches,
+        )
+
         open_issue_groups = load_open_issue_groups(
             repo=repo,
             token=token,
@@ -1020,33 +1080,40 @@ def main() -> int:
             dry_run=reconcile_dry_run,
         )
     else:
+        historical_watches = {}
         open_issue_groups = {}
 
     next_state: dict[str, Any] = {"watches": {}}
     bootstrapped = 0
     changed = 0
     created = 0
-    updated = 0
+    rotated = 0
+    amended = 0
     errors: list[str] = []
 
     for watch in config.get("watches", []):
+        previous = prior_watches.get(watch["id"])
+        historical = historical_watches.get(watch["id"])
+        fallback_snapshot = previous or historical
         try:
             snapshot = fetch_snapshot(watch, token)
             next_state["watches"][watch["id"]] = snapshot
-            previous = prior_watches.get(watch["id"])
+            effective_previous = previous or historical
+            if historical and historical.get("value") == snapshot.get("value"):
+                effective_previous = historical
 
-            if previous is None:
+            if effective_previous is None:
                 bootstrapped += 1
                 summary.append(f"- Bootstrapped `{watch['id']}` with `{snapshot['value']}`")
                 continue
 
-            if previous.get("value") == snapshot.get("value"):
+            if effective_previous.get("value") == snapshot.get("value"):
                 summary.append(f"- No change for `{watch['id']}`")
                 continue
 
             changed += 1
             summary.append(
-                f"- Change detected for `{watch['id']}`: `{previous.get('value')}` -> `{snapshot.get('value')}`"
+                f"- Change detected for `{watch['id']}`: `{effective_previous.get('value')}` -> `{snapshot.get('value')}`"
             )
 
             if args.sync_state_only:
@@ -1056,12 +1123,12 @@ def main() -> int:
             if not args.dry_run and not repo:
                 raise RuntimeError("GITHUB_REPOSITORY is required to create or update issues")
 
-            action = upsert_issue(
+            action = rotate_issue(
                 repo=repo or "",
                 token=token or "",
                 labels=issue_labels,
                 watch=watch,
-                old_snapshot=previous,
+                old_snapshot=effective_previous,
                 new_snapshot=snapshot,
                 watch_index=watch_index,
                 open_issue_groups=open_issue_groups,
@@ -1069,9 +1136,13 @@ def main() -> int:
             )
             if action == "create":
                 created += 1
+            elif action == "rotate":
+                rotated += 1
             else:
-                updated += 1
+                amended += 1
         except Exception as exc:  # noqa: BLE001
+            if fallback_snapshot is not None:
+                next_state["watches"][watch["id"]] = fallback_snapshot
             message = f"{watch.get('id', 'unknown-watch')}: {exc}"
             errors.append(message)
             summary.append(f"- Error for `{watch.get('id', 'unknown-watch')}`: {exc}")
@@ -1087,7 +1158,8 @@ def main() -> int:
             f"- Bootstrapped watches: `{bootstrapped}`",
             f"- Changed watches: `{changed}`",
             f"- Issues created: `{created}`",
-            f"- Issues updated: `{updated}`",
+            f"- Issues rotated: `{rotated}`",
+            f"- Same-run issue amendments: `{amended}`",
             f"- Issue groups scanned: `{reconciliation_stats['groups']}`",
             f"- Issue bodies normalized: `{reconciliation_stats['issues_rewritten']}`",
             f"- Duplicate issues closed: `{reconciliation_stats['duplicates_closed']}`",

@@ -13,6 +13,9 @@ concurrency:
   group: upstream-watch
   cancel-in-progress: false
 
+env:
+  UPSTREAM_WATCH_STATE_FILE: .cache/upstream-watch/upstream-watch-state.json
+
 jobs:
   watch:
     runs-on: ubuntu-latest
@@ -26,22 +29,33 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Restore upstream watch state cache
+        id: restore-upstream-watch-state
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.UPSTREAM_WATCH_STATE_FILE }}
+          key: upstream-watch-state-${{ github.repository_id }}-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            upstream-watch-state-${{ github.repository_id }}-${{ github.ref_name }}-
+
+      - name: Seed upstream watch state
+        run: |
+          mkdir -p "$(dirname "${{ env.UPSTREAM_WATCH_STATE_FILE }}")"
+          if [ ! -f "${{ env.UPSTREAM_WATCH_STATE_FILE }}" ]; then
+            cp .github/upstream-watch-state.json "${{ env.UPSTREAM_WATCH_STATE_FILE }}"
+          fi
+
       - name: Validate upstream watch config
         run: python3 scripts/upstream_watch.py --validate-config
 
       - name: Run upstream watch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/upstream_watch.py
+        run: python3 scripts/upstream_watch.py --state "${{ env.UPSTREAM_WATCH_STATE_FILE }}"
 
-      - name: Commit updated watch state
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/upstream-watch-state.json
-          if git diff --cached --quiet; then
-            echo "No state changes to commit."
-            exit 0
-          fi
-          git commit -m "chore: refresh upstream watch state"
-          git push
+      - name: Save upstream watch state cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.UPSTREAM_WATCH_STATE_FILE }}
+          key: upstream-watch-state-${{ github.repository_id }}-${{ github.ref_name }}-${{ github.run_id }}
