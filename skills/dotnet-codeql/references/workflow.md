@@ -242,7 +242,7 @@ Automatic with `github/codeql-action/analyze`:
 
 ```yaml
 - name: Upload SARIF as artifact
-  uses: actions/upload-artifact@v4
+  uses: actions/upload-artifact@v7
   with:
     name: sarif-results
     path: sarif-results

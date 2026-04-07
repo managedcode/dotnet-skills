@@ -88,7 +88,7 @@ jobs:
             -reporttypes:"HtmlSummary;Cobertura;MarkdownSummaryGithub"
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage/report
@@ -228,7 +228,7 @@ jobs:
             -reporttypes:"HtmlSummary;Cobertura"
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/report
@@ -346,7 +346,7 @@ jobs:
         working-directory: ./tests/MyProject.Tests
 
       - name: Upload mutation report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: stryker-report
           path: '**/StrykerOutput/**'
@@ -424,7 +424,7 @@ jobs:
             --severity=WARNING
 
       - name: Upload inspection report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: inspectcode-report
           path: inspectcode-report.xml

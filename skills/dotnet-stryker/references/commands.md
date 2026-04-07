@@ -209,7 +209,7 @@ dotnet stryker --since --since-target main
   continue-on-error: true
 
 - name: Upload Mutation Report
-  uses: actions/upload-artifact@v4
+  uses: actions/upload-artifact@v7
   with:
     name: mutation-report
     path: StrykerOutput/

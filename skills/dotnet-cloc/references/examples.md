@@ -109,7 +109,7 @@ Goal: Track code size over time in CI.
     echo "Total lines: $(jq '.SUM.code' cloc-report.json)"
 
 - name: Upload metrics artifact
-  uses: actions/upload-artifact@v4
+  uses: actions/upload-artifact@v7
   with:
     name: code-metrics
     path: cloc-report.json
