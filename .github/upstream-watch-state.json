@@ -100,13 +100,13 @@
       "value": "\"7dOif7lWQsZdDleBf98Jbojr428=\""
     },
     "agent-framework-docs-overview": {
-      "etag": "\"1/ZpaFZvXuQQsv+2Z6EbfXbiALo=\"",
-      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"1/ZpaFZvXuQQsv+2Z6EbfXbiALo=\"",
+      "etag": "\"3sZHmSIzKdACIoycjqG6dM0RGiI=\"",
+      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"3sZHmSIzKdACIoycjqG6dM0RGiI=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 02 Apr 2026 17:01:13 GMT",
+      "last_modified": "Mon, 06 Apr 2026 21:42:01 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/overview/",
       "title": "Microsoft Agent Framework Overview | Microsoft Learn",
-      "value": "\"1/ZpaFZvXuQQsv+2Z6EbfXbiALo=\""
+      "value": "\"3sZHmSIzKdACIoycjqG6dM0RGiI=\""
     },
     "agent-framework-docs-support": {
       "etag": "\"Njez5XMtqD1fdOAruqi9hxgfJaQ=\"",
@@ -163,13 +163,13 @@
       "value": "\"9CGaSM/IWQ3/6UsBFl/+cUzCxlI=\""
     },
     "agent-framework-docs-tutorials-agents-enable-observability": {
-      "etag": "\"tcR0wwZbySAePhgOxyh+rKUBlTg=\"",
-      "human": "Observability | Microsoft Learn | ETag \"tcR0wwZbySAePhgOxyh+rKUBlTg=\"",
+      "etag": "\"fODlZY2dastMKpJZoq0zQpjh910=\"",
+      "human": "Observability | Microsoft Learn | ETag \"fODlZY2dastMKpJZoq0zQpjh910=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 02 Apr 2026 17:01:13 GMT",
+      "last_modified": "Mon, 06 Apr 2026 21:42:01 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/tutorials/agents/enable-observability",
       "title": "Observability | Microsoft Learn",
-      "value": "\"tcR0wwZbySAePhgOxyh+rKUBlTg=\""
+      "value": "\"fODlZY2dastMKpJZoq0zQpjh910=\""
     },
     "agent-framework-docs-tutorials-agents-function-tools": {
       "etag": "\"74awnR5ZRgjTFYcSoZ/6oI6W9jE=\"",
@@ -397,13 +397,13 @@
       "value": "\"r2Up7USlgDMshOlaxRClJiAJ4LI=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types": {
-      "etag": "\"oK5UtMjS4uu350mAVPGuTIRPgco=\"",
-      "human": "Providers Overview | Microsoft Learn | ETag \"oK5UtMjS4uu350mAVPGuTIRPgco=\"",
+      "etag": "\"3tB8JHhbq+EEE3SxBMeNsw4YDfU=\"",
+      "human": "Providers Overview | Microsoft Learn | ETag \"3tB8JHhbq+EEE3SxBMeNsw4YDfU=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
+      "last_modified": "Mon, 06 Apr 2026 21:42:01 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/",
       "title": "Providers Overview | Microsoft Learn",
-      "value": "\"oK5UtMjS4uu350mAVPGuTIRPgco=\""
+      "value": "\"3tB8JHhbq+EEE3SxBMeNsw4YDfU=\""
     },
     "agent-framework-docs-user-guide-agents-agent-types-a2a-agent": {
       "etag": "\"5nLBA8kcoQ7+L9D/LXShMT1LnBM=\"",
@@ -604,13 +604,13 @@
       "value": "\"z/omz7hl0+uebIvGReb3y7tDs0g=\""
     },
     "agent-framework-docs-user-guide-hosting": {
-      "etag": "\"vzUviE1P2jPlA9m1tjEVZ2RK42Y=\"",
-      "human": "Agent Framework Integrations | Microsoft Learn | ETag \"vzUviE1P2jPlA9m1tjEVZ2RK42Y=\"",
+      "etag": "\"rWSB2J1Hz+z7zPHbMqF37YhWuMM=\"",
+      "human": "Agent Framework Integrations | Microsoft Learn | ETag \"rWSB2J1Hz+z7zPHbMqF37YhWuMM=\"",
       "kind": "http_document",
-      "last_modified": "Wed, 01 Apr 2026 16:45:11 GMT",
+      "last_modified": "Mon, 06 Apr 2026 21:42:01 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/hosting/",
       "title": "Agent Framework Integrations | Microsoft Learn",
-      "value": "\"vzUviE1P2jPlA9m1tjEVZ2RK42Y=\""
+      "value": "\"rWSB2J1Hz+z7zPHbMqF37YhWuMM=\""
     },
     "agent-framework-docs-user-guide-hosting-agent-to-agent-integration": {
       "etag": "\"5nLBA8kcoQ7+L9D/LXShMT1LnBM=\"",
@@ -658,22 +658,22 @@
       "value": "\"8Gh9W10SYgnFQ/XOfEUOyKswyC8=\""
     },
     "agent-framework-docs-user-guide-observability": {
-      "etag": "\"tcR0wwZbySAePhgOxyh+rKUBlTg=\"",
-      "human": "Observability | Microsoft Learn | ETag \"tcR0wwZbySAePhgOxyh+rKUBlTg=\"",
+      "etag": "\"fODlZY2dastMKpJZoq0zQpjh910=\"",
+      "human": "Observability | Microsoft Learn | ETag \"fODlZY2dastMKpJZoq0zQpjh910=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 02 Apr 2026 17:01:13 GMT",
+      "last_modified": "Mon, 06 Apr 2026 21:42:01 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/observability",
       "title": "Observability | Microsoft Learn",
-      "value": "\"tcR0wwZbySAePhgOxyh+rKUBlTg=\""
+      "value": "\"fODlZY2dastMKpJZoq0zQpjh910=\""
     },
     "agent-framework-docs-user-guide-overview": {
-      "etag": "\"1/ZpaFZvXuQQsv+2Z6EbfXbiALo=\"",
-      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"1/ZpaFZvXuQQsv+2Z6EbfXbiALo=\"",
+      "etag": "\"3sZHmSIzKdACIoycjqG6dM0RGiI=\"",
+      "human": "Microsoft Agent Framework Overview | Microsoft Learn | ETag \"3sZHmSIzKdACIoycjqG6dM0RGiI=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 02 Apr 2026 17:01:13 GMT",
+      "last_modified": "Mon, 06 Apr 2026 21:42:01 GMT",
       "source_url": "https://learn.microsoft.com/agent-framework/user-guide/overview",
       "title": "Microsoft Agent Framework Overview | Microsoft Learn",
-      "value": "\"1/ZpaFZvXuQQsv+2Z6EbfXbiALo=\""
+      "value": "\"3sZHmSIzKdACIoycjqG6dM0RGiI=\""
     },
     "agent-framework-docs-user-guide-workflows-as-agents": {
       "etag": "\"FEi5YdUCof/l6ftU3ik2hKo9XUU=\"",
@@ -926,13 +926,13 @@
       "value": "\"74526ca224c20abf7e3911c3e990508113194d644b2c99db04049eaeaf02c82c\""
     },
     "aspire-docs": {
-      "etag": "\"HHJ+Pc4FQuQ5UbxBGO2q12K6PibA1ZzOWVexz2GyuTo=\"",
-      "human": "Aspire \u2014 Your stack, streamlined | ETag \"HHJ+Pc4FQuQ5UbxBGO2q12K6PibA1ZzOWVexz2GyuTo=\"",
+      "etag": "\"JzLAGvB538uXihx7MBDVnI6K09XFBkwA3hrVuHpiRTs=\"",
+      "human": "Aspire \u2014 Your stack, streamlined | ETag \"JzLAGvB538uXihx7MBDVnI6K09XFBkwA3hrVuHpiRTs=\"",
       "kind": "http_document",
-      "last_modified": "Thu, 02 Apr 2026 15:25:47 GMT",
+      "last_modified": "Mon, 06 Apr 2026 15:22:32 GMT",
       "source_url": "https://aspire.dev/",
       "title": "Aspire \u2014 Your stack, streamlined",
-      "value": "\"HHJ+Pc4FQuQ5UbxBGO2q12K6PibA1ZzOWVexz2GyuTo=\""
+      "value": "\"JzLAGvB538uXihx7MBDVnI6K09XFBkwA3hrVuHpiRTs=\""
     },
     "aspire-release": {
       "human": "v13.2.1 (2026-03-31T05:43:00Z)",
