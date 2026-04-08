@@ -485,21 +485,21 @@ internal static class ConsoleUi
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
         grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[dim]packages[/]"), new Markup($"{catalog.Packages.Count}"));
+        grid.AddRow(new Markup("[dim]skill stacks[/]"), new Markup($"{catalog.Packages.Count}"));
         grid.AddRow(new Markup("[dim]skills covered[/]"), new Markup($"{catalog.Skills.Count}"));
-        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]packages[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]skill stacks[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         if (catalog.Packages.Count == 0)
         {
-            AnsiConsole.Write(new Panel(new Markup("No packages are available in this catalog version yet."))
-                .Header("[dim]packages[/]")
+            AnsiConsole.Write(new Panel(new Markup("No skill stacks are available in this catalog version yet."))
+                .Header("[dim]skill stacks[/]")
                 .Expand());
             return;
         }
 
         var table = new Table().Expand().Border(TableBorder.Rounded);
-        table.Title = new TableTitle("[bold]Available skill packages[/]");
+        table.Title = new TableTitle("[bold]Available skill stacks[/]");
         table.AddColumn("Package");
         table.AddColumn("Type");
         table.AddColumn("Skills");
@@ -573,14 +573,14 @@ internal static class ConsoleUi
 
         Section("Catalog");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} list", "Inventory with scope comparison");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} package list", "Curated skill packages");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} package list", "Curated skill stacks");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} recommend", "Scan .csproj and propose skills");
 
         Section("Install");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install aspire orleans", "Install by alias");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto", "Auto-install from project signals");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto --prune", "Reconcile stale auto-managed skills");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} install package ai", "Install a multi-skill package");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} install package ai", "Install a multi-skill skill stack");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} remove --all", "Remove all installed skills");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} update", "Update to latest catalog version");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} sync --force", "Refresh cached catalog");

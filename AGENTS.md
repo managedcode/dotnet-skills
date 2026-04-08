@@ -74,6 +74,7 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - For interactive CLI UX changes in the publishable tools, run a dedicated Claude-led design pass before finalizing the console presentation.
 - Do not ship flat menus where every entry has the same visual weight. Interactive menus must expose clear hierarchy, differentiated sections, and obvious primary flows.
 - When the CLI has package-aware workflows, surface NuGet/package entry points clearly in the interactive shell instead of burying them behind generic labels.
+- In public UX and docs, never call catalog bundle installs just `packages` when that could be confused with real NuGet packages from a user's project. Use `skill packages`, `skill stacks`, or `package bundles` for catalog bundles, and say `NuGet packages` explicitly for project-detected package flows.
 
 ### Issue Workflow
 

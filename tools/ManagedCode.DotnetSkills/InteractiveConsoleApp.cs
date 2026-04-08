@@ -118,7 +118,7 @@ internal sealed class InteractiveConsoleApp
         grid.AddRow(new Markup("[green]\u2714[/] [dim]catalog[/]"), new Markup(Escape(skillCatalog.CatalogVersion)));
         grid.AddRow(new Markup("[dim]source[/]"), new Markup(Escape(skillCatalog.SourceLabel)));
         grid.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
-        grid.AddRow(new Markup("[dim]packages[/]"), new Markup(skillCatalog.Packages.Count.ToString()));
+        grid.AddRow(new Markup("[dim]skill stacks[/]"), new Markup(skillCatalog.Packages.Count.ToString()));
         AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]refreshed[/]").Border(BoxBorder.Rounded).Expand());
         prompts.Pause("Press any key to continue...");
     }
@@ -151,7 +151,7 @@ internal sealed class InteractiveConsoleApp
         overview.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))}[/]"));
         overview.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(skillLayout.PrimaryRoot.FullName)}[/]"));
         overview.AddRow(new Markup("[dim]skills[/]"), new Markup($"[green]{bar}[/] {installedSkills.Count}/{skillCatalog.Skills.Count}" + (outdatedSkills > 0 ? $" [yellow]({outdatedSkills} outdated)[/]" : "")));
-        overview.AddRow(new Markup("[dim]packages[/]"), new Markup($"{skillCatalog.Packages.Count} available"));
+        overview.AddRow(new Markup("[dim]skill stacks[/]"), new Markup($"{skillCatalog.Packages.Count} available"));
         overview.AddRow(new Markup("[dim]agents[/]"), new Markup($"{agentCatalog.Agents.Count} [dim]({Escape(agentStatus.Summary)})[/]"));
         AnsiConsole.Write(new Panel(overview).Header("[deepskyblue1]workspace[/]").Border(BoxBorder.Rounded).Expand());
 
@@ -450,11 +450,11 @@ internal sealed class InteractiveConsoleApp
             ConsoleUi.RenderPackageList(skillCatalog);
 
             var action = prompts.Select(
-                "Package actions",
+                "Skill stack actions",
                 new[]
                 {
-                    new MenuOption<PackageAction>("Inspect a package", PackageAction.Inspect),
-                    new MenuOption<PackageAction>("Install packages", PackageAction.Install),
+                    new MenuOption<PackageAction>("Inspect a skill stack", PackageAction.Inspect),
+                    new MenuOption<PackageAction>("Install skill stacks", PackageAction.Install),
                     new MenuOption<PackageAction>("Back", PackageAction.Back),
                 },
                 option => option.Label);
@@ -465,12 +465,12 @@ internal sealed class InteractiveConsoleApp
                 {
                     if (skillCatalog.Packages.Count == 0)
                     {
-                        RenderInfo("No packages are available in this catalog version yet.");
+                        RenderInfo("No skill stacks are available in this catalog version yet.");
                         break;
                     }
 
                     var selectedPackage = prompts.Select(
-                        "Inspect a package",
+                        "Inspect a skill stack",
                         skillCatalog.Packages.OrderBy(package => package.Name, StringComparer.Ordinal).ToArray(),
                         package => $"{package.Name} ({package.Skills.Count} skills)");
                     ShowPackageDetail(selectedPackage);
@@ -480,12 +480,12 @@ internal sealed class InteractiveConsoleApp
                 {
                     if (skillCatalog.Packages.Count == 0)
                     {
-                        RenderInfo("No packages are available in this catalog version yet.");
+                        RenderInfo("No skill stacks are available in this catalog version yet.");
                         break;
                     }
 
                     var selectedPackages = prompts.MultiSelect(
-                        "Install packages",
+                        "Install skill stacks",
                         skillCatalog.Packages.OrderBy(package => package.Name, StringComparer.Ordinal).ToArray(),
                         package => $"{package.Name} ({package.Skills.Count} skills)");
                     if (selectedPackages.Count == 0)
@@ -494,7 +494,7 @@ internal sealed class InteractiveConsoleApp
                     }
 
                     var layout = ResolveSkillLayout();
-                    if (prompts.Confirm($"Install {selectedPackages.Count} package(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                    if (prompts.Confirm($"Install {selectedPackages.Count} skill stack(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
                     {
                         InstallPackages(selectedPackages);
                     }
@@ -515,10 +515,10 @@ internal sealed class InteractiveConsoleApp
             RenderPackageDetailPanel(package);
 
             var action = prompts.Select(
-                "Package actions",
+                "Skill stack actions",
                 new[]
                 {
-                    new MenuOption<PackageDetailAction>("Install this package", PackageDetailAction.Install),
+                    new MenuOption<PackageDetailAction>("Install this skill stack", PackageDetailAction.Install),
                     new MenuOption<PackageDetailAction>("Back", PackageDetailAction.Back),
                 },
                 option => option.Label);
@@ -528,7 +528,7 @@ internal sealed class InteractiveConsoleApp
                 case PackageDetailAction.Install:
                 {
                     var layout = ResolveSkillLayout();
-                    if (prompts.Confirm($"Install package {package.Name} into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                    if (prompts.Confirm($"Install skill stack {package.Name} into {layout.PrimaryRoot.FullName}?", defaultValue: true))
                     {
                         InstallPackages([package]);
                     }
@@ -956,7 +956,7 @@ internal sealed class InteractiveConsoleApp
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[dim]package[/]"), new Markup(Escape(package.Name)));
+        grid.AddRow(new Markup("[dim]skill stack[/]"), new Markup(Escape(package.Name)));
         grid.AddRow(new Markup("[dim]type[/]"), new Markup(Escape(package.Kind)));
         grid.AddRow(new Markup("[dim]category[/]"), new Markup(Escape(package.SourceCategory)));
         grid.AddRow(new Markup("[dim]skills[/]"), new Markup(package.Skills.Count.ToString()));
