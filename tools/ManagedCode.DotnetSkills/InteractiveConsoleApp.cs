@@ -56,10 +56,10 @@ internal sealed class InteractiveConsoleApp
                 RenderDashboard();
 
                 var action = prompts.Select(
-                    "Choose a workspace action",
+                    "What would you like to do?",
                     new[]
                     {
-                        new MenuOption<HomeAction>("Browse skill catalog", HomeAction.BrowseSkillCatalog),
+                        new MenuOption<HomeAction>("Browse catalog", HomeAction.BrowseSkillCatalog),
                         new MenuOption<HomeAction>("Installed skills", HomeAction.InstalledSkills),
                         new MenuOption<HomeAction>("Packages", HomeAction.Packages),
                         new MenuOption<HomeAction>("Agents", HomeAction.Agents),
@@ -115,24 +115,28 @@ internal sealed class InteractiveConsoleApp
     private async Task RefreshCatalogAsync()
     {
         AnsiConsole.Clear();
-        AnsiConsole.MarkupLine("[grey]Refreshing catalog payload...[/]");
+        AnsiConsole.MarkupLine("[dim]Refreshing catalog...[/]");
         await LoadCatalogsAsync(refreshCatalog: true);
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup(Escape(skillCatalog.CatalogVersion)));
-        grid.AddRow(new Markup("[grey]Source[/]"), new Markup(Escape(skillCatalog.SourceLabel)));
-        grid.AddRow(new Markup("[grey]Skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Packages[/]"), new Markup(skillCatalog.Packages.Count.ToString()));
-        AnsiConsole.Write(new Panel(grid).Header("Catalog refreshed").Expand());
+        grid.AddRow(new Markup("[green]\u2714[/] [dim]catalog[/]"), new Markup(Escape(skillCatalog.CatalogVersion)));
+        grid.AddRow(new Markup("[dim]source[/]"), new Markup(Escape(skillCatalog.SourceLabel)));
+        grid.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
+        grid.AddRow(new Markup("[dim]packages[/]"), new Markup(skillCatalog.Packages.Count.ToString()));
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]refreshed[/]").Border(BoxBorder.Rounded).Expand());
         prompts.Pause("Press any key to continue...");
     }
 
     private void RenderDashboard()
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule("[deepskyblue1]dotnet skills interactive[/]"));
+
+        // Minimal header — Claude Code-inspired understated identity
+        AnsiConsole.MarkupLine("[bold deepskyblue1]dotnet skills[/] [dim]v{0}[/]", Escape(ToolVersionInfo.CurrentVersion));
+        AnsiConsole.MarkupLine("[dim].NET skill catalog for AI-assisted development[/]");
+        AnsiConsole.WriteLine();
 
         var skillLayout = ResolveSkillLayout();
         var skillInstaller = new SkillInstaller(skillCatalog);
@@ -140,37 +144,23 @@ internal sealed class InteractiveConsoleApp
         var outdatedSkills = installedSkills.Count(record => !record.IsCurrent);
         var agentStatus = ResolveAgentStatus();
 
+        var ratio = skillCatalog.Skills.Count > 0 ? (double)installedSkills.Count / skillCatalog.Skills.Count : 0;
+        var barWidth = 20;
+        var filled = (int)(ratio * barWidth);
+        var bar = new string('\u2588', filled) + new string('\u2591', barWidth - filled);
+
         var overview = new Grid();
         overview.AddColumn(new GridColumn().NoWrap());
         overview.AddColumn();
-        overview.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(skillCatalog.SourceLabel)} [grey]({Escape(skillCatalog.CatalogVersion)})[/]"));
-        overview.AddRow(new Markup("[grey]Session[/]"), new Markup($"{Escape(Session.Agent.ToString())} / {Escape(Session.Scope.ToString())}"));
-        overview.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))));
-        overview.AddRow(new Markup("[grey]Skill target[/]"), new Markup(Escape(skillLayout.PrimaryRoot.FullName)));
-        overview.AddRow(new Markup("[grey]Installed skills[/]"), new Markup($"{installedSkills.Count} [grey]({outdatedSkills} outdated)[/]"));
-        overview.AddRow(new Markup("[grey]Packages[/]"), new Markup(skillCatalog.Packages.Count.ToString()));
-        overview.AddRow(new Markup("[grey]Agents[/]"), new Markup($"{agentCatalog.Agents.Count} [grey]({Escape(agentStatus.Summary)})[/]"));
-        AnsiConsole.Write(new Panel(overview).Header("Workspace").Expand());
+        overview.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(skillCatalog.SourceLabel)} [dim]({Escape(skillCatalog.CatalogVersion)})[/]"));
+        overview.AddRow(new Markup("[dim]session[/]"), new Markup($"{Escape(Session.Agent.ToString())} [dim]/[/] {Escape(Session.Scope.ToString())}"));
+        overview.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))}[/]"));
+        overview.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(skillLayout.PrimaryRoot.FullName)}[/]"));
+        overview.AddRow(new Markup("[dim]skills[/]"), new Markup($"[green]{bar}[/] {installedSkills.Count}/{skillCatalog.Skills.Count}" + (outdatedSkills > 0 ? $" [yellow]({outdatedSkills} outdated)[/]" : "")));
+        overview.AddRow(new Markup("[dim]packages[/]"), new Markup($"{skillCatalog.Packages.Count} available"));
+        overview.AddRow(new Markup("[dim]agents[/]"), new Markup($"{agentCatalog.Agents.Count} [dim]({Escape(agentStatus.Summary)})[/]"));
+        AnsiConsole.Write(new Panel(overview).Header("[deepskyblue1]workspace[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
-
-        var workflow = new Markup(
-            "Bare [green]dotnet skills[/] runs this interactive catalog shell."
-            + Environment.NewLine
-            + "Explicit commands such as [green]dotnet skills install aspire[/] still execute directly."
-            + Environment.NewLine
-            + "Use [green]Session target[/] to pin Codex, Claude, Copilot, Gemini, or Junie before you install.");
-        AnsiConsole.Write(new Panel(workflow).Header("Mode").Expand());
-        AnsiConsole.WriteLine();
-
-        var quickStarts = new Table().Expand();
-        quickStarts.Title = new TableTitle("Quick starts");
-        quickStarts.AddColumn("Flow");
-        quickStarts.AddColumn("What it does");
-        quickStarts.AddRow("Browse skill catalog", "Inspect the full catalog and install missing skills.");
-        quickStarts.AddRow("Installed skills", "Remove or update what is already in the current target.");
-        quickStarts.AddRow("Packages", "Install grouped stacks such as AI, Orleans, or code-quality.");
-        quickStarts.AddRow("Agents", "Manage orchestration agents in the matching native platform folder.");
-        AnsiConsole.Write(quickStarts);
     }
 
     private async Task ShowCatalogSkillsAsync()
@@ -837,17 +827,17 @@ internal sealed class InteractiveConsoleApp
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Alias[/]"), new Markup(Escape(ToAlias(skill.Name))));
-        grid.AddRow(new Markup("[grey]Skill[/]"), new Markup(Escape(skill.Name)));
-        grid.AddRow(new Markup("[grey]Category[/]"), new Markup(Escape(skill.Category)));
-        grid.AddRow(new Markup("[grey]Version[/]"), new Markup(Escape(skill.Version)));
-        grid.AddRow(new Markup("[grey]Installed[/]"), new Markup(installed is null ? "[grey]No[/]" : $"{Escape(installed.InstalledVersion)} {(installed.IsCurrent ? "[green](current)[/]" : "[yellow](update available)[/]")}"));
-        grid.AddRow(new Markup("[grey]Compatibility[/]"), new Markup(Escape(skill.Compatibility)));
-        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Direct install[/]"), new Markup(Escape($"dotnet skills install {ToAlias(skill.Name)}")));
-        AnsiConsole.Write(new Panel(grid).Header("Skill").Expand());
+        grid.AddRow(new Markup("[dim]alias[/]"), new Markup(Escape(ToAlias(skill.Name))));
+        grid.AddRow(new Markup("[dim]skill[/]"), new Markup($"[dim]{Escape(skill.Name)}[/]"));
+        grid.AddRow(new Markup("[dim]category[/]"), new Markup(Escape(skill.Category)));
+        grid.AddRow(new Markup("[dim]version[/]"), new Markup(Escape(skill.Version)));
+        grid.AddRow(new Markup("[dim]status[/]"), new Markup(installed is null ? "[dim]not installed[/]" : $"{Escape(installed.InstalledVersion)} {(installed.IsCurrent ? "[green](current)[/]" : "[yellow](update available)[/]")}"));
+        grid.AddRow(new Markup("[dim]compat[/]"), new Markup(Escape(skill.Compatibility)));
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills install {ToAlias(skill.Name)}")}[/]"));
+        AnsiConsole.Write(new Panel(grid).Header($"[deepskyblue1]{Escape(ToAlias(skill.Name))}[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(skill.Description))).Header("Description").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(skill.Description))).Border(BoxBorder.Rounded).Expand());
     }
 
     private void RenderPackageDetailPanel(SkillPackageEntry package)
@@ -855,14 +845,14 @@ internal sealed class InteractiveConsoleApp
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Package[/]"), new Markup(Escape(package.Name)));
-        grid.AddRow(new Markup("[grey]Type[/]"), new Markup(Escape(package.Kind)));
-        grid.AddRow(new Markup("[grey]Source category[/]"), new Markup(Escape(package.SourceCategory)));
-        grid.AddRow(new Markup("[grey]Skills[/]"), new Markup(package.Skills.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Direct install[/]"), new Markup(Escape($"dotnet skills install package {package.Name}")));
-        AnsiConsole.Write(new Panel(grid).Header("Package").Expand());
+        grid.AddRow(new Markup("[dim]package[/]"), new Markup(Escape(package.Name)));
+        grid.AddRow(new Markup("[dim]type[/]"), new Markup(Escape(package.Kind)));
+        grid.AddRow(new Markup("[dim]category[/]"), new Markup(Escape(package.SourceCategory)));
+        grid.AddRow(new Markup("[dim]skills[/]"), new Markup(package.Skills.Count.ToString()));
+        grid.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills install package {package.Name}")}[/]"));
+        AnsiConsole.Write(new Panel(grid).Header($"[deepskyblue1]{Escape(package.Name)}[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(package.Description))).Header("Description").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(package.Description))).Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         var table = new Table().Expand();
@@ -883,17 +873,17 @@ internal sealed class InteractiveConsoleApp
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Alias[/]"), new Markup(Escape(ToAlias(agent.Name))));
-        grid.AddRow(new Markup("[grey]Agent[/]"), new Markup(Escape(agent.Name)));
-        grid.AddRow(new Markup("[grey]Model[/]"), new Markup(Escape(agent.Model)));
-        grid.AddRow(new Markup("[grey]Skills[/]"), new Markup(agent.Skills.Count == 0 ? "-" : Escape(string.Join(", ", agent.Skills.Select(ToAlias)))));
-        grid.AddRow(new Markup("[grey]Tools[/]"), new Markup(Escape(agent.Tools)));
-        grid.AddRow(new Markup("[grey]Install status[/]"), new Markup(layout is null ? "[grey]Target unavailable[/]" : installed ? "[green]Installed[/]" : "[grey]Not installed[/]"));
-        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(layout is null ? Escape(layoutError ?? "Unavailable") : Escape(layout.PrimaryRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Direct install[/]"), new Markup(Escape($"dotnet skills agent install {ToAlias(agent.Name)} --agent {Session.Agent.ToString().ToLowerInvariant()}")));
-        AnsiConsole.Write(new Panel(grid).Header("Agent").Expand());
+        grid.AddRow(new Markup("[dim]alias[/]"), new Markup(Escape(ToAlias(agent.Name))));
+        grid.AddRow(new Markup("[dim]agent[/]"), new Markup($"[dim]{Escape(agent.Name)}[/]"));
+        grid.AddRow(new Markup("[dim]model[/]"), new Markup(Escape(agent.Model)));
+        grid.AddRow(new Markup("[dim]skills[/]"), new Markup(agent.Skills.Count == 0 ? "-" : Escape(string.Join(", ", agent.Skills.Select(ToAlias)))));
+        grid.AddRow(new Markup("[dim]tools[/]"), new Markup(Escape(agent.Tools)));
+        grid.AddRow(new Markup("[dim]status[/]"), new Markup(layout is null ? "[dim]target unavailable[/]" : installed ? "[green]installed[/]" : "[dim]not installed[/]"));
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup(layout is null ? $"[dim]{Escape(layoutError ?? "Unavailable")}[/]" : $"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills agent install {ToAlias(agent.Name)} --agent {Session.Agent.ToString().ToLowerInvariant()}")}[/]"));
+        AnsiConsole.Write(new Panel(grid).Header($"[deepskyblue1]{Escape(ToAlias(agent.Name))}[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(agent.Description))).Header("Description").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(agent.Description))).Border(BoxBorder.Rounded).Expand());
     }
 
     private void RenderSessionTargetPanel()
@@ -904,20 +894,15 @@ internal sealed class InteractiveConsoleApp
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Platform[/]"), new Markup(Escape(Session.Agent.ToString())));
-        grid.AddRow(new Markup("[grey]Scope[/]"), new Markup(Escape(Session.Scope.ToString())));
-        grid.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))));
-        grid.AddRow(new Markup("[grey]Skill target[/]"), new Markup(Escape(skillLayout.PrimaryRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Agent target[/]"), new Markup(agentLayout is null ? Escape(agentLayoutError ?? "Unavailable") : Escape(agentLayout.PrimaryRoot.FullName)));
-        AnsiConsole.Write(new Panel(grid).Header("Session target").Expand());
+        grid.AddRow(new Markup("[dim]platform[/]"), new Markup(Escape(Session.Agent.ToString())));
+        grid.AddRow(new Markup("[dim]scope[/]"), new Markup(Escape(Session.Scope.ToString())));
+        grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))}[/]"));
+        grid.AddRow(new Markup("[dim]skill target[/]"), new Markup($"[dim]{Escape(skillLayout.PrimaryRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]agent target[/]"), new Markup($"[dim]{(agentLayout is null ? Escape(agentLayoutError ?? "Unavailable") : Escape(agentLayout.PrimaryRoot.FullName))}[/]"));
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]session[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
-        AnsiConsole.Write(new Panel(new Markup(
-                "Use a concrete platform when you want a predictable native install root."
-                + Environment.NewLine
-                + "Keep [bold]Auto[/] only when you want fallback behavior for skills and you already understand how agent auto-detect behaves."))
-            .Header("Guidance")
-            .Expand());
+        AnsiConsole.MarkupLine("[dim]Use a concrete platform for predictable roots. Keep Auto for fallback behavior.[/]");
     }
 
     private void RenderAgentFallback(string message)
@@ -925,9 +910,9 @@ internal sealed class InteractiveConsoleApp
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Current session[/]"), new Markup($"{Escape(Session.Agent.ToString())} / {Escape(Session.Scope.ToString())}"));
-        grid.AddRow(new Markup("[grey]Status[/]"), new Markup(Escape(message)));
-        AnsiConsole.Write(new Panel(grid).Header("Agent target unavailable").Expand());
+        grid.AddRow(new Markup("[dim]session[/]"), new Markup($"{Escape(Session.Agent.ToString())} [dim]/[/] {Escape(Session.Scope.ToString())}"));
+        grid.AddRow(new Markup("[dim]status[/]"), new Markup($"[dim]{Escape(message)}[/]"));
+        AnsiConsole.Write(new Panel(grid).Header("[yellow]agent target unavailable[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         var table = new Table().Expand();
@@ -950,14 +935,16 @@ internal sealed class InteractiveConsoleApp
     private void RenderInfo(string message)
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Panel(new Markup(Escape(message))).Header("Info").Expand());
+        AnsiConsole.MarkupLine($"[dim]{Escape(message)}[/]");
+        AnsiConsole.WriteLine();
         prompts.Pause("Press any key to continue...");
     }
 
     private void RenderError(string message)
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Panel(new Markup(Escape(message))).Header("[red]Error[/]").Expand());
+        AnsiConsole.MarkupLine($"[red]error:[/] {Escape(message)}");
+        AnsiConsole.WriteLine();
         prompts.Pause("Press any key to continue...");
     }
 

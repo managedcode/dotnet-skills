@@ -6,14 +6,16 @@ internal sealed class ProjectSkillAutoSyncService(SkillCatalogPackage catalog)
 {
     private static readonly HashSet<string> ProtectedSkillNames = new(StringComparer.OrdinalIgnoreCase)
     {
+        // Keep durable diagnostics installed even when their NuGet signal disappears.
+        "dotnet-archunitnet",
+        "dotnet-coverlet",
         "dotnet-graphify-dotnet",
-    };
-
-    private static readonly HashSet<string> ProtectedCategories = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "Testing",
-        "Code Quality",
-        "Metrics",
+        "dotnet-meziantou-analyzer",
+        "dotnet-netarchtest",
+        "dotnet-reportgenerator",
+        "dotnet-roslynator",
+        "dotnet-stryker",
+        "dotnet-stylecop-analyzers",
     };
 
     private readonly ProjectSkillRecommender recommender = new(catalog);
@@ -84,8 +86,7 @@ internal sealed class ProjectSkillAutoSyncService(SkillCatalogPackage catalog)
 
     public static bool IsProtected(SkillEntry skill)
     {
-        return ProtectedSkillNames.Contains(skill.Name)
-            || ProtectedCategories.Contains(skill.Category);
+        return ProtectedSkillNames.Contains(skill.Name);
     }
 }
 

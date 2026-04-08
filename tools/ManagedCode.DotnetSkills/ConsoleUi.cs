@@ -29,7 +29,7 @@ internal static class ConsoleUi
             if (installedSkills.Count == 0)
             {
                 AnsiConsole.Write(new Panel(new Markup("No catalog skills are installed in this target yet."))
-                    .Header("Installed skills")
+                    .Header("[dim]installed skills[/]")
                     .Expand());
             }
             else
@@ -51,7 +51,7 @@ internal static class ConsoleUi
             if (availableSkills.Length == 0)
             {
                 AnsiConsole.Write(new Panel(new Markup("All catalog skills are already installed in this target."))
-                    .Header("Available catalog skills")
+                    .Header("[dim]available[/]")
                     .Expand());
             }
             else
@@ -67,7 +67,7 @@ internal static class ConsoleUi
                 {
                     AnsiConsole.WriteLine();
                     AnsiConsole.Write(new Panel(new Markup("Use [green]dotnet skills list --available-only[/] to expand categories into per-skill tables with short summaries."))
-                        .Header("Explore skills")
+                        .Header("[dim]explore[/]")
                         .Expand());
                 }
             }
@@ -107,12 +107,12 @@ internal static class ConsoleUi
         if (summary.SkippedExisting.Count > 0)
         {
             AnsiConsole.Write(new Panel(new Markup(Escape(string.Join(", ", summary.SkippedExisting))))
-                .Header("Skipped existing")
+                .Header("[dim]skipped[/]")
                 .Expand());
             AnsiConsole.WriteLine();
         }
 
-        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("Next step").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("[dim]next step[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void RenderInstallSummaryMultiple(
@@ -128,17 +128,17 @@ internal static class ConsoleUi
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[grey]Targets[/]"), new Markup(results.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Written[/]"), new Markup(totalWritten.ToString()));
-        grid.AddRow(new Markup("[grey]Skipped[/]"), new Markup(totalSkipped.ToString()));
+        grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
+        grid.AddRow(new Markup("[dim]targets[/]"), new Markup($"{results.Count}"));
+        grid.AddRow(new Markup("[green]\u2714[/] [dim]written[/]"), new Markup($"[green]{totalWritten}[/]"));
+        grid.AddRow(new Markup("[dim]\u2500[/] [dim]skipped[/]"), new Markup($"[dim]{totalSkipped}[/]"));
 
         if (totalAdapters > 0)
         {
-            grid.AddRow(new Markup("[grey]Generated adapters[/]"), new Markup(totalAdapters.ToString()));
+            grid.AddRow(new Markup("[yellow]\u25c6[/] [dim]adapters[/]"), new Markup($"[yellow]{totalAdapters}[/]"));
         }
 
-        AnsiConsole.Write(new Panel(grid).Header("Summary").Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]summary[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         var targetTable = new Table().Expand();
@@ -185,7 +185,7 @@ internal static class ConsoleUi
         var hints = string.Join(
             Environment.NewLine,
             results.Select(result => $"{result.Layout.Agent} [{result.Layout.PrimaryRoot.FullName}] : {result.Layout.ReloadHint}"));
-        AnsiConsole.Write(new Panel(new Markup(Escape(hints))).Header("Next steps").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(hints))).Header("[dim]next steps[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void RenderRemoveSummary(
@@ -202,7 +202,7 @@ internal static class ConsoleUi
         if (rows.Count == 0)
         {
             AnsiConsole.Write(new Panel(new Markup(Escape(statusMessage ?? "No matching catalog skills were removed.")))
-                .Header("Status")
+                .Header("[dim]status[/]")
                 .Expand());
         }
         else
@@ -211,7 +211,7 @@ internal static class ConsoleUi
         }
 
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("Next step").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("[dim]next step[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void RenderUpdateSummary(
@@ -228,7 +228,7 @@ internal static class ConsoleUi
         if (rows.Count == 0)
         {
             AnsiConsole.Write(new Panel(new Markup(Escape(statusMessage ?? "All installed catalog skills already match the selected catalog version.")))
-                .Header("Status")
+                .Header("[dim]status[/]")
                 .Expand());
         }
         else
@@ -237,7 +237,7 @@ internal static class ConsoleUi
         }
 
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("Next step").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("[dim]next step[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void RenderRecommendationSummary(
@@ -252,30 +252,45 @@ internal static class ConsoleUi
 
         if (scanResult.Recommendations.Count == 0)
         {
-            AnsiConsole.Write(new Panel(new Markup("No direct package or project-signal matches were found. Nothing was installed. Start with [bold]dotnet[/] and [bold]dotnet-modern-csharp[/] if you want a baseline .NET skill set."))
-                .Header("Recommendations")
-                .Expand());
+            AnsiConsole.MarkupLine("[dim]No direct package or project-signal matches found.[/]");
+            AnsiConsole.MarkupLine("[dim]Start with[/] [green]dotnet skills install dotnet modern-csharp[/] [dim]for a baseline.[/]");
             return;
         }
 
-        var table = new Table().Expand();
-        table.Title = new TableTitle("Recommendations");
+        // Recommendation table with grouped confidence sections
+        var highRecs = scanResult.Recommendations.Where(r => r.Confidence == RecommendationConfidence.High).ToArray();
+        var medRecs = scanResult.Recommendations.Where(r => r.Confidence == RecommendationConfidence.Medium).ToArray();
+        var lowRecs = scanResult.Recommendations.Where(r => r.Confidence == RecommendationConfidence.Low).ToArray();
+
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle("[bold]Skill recommendations[/]");
         table.AddColumn("Skill");
         table.AddColumn("Confidence");
         table.AddColumn("Auto");
         table.AddColumn("Status");
         table.AddColumn("Signals");
 
-        foreach (var recommendation in scanResult.Recommendations)
+        void AddRecommendationRows(IReadOnlyList<ProjectSkillRecommendation> recs)
         {
-            installedSkills.TryGetValue(recommendation.Skill.Name, out var installed);
-            table.AddRow(
-                BuildSkillCell(recommendation.Skill),
-                FormatConfidence(recommendation.Confidence),
-                FormatAutoSyncCandidate(recommendation),
-                FormatRecommendationStatus(installed),
-                Escape(string.Join(Environment.NewLine, recommendation.Reasons)));
+            foreach (var recommendation in recs)
+            {
+                installedSkills.TryGetValue(recommendation.Skill.Name, out var installed);
+                table.AddRow(
+                    $"[bold]{Escape(ToAlias(recommendation.Skill.Name))}[/]",
+                    FormatConfidence(recommendation.Confidence),
+                    FormatAutoSyncCandidate(recommendation),
+                    FormatRecommendationStatus(installed),
+                    Escape(string.Join("; ", recommendation.Reasons)));
+            }
         }
+
+        AddRecommendationRows(highRecs);
+        if (highRecs.Length > 0 && (medRecs.Length > 0 || lowRecs.Length > 0))
+            table.AddEmptyRow();
+        AddRecommendationRows(medRecs);
+        if (medRecs.Length > 0 && lowRecs.Length > 0)
+            table.AddEmptyRow();
+        AddRecommendationRows(lowRecs);
 
         AnsiConsole.Write(table);
         AnsiConsole.WriteLine();
@@ -295,30 +310,22 @@ internal static class ConsoleUi
 
         if (installableSkills.Length > 0 || autoInstallableSkills.Length > 0)
         {
-            var lines = new List<string>
-            {
-                "Scan complete. Nothing is installed automatically unless you opt into auto mode.",
-                "Use the manual install command when you want exact control, or auto mode when you want package- and app-model-driven syncing."
-            };
+            var lines = new List<string>();
 
             if (installableSkills.Length > 0)
             {
-                lines.Add(string.Empty);
-                lines.Add("Manual install:");
                 lines.Add($"[green]{Escape($"dotnet skills install {string.Join(' ', installableSkills)}")}[/]");
             }
 
             if (autoInstallableSkills.Length > 0)
             {
-                lines.Add(string.Empty);
-                lines.Add("Auto-manage project-matched skills:");
-                lines.Add($"[green]{Escape("dotnet skills install --auto")}[/]");
-                lines.Add($"[green]{Escape("dotnet skills install --auto --prune")}[/]");
-                lines.Add("[grey]`--prune` removes stale auto-managed skills but keeps protected diagnostics and graphify-dotnet.[/]");
+                lines.Add($"[green]{Escape("dotnet skills install --auto")}[/] [dim]project-driven sync[/]");
+                lines.Add($"[green]{Escape("dotnet skills install --auto --prune")}[/] [dim]+ remove stale[/]");
             }
 
             AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, lines)))
-                .Header("Review and confirm")
+                .Header("[dim]next steps[/]")
+                .Border(BoxBorder.Rounded)
                 .Expand());
         }
     }
@@ -338,31 +345,31 @@ internal static class ConsoleUi
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(plan.ScanResult.ProjectRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Projects scanned[/]"), new Markup(plan.ScanResult.ProjectFiles.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Auto-managed matches[/]"), new Markup(plan.DesiredSkills.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Written[/]"), new Markup(installSummary.InstalledCount.ToString()));
-        grid.AddRow(new Markup("[grey]Skipped[/]"), new Markup(installSummary.SkippedExisting.Count.ToString()));
+        grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
+        grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(plan.ScanResult.ProjectRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]scanned[/]"), new Markup($"{plan.ScanResult.ProjectFiles.Count} projects"));
+        grid.AddRow(new Markup("[dim]auto-managed[/]"), new Markup($"{plan.DesiredSkills.Count}"));
+        grid.AddRow(new Markup("[green]\u2714[/] [dim]written[/]"), new Markup($"[green]{installSummary.InstalledCount}[/]"));
+        grid.AddRow(new Markup("[dim]\u2500[/] [dim]skipped[/]"), new Markup($"[dim]{installSummary.SkippedExisting.Count}[/]"));
 
         if (pruneRequested)
         {
-            grid.AddRow(new Markup("[grey]Removed stale[/]"), new Markup(removeSummary.RemovedCount.ToString()));
-            grid.AddRow(new Markup("[grey]Protected kept[/]"), new Markup(plan.ProtectedStaleSkills.Count.ToString()));
+            grid.AddRow(new Markup("[red]\u2716[/] [dim]removed[/]"), new Markup($"[red]{removeSummary.RemovedCount}[/]"));
+            grid.AddRow(new Markup("[yellow]\u25c6[/] [dim]protected[/]"), new Markup($"[yellow]{plan.ProtectedStaleSkills.Count}[/]"));
         }
 
-        AnsiConsole.Write(new Panel(grid).Header("Auto sync").Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]auto sync[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
+        // Install section
+        WriteSubTitle("Install");
         if (installRows.Count == 0)
         {
-            AnsiConsole.Write(new Panel(new Markup(
-                    "No auto-installable skills matched the detected project signals."
-                    + Environment.NewLine
-                    + "Manual baseline skills such as [bold]dotnet[/] and [bold]dotnet-modern-csharp[/] remain opt-in."))
-                .Header("Install results")
-                .Expand());
+            AnsiConsole.Write(new Markup("  [grey]No auto-installable skills matched the detected project signals.[/]"));
+            AnsiConsole.WriteLine();
+            AnsiConsole.Write(new Markup("  [grey]Manual baseline skills such as[/] [bold]dotnet[/] [grey]and[/] [bold]dotnet-modern-csharp[/] [grey]remain opt-in.[/]"));
+            AnsiConsole.WriteLine();
         }
         else
         {
@@ -371,22 +378,21 @@ internal static class ConsoleUi
 
         AnsiConsole.WriteLine();
 
+        // Prune section
         if (pruneRequested)
         {
+            WriteSubTitle("Prune");
             if (!plan.MatchedPreviousProject)
             {
-                AnsiConsole.Write(new Panel(new Markup(
-                        "No previous auto-managed state matched this project root, so prune did not remove anything."
-                        + Environment.NewLine
-                        + "Run [green]dotnet skills install --auto[/] once first, then use [green]--prune[/] on later syncs."))
-                    .Header("Prune state")
-                    .Expand());
+                AnsiConsole.Write(new Markup("  [grey]No previous auto-managed state matched this project root.[/]"));
+                AnsiConsole.WriteLine();
+                AnsiConsole.Write(new Markup("  Run [green]dotnet skills install --auto[/] once first, then use [green]--prune[/] on later syncs."));
+                AnsiConsole.WriteLine();
             }
             else if (removeRows.Count == 0)
             {
-                AnsiConsole.Write(new Panel(new Markup("No stale auto-managed skills needed removal."))
-                    .Header("Prune results")
-                    .Expand());
+                AnsiConsole.Write(new Markup("  [grey]No stale auto-managed skills needed removal.[/]"));
+                AnsiConsole.WriteLine();
             }
             else
             {
@@ -396,30 +402,33 @@ internal static class ConsoleUi
             if (plan.ProtectedStaleSkills.Count > 0)
             {
                 AnsiConsole.WriteLine();
-                AnsiConsole.Write(new Panel(new Markup(
-                        Escape(string.Join(", ", plan.ProtectedStaleSkills
-                            .OrderBy(skill => skill.Name, StringComparer.Ordinal)
-                            .Select(skill => ToAlias(skill.Name))))))
-                    .Header("Protected skills kept")
+                var protectedNames = plan.ProtectedStaleSkills
+                    .OrderBy(skill => skill.Name, StringComparer.Ordinal)
+                    .Select(skill => $"[yellow]\u25c6[/] {Escape(ToAlias(skill.Name))}");
+                AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, protectedNames)))
+                    .Header("[yellow]protected[/]")
+                    .Border(BoxBorder.Rounded)
                     .Expand());
             }
 
             AnsiConsole.WriteLine();
         }
 
-        var nextSteps = new List<string>
+        // Next steps
+        var lines = new List<string>
         {
-            layout.ReloadHint,
-            "Use [green]dotnet skills recommend[/] when you want to inspect the scan before changing installs."
+            Escape(layout.ReloadHint),
+            "[green]dotnet skills recommend[/] [dim]to inspect the scan[/]",
         };
 
         if (!pruneRequested)
         {
-            nextSteps.Add("Use [green]dotnet skills install --auto --prune[/] on later runs to remove stale auto-managed skills.");
+            lines.Add("[green]dotnet skills install --auto --prune[/] [dim]to remove stale skills[/]");
         }
 
-        AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, nextSteps)))
-            .Header("Next steps")
+        AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, lines)))
+            .Header("[dim]next steps[/]")
+            .Border(BoxBorder.Rounded)
             .Expand());
     }
 
@@ -429,37 +438,37 @@ internal static class ConsoleUi
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup(Escape(catalog.CatalogVersion)));
-        grid.AddRow(new Markup("[grey]Source[/]"), new Markup(Escape(catalog.SourceLabel)));
-        grid.AddRow(new Markup("[grey]Cache[/]"), new Markup(Escape(catalog.CatalogRoot.FullName)));
-        AnsiConsole.Write(new Panel(grid).Header("Synced catalog").Expand());
+        grid.AddRow(new Markup("[green]\u2714[/] [dim]catalog[/]"), new Markup(Escape(catalog.CatalogVersion)));
+        grid.AddRow(new Markup("[dim]source[/]"), new Markup(Escape(catalog.SourceLabel)));
+        grid.AddRow(new Markup("[dim]cache[/]"), new Markup($"[dim]{Escape(catalog.CatalogRoot.FullName)}[/]"));
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]synced[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void RenderVersionSummary(string currentVersion, ToolUpdateStatusInfo? status)
     {
-        WriteTitle($"{ToolIdentity.DisplayCommand} version");
+        WriteBanner();
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Package[/]"), new Markup(ToolIdentity.PackageId));
-        grid.AddRow(new Markup("[grey]Current[/]"), new Markup(Escape(currentVersion)));
-        grid.AddRow(new Markup("[grey]Build[/]"), new Markup(ToolVersionInfo.IsDevelopmentBuild ? "local development build" : "published tool build"));
+        grid.AddRow(new Markup("[dim]package[/]"), new Markup(ToolIdentity.PackageId));
+        grid.AddRow(new Markup("[dim]current[/]"), new Markup(Escape(currentVersion)));
+        grid.AddRow(new Markup("[dim]build[/]"), new Markup(ToolVersionInfo.IsDevelopmentBuild ? "[dim]local development[/]" : "[green]published[/]"));
 
         if (status is not null)
         {
-            grid.AddRow(new Markup("[grey]Latest NuGet[/]"), new Markup(Escape(status.LatestVersion ?? "unknown")));
-            grid.AddRow(new Markup("[grey]Status[/]"), new Markup(FormatToolUpdateState(status.State)));
+            grid.AddRow(new Markup("[dim]latest[/]"), new Markup(Escape(status.LatestVersion ?? "unknown")));
+            grid.AddRow(new Markup("[dim]status[/]"), new Markup(FormatToolUpdateState(status.State)));
 
             if (status.CheckedAt is not null)
             {
                 grid.AddRow(
-                    new Markup("[grey]Checked[/]"),
-                    new Markup($"{Escape(status.CheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss zzz"))}{(status.UsedCachedValue ? " [grey](cached)[/]" : string.Empty)}"));
+                    new Markup("[dim]checked[/]"),
+                    new Markup($"{Escape(status.CheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss zzz"))}{(status.UsedCachedValue ? " [dim](cached)[/]" : string.Empty)}"));
             }
         }
 
-        AnsiConsole.Write(new Panel(grid).Header("Version").Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]version[/]").Border(BoxBorder.Rounded).Expand());
 
         if (status?.HasUpdate == true)
         {
@@ -475,22 +484,22 @@ internal static class ConsoleUi
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[grey]Packages[/]"), new Markup(catalog.Packages.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Skills covered[/]"), new Markup(catalog.Skills.Count.ToString()));
-        AnsiConsole.Write(new Panel(grid).Header("Package catalog").Expand());
+        grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
+        grid.AddRow(new Markup("[dim]packages[/]"), new Markup($"{catalog.Packages.Count}"));
+        grid.AddRow(new Markup("[dim]skills covered[/]"), new Markup($"{catalog.Skills.Count}"));
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]packages[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         if (catalog.Packages.Count == 0)
         {
             AnsiConsole.Write(new Panel(new Markup("No packages are available in this catalog version yet."))
-                .Header("Packages")
+                .Header("[dim]packages[/]")
                 .Expand());
             return;
         }
 
-        var table = new Table().Expand();
-        table.Title = new TableTitle("Available skill packages");
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle("[bold]Available skill packages[/]");
         table.AddColumn("Package");
         table.AddColumn("Type");
         table.AddColumn("Skills");
@@ -523,11 +532,9 @@ internal static class ConsoleUi
             .ToArray();
 
         AnsiConsole.Write(new Panel(new Markup(
-                "Install a package when you want one command to expand into a related skill set."
-                + Environment.NewLine
-                + Environment.NewLine
-                + string.Join(Environment.NewLine, suggested.Select(command => $"[green]{Escape(command)}[/]"))))
-            .Header("Quick commands")
+                string.Join(Environment.NewLine, suggested.Select(command => $"[green]{Escape(command)}[/]"))))
+            .Header("[dim]commands[/]")
+            .Border(BoxBorder.Rounded)
             .Expand());
     }
 
@@ -539,54 +546,69 @@ internal static class ConsoleUi
             return;
         }
 
-        WriteTitle(ToolIdentity.PackageId);
+        WriteBanner();
 
-        var table = new Table().Expand();
-        table.AddColumn("Command");
-        table.AddColumn("Purpose");
-        table.AddRow($"[green]{Escape(ToolIdentity.DisplayCommand)}[/]", "Launch the interactive catalog shell for browsing, installing, removing, and updating skills or agents.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} help")}[/]", "Render the direct command reference without entering the interactive shell.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} list")}[/]", "Show the current inventory, compare project/global scope when relevant, and render available skills in grouped category tables.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} package list")}[/]", "List curated and category-based packages that expand into multiple related skills.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} version")}[/]", "Show the current tool version and check whether NuGet has a newer release.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} recommend")}[/]", "Scan `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install aspire orleans")}[/]", "Install one or more skills by slug or short alias.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install --auto")}[/]", "Scan the project and install skills that match detected packages or strong app-model signals.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install --auto --prune")}[/]", "Reconcile auto-managed skills with the current project and remove stale ones from the project scope.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install package ai")}[/]", "Install a package that expands into a related multi-skill set.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} package install orleans")}[/]", "Alias for package installation when you prefer the package-first command shape.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} remove --all")}[/]", "Remove installed catalog skills from the selected target.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} update")}[/]", "Refresh already installed catalog skills to the selected catalog version.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} sync --force")}[/]", "Refresh the cached remote catalog payload.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} where")}[/]", "Print the resolved install path.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} list")}[/]", "List available orchestration agents.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install router ai")}[/]", "Install orchestration agents by name.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install --all --auto")}[/]", "Install all agents to all detected platforms.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install router --target /path/to/agents")}[/]", "Install agents to an explicit custom target.");
-        AnsiConsole.Write(table);
+        // Command reference — compact, scannable, grouped
+        var cmdTable = new Table().Border(TableBorder.None).Expand().HideHeaders();
+        cmdTable.AddColumn(new TableColumn("cmd").NoWrap().PadLeft(2).PadRight(2));
+        cmdTable.AddColumn(new TableColumn("desc"));
+
+        void Section(string title)
+        {
+            cmdTable.AddEmptyRow();
+            cmdTable.AddRow(new Markup($"[dim]{Escape(title)}[/]"), new Markup(string.Empty));
+        }
+
+        void Cmd(string command, string desc)
+        {
+            cmdTable.AddRow(
+                new Markup($"[green]{Escape(command)}[/]"),
+                new Markup($"[dim]{Escape(desc)}[/]"));
+        }
+
+        Section("Getting started");
+        Cmd(ToolIdentity.DisplayCommand, "Launch the interactive shell");
+        Cmd($"{ToolIdentity.DisplayCommand} help", "This command reference");
+        Cmd($"{ToolIdentity.DisplayCommand} version", "Version and update check");
+
+        Section("Catalog");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} list", "Inventory with scope comparison");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} package list", "Curated skill packages");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} recommend", "Scan .csproj and propose skills");
+
+        Section("Install");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} install aspire orleans", "Install by alias");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto", "Auto-install from project signals");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto --prune", "Reconcile stale auto-managed skills");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} install package ai", "Install a multi-skill package");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} remove --all", "Remove all installed skills");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} update", "Update to latest catalog version");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} sync --force", "Refresh cached catalog");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} where", "Print resolved install path");
+
+        Section("Agents");
+        Cmd($"{ToolIdentity.AgentDisplayCommand} list", "List orchestration agents");
+        Cmd($"{ToolIdentity.AgentDisplayCommand} install router ai", "Install agents by name");
+        Cmd($"{ToolIdentity.AgentDisplayCommand} install --all --auto", "All agents to detected platforms");
+        Cmd($"{ToolIdentity.AgentDisplayCommand} install router --target /path", "Explicit target path");
+
+        AnsiConsole.Write(cmdTable);
         AnsiConsole.WriteLine();
 
-        var notes = string.Join(
-            Environment.NewLine,
-            "- `list`, `package list`, `recommend`, `install`, and `update` use the latest `catalog-v*` GitHub release by default.",
-            $"- Bare `{ToolIdentity.DisplayCommand}` starts the interactive shell; use `{ToolIdentity.DisplayCommand} help` when you want the direct command reference only.",
-            $"- `{ToolIdentity.DisplayCommand} version` and `{ToolIdentity.DisplayCommand} --version` both show the current tool version.",
-            "- `help` and the interactive startup path both run the automatic tool update check unless it is suppressed.",
-            $"- Use `{ToolIdentity.DisplayCommand} version --no-check` when you only want the local installed version without a NuGet lookup.",
-            "- `list` stays compact: it shows the current installed inventory and a grouped category summary for the remaining catalog.",
-            "- `list --installed-only` and `list --local` are equivalent shortcuts for the installed inventory view; `list --available-only` expands the remaining catalog into per-category skill tables with short summaries.",
-            "- `--bundled` skips the network and uses the catalog packaged with the tool.",
-            "- `--catalog-version <version>` pins a specific remote catalog release.",
-            "- `--refresh` forces `install` or `update` to redownload the selected remote catalog first.",
-            "- `install --auto` uses package, SDK, and strong project-property signals from local `*.csproj` files to install matching skills.",
-            "- `install --auto --prune` is project-scope only and removes stale auto-managed skills while keeping protected diagnostics and `graphify-dotnet`.",
-            "- Short aliases work everywhere: `aspire` resolves to `dotnet-aspire`.",
-            $"- Package installs expand into multiple skills. Example: `{ToolIdentity.SkillsDisplayCommand} install package code-quality`.",
-            $"- Set `{ToolIdentity.SkipUpdateEnvironmentVariable}=1` to suppress automatic tool update notices on startup.",
-            "- Auto skill target detection probes `.codex`, `.claude`, `.github`, `.gemini`, and `.junie`; it writes to every existing native platform target it finds, and falls back to `.agents/skills` only when no native platform folder exists.",
-            "- Agent auto-detect uses only native agent roots. If none exist yet, specify `--agent` or `--target`.");
+        // Compact notes — key flags and behavior
+        var noteLines = new[]
+        {
+            $"[dim]Bare[/] [green]{Escape(ToolIdentity.DisplayCommand)}[/] [dim]opens the interactive shell.[/]",
+            "[dim]Short aliases work everywhere:[/] [green]aspire[/] [dim]resolves to[/] [green]dotnet-aspire[/][dim].[/]",
+            "[dim]--bundled skips the network. --catalog-version pins a release. --refresh redownloads.[/]",
+            "[dim]Auto-detect probes .codex, .claude, .github, .gemini, .junie; falls back to .agents/skills.[/]",
+            $"[dim]Set[/] [green]{Escape(ToolIdentity.SkipUpdateEnvironmentVariable)}=1[/] [dim]to suppress update notices.[/]",
+        };
 
-        AnsiConsole.Write(new Panel(new Markup(Escape(notes))).Header("Notes").Expand());
+        AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, noteLines)))
+            .Header("[dim]notes[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
     }
 
     private static void RenderAgentToolUsage()
@@ -617,7 +639,7 @@ internal static class ConsoleUi
             "- Agent auto-detect uses only native agent roots. If none exist yet, specify `--agent` or `--target`.",
             "- Explicit `--target` still requires `--agent`, because the generated file format depends on the selected platform.");
 
-        AnsiConsole.Write(new Panel(new Markup(Escape(notes))).Header("Notes").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(notes))).Header("[dim]notes[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void WriteWarning(string message)
@@ -637,9 +659,23 @@ internal static class ConsoleUi
         Console.Error.WriteLine($"If installed via a local tool manifest: {LocalToolUpdateCommand}");
     }
 
+    private static void WriteBanner()
+    {
+        AnsiConsole.MarkupLine("[bold deepskyblue1]dotnet skills[/] [dim]v{0}[/]", Escape(ToolVersionInfo.CurrentVersion));
+        AnsiConsole.MarkupLine("[dim].NET skill catalog for AI-assisted development[/]");
+        AnsiConsole.WriteLine();
+    }
+
     private static void WriteTitle(string title)
     {
-        AnsiConsole.Write(new Rule($"[deepskyblue1]{Escape(title)}[/]"));
+        AnsiConsole.MarkupLine($"[bold deepskyblue1]{Escape(title)}[/]");
+        AnsiConsole.Write(new Rule { Style = Style.Parse("dim") });
+        AnsiConsole.WriteLine();
+    }
+
+    private static void WriteSubTitle(string title)
+    {
+        AnsiConsole.MarkupLine($"[dim]{Escape(title)}[/]");
     }
 
     private static Panel BuildSessionPanel(SkillCatalogPackage catalog, SkillInstallLayout layout, int installedCount, string? projectRoot)
@@ -647,18 +683,23 @@ internal static class ConsoleUi
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[grey]Agent[/]"), new Markup(Escape(layout.Agent.ToString())));
-        grid.AddRow(new Markup("[grey]Scope[/]"), new Markup(Escape(layout.Scope.ToString())));
+        grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
+        grid.AddRow(new Markup("[dim]platform[/]"), new Markup(Escape(layout.Agent.ToString())));
+        grid.AddRow(new Markup("[dim]scope[/]"), new Markup(Escape(layout.Scope.ToString())));
         if (!string.IsNullOrWhiteSpace(projectRoot))
         {
-            grid.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(projectRoot)));
+            grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(projectRoot)}[/]"));
         }
 
-        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Mode[/]"), new Markup(FormatInstallMode(layout.Mode)));
-        grid.AddRow(new Markup("[grey]Installed[/]"), new Markup($"{installedCount} of {catalog.Skills.Count} catalog skills"));
-        return new Panel(grid).Header("Session").Expand();
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+
+        var ratio = catalog.Skills.Count > 0 ? (double)installedCount / catalog.Skills.Count : 0;
+        var barWidth = 20;
+        var filled = (int)(ratio * barWidth);
+        var bar = new string('\u2588', filled) + new string('\u2591', barWidth - filled);
+        grid.AddRow(new Markup("[dim]installed[/]"), new Markup($"[green]{bar}[/] {installedCount}/{catalog.Skills.Count}"));
+
+        return new Panel(grid).Header("[deepskyblue1]session[/]").Border(BoxBorder.Rounded).Expand();
     }
 
     private static Table BuildScopeInventoryTable(IReadOnlyList<ScopeInventoryRow> scopeInventory)
@@ -700,52 +741,66 @@ internal static class ConsoleUi
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Written[/]"), new Markup(writtenCount.ToString()));
-        grid.AddRow(new Markup("[grey]Skipped[/]"), new Markup(skippedCount.ToString()));
+        grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[green]\u2714[/] [dim]written[/]"), new Markup($"[green]{writtenCount}[/]"));
+        grid.AddRow(new Markup("[dim]\u2500[/] [dim]skipped[/]"), new Markup($"[dim]{skippedCount}[/]"));
 
         if (generatedAdapters > 0)
         {
-            grid.AddRow(new Markup("[grey]Generated adapters[/]"), new Markup(generatedAdapters.ToString()));
+            grid.AddRow(new Markup("[yellow]\u25c6[/] [dim]adapters[/]"), new Markup($"[yellow]{generatedAdapters}[/]"));
         }
 
-        return new Panel(grid).Header("Summary").Expand();
+        return new Panel(grid).Header("[deepskyblue1]summary[/]").Border(BoxBorder.Rounded).Expand();
     }
 
     private static Panel BuildUpdateCommandPanel(ToolUpdateStatusInfo status)
     {
         var lines = string.Join(
             Environment.NewLine,
-            $"A newer [bold]{Escape(status.LatestVersion ?? "unknown")}[/] release is available on NuGet. Current: [bold]{Escape(status.CurrentVersion)}[/].",
+            $"[yellow]\u26a1[/] A newer [bold]{Escape(status.LatestVersion ?? "unknown")}[/] release is available on NuGet. Current: [bold]{Escape(status.CurrentVersion)}[/].",
             string.Empty,
-            "Global tool:",
-            $"[green]{Escape(GlobalToolUpdateCommand)}[/]",
+            "[deepskyblue1]\u25b8[/] Global tool:",
+            $"  [green]{Escape(GlobalToolUpdateCommand)}[/]",
             string.Empty,
-            "Local tool manifest:",
-            $"[green]{Escape(LocalToolUpdateCommand)}[/]");
+            "[deepskyblue1]\u25b8[/] Local tool manifest:",
+            $"  [green]{Escape(LocalToolUpdateCommand)}[/]");
 
-        return new Panel(new Markup(lines)).Expand();
+        return new Panel(new Markup(lines)).Header("[yellow]update available[/]").Border(BoxBorder.Rounded).Expand();
     }
 
     private static Panel BuildRecommendationPanel(ProjectScanResult scanResult, SkillCatalogPackage catalog, SkillInstallLayout layout)
     {
+        var autoCount = scanResult.Recommendations.Count(recommendation => recommendation.IsAutoInstallCandidate);
+        var highCount = scanResult.Recommendations.Count(r => r.Confidence == RecommendationConfidence.High);
+        var medCount = scanResult.Recommendations.Count(r => r.Confidence == RecommendationConfidence.Medium);
+        var lowCount = scanResult.Recommendations.Count(r => r.Confidence == RecommendationConfidence.Low);
+
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(scanResult.ProjectRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Projects[/]"), new Markup(scanResult.ProjectFiles.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Frameworks[/]"), new Markup(scanResult.TargetFrameworks.Count == 0 ? "unknown" : Escape(string.Join(", ", scanResult.TargetFrameworks))));
-        grid.AddRow(new Markup("[grey]Auto-manageable[/]"), new Markup(scanResult.Recommendations.Count(recommendation => recommendation.IsAutoInstallCandidate).ToString()));
-        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[grey]Install target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
-        return new Panel(grid).Header("Scan").Expand();
+        grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(scanResult.ProjectRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]scanned[/]"), new Markup($"{scanResult.ProjectFiles.Count} projects"));
+        grid.AddRow(new Markup("[dim]frameworks[/]"), new Markup(scanResult.TargetFrameworks.Count == 0 ? "[dim]unknown[/]" : Escape(string.Join(", ", scanResult.TargetFrameworks))));
+        grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+
+        // Recommendation breakdown — inline
+        var breakdownParts = new List<string>();
+        if (highCount > 0) breakdownParts.Add($"[green]{highCount} high[/]");
+        if (medCount > 0) breakdownParts.Add($"[yellow]{medCount} med[/]");
+        if (lowCount > 0) breakdownParts.Add($"[dim]{lowCount} low[/]");
+        var breakdown = breakdownParts.Count > 0 ? $" [dim]([/]{string.Join("[dim] \u00b7 [/]", breakdownParts)}[dim])[/]" : string.Empty;
+
+        grid.AddRow(new Markup("[dim]found[/]"), new Markup($"{scanResult.Recommendations.Count} recommendations{breakdown}"));
+        grid.AddRow(new Markup("[dim]auto-eligible[/]"), new Markup($"{autoCount}"));
+        return new Panel(grid).Header("[deepskyblue1]project scan[/]").Border(BoxBorder.Rounded).Expand();
     }
 
     private static Table BuildInstalledSkillsTable(IReadOnlyList<InstalledSkillRecord> installedSkills)
     {
-        var table = new Table().Expand();
-        table.Title = new TableTitle("Installed skills");
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle("[bold]Installed skills[/]");
         table.AddColumn("Alias");
         table.AddColumn("Installed");
         table.AddColumn("Latest");
@@ -758,8 +813,8 @@ internal static class ConsoleUi
                 $"[bold]{Escape(ToAlias(record.Skill.Name))}[/]",
                 Escape(record.InstalledVersion),
                 Escape(record.Skill.Version),
-                record.IsCurrent ? "[green]Current[/]" : "[yellow]Update available[/]",
-                Escape(record.Skill.Category));
+                record.IsCurrent ? "[green]\u2714 Current[/]" : "[yellow]\u21bb Update available[/]",
+                $"[grey]{Escape(record.Skill.Category)}[/]");
         }
 
         return table;
@@ -767,8 +822,8 @@ internal static class ConsoleUi
 
     private static Table BuildAvailableCategorySummaryTable(IReadOnlyList<SkillEntry> availableSkills)
     {
-        var table = new Table().Expand();
-        table.Title = new TableTitle("Available catalog skills");
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle("[bold]Available catalog skills[/]");
         table.AddColumn("Category");
         table.AddColumn("Available");
         table.AddColumn("Examples");
@@ -819,8 +874,8 @@ internal static class ConsoleUi
 
     private static Table BuildOperationTable(string title, IReadOnlyList<SkillActionRow> rows)
     {
-        var table = new Table().Expand();
-        table.Title = new TableTitle(title);
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle($"[bold]{Escape(title)}[/]");
         table.AddColumn("Skill");
         table.AddColumn("From");
         table.AddColumn("To");
@@ -849,92 +904,88 @@ internal static class ConsoleUi
     {
         var lines = new List<string>();
 
-        if (installedSkills.Count > 0)
-        {
-            lines.Add($"Update installed skills:{Environment.NewLine}[green]{Escape($"dotnet skills update {string.Join(' ', installedSkills.Take(3).Select(skill => ToAlias(skill.Name)))}")}[/]");
-            lines.Add($"Remove installed skills:{Environment.NewLine}[green]{Escape("dotnet skills remove --all")}[/]");
-        }
-
         if (availableSkills.Count > 0)
         {
-            lines.Add($"Install more skills:{Environment.NewLine}[green]{Escape($"dotnet skills install {string.Join(' ', availableSkills.Take(3).Select(skill => ToAlias(skill.Name)))}")}[/]");
+            lines.Add($"[green]{Escape($"dotnet skills install {string.Join(' ', availableSkills.Take(3).Select(skill => ToAlias(skill.Name)))}")}[/]");
+        }
+
+        if (installedSkills.Count > 0)
+        {
+            lines.Add($"[green]{Escape($"dotnet skills update {string.Join(' ', installedSkills.Take(3).Select(skill => ToAlias(skill.Name)))}")}[/]");
         }
 
         if (packages.Count > 0)
         {
             var featuredPackage = packages.OrderBy(FormatPackageSortKey, StringComparer.Ordinal).First();
-            lines.Add($"Install a package:{Environment.NewLine}[green]{Escape($"dotnet skills install package {featuredPackage.Name}")}[/]");
-            lines.Add($"Browse all packages:{Environment.NewLine}[green]{Escape("dotnet skills package list")}[/]");
+            lines.Add($"[green]{Escape($"dotnet skills install package {featuredPackage.Name}")}[/]");
         }
 
-        lines.Add($"Auto-sync package-matched skills:{Environment.NewLine}[green]{Escape("dotnet skills install --auto")}[/]");
-        lines.Add($"Auto-sync and prune stale project skills:{Environment.NewLine}[green]{Escape("dotnet skills install --auto --prune")}[/]");
+        lines.Add($"[green]dotnet skills install --auto[/] [dim]project-driven sync[/]");
+        lines.Add($"[green]dotnet skills recommend[/] [dim]scan .csproj signals[/]");
 
         var alternateScope = scopeInventory.FirstOrDefault(row => row.Scope != layout.Scope);
         if (alternateScope is not null)
         {
-            var command = alternateScope.Scope == InstallScope.Global
+            var scopeCmd = alternateScope.Scope == InstallScope.Global
                 ? "dotnet skills list --scope global"
                 : "dotnet skills list --scope project";
-            lines.Add($"Check the {alternateScope.Scope.ToString().ToLowerInvariant()} inventory:{Environment.NewLine}[green]{Escape(command)}[/]");
+            lines.Add($"[green]{Escape(scopeCmd)}[/] [dim]compare scopes[/]");
         }
 
-        lines.Add($"Get dependency-based recommendations:{Environment.NewLine}[green]{Escape("dotnet skills recommend")}[/]");
-        lines.Add($"Refresh the remote cache:{Environment.NewLine}[green]{Escape("dotnet skills sync --force")}[/]");
-
-        return new Panel(new Markup(string.Join($"{Environment.NewLine}{Environment.NewLine}", lines)))
-            .Header("Quick commands")
+        return new Panel(new Markup(string.Join(Environment.NewLine, lines)))
+            .Header("[dim]commands[/]")
+            .Border(BoxBorder.Rounded)
             .Expand();
     }
 
-    private static string BuildSkillCell(SkillEntry skill)
+private static string BuildSkillCell(SkillEntry skill)
     {
         return $"[bold]{Escape(skill.Name)}[/] [dim]({Escape(ToAlias(skill.Name))})[/]";
     }
 
     private static string FormatAction(SkillAction action) => action switch
     {
-        SkillAction.Installed => "[green]Installed[/]",
-        SkillAction.Removed => "[red]Removed[/]",
-        SkillAction.Updated => "[yellow]Updated[/]",
-        SkillAction.Missing => "[grey]Missing[/]",
-        SkillAction.Skipped => "[grey]Skipped[/]",
+        SkillAction.Installed => "[green]\u2714 Installed[/]",
+        SkillAction.Removed => "[red]\u2716 Removed[/]",
+        SkillAction.Updated => "[yellow]\u21bb Updated[/]",
+        SkillAction.Missing => "[grey]\u2205 Missing[/]",
+        SkillAction.Skipped => "[grey]\u2500 Skipped[/]",
         _ => Escape(action.ToString()),
     };
 
     private static string FormatConfidence(RecommendationConfidence confidence) => confidence switch
     {
-        RecommendationConfidence.High => "[green]High[/]",
-        RecommendationConfidence.Medium => "[yellow]Medium[/]",
-        RecommendationConfidence.Low => "[grey]Low[/]",
+        RecommendationConfidence.High => "[green]\u2588\u2588\u2588 High[/]",
+        RecommendationConfidence.Medium => "[yellow]\u2588\u2588\u2591 Medium[/]",
+        RecommendationConfidence.Low => "[grey]\u2588\u2591\u2591 Low[/]",
         _ => Escape(confidence.ToString()),
     };
 
     private static string FormatAutoSyncCandidate(ProjectSkillRecommendation recommendation)
     {
         return recommendation.IsAutoInstallCandidate
-            ? "[green]Yes[/]"
-            : "[grey]Manual only[/]";
+            ? "[green]\u2714 Yes[/]"
+            : "[grey]\u2500 Manual[/]";
     }
 
     private static string FormatRecommendationStatus(InstalledSkillRecord? installed)
     {
         if (installed is null)
         {
-            return "[blue]Not installed[/]";
+            return "[deepskyblue1]\u25cb Not installed[/]";
         }
 
         return installed.IsCurrent
-            ? $"[green]Installed {Escape(installed.InstalledVersion)}[/]"
-            : $"[yellow]Update to {Escape(installed.Skill.Version)}[/]";
+            ? $"[green]\u2714 {Escape(installed.InstalledVersion)}[/]"
+            : $"[yellow]\u21bb Update to {Escape(installed.Skill.Version)}[/]";
     }
 
     private static string FormatToolUpdateState(ToolUpdateState state) => state switch
     {
-        ToolUpdateState.Current => "[green]Current[/]",
-        ToolUpdateState.UpdateAvailable => "[yellow]Update available[/]",
-        ToolUpdateState.DevelopmentBuild => "[grey]Local development build[/]",
-        ToolUpdateState.Unknown => "[grey]Latest version unavailable[/]",
+        ToolUpdateState.Current => "[green]\u2714 Current[/]",
+        ToolUpdateState.UpdateAvailable => "[yellow]\u26a1 Update available[/]",
+        ToolUpdateState.DevelopmentBuild => "[grey]\u2500 Local development build[/]",
+        ToolUpdateState.Unknown => "[grey]\u2500 Latest version unavailable[/]",
         _ => Escape(state.ToString()),
     };
 
@@ -1000,28 +1051,32 @@ internal static class ConsoleUi
     {
         WriteTitle($"{ToolIdentity.AgentDisplayCommand} list");
 
+        var agentRatio = catalog.Agents.Count > 0 ? (double)installedAgents.Count / catalog.Agents.Count : 0;
+        var barWidth = 20;
+        var agentFilled = (int)(agentRatio * barWidth);
+        var agentBar = new string('\u2588', agentFilled) + new string('\u2591', barWidth - agentFilled);
+
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
-        grid.AddRow(new Markup("[grey]Catalog agents[/]"), new Markup(catalog.Agents.Count.ToString()));
-        grid.AddRow(new Markup("[grey]Agent platform[/]"), new Markup(Escape(layout.Agent.ToString())));
-        grid.AddRow(new Markup("[grey]Scope[/]"), new Markup(Escape(layout.Scope.ToString())));
-        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
-        grid.AddRow(new Markup("[grey]Mode[/]"), new Markup(FormatAgentInstallMode(layout.Mode)));
-        grid.AddRow(new Markup("[grey]Installed[/]"), new Markup($"{installedAgents.Count} of {catalog.Agents.Count} agents"));
-        AnsiConsole.Write(new Panel(grid).Header("Session").Expand());
+        grid.AddRow(new Markup("[dim]agents[/]"), new Markup($"{catalog.Agents.Count}"));
+        grid.AddRow(new Markup("[dim]platform[/]"), new Markup(Escape(layout.Agent.ToString())));
+        grid.AddRow(new Markup("[dim]scope[/]"), new Markup(Escape(layout.Scope.ToString())));
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]installed[/]"), new Markup($"[green]{agentBar}[/] {installedAgents.Count}/{catalog.Agents.Count}"));
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]session[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         if (catalog.Agents.Count == 0)
         {
             AnsiConsole.Write(new Panel(new Markup("No agents available in the catalog."))
-                .Header("Agents")
+                .Header("[dim]agents[/]")
                 .Expand());
             return;
         }
 
-        var table = new Table().Expand();
-        table.Title = new TableTitle("Available orchestration agents");
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle("[bold]Available orchestration agents[/]");
         table.AddColumn("Agent");
         table.AddColumn("Status");
         table.AddColumn("Skills");
@@ -1037,7 +1092,7 @@ internal static class ConsoleUi
 
             table.AddRow(
                 $"[bold]{Escape(ToAlias(agent.Name))}[/]",
-                isInstalled ? "[green]Installed[/]" : "[grey]Not installed[/]",
+                isInstalled ? "[green]\u2714 Installed[/]" : "[grey]\u25cb Not installed[/]",
                 Escape(skillsList),
                 Escape(CompactDescription(agent.Description)));
         }
@@ -1053,10 +1108,14 @@ internal static class ConsoleUi
 
         if (notInstalled.Length > 0)
         {
-            AnsiConsole.Write(new Panel(new Markup(
-                $"Install agents:{Environment.NewLine}[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install {string.Join(' ', notInstalled)}")}[/]{Environment.NewLine}{Environment.NewLine}" +
-                $"Install to all detected platforms:{Environment.NewLine}[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install {string.Join(' ', notInstalled)} --auto")}[/]"))
-                .Header("Quick commands")
+            var lines = new[]
+            {
+                $"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install {string.Join(' ', notInstalled)}")}[/]",
+                $"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install {string.Join(' ', notInstalled)} --auto")}[/] [dim]all platforms[/]",
+            };
+            AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, lines)))
+                .Header("[dim]commands[/]")
+                .Border(BoxBorder.Rounded)
                 .Expand());
         }
     }
@@ -1077,7 +1136,7 @@ internal static class ConsoleUi
         grid.AddRow(new Markup("[grey]Mode[/]"), new Markup(FormatAgentInstallMode(layout.Mode)));
         grid.AddRow(new Markup("[grey]Installed[/]"), new Markup(summary.InstalledCount.ToString()));
         grid.AddRow(new Markup("[grey]Skipped[/]"), new Markup(summary.SkippedExisting.Count.ToString()));
-        AnsiConsole.Write(new Panel(grid).Header("Summary").Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]summary[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         if (agents.Count > 0)
@@ -1105,7 +1164,7 @@ internal static class ConsoleUi
             AnsiConsole.WriteLine();
         }
 
-        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("Next step").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(layout.ReloadHint))).Header("[dim]next step[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void RenderAgentInstallSummaryMultiple(
@@ -1122,7 +1181,7 @@ internal static class ConsoleUi
         grid.AddRow(new Markup("[grey]Platforms detected[/]"), new Markup(layouts.Count.ToString()));
         grid.AddRow(new Markup("[grey]Agents selected[/]"), new Markup(agents.Count.ToString()));
         grid.AddRow(new Markup("[grey]Total installed[/]"), new Markup(summary.InstalledCount.ToString()));
-        AnsiConsole.Write(new Panel(grid).Header("Summary").Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]summary[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         var table = new Table().Expand();
@@ -1162,7 +1221,7 @@ internal static class ConsoleUi
         AnsiConsole.WriteLine();
 
         var hints = string.Join(Environment.NewLine, layouts.Select(l => $"• {l.Agent}: {l.ReloadHint}"));
-        AnsiConsole.Write(new Panel(new Markup(Escape(hints))).Header("Next steps").Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(hints))).Header("[dim]next steps[/]").Border(BoxBorder.Rounded).Expand());
     }
 
     public static void RenderAgentRemoveSummary(
@@ -1180,7 +1239,7 @@ internal static class ConsoleUi
         grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
         grid.AddRow(new Markup("[grey]Removed[/]"), new Markup(summary.RemovedCount.ToString()));
         grid.AddRow(new Markup("[grey]Missing[/]"), new Markup(summary.MissingAgents.Count.ToString()));
-        AnsiConsole.Write(new Panel(grid).Header("Summary").Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]summary[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         if (agents.Count > 0)

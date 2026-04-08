@@ -43,7 +43,7 @@ public sealed class InteractiveConsoleAppTests
         var catalog = TestCatalog.Load();
         var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
-            "Browse skill catalog",
+            "Browse catalog",
             "Install skills",
             new[] { aspireSkill },
             true,

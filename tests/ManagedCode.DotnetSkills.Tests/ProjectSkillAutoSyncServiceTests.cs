@@ -5,7 +5,7 @@ namespace ManagedCode.DotnetSkills.Tests;
 public sealed class ProjectSkillAutoSyncServiceTests
 {
     [Fact]
-    public void BuildPlan_PrunesStaleAutoManagedSkills_ButKeepsProtectedOnes()
+    public void BuildPlan_PrunesPackageDrivenSkills_ButKeepsProtectedDiagnosticsAndGraphify()
     {
         using var tempDirectory = new TemporaryDirectory();
         var projectPath = Path.Combine(tempDirectory.Path, "App.csproj");
@@ -26,7 +26,7 @@ public sealed class ProjectSkillAutoSyncServiceTests
             agent: AgentPlatform.Codex,
             scope: InstallScope.Project,
             projectDirectory: tempDirectory.Path);
-        var selected = installer.SelectSkills(["aspire", "xunit", "graphify-dotnet"], installAll: false);
+        var selected = installer.SelectSkills(["aspire", "xunit", "coverlet", "graphify-dotnet"], installAll: false);
 
         installer.Install(selected, layout, force: false);
 
@@ -38,9 +38,10 @@ public sealed class ProjectSkillAutoSyncServiceTests
 
         Assert.True(plan.MatchedPreviousProject);
         Assert.Contains(plan.SkillsToRemove, skill => skill.Name == "dotnet-aspire");
-        Assert.DoesNotContain(plan.SkillsToRemove, skill => skill.Name == "dotnet-xunit");
+        Assert.Contains(plan.SkillsToRemove, skill => skill.Name == "dotnet-xunit");
         Assert.DoesNotContain(plan.SkillsToRemove, skill => skill.Name == "dotnet-graphify-dotnet");
-        Assert.Contains(plan.ProtectedStaleSkills, skill => skill.Name == "dotnet-xunit");
+        Assert.DoesNotContain(plan.SkillsToRemove, skill => skill.Name == "dotnet-coverlet");
+        Assert.Contains(plan.ProtectedStaleSkills, skill => skill.Name == "dotnet-coverlet");
         Assert.Contains(plan.ProtectedStaleSkills, skill => skill.Name == "dotnet-graphify-dotnet");
     }
 }
