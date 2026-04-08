@@ -3,8 +3,6 @@ name: exp-test-smell-detection
 description: "Deep formal test smell audit based on academic research taxonomy (testsmells.org). Detects 19 categorized smell types — conditional logic, mystery guests, sensitive equality, eager tests, and more — with calibrated severity and research-backed remediation. Use for comprehensive test suite health assessments. For a quick pragmatic review, use test-anti-patterns instead. DO NOT USE FOR: writing new tests (use writing-mstest-tests), evaluating assertion quality specifically (use exp-assertion-quality), or finding test duplication and boilerplate (use exp-test-maintainability)."
 compatibility: "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-experimental/skills/exp-test-smell-detection/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Test Smell Detection
 
 Deep formal audit of test code using an academic test smell taxonomy. Detects symptoms of bad design or implementation decisions that make tests harder to understand, more fragile, less effective at catching bugs, or more expensive to maintain. Produces a severity-ranked report with specific locations and actionable fixes.

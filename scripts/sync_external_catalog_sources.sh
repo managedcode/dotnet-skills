@@ -6,5 +6,5 @@ if ! command -v vendir >/dev/null 2>&1; then
   exit 1
 fi
 
-vendir sync
+vendir sync --chdir external-sources
 python3 scripts/import_external_catalog_sources.py

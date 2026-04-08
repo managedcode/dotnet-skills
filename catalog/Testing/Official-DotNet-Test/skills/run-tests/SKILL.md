@@ -3,8 +3,6 @@ name: run-tests
 description: "Runs .NET tests with dotnet test. Use when user says \"run tests\", \"execute tests\", \"dotnet test\", \"test filter\", \"filter by category\", \"filter by class\", \"run only specific tests\", \"tests not running\", \"hang timeout\", \"blame-hang\", \"blame-crash\", \"TUnit\", \"treenode-filter\", or needs to detect the test platform (VSTest or Microsoft.Testing.Platform), identify the test framework, apply test filters, or troubleshoot test execution failures. Covers MSTest, xUnit, NUnit, and TUnit across both VSTest and MTP platforms. Also use for --filter-class, --filter-trait, and other framework-specific filter syntax. DO NOT USE FOR: writing or generating test code, CI/CD pipeline configuration, or debugging failing test logic."
 compatibility: "Requires a .NET test project or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-test/skills/run-tests/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Run .NET Tests
 
 Detect the test platform and framework, run tests, and apply filters using `dotnet test`.

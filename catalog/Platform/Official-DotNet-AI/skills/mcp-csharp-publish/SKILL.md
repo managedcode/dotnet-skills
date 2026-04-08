@@ -3,8 +3,6 @@ name: mcp-csharp-publish
 description: "Publish and deploy C# MCP servers. Covers NuGet packaging for stdio servers, Docker containerization for HTTP servers, Azure Container Apps and App Service deployment, and publishing to the official MCP Registry. USE FOR: packaging stdio MCP servers as NuGet tools, creating Dockerfiles for HTTP MCP servers, deploying to Azure Container Apps or App Service, publishing to the MCP Registry at registry.modelcontextprotocol.io, configuring server.json for MCP package metadata, setting up CI/CD for MCP server publishing. DO NOT USE FOR: publishing general NuGet libraries (not MCP-specific), general Docker guidance unrelated to MCP, creating new servers (use mcp-csharp-create), debugging (use mcp-csharp-debug), writing tests (use mcp-csharp-test)."
 compatibility: "Requires a .NET repository working with AI, ML, or MCP workloads."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-ai/skills/mcp-csharp-publish/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # C# MCP Server Publishing
 
 Publish and deploy MCP servers to their target platforms. stdio servers are distributed as NuGet tool packages. HTTP servers are containerized and deployed to Azure or other container hosts. Both can optionally be listed in the official MCP Registry.

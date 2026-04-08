@@ -3,8 +3,6 @@ name: migrate-dotnet10-to-dotnet11
 description: "Migrate a .NET 10 project or solution to .NET 11 and resolve all breaking changes. This is a MIGRATION skill — use it when upgrading from .NET 10 to .NET 11, NOT for writing new programs. USE FOR: upgrading TargetFramework from net10.0 to net11.0, fixing build errors after updating the .NET 11 SDK, resolving source-breaking and behavioral changes in .NET 11 runtime, C# 15 compiler, and EF Core 11, adapting to updated minimum hardware requirements (x86-64-v2, Arm64 LSE), and updating CI/CD pipelines and Dockerfiles for .NET 11. DO NOT USE FOR: .NET Framework migrations, upgrading from .NET 9 or earlier, greenfield .NET 11 projects, or cosmetic modernization unrelated to the upgrade. NOTE: .NET 11 is in preview. Covers breaking changes through Preview 1."
 compatibility: "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-upgrade/skills/migrate-dotnet10-to-dotnet11/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # .NET 10 → .NET 11 Migration
 
 Migrate a .NET 10 project or solution to .NET 11, systematically resolving all breaking changes. The outcome is a project targeting `net11.0` that builds cleanly, passes tests, and accounts for every behavioral, source-incompatible, and binary-incompatible change introduced in .NET 11.

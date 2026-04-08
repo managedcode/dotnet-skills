@@ -3,8 +3,6 @@ name: template-instantiation
 description: "Creates .NET projects from templates with validated parameters, smart defaults, Central Package Management adaptation, and latest NuGet version resolution. USE FOR: creating new dotnet projects, scaffolding solutions with multiple projects, installing or uninstalling template packages, creating projects that respect Directory.Packages.props (CPM), composing multi-project solutions (API + tests + library), getting latest NuGet package versions in newly created projects. DO NOT USE FOR: finding or comparing templates (use template-discovery), authoring custom templates (use template-authoring), modifying existing projects or adding NuGet packages to existing projects."
 compatibility: "Requires a .NET repository using dotnet new templates or template authoring workflows."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-template-engine/skills/template-instantiation/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Template Instantiation
 
 This skill creates .NET projects from templates using `dotnet new` CLI commands, with guidance for parameter validation, Central Package Management adaptation, and multi-project composition.

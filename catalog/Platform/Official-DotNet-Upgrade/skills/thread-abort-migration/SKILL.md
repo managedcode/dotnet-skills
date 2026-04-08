@@ -3,8 +3,6 @@ name: thread-abort-migration
 description: "Guides migration of .NET Framework Thread.Abort usage to cooperative cancellation in modern .NET. USE FOR: modernizing code that calls Thread.Abort, catching ThreadAbortException, replacing Thread.ResetAbort, replacing Thread.Interrupt for thread termination, resolving PlatformNotSupportedException or SYSLIB0006 after retargeting to .NET 6+, migrating ASP.NET Response.End or Response.Redirect(url, true) which internally call Thread.Abort. DO NOT USE FOR: code that only uses Thread.Join, Thread.Sleep, or Thread.Start without any abort, interrupt, or ThreadAbortException usage — these APIs work identically in modern .NET and need no migration. Also not for projects staying on .NET Framework, or Thread.Abort usage inside third-party libraries you do not control."
 compatibility: "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-upgrade/skills/thread-abort-migration/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Thread.Abort Migration
 
 This skill helps an agent migrate .NET Framework code that uses `Thread.Abort` to the cooperative cancellation model required by modern .NET (6+). `Thread.Abort` throws `PlatformNotSupportedException` in modern .NET — there is no way to forcibly terminate a managed thread. The skill identifies the usage pattern first, then applies the correct replacement strategy.

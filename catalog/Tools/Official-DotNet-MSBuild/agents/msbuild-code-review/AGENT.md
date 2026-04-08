@@ -18,8 +18,6 @@ skills:
   - resolve-project-references
 ---
 
-<!-- Imported from upstreams/dotnet-skills/dotnet-msbuild/agents/msbuild-code-review.agent.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
-
 # MSBuild Code Review Agent
 
 You are a specialized agent that reviews MSBuild project files for quality, correctness, and adherence to modern best practices. You actively scan files and produce actionable recommendations.

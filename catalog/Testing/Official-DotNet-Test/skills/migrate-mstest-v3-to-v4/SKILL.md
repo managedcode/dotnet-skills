@@ -3,8 +3,6 @@ name: migrate-mstest-v3-to-v4
 description: "Migrate an MSTest v3 test project to MSTest v4. Use when user says \"upgrade to MSTest v4\", \"update to latest MSTest\", \"MSTest 4 migration\", \"MSTest v4 breaking changes\", \"MSTest v4 compatibility\", or has build errors after updating MSTest packages from 3.x to 4.x. Also use for target framework compatibility (e.g. net6.0/net7.0 support with MSTest v4). USE FOR: upgrading MSTest packages from 3.x to 4.x, fixing source breaking changes (Execute -> ExecuteAsync, CallerInfo constructor, ClassCleanupBehavior removal, TestContext.Properties, Assert API changes, ExpectedExceptionAttribute removal, TestTimeout enum removal), resolving behavioral changes (TreatDiscoveryWarningsAsErrors, TestContext lifecycle, TestCase.Id changes, MSTest.Sdk MTP changes), handling dropped TFMs (net5.0-net7.0 dropped, only net8.0+, net462, uap10.0 supported). DO NOT USE FOR: migrating from MSTest v1/v2 to v3 (use migrate-mstest-v1v2-to-v3 first), migrating between test frameworks, or general .NET upgrades unrelated to MSTest."
 compatibility: "Requires a .NET test project or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-test/skills/migrate-mstest-v3-to-v4/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # MSTest v3 -> v4 Migration
 
 Migrate a test project from MSTest v3 to MSTest v4. The outcome is a project using MSTest v4 that builds cleanly, passes tests, and accounts for every source-incompatible and behavioral change. MSTest v4 is **not binary compatible** with MSTest v3 -- any library compiled against v3 must be recompiled against v4.

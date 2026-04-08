@@ -179,12 +179,14 @@ catalog/
         ├── skills/
         │   └── <skill-name>/
         │       ├── SKILL.md
+        │       ├── manifest.json
         │       ├── scripts/     # optional
         │       ├── references/  # optional
         │       └── assets/      # optional
         └── agents/
             └── <agent-name>/
                 ├── AGENT.md
+                ├── manifest.json # optional
                 ├── scripts/     # optional
                 ├── references/  # optional
                 └── assets/      # optional
@@ -194,7 +196,25 @@ The package-level `manifest.json` is the package control plane. It carries packa
 
 `SKILL.md` should stay focused on routing, workflow, deliverables, and validation. Do not put `version`, `category`, `packages`, or `package_prefix` in `SKILL.md` frontmatter.
 
-External upstream repositories are vendir-managed under `upstreams/`, mapped by `catalog-sources/*.json`, and normalized into `catalog/` by `scripts/import_external_catalog_sources.py`. Official imports may keep their upstream skill ids instead of being renamed to `dotnet-*`.
+## External Upstream Sources
+
+External upstream repositories live in the dedicated [`external-sources/`](external-sources/) area.
+
+- `external-sources/vendir.yml` and `external-sources/vendir.lock.yml` handle fetch-and-pin only.
+- `external-sources/upstreams/` holds the checked-in vendored snapshots.
+- `external-sources/imports/*.json` is overrides-only local policy for type, category, package naming, compatibility, and skill-level package trigger metadata.
+- `scripts/import_external_catalog_sources.py` auto-discovers upstream plugins from vendored `plugin.json` files, applies the local overrides, and normalizes the result into `catalog/<type>/<package>/`.
+
+Official imports may keep their upstream skill ids instead of being renamed to `dotnet-*`.
+
+```mermaid
+flowchart LR
+  A["external-sources/vendir.yml"] --> B["external-sources/upstreams/<repo>/"]
+  B --> C["plugin.json auto-discovery"]
+  D["external-sources/imports/*.json (overrides only)"] --> C
+  C --> E["scripts/import_external_catalog_sources.py"]
+  E --> F["catalog/<type>/<package>/"]
+```
 
 When you refresh vendored upstream content locally, use `bash scripts/sync_external_catalog_sources.sh`.
 

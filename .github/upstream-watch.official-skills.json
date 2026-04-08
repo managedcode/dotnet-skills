@@ -7,7 +7,7 @@
       "name": "dotnet/skills main branch",
       "issue_key": "official-dotnet-skills-upstream",
       "issue_name": "Review official dotnet/skills upstream update",
-      "notes": "Review vendir.lock.yml, sync upstreams/dotnet-skills via vendir, rerun scripts/import_external_catalog_sources.py, then regenerate catalog outputs and verify the imported official skills and agents.",
+      "notes": "Review external-sources/vendir.lock.yml, sync external-sources/upstreams/dotnet-skills via vendir, rerun scripts/import_external_catalog_sources.py, then regenerate catalog outputs and verify the imported official skills and agents.",
       "skills": [
         "configuring-opentelemetry-dotnet",
         "minimal-api-file-upload",

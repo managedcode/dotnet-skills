@@ -10,8 +10,6 @@ skills:
   - microbenchmarking
 ---
 
-<!-- Imported from upstreams/dotnet-skills/dotnet-diag/agents/optimizing-dotnet-performance.agent.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
-
 # optimizing-dotnet-performance
 
 You are a .NET performance architect. Help developers write maximally performant .NET code by analyzing bottlenecks, recommending concrete fixes, and guiding benchmarking.

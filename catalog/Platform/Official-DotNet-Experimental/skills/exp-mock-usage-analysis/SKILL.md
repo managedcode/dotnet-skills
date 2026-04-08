@@ -3,8 +3,6 @@ name: exp-mock-usage-analysis
 description: "Audits .NET test mock usage by tracing each mock setup through the production code's execution path to find dead, unreachable, redundant, or replaceable mocks. Use when the user asks to audit mock usage, find unused or unnecessary mock setups, check if mocks are needed, reduce mock duplication or over-mocking, simplify test setup, or review whether mock configurations like ILogger/IOptions should use real implementations instead. Supports Moq, NSubstitute, and FakeItEasy."
 compatibility: "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-experimental/skills/exp-mock-usage-analysis/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Mock Usage Analysis
 
 Trace each mock setup through the production code's execution path to determine which setups are actually exercised at runtime and which are dead, unreachable, redundant, or replaceable with real implementations.

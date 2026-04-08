@@ -206,10 +206,13 @@ Do not introduce or treat a checked-in aggregate catalog JSON file as the canoni
 
 External upstream repositories are handled separately:
 
-- `vendir.yml` declares which repositories are synced into `upstreams/`
-- `vendir.lock.yml` pins the resolved upstream SHAs
-- `catalog-sources/*.json` describes how vendored upstream plugins are normalized into `catalog/<type>/<package>/`
+- `external-sources/vendir.yml` declares which repositories are synced into `external-sources/upstreams/`
+- `external-sources/vendir.lock.yml` pins the resolved upstream SHAs
+- `external-sources/imports/*.json` carries overrides-only import policy for vendored upstream plugins
 - `scripts/import_external_catalog_sources.py` performs the normalization step
+
+Do not maintain a second manual plugin registry in local config.
+The importer auto-discovers upstream plugins from vendored `plugin.json` files and uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides.
 
 For imported official upstream skills, keep the upstream skill or agent id unless there is a real compatibility reason to rename it.
 

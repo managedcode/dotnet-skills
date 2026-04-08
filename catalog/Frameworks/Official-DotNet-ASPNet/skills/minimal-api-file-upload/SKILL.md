@@ -3,8 +3,6 @@ name: minimal-api-file-upload
 description: "File upload endpoints in ASP.NET minimal APIs (.NET 8+)"
 compatibility: "Requires an ASP.NET Core project or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-aspnet/skills/minimal-api-file-upload/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Implementing File Uploads in ASP.NET Core Minimal APIs
 
 ## When to Use

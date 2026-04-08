@@ -18,8 +18,6 @@ skills:
   - resolve-project-references
 ---
 
-<!-- Imported from upstreams/dotnet-skills/dotnet-msbuild/agents/build-perf.agent.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
-
 # Build Performance Agent
 
 You are a specialized agent for diagnosing and optimizing MSBuild build performance. You actively run builds, analyze binlogs, and provide data-driven optimization recommendations.

@@ -3,8 +3,6 @@ name: resolve-project-references
 description: "Guide for interpreting ResolveProjectReferences time in MSBuild performance summaries. Only activate in MSBuild/.NET build context. Activate when ResolveProjectReferences appears as the most expensive target and developers are trying to optimize it directly. Explains that the reported time includes wait time for dependent project builds and is misleading. Guides users to focus on task self-time instead. Do not activate for general build performance -- use build-perf-diagnostics instead."
 compatibility: "Requires a .NET repository with MSBuild project or solution files."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-msbuild/skills/resolve-project-references/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Misleading ResolveProjectReferences Time
 
 Prevent misguided optimization of `ResolveProjectReferences` by explaining that its reported time is wall-clock wait time, not CPU work.

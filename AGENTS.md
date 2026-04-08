@@ -30,12 +30,11 @@ Follow official or documented agent standards where they exist; do not present a
 - Areas with specialized responsibilities:
   - `agents/`: top-level orchestration agents that sit above the skill catalog, one folder per agent
   - `catalog/`: canonical scanned catalog tree, including package manifests plus nested skills and package-owned agents
-  - `catalog-sources/`: mapping files for vendir-managed external repositories that are normalized into `catalog/`
+  - `external-sources/`: vendir transport config, pinned lockfile, checked-in upstream snapshots, and import overrides for external repositories
   - `cli/ManagedCode.DotnetAgents/`: publishable `dotnet-agents` installer tool for repo-owned orchestration agents
   - `cli/ManagedCode.Agents/`: publishable `agents` installer tool for the same repo-owned orchestration agents
   - `cli/ManagedCode.DotnetSkills/`: publishable `dotnet-skills` installer tool
   - `scripts/`: catalog generation and upstream-watch automation
-  - `upstreams/`: vendir-managed checked-in snapshots of external source repositories
   - `.github/workflows/`: CI, release, and scheduled automation
 - Local `AGENTS.md` files currently present: none
 
@@ -80,10 +79,12 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - Skill- or agent-specific manifest metadata belongs in the nearest sibling `manifest.json` next to that `SKILL.md` or `AGENT.md`, not in package-level keyed maps and not in `SKILL.md` frontmatter. For skills, keep `version`, `category`, `packages`, and `package_prefix` in that sibling manifest. Keep package `manifest.json` for package-level metadata such as title, icon, and upstream links.
 - Package `manifest.json` should also hold upstream source metadata for the package surface: repository URL plus docs and NuGet links when known. Catalog generators should read those links from manifests and propagate them into exported catalog data and the public site instead of hardcoding or inferring them ad hoc.
 - Do not hardcode catalog category lists or catalog type-directory lists as root constants in Python or C#. Derive them from the scanned catalog or a generated artifact sourced from the catalog manifests, so adding a new manifest category or catalog type does not require manual constant edits in runtime code.
-- External repositories that contribute skills or agents must be synced declaratively via `vendir.yml` and pinned in `vendir.lock.yml`, with checked-in snapshots under `upstreams/`. Do not copy external repositories into `catalog/` by hand.
-- Normalize vendir-managed upstream content into `catalog/` through a repo script and a checked-in config under `catalog-sources/`, so multiple repositories can be imported consistently.
+- External repositories that contribute skills or agents must live under `external-sources/`: keep vendir transport config in `external-sources/vendir.yml`, the lockfile in `external-sources/vendir.lock.yml`, and checked-in upstream snapshots under `external-sources/upstreams/`. Do not copy external repositories into `catalog/` by hand.
+- Normalize vendir-managed upstream content into `catalog/` through `scripts/import_external_catalog_sources.py` plus checked-in overrides under `external-sources/imports/`.
+- Import configs under `external-sources/imports/` are overrides-only. Auto-discover upstream plugins from vendored `plugin.json` files instead of maintaining a second manual plugin registry in local config.
 - Imported official upstream skills or agents may keep their upstream canonical ids instead of being renamed to fit the local `dotnet-*` convention.
 - If an imported official upstream skill or agent is a true duplicate of a repo-authored local entry, prefer the official upstream source and remove the local duplicate instead of keeping two copies.
+- Do not inject HTML provenance comments such as `Imported from ... via vendir` into generated `SKILL.md` or `AGENT.md` files. Keep imported content clean; provenance belongs in package metadata, external-source config, or importer logic, not inside the skill or agent body.
 
 ### Issue Workflow
 
@@ -179,13 +180,14 @@ Other important repository files:
 - [`README.md`](README.md): public catalog and repository overview.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contributor workflow for skills, versions, descriptions, and watch entries.
 - [`agents/README.md`](agents/README.md): index of repo-owned orchestration agents and layout conventions.
-- [`catalog-sources/*.json`](catalog-sources/): source-import mapping files that describe how vendir-managed repositories are converted into catalog packages.
+- [`external-sources/`](external-sources/): dedicated area for vendir transport config, vendored upstream snapshots, and import overrides.
+- [`external-sources/imports/*.json`](external-sources/imports/): overrides-only import policy files for vendir-managed repositories.
 - [`catalog/*/*/manifest.json`](catalog/): package manifests that hold package metadata and upstream links for the scanned catalog tree.
 - [`catalog/*/*/skills/*/manifest.json`](catalog/): sibling skill manifests that hold skill-specific metadata such as `version`, `category`, `packages`, and `package_prefix`.
 - [`catalog/*/*/agents/*/manifest.json`](catalog/): sibling agent manifests for agent-specific metadata when needed.
-- [`upstreams/`](upstreams): vendir-managed snapshots of external source repositories used by import scripts.
-- [`vendir.yml`](vendir.yml): declarative source-sync config for vendir-managed repositories.
-- [`vendir.lock.yml`](vendir.lock.yml): resolved vendir lock file with pinned upstream SHAs.
+- [`external-sources/upstreams/`](external-sources/upstreams/): vendir-managed snapshots of external source repositories used by import scripts.
+- [`external-sources/vendir.yml`](external-sources/vendir.yml): declarative source-sync config for vendir-managed repositories.
+- [`external-sources/vendir.lock.yml`](external-sources/vendir.lock.yml): resolved vendir lock file with pinned upstream SHAs.
 - [`.github/workflows/catalog-check.yml`](.github/workflows/catalog-check.yml): pull-request validation workflow for generated catalog outputs and tool smoke checks.
 - [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml): unified 04:00 UTC release workflow for `catalog-v*` assets, NuGet tool publish, and GitHub Pages deployment.
 - [`.github/upstream-watch.json`](.github/upstream-watch.json): base upstream watch metadata file for labels and shared defaults.

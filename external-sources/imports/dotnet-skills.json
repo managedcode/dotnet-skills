@@ -3,21 +3,17 @@
   "repository": "https://github.com/dotnet/skills",
   "sourceRoot": "upstreams/dotnet-skills",
   "docsBase": "https://github.com/dotnet/skills/tree/main/plugins",
+  "titlePrefix": "Official .NET skills",
   "managedPackagePrefix": "Official-DotNet",
   "replaceSkillConflicts": true,
   "replaceAgentConflicts": true,
-  "plugins": {
-    "dotnet": {
-      "type": "Platform",
-      "package": "Official-DotNet",
-      "title": "Official .NET skills: dotnet",
-      "category": "Core",
-      "compatibility": "Requires a .NET repository or solution."
-    },
+  "pluginDefaults": {
+    "type": "Platform",
+    "category": "Core",
+    "compatibility": "Requires a .NET repository or solution."
+  },
+  "pluginOverrides": {
     "dotnet-ai": {
-      "type": "Platform",
-      "package": "Official-DotNet-AI",
-      "title": "Official .NET skills: dotnet-ai",
       "category": "AI",
       "compatibility": "Requires a .NET repository working with AI, ML, or MCP workloads.",
       "skillOverrides": {
@@ -49,8 +45,6 @@
     },
     "dotnet-aspnet": {
       "type": "Frameworks",
-      "package": "Official-DotNet-ASPNet",
-      "title": "Official .NET skills: dotnet-aspnet",
       "category": "Web",
       "compatibility": "Requires an ASP.NET Core project or solution.",
       "skillOverrides": {
@@ -64,8 +58,6 @@
     },
     "dotnet-data": {
       "type": "Libraries",
-      "package": "Official-DotNet-Data",
-      "title": "Official .NET skills: dotnet-data",
       "category": "Data",
       "compatibility": "Requires a .NET repository using Entity Framework Core or similar data-access patterns.",
       "skillOverrides": {
@@ -77,14 +69,10 @@
     "dotnet-diag": {
       "type": "Tools",
       "package": "Official-DotNet-Diagnostics",
-      "title": "Official .NET skills: dotnet-diag",
       "category": "Metrics",
       "compatibility": "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
     },
     "dotnet-experimental": {
-      "type": "Platform",
-      "package": "Official-DotNet-Experimental",
-      "title": "Official .NET skills: dotnet-experimental",
       "category": "Testing",
       "compatibility": "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable.",
       "skillOverrides": {
@@ -96,7 +84,6 @@
     "dotnet-maui": {
       "type": "Frameworks",
       "package": "Official-DotNet-MAUI",
-      "title": "Official .NET skills: dotnet-maui",
       "category": "Cross-Platform UI",
       "compatibility": "Requires a .NET MAUI project or solution.",
       "skillDefaults": {
@@ -105,29 +92,18 @@
     },
     "dotnet-msbuild": {
       "type": "Tools",
-      "package": "Official-DotNet-MSBuild",
-      "title": "Official .NET skills: dotnet-msbuild",
-      "category": "Core",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files."
     },
     "dotnet-nuget": {
       "type": "Tools",
-      "package": "Official-DotNet-NuGet",
-      "title": "Official .NET skills: dotnet-nuget",
-      "category": "Core",
       "compatibility": "Requires a .NET repository using NuGet package management."
     },
     "dotnet-template-engine": {
       "type": "Tools",
-      "package": "Official-DotNet-Template-Engine",
-      "title": "Official .NET skills: dotnet-template-engine",
-      "category": "Core",
       "compatibility": "Requires a .NET repository using dotnet new templates or template authoring workflows."
     },
     "dotnet-test": {
       "type": "Testing",
-      "package": "Official-DotNet-Test",
-      "title": "Official .NET skills: dotnet-test",
       "category": "Testing",
       "compatibility": "Requires a .NET test project or solution.",
       "skillOverrides": {
@@ -155,9 +131,6 @@
       }
     },
     "dotnet-upgrade": {
-      "type": "Platform",
-      "package": "Official-DotNet-Upgrade",
-      "title": "Official .NET skills: dotnet-upgrade",
       "category": "Legacy",
       "compatibility": "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
     }

@@ -3,8 +3,6 @@ name: writing-mstest-tests
 description: "Best practices for writing MSTest 3.x/4.x unit tests. Use when the user needs to write, improve, fix, or review MSTest tests, including modern assertions, data-driven tests, test lifecycle, and common anti-patterns. Also use when fixing test issues like swapped Assert.AreEqual arguments, incorrect assertion usage, or modernizing legacy test code. Covers MSTest.Sdk, sealed classes, Assert.Throws, DynamicData with ValueTuples, TestContext, and conditional execution."
 compatibility: "Requires a .NET test project or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-test/skills/writing-mstest-tests/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Writing MSTest Tests
 
 Help users write effective, modern unit tests with MSTest 3.x/4.x using current APIs and best practices.

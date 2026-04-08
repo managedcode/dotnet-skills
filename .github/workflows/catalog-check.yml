@@ -17,17 +17,23 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install vendir
+        run: |
+          mkdir -p .tools
+          curl -fsSL https://carvel.dev/install.sh | K14SIO_INSTALL_BIN_DIR="$PWD/.tools" bash
+          echo "$PWD/.tools" >> "$GITHUB_PATH"
+
       - name: Validate automation scripts
         run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_catalog_definitions.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/import_external_catalog_sources.py scripts/upstream_watch.py
 
       - name: Validate external catalog source config
         run: python3 scripts/import_external_catalog_sources.py --validate-config
 
-      - name: Normalize vendored external sources
-        run: python3 scripts/import_external_catalog_sources.py
+      - name: Sync and normalize external sources
+        run: bash scripts/sync_external_catalog_sources.sh
 
       - name: Verify imported external sources are committed
-        run: git diff --exit-code -- catalog
+        run: git diff --exit-code -- catalog external-sources
 
       - name: Validate catalog source metadata
         run: |

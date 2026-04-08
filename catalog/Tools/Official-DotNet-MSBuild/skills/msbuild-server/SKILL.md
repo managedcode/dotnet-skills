@@ -3,8 +3,6 @@ name: msbuild-server
 description: "Guide for using MSBuild Server to improve CLI build performance. Only activate in MSBuild/.NET build context. Activate when developers report slow incremental builds from the command line, or when CLI builds are noticeably slower than IDE builds. Covers MSBUILDUSESERVER=1 environment variable for persistent server-based caching. Do not activate for IDE-based builds (Visual Studio already uses a long-lived process)."
 compatibility: "Requires a .NET repository with MSBuild project or solution files."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-msbuild/skills/msbuild-server/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # MSBuild Server for CLI Caching
 
 Use the MSBuild Server to cache evaluation results across CLI builds, matching the performance advantage Visual Studio gets from its long-lived MSBuild process.

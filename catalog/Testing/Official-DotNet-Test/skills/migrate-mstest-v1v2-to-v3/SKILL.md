@@ -3,8 +3,6 @@ name: migrate-mstest-v1v2-to-v3
 description: "Migrate MSTest v1 or v2 test project to MSTest v3. Use when user says \"upgrade MSTest\", \"upgrade to MSTest v3\", \"migrate to MSTest v3\", \"update test framework\", \"modernize tests\", \"MSTest v3 migration\", \"MSTest compatibility\", \"MSTest v2 to v3\", or build errors after updating MSTest packages from 1.x/2.x to 3.x. USE FOR: upgrading from MSTest v1 assembly references (Microsoft.VisualStudio.QualityTools.UnitTestFramework) or MSTest v2 NuGet (MSTest.TestFramework 1.x-2.x) to MSTest v3, fixing assertion overload errors (AreEqual/AreNotEqual), updating DataRow constructors, replacing .testsettings with .runsettings, timeout behavior changes, target framework compatibility (.NET 5 dropped -- use .NET 6+; .NET Fx older than 4.6.2 dropped), adopting MSTest.Sdk. First step toward MSTest v4 -- after this, use migrate-mstest-v3-to-v4. DO NOT USE FOR: migrating to MSTest v4 (use migrate-mstest-v3-to-v4), migrating between frameworks (MSTest to xUnit/NUnit), or general .NET upgrades unrelated to MSTest."
 compatibility: "Requires a .NET test project or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-test/skills/migrate-mstest-v1v2-to-v3/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # MSTest v1/v2 -> v3 Migration
 
 Migrate a test project from MSTest v1 (assembly references) or MSTest v2 (NuGet 1.x-2.x) to MSTest v3. MSTest v3 is **not binary compatible** with v1/v2 -- libraries compiled against v1/v2 must be recompiled.

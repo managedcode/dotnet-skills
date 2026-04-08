@@ -3,8 +3,6 @@ name: dump-collect
 description: "Configure and collect crash dumps for modern .NET applications. USE FOR: enabling automatic crash dumps for CoreCLR or NativeAOT, capturing dumps from running .NET processes, setting up dump collection in Docker or Kubernetes, using dotnet-dump collect or createdump. DO NOT USE FOR: analyzing or debugging dumps, post-mortem investigation with lldb/windbg/dotnet-dump analyze, profiling or tracing, or for .NET Framework processes."
 compatibility: "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-diag/skills/dump-collect/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # .NET Crash Dump Collection
 
 This skill configures and collects crash dumps for modern .NET applications (CoreCLR and NativeAOT) on Linux, macOS, and Windows — including containers.

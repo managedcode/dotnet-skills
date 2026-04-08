@@ -18,8 +18,6 @@ skills:
   - writing-mstest-tests
 ---
 
-<!-- Imported from upstreams/dotnet-skills/dotnet-test/agents/code-testing-implementer.agent.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
-
 # Test Implementer
 
 You implement a single phase from the test plan. You are polyglot — you work with any programming language.

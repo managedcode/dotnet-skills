@@ -3,8 +3,6 @@ name: migrate-dotnet8-to-dotnet9
 description: "Migrate a .NET 8 project to .NET 9 and resolve all breaking changes. USE FOR: upgrading TargetFramework from net8.0 to net9.0, fixing build errors after updating the .NET 9 SDK, resolving behavioral changes in .NET 9 / C# 13 / ASP.NET Core 9 / EF Core 9, replacing BinaryFormatter (now always throws), resolving SYSLIB0054-SYSLIB0057, adapting to params span overload resolution, fixing C# 13 compiler changes, updating HttpClientFactory for SocketsHttpHandler, and resolving EF Core 9 migration/Cosmos DB changes. DO NOT USE FOR: .NET Framework migrations, upgrading from .NET 7 or earlier, greenfield .NET 9 projects, or cosmetic modernization unrelated to the upgrade."
 compatibility: "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-upgrade/skills/migrate-dotnet8-to-dotnet9/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # .NET 8 → .NET 9 Migration
 
 Migrate a .NET 8 project or solution to .NET 9, systematically resolving all breaking changes. The outcome is a project targeting `net9.0` that builds cleanly, passes tests, and accounts for every behavioral, source-incompatible, and binary-incompatible change introduced in the .NET 9 release.

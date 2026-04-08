@@ -3,8 +3,6 @@ name: build-perf-baseline
 description: "Establish build performance baselines and apply systematic optimization techniques. Only activate in MSBuild/.NET build context. USE FOR: diagnosing slow builds, establishing before/after measurements (cold, warm, no-op scenarios), applying optimization strategies like MSBuild Server, static graph builds, artifacts output, and dependency graph trimming. Start here before diving into build-perf-diagnostics, incremental-build, or build-parallelism. DO NOT USE FOR: non-MSBuild build systems, detailed bottleneck analysis (use build-perf-diagnostics after baselining)."
 compatibility: "Requires a .NET repository with MSBuild project or solution files."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-msbuild/skills/build-perf-baseline/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # Build Performance Baseline & Optimization
 
 ## Overview

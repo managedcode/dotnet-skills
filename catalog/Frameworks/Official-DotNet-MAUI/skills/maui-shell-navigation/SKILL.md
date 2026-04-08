@@ -3,8 +3,6 @@ name: maui-shell-navigation
 description: "Guide for implementing Shell-based navigation in .NET MAUI apps. Covers AppShell setup, visual hierarchy (FlyoutItem, TabBar, Tab, ShellContent), URI-based navigation with GoToAsync, route registration, query parameters, back navigation, flyout and tab configuration, navigation events, and navigation guards. Use when: setting up Shell navigation, adding tabs or flyout menus, navigating between pages with GoToAsync, passing parameters between pages, registering routes, customizing back button behavior, or guarding navigation with confirmation dialogs. Do not use for: deep linking from external URLs (see .NET MAUI deep linking documentation), data binding on pages (use maui-data-binding), dependency injection setup (use maui-dependency-injection), or NavigationPage-only apps that don't use Shell."
 compatibility: "Requires a .NET MAUI project or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-maui/skills/maui-shell-navigation/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # .NET MAUI Shell Navigation
 
 Implement page navigation in .NET MAUI apps using Shell. Shell provides URI-based navigation, a flyout menu, tab bars, and a four-level visual hierarchy — all configured declaratively in XAML.

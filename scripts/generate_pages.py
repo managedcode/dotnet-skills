@@ -510,7 +510,7 @@ def load_bundle_documents(bundles: list[dict], skills_by_name: dict[str, dict], 
                 "slug": bundle_name,
                 "short_name": bundle_name,
                 "kind": kind,
-                "kind_label": "Category bundle" if kind == "category" else "Curated bundle",
+                "kind_label": "Category" if kind == "category" else "Curated",
                 "source_category_slug": slugify(source_category) if source_category else "",
                 "detail_path": detail_path,
                 "detail_url": build_absolute_url(site_url, detail_path),
@@ -767,8 +767,8 @@ def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, di
           </div>
         </div>
         <div class="card-actions card-actions-inline">
-          {render_button("Source", agent["source_url"], "ghost", external=True)}
-          <a class="card-inline-link" href="{escape_html(detail_href)}">Open agent page<span class="card-inline-arrow">→</span></a>
+          <a class="card-inline-link" href="{escape_html(detail_href)}">Open agent page<span class="card-inline-arrow"> →</span></a>
+          <a class="card-inline-link card-source-link" href="{escape_html(agent['source_url'])}" target="_blank" rel="noopener noreferrer">Source</a>
         </div>
       </article>
     """.strip()
@@ -832,11 +832,10 @@ def render_bundle_card(bundle: dict, root_prefix: str) -> str:
         <div class="card-head">
           <div class="card-head-top">
             <h3><a href="{escape_html(detail_href)}">{escape_html(bundle['title'])}</a></h3>
-            <a class="card-detail-link" href="{escape_html(detail_href)}">Details →</a>
-          </div>
-          <div class="card-tags">
-            <span class="card-tag card-tag-type">{escape_html(bundle['kind_label'])}</span>
-            <span class="card-tag card-tag-category">{skill_count} skills</span>
+            <div class="bundle-meta">
+              <span class="bundle-kind">{escape_html(bundle['kind_label'])}</span>
+              <span class="bundle-count">{skill_count} skills</span>
+            </div>
           </div>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
@@ -1804,7 +1803,7 @@ def render_about_page(
           </section>
           <section>
             <h2>How catalog packages are structured</h2>
-            <p>The human-maintained source of truth is the scanned <code>catalog/&lt;type&gt;/&lt;package&gt;/</code> tree. Each package owns one package-level <code>manifest.json</code>, optional package assets such as icons, one or more skills under <code>skills/&lt;skill&gt;/SKILL.md</code> with required sibling <code>manifest.json</code> files, and optional repo-owned agents under <code>agents/&lt;agent&gt;/AGENT.md</code> with their own sibling manifests when needed. Some packages are repo-authored, while official upstream packages are vendir-managed under <code>upstreams/</code> and normalized into the same shape through checked-in import configs.</p>
+            <p>The human-maintained source of truth is the scanned <code>catalog/&lt;type&gt;/&lt;package&gt;/</code> tree. Each package owns one package-level <code>manifest.json</code>, optional package assets such as icons, one or more skills under <code>skills/&lt;skill&gt;/SKILL.md</code> with required sibling <code>manifest.json</code> files, and optional repo-owned agents under <code>agents/&lt;agent&gt;/AGENT.md</code> with their own sibling manifests when needed. Some packages are repo-authored, while official upstream packages are vendir-managed under <code>external-sources/upstreams/</code> and normalized into the same shape through overrides-only configs in <code>external-sources/imports/</code>; the importer auto-discovers upstream plugins from their vendored <code>plugin.json</code> files.</p>
           </section>
           <section>
             <h2>What belongs in manifest.json</h2>

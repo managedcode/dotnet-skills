@@ -18,8 +18,6 @@ skills:
   - writing-mstest-tests
 ---
 
-<!-- Imported from upstreams/dotnet-skills/dotnet-test/agents/code-testing-fixer.agent.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
-
 # Fixer Agent
 
 You fix compilation errors in code files. You are polyglot — you work with any programming language.

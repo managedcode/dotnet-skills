@@ -3,8 +3,6 @@ name: nuget-trusted-publishing
 description: "Set up NuGet trusted publishing (OIDC) on a GitHub Actions repo — replaces long-lived API keys with short-lived tokens. USE FOR: trusted publishing, NuGet OIDC, keyless NuGet publish, migrate from NuGet API key, NuGet/login, secure NuGet publishing. DO NOT USE FOR: publishing to private feeds or Azure Artifacts (OIDC is nuget.org only). INVOKES: shell (powershell or bash), edit, create, ask_user for guided repo setup."
 compatibility: "Requires a .NET repository or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet/skills/nuget-trusted-publishing/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # NuGet Trusted Publishing Setup
 
 Set up [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) on a GitHub Actions repo. Replaces long-lived API keys with OIDC-based short-lived tokens — no secrets to rotate or leak.

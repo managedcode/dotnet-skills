@@ -3,8 +3,6 @@ name: exp-dotnet-test-frameworks
 description: "Reference data for .NET test framework detection patterns, assertion APIs, skip annotations, setup/teardown methods, and common test smell indicators across MSTest, xUnit, NUnit, and TUnit. DO NOT USE directly — loaded by test analysis skills (exp-test-smell-detection, exp-assertion-quality, exp-test-maintainability, exp-test-tagging) when they need framework-specific lookup tables."
 compatibility: "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-experimental/skills/exp-dotnet-test-frameworks/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # .NET Test Framework Reference
 
 Language-specific detection patterns for .NET test frameworks (MSTest, xUnit, NUnit, TUnit).

@@ -3,8 +3,6 @@ name: maui-theming
 description: "Guide for theming .NET MAUI apps — light/dark mode via AppThemeBinding, ResourceDictionary theme switching, DynamicResource bindings, system theme detection, and user theme preferences. Use when: \"dark mode\", \"light mode\", \"theming\", \"AppThemeBinding\", \"theme switching\", \"ResourceDictionary theme\", \"dynamic resources\", \"system theme detection\", \"color scheme\", \"app theme\", \"DynamicResource\". Do not use for: localization or language switching (see .NET MAUI localization documentation), accessibility visual adjustments (see .NET MAUI accessibility documentation), app icons or splash screens (see .NET MAUI app icons documentation), or Bootstrap-style class theming (see Plugin.Maui.BootstrapTheme NuGet package)."
 compatibility: "Requires a .NET MAUI project or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-maui/skills/maui-theming/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # .NET MAUI Theming
 
 Apply light/dark mode support, custom branded themes, and runtime theme switching in .NET MAUI apps using AppThemeBinding, ResourceDictionary swapping, and system theme detection APIs.

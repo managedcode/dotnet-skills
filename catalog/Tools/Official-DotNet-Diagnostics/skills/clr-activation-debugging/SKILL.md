@@ -3,8 +3,6 @@ name: clr-activation-debugging
 description: "Diagnoses .NET Framework CLR activation issues using CLR activation logs (CLRLoad logs) produced by mscoree.dll. Use when: the shim picks the wrong runtime, fails to load any runtime, shows unexpected .NET 3.5 Feature-on-Demand (FOD) dialogs, unexpectedly does NOT show FOD dialogs, loads both v2 and v4 into the same process causing failures, or any time someone is wondering \"what is happening with .NET Framework activation?\""
 compatibility: "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet-diag/skills/clr-activation-debugging/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # CLR Activation Debugging
 
 Diagnose .NET Framework runtime activation issues by analyzing CLR activation logs (CLRLoad logs) produced by the shim (mscoree.dll). These logs record every decision the shim makes when selecting and loading a CLR version.

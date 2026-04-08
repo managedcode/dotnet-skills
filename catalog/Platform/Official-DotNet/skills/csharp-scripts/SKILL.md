@@ -3,8 +3,6 @@ name: csharp-scripts
 description: "Run single-file C# programs as scripts (file-based apps) for quick experimentation, prototyping, and concept testing. Use when the user wants to write and execute a small C# program without creating a full project."
 compatibility: "Requires a .NET repository or solution."
 ---
-
-<!-- Imported from upstreams/dotnet-skills/dotnet/skills/csharp-scripts/SKILL.md via vendir. Edit upstream or catalog-sources config, then rerun scripts/import_external_catalog_sources.py. -->
 # C# Scripts
 
 ## When to Use
