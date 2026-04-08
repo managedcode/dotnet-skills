@@ -693,7 +693,10 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
     return f"""
       <article class="directory-card skill-card {type_class} is-clickable js-filter-card" data-category="{escape_html(skill['category'])}" data-type="{escape_html(skill_type)}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
         <div class="card-head">
-          <h3><a href="{escape_html(detail_href)}">{escape_html(skill['title'])}</a></h3>
+          <div class="card-head-top">
+            <h3><a href="{escape_html(detail_href)}">{escape_html(skill['title'])}</a></h3>
+            <a class="card-detail-link" href="{escape_html(detail_href)}">Details →</a>
+          </div>
           <div class="card-tags">
             <span class="card-tag card-tag-type">{escape_html(skill_type)}</span>
             <a class="card-tag card-tag-category" href="{escape_html(category_href)}">{escape_html(skill['category'])}</a>
@@ -826,16 +829,24 @@ def render_bundle_card(bundle: dict, root_prefix: str) -> str:
     skill_count = len(bundle['skills'])
     return f"""
       <article class="directory-card bundle-card is-clickable js-filter-card" data-category="{escape_html(bundle['kind'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(bundle['title'])} bundle">
-        <div class="card-top">
-          <div>
+        <div class="card-head">
+          <div class="card-head-top">
             <h3><a href="{escape_html(detail_href)}">{escape_html(bundle['title'])}</a></h3>
+            <a class="card-detail-link" href="{escape_html(detail_href)}">Details →</a>
           </div>
-          <span class="card-version">{skill_count}</span>
+          <div class="card-tags">
+            <span class="card-tag card-tag-type">{escape_html(bundle['kind_label'])}</span>
+            <span class="card-tag card-tag-category">{skill_count} skills</span>
+          </div>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
         <div class="card-footer">
-          <code class="card-cmd">{escape_html(install_command)}</code>
-          <a class="card-inline-link" href="{escape_html(detail_href)}">View<span class="card-inline-arrow">→</span></a>
+          <div class="card-cmd-row">
+            <code class="card-cmd">{escape_html(install_command)}</code>
+            <button type="button" class="card-copy-btn" data-copy="{escape_html(install_command)}" aria-label="Copy command">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
         </div>
       </article>
     """.strip()

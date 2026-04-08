@@ -1,0 +1,10 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: upstreams
+    contents:
+      - path: dotnet-skills
+        git:
+          url: https://github.com/dotnet/skills
+          ref: origin/main
+        newRootPath: plugins

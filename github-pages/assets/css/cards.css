@@ -64,6 +64,28 @@
   gap: 6px;
 }
 
+.card-head-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-detail-link {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--card-accent);
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 0.7;
+  transition: opacity 150ms;
+}
+
+.directory-card:hover .card-detail-link {
+  opacity: 1;
+}
+
 .card-tags {
   display: flex;
   flex-wrap: wrap;
@@ -161,7 +183,7 @@
 .card-summary {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
   margin-top: 6px;
   align-self: start;

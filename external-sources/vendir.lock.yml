@@ -1,0 +1,9 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: LockConfig
+directories:
+  - path: upstreams
+    contents:
+      - path: dotnet-skills
+        git:
+          sha: 93dc33da8623b22d3d00c143c1d0cb27954fe3d8
+          commitTitle: Stabilize and unify some test skills (#501)
