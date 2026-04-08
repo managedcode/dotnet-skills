@@ -189,7 +189,7 @@ skills/<skill-name>/
 
 <!-- BEGIN GENERATED CATALOG -->
 
-This catalog currently contains **83** skills.
+This catalog currently contains **84** skills.
 
 ### Core
 
@@ -200,7 +200,7 @@ This catalog currently contains **83** skills.
 | [`dotnet-code-review`](skills/dotnet-code-review/) | `1.0.0` | Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them. |
 | [`dotnet-managedcode-communication`](skills/dotnet-managedcode-communication/) | `1.0.0` | Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow. |
 | [`dotnet-managedcode-mimetypes`](skills/dotnet-managedcode-mimetypes/) | `1.0.0` | Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses. |
-| [`dotnet-mcaf`](skills/dotnet-mcaf/) | `1.2.0` | Adopt MCAF alongside the dotnet-skills catalog with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow. |
+| [`dotnet-mcaf`](skills/dotnet-mcaf/) | `1.2.1` | Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. Use when bootstrapping or updating MCAF alongside the dotnet-skills catalog. |
 | [`dotnet-mcaf-agile-delivery`](skills/dotnet-mcaf-agile-delivery/) | `1.0.0` | Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements. |
 | [`dotnet-mcaf-devex`](skills/dotnet-mcaf-devex/) | `1.0.0` | Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into. |
 | [`dotnet-mcaf-human-review-planning`](skills/dotnet-mcaf-human-review-planning/) | `1.0.0` | Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the files a human should inspect first. Use when the codebase is too large to review line-by-line and you need a practical review sequence plus a prioritized file list. |
@@ -230,7 +230,7 @@ This catalog currently contains **83** skills.
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [`dotnet-managedcode-orleans-graph`](skills/dotnet-managedcode-orleans-graph/) | `1.0.0` | Use ManagedCode.Orleans.Graph when a distributed .NET application models graph-oriented relationships or traversal logic on top of Orleans grains and graph-aware integration patterns. |
+| [`dotnet-managedcode-orleans-graph`](skills/dotnet-managedcode-orleans-graph/) | `1.0.1` | Integrate ManagedCode.Orleans.Graph into an Orleans-based .NET application for graph-oriented relationships, edge management, and traversal logic on top of Orleans grains. Use when the application models graph structures in a distributed Orleans system. |
 | [`dotnet-managedcode-orleans-signalr`](skills/dotnet-managedcode-orleans-signalr/) | `1.0.0` | Use ManagedCode.Orleans.SignalR when a distributed .NET application needs Orleans-based coordination of SignalR real-time messaging, hub delivery, and grain-driven push flows. |
 | [`dotnet-orleans`](skills/dotnet-orleans/) | `2.1.0` | Build or review distributed .NET applications with Orleans grains, silos, persistence, streaming, reminders, placement, transactions, serialization, event sourcing, testing, and cloud-native hosting. |
 | [`dotnet-worker-services`](skills/dotnet-worker-services/) | `1.0.0` | Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons. |
@@ -240,8 +240,8 @@ This catalog currently contains **83** skills.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [`dotnet-libvlc`](skills/dotnet-libvlc/) | `1.0.0` | Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding. |
-| [`dotnet-winforms`](skills/dotnet-winforms/) | `1.0.0` | Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, and migration to modern .NET. |
-| [`dotnet-winui`](skills/dotnet-winui/) | `1.0.0` | Build or review WinUI 3 applications with the Windows App SDK, modern Windows desktop patterns, packaging decisions, and interop boundaries with other .NET stacks. |
+| [`dotnet-winforms`](skills/dotnet-winforms/) | `1.0.1` | Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. Use when working on WinForms projects or migrating from .NET Framework. |
+| [`dotnet-winui`](skills/dotnet-winui/) | `1.0.1` | Build or review WinUI 3 applications with the Windows App SDK, including MVVM patterns, packaging decisions, navigation, theming, windowing, and interop boundaries with other .NET stacks. Use when building modern Windows-native desktop UI. |
 | [`dotnet-wpf`](skills/dotnet-wpf/) | `1.0.0` | Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions. |
 
 ### Cross-Platform UI
@@ -258,7 +258,7 @@ This catalog currently contains **83** skills.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [`dotnet-entity-framework-core`](skills/dotnet-entity-framework-core/) | `1.0.0` | Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications. |
-| [`dotnet-entity-framework6`](skills/dotnet-entity-framework6/) | `1.0.0` | Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. |
+| [`dotnet-entity-framework6`](skills/dotnet-entity-framework6/) | `1.0.1` | Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. Use when working in an EF6 codebase or planning a data layer migration. |
 | [`dotnet-managedcode-markitdown`](skills/dotnet-managedcode-markitdown/) | `1.0.0` | Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows. |
 | [`dotnet-managedcode-storage`](skills/dotnet-managedcode-storage/) | `1.0.0` | Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept behind one library contract. |
 | [`dotnet-sep`](skills/dotnet-sep/) | `1.0.0` | Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows. |
@@ -268,9 +268,9 @@ This catalog currently contains **83** skills.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [`dotnet-mcaf-ml-ai-delivery`](skills/dotnet-mcaf-ml-ai-delivery/) | `1.0.0` | Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. Use when the repo includes model training, inference, data science workflows, or ML-specific delivery planning. |
-| [`dotnet-mcp`](skills/dotnet-mcp/) | `1.1.0` | Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. |
-| [`dotnet-microsoft-agent-framework`](skills/dotnet-microsoft-agent-framework/) | `1.7.0` | Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails. |
-| [`dotnet-microsoft-extensions-ai`](skills/dotnet-microsoft-extensions-ai/) | `1.2.2` | Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation. |
+| [`dotnet-mcp`](skills/dotnet-mcp/) | `1.1.1` | Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. |
+| [`dotnet-microsoft-agent-framework`](skills/dotnet-microsoft-agent-framework/) | `1.8.0` | Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails. |
+| [`dotnet-microsoft-extensions-ai`](skills/dotnet-microsoft-extensions-ai/) | `1.3.0` | Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation. |
 | [`dotnet-mixed-reality`](skills/dotnet-mixed-reality/) | `1.0.0` | Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack. |
 | [`dotnet-mlnet`](skills/dotnet-mlnet/) | `1.0.0` | Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations. |
 | [`dotnet-semantic-kernel`](skills/dotnet-semantic-kernel/) | `1.0.0` | Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable. |
@@ -323,6 +323,7 @@ This catalog currently contains **83** skills.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [`dotnet-archunitnet`](skills/dotnet-archunitnet/) | `1.0.0` | Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide. |
+| [`dotnet-graphify-dotnet`](skills/dotnet-graphify-dotnet/) | `1.0.0` | Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships. |
 | [`dotnet-mcaf-documentation`](skills/dotnet-mcaf-documentation/) | `1.0.0` | Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. Use when a repo’s docs are missing, stale, duplicated, or hard to navigate, or when adding new durable engineering guidance. |
 | [`dotnet-mcaf-feature-spec`](skills/dotnet-mcaf-feature-spec/) | `1.0.0` | Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. Use when the user asks for a feature spec, executable requirements, acceptance criteria, behaviour documentation, or a pre-implementation plan for non-trivial behaviour changes. |
 | [`dotnet-mcaf-nfr`](skills/dotnet-mcaf-nfr/) | `1.0.0` | Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. Use when a feature or architecture change needs explicit quality attributes and trade-offs. |

@@ -174,9 +174,9 @@
     {
       "name": "dotnet-entity-framework6",
       "title": "Entity Framework 6",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "Data",
-      "description": "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step.",
+      "description": "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. Use when working in an EF6 codebase or planning a data layer migration.",
       "compatibility": "Requires EF6 or a transition plan from EF6 to EF Core or modern .NET.",
       "path": "skills/dotnet-entity-framework6/"
     },
@@ -197,6 +197,15 @@
       "description": "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. Use when a .NET repo needs formatting commands, `--verify-no-changes` CI checks, or `.editorconfig`-driven code style enforcement.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "skills/dotnet-format/"
+    },
+    {
+      "name": "dotnet-graphify-dotnet",
+      "title": "graphify-dotnet",
+      "version": "1.0.0",
+      "category": "Architecture",
+      "description": "Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships.",
+      "compatibility": "Requires the `graphify-dotnet` global tool and a .NET 10 SDK; AST-only extraction works with zero model setup, while semantic enrichment needs Azure OpenAI, Ollama, or GitHub Copilot SDK.",
+      "path": "skills/dotnet-graphify-dotnet/"
     },
     {
       "name": "dotnet-grpc",
@@ -264,9 +273,9 @@
     {
       "name": "dotnet-managedcode-orleans-graph",
       "title": "ManagedCode.Orleans.Graph",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "Distributed",
-      "description": "Use ManagedCode.Orleans.Graph when a distributed .NET application models graph-oriented relationships or traversal logic on top of Orleans grains and graph-aware integration patterns.",
+      "description": "Integrate ManagedCode.Orleans.Graph into an Orleans-based .NET application for graph-oriented relationships, edge management, and traversal logic on top of Orleans grains. Use when the application models graph structures in a distributed Orleans system.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.Orleans.Graph or evaluates graph-style modeling with Orleans.",
       "path": "skills/dotnet-managedcode-orleans-graph/"
     },
@@ -300,9 +309,9 @@
     {
       "name": "dotnet-mcaf",
       "title": "MCAF Adoption",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "category": "Core",
-      "description": "Adopt MCAF alongside the dotnet-skills catalog with the right AGENTS.md layout, repo-native docs, skill installation flow, verification rules, and non-trivial task workflow.",
+      "description": "Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. Use when bootstrapping or updating MCAF alongside the dotnet-skills catalog.",
       "compatibility": "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work.",
       "path": "skills/dotnet-mcaf/"
     },
@@ -390,7 +399,7 @@
     {
       "name": "dotnet-mcp",
       "title": "MCP C# SDK for .NET",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "AI",
       "description": "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation.",
       "compatibility": "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.1.x SDK.",
@@ -417,7 +426,7 @@
     {
       "name": "dotnet-microsoft-agent-framework",
       "title": "Microsoft Agent Framework",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "category": "AI",
       "description": "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails.",
       "compatibility": "Requires preview-era Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration.",
@@ -435,7 +444,7 @@
     {
       "name": "dotnet-microsoft-extensions-ai",
       "title": "Microsoft.Extensions.AI",
-      "version": "1.2.2",
+      "version": "1.3.0",
       "category": "AI",
       "description": "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation.",
       "compatibility": "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration.",
@@ -696,18 +705,18 @@
     {
       "name": "dotnet-winforms",
       "title": "Windows Forms",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "Desktop",
-      "description": "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, and migration to modern .NET.",
+      "description": "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. Use when working on WinForms projects or migrating from .NET Framework.",
       "compatibility": "Requires a Windows Forms project on .NET or .NET Framework.",
       "path": "skills/dotnet-winforms/"
     },
     {
       "name": "dotnet-winui",
       "title": "WinUI 3 and Windows App SDK",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "Desktop",
-      "description": "Build or review WinUI 3 applications with the Windows App SDK, modern Windows desktop patterns, packaging decisions, and interop boundaries with other .NET stacks.",
+      "description": "Build or review WinUI 3 applications with the Windows App SDK, including MVVM patterns, packaging decisions, navigation, theming, windowing, and interop boundaries with other .NET stacks. Use when building modern Windows-native desktop UI.",
       "compatibility": "Requires a WinUI 3, Windows App SDK, or MAUI-on-Windows integration scenario.",
       "path": "skills/dotnet-winui/"
     },
@@ -957,11 +966,12 @@
     {
       "name": "architecture",
       "title": "Architecture package",
-      "description": "Install all 5 skills from the Architecture category in one command.",
+      "description": "Install all 6 skills from the Architecture category in one command.",
       "kind": "category",
       "sourceCategory": "Architecture",
       "skills": [
         "dotnet-archunitnet",
+        "dotnet-graphify-dotnet",
         "dotnet-mcaf-documentation",
         "dotnet-mcaf-feature-spec",
         "dotnet-mcaf-nfr",
