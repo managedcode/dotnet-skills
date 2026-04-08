@@ -1,0 +1,205 @@
+/* ================================================================
+   Hero — page hero, eyebrows, metric cards
+   ================================================================ */
+
+.page-hero {
+  position: relative;
+  margin-bottom: 48px;
+  padding: 72px 64px 60px;
+  border-radius: var(--r3);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+  color: #f0f0f0;
+  border: none;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+body.page-home .page-title {
+  max-width: 18ch;
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+}
+
+body.page-home .page-lead {
+  max-width: 56ch;
+  font-size: 15px;
+}
+
+.page-hero > * { position: relative; z-index: 1; }
+
+.page-hero::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.page-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.page-hero .eyebrow,
+.page-hero .tag {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px);
+}
+
+.page-hero .tag-accent {
+  background: rgba(99,102,241,0.25);
+  border-color: rgba(99,102,241,0.4);
+  color: #c7d2fe;
+}
+
+.page-hero .page-lead { color: rgba(255,255,255,0.7); }
+.page-hero .page-title { color: #ffffff; }
+.page-hero .page-title .accent { color: #a5b4fc; }
+
+.page-hero .button-primary {
+  background: #6366f1;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+}
+
+.page-hero .button-primary:hover {
+  background: #818cf8;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+}
+
+.page-hero .button-ghost {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+}
+
+.page-hero .button-ghost:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+body.page-home .page-hero { display: block; }
+body.page-home .page-hero .eyebrow-row,
+body.page-home .page-hero .page-title,
+body.page-home .page-hero .page-lead,
+body.page-home .page-hero .hero-actions { grid-column: auto; }
+body.page-home .page-hero .metric-grid { margin-top: 24px; }
+
+/* ---- Eyebrows & tags ---- */
+
+.eyebrow-row, .breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.eyebrow, .tag, .pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg-sunken);
+  color: var(--ink-2);
+  font-size: 11px;
+  font-weight: 500;
+  border: none;
+}
+
+.tag { background: var(--bg-sunken); color: var(--ink-2); border: none; }
+
+.tag-accent {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.breadcrumb { margin-bottom: 10px; color: var(--ink-3); font-size: 13px; }
+.breadcrumb a { color: var(--ink-2); }
+.breadcrumb a:hover { color: var(--ink); }
+
+.page-title {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+.page-title .accent { color: var(--accent); }
+
+.page-lead {
+  max-width: 50ch;
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.65;
+}
+
+.hero-actions, .meta-row, .card-actions, .chip-row, .sidebar-links, .section-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hero-actions { margin-top: 20px; }
+
+/* ---- Metric cards ---- */
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.metric-card {
+  padding: 14px 16px;
+  border-radius: var(--r);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
+}
+
+.metric-card::before { display: none; }
+
+.page-hero .metric-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(4px);
+  box-shadow: none;
+}
+
+.page-hero .metric-value { color: #ffffff; }
+.page-hero .metric-label { color: rgba(255,255,255,0.5); }
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-label {
+  margin-top: 2px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  font-weight: 600;
+}

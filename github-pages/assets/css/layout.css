@@ -1,0 +1,98 @@
+/* ================================================================
+   Layout — shell, grids, section stack, detail layout
+   ================================================================ */
+
+.shell {
+  width: min(calc(100% - 40px), var(--shell));
+  margin: 0 auto;
+}
+
+.site-main { padding: 32px 0 72px; }
+
+.site-main > .section-stack + .section-stack {
+  margin-top: 32px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.section-stack { display: grid; gap: 16px; }
+
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.section-header > :first-child { max-width: 560px; }
+
+.section-header h2, .panel h2, .detail-card h2, .sidebar-card h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.section-header h2 {
+  display: inline-block;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--accent);
+}
+
+.section-header p, .panel p, .sidebar-card p, .detail-card p,
+.directory-card p, .article-copy p, .article-copy li {
+  color: var(--ink-2);
+}
+
+.panel {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border-radius: var(--r2);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
+}
+
+.panel:hover { transform: none; box-shadow: none; }
+.panel::before { display: none; }
+
+.panel-grid, .directory-grid, .detail-layout, .spotlight-grid, .quickstart-grid, .directory-links {
+  display: grid;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.panel-grid       { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.quickstart-grid  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.directory-grid   { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.agent-grid       { grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); }
+
+body.page-agents .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+body.page-skills #listing-grid,
+body.page-categories .panel #listing-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.quickstart-grid > .directory-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickstart-grid > .directory-card h3 { min-height: 2.6em; }
+.quickstart-grid > .directory-card p { flex: 1; }
+.quickstart-grid > .directory-card .command-row { margin-top: auto; }
+.quickstart-grid > .directory-card .command-row code {
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 100%;
+}
+
+.detail-layout {
+  grid-template-columns: minmax(0, 1.8fr) minmax(220px, 0.85fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.sidebar-stack { display: grid; gap: 12px; }

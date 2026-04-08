@@ -583,11 +583,13 @@ def render_button(label: str, href: str, variant: str = "ghost", external: bool 
 
 
 def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) -> str:
-    """Render a skill card with both quick view and crawlable page links."""
+    """Render a skill card with type indicator and gradient glow border."""
     detail_href = f"{root_prefix}{skill['detail_path']}"
     category_href = f"{root_prefix}categories/{skill['category_slug']}/"
     install_command = f"dotnet skills install {skill['short_name']}"
     summary = preview_text(skill["description"])
+    skill_type = skill.get("type", "Platform")
+    type_class = f"card-type-{skill_type.lower()}"
     filter_text = " ".join(
         dedupe_strings(
             [
@@ -595,35 +597,24 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
                 skill["name"],
                 skill["description"],
                 skill["category"],
+                skill_type,
                 skill.get("compatibility", ""),
             ]
         )
     )
-    actions = [
-        f'<a class="card-inline-link" href="{escape_html(detail_href)}">Open skill page'
-        '<span class="card-inline-arrow">→</span></a>',
-    ]
-    if quick_view:
-        actions.insert(0, f'<button type="button" class="button button-ghost" data-open-skill="{escape_html(skill["name"])}">Quick view</button>')
-
     return f"""
-      <article class="directory-card skill-card is-clickable js-filter-card" data-category="{escape_html(skill['category'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
+      <article class="directory-card skill-card {type_class} is-clickable js-filter-card" data-category="{escape_html(skill['category'])}" data-type="{escape_html(skill_type)}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
         <div class="card-top">
           <div>
-            <div class="card-kicker">Skill</div>
+            <span class="card-type-indicator"><span class="card-type-dot"></span>{escape_html(skill_type)}</span>
             <h3><a href="{escape_html(detail_href)}">{escape_html(skill['title'])}</a></h3>
           </div>
-          <span class="card-version">v{escape_html(skill['version'])}</span>
+          <a class="chip card-category-chip" href="{escape_html(category_href)}">{escape_html(skill['category'])}</a>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
-        <div class="chip-row skill-meta-row">
-          <a class="chip" href="{escape_html(category_href)}">{escape_html(skill['category'])}</a>
-        </div>
-        <div class="command-row skill-command-row">
-          <code>{escape_html(install_command)}</code>
-        </div>
-        <div class="card-actions card-actions-inline">
-          {"".join(actions)}
+        <div class="card-footer">
+          <code class="card-cmd">{escape_html(install_command)}</code>
+          <a class="card-inline-link" href="{escape_html(detail_href)}">View<span class="card-inline-arrow">→</span></a>
         </div>
       </article>
     """.strip()
@@ -703,22 +694,18 @@ def render_category_card(category_name: str, category_info: dict, root_prefix: s
         )
     )
 
+    skill_count = len(category_info['skills'])
     return f"""
       <article class="directory-card category-card is-clickable js-filter-card" data-category="category" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(category_name)} category">
         <div class="card-top">
           <div>
-            <div class="card-kicker">Category</div>
             <h3><a href="{escape_html(detail_href)}">{escape_html(category_name)}</a></h3>
           </div>
-          <span class="card-version">{len(category_info['skills'])} skills</span>
+          <span class="card-version">{skill_count}</span>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
-        <div class="chip-row">
-          <span class="chip">{len(category_info['related_agents'])} related agents</span>
-          <span class="chip">{escape_html(sample_skills or 'catalog overview')}</span>
-        </div>
         <div class="card-inline-link" aria-hidden="true">
-          <span>Browse skills</span>
+          <span>Browse {skill_count} skills</span>
           <span class="card-inline-arrow">→</span>
         </div>
       </article>
@@ -743,34 +730,19 @@ def render_package_card(package: dict, root_prefix: str) -> str:
         )
     )
 
-    chips = [
-        f'<span class="chip">{escape_html(package["kind_label"])}</span>',
-    ]
-    if package.get("sourceCategory") and package.get("source_category_slug"):
-        chips.insert(
-            1,
-            f'<a class="chip" href="{escape_html(root_prefix + "categories/" + package["source_category_slug"] + "/")}">'
-            f'{escape_html(package["sourceCategory"])} category</a>',
-        )
-
+    skill_count = len(package['skills'])
     return f"""
       <article class="directory-card package-card is-clickable js-filter-card" data-category="{escape_html(package['kind'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(package['title'])} skill stack">
         <div class="card-top">
           <div>
-            <div class="card-kicker">{escape_html(package["kind_label"])}</div>
             <h3><a href="{escape_html(detail_href)}">{escape_html(package['title'])}</a></h3>
           </div>
-          <span class="card-version">{len(package['skills'])} skills</span>
+          <span class="card-version">{skill_count}</span>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
-        <div class="chip-row">
-          {"".join(chips)}
-        </div>
-        <div class="command-row">
-          <code>{escape_html(install_command)}</code>
-        </div>
-        <div class="card-actions card-actions-inline">
-          <a class="card-inline-link" href="{escape_html(detail_href)}">Open stack<span class="card-inline-arrow">→</span></a>
+        <div class="card-footer">
+          <code class="card-cmd">{escape_html(install_command)}</code>
+          <a class="card-inline-link" href="{escape_html(detail_href)}">View<span class="card-inline-arrow">→</span></a>
         </div>
       </article>
     """.strip()
@@ -1122,6 +1094,7 @@ def build_skill_payload(skills: list[dict], root_prefix: str) -> list[dict]:
             "description": skill["description"],
             "version": skill["version"],
             "category": skill["category"],
+            "type": skill.get("type", "Platform"),
             "compatibility": skill.get("compatibility", ""),
             "detailUrl": f"{root_prefix}{skill['detail_path']}",
             "sourceUrl": skill["source_url"],
@@ -1215,11 +1188,13 @@ def render_skill_detail_page(skill: dict, related_skills: list[dict], related_ag
         for agent in related_agents[:2]
     )
 
+    skill_type = skill.get("type", "Platform")
+
     return f"""
       {render_breadcrumb([("Home", root_prefix or "./"), ("Skills", f"{root_prefix}skills/"), (skill["title"], None)])}
       <section class="page-hero">
         <div class="eyebrow-row">
-          <span class="eyebrow">Skill page</span>
+          <span class="eyebrow">{escape_html(skill_type)}</span>
           <a class="tag" href="{escape_html(root_prefix + 'categories/' + skill['category_slug'] + '/')}">{escape_html(skill['category'])}</a>
           <span class="tag tag-accent">v{escape_html(skill['version'])}</span>
         </div>

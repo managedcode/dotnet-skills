@@ -1,36 +1,24 @@
 {
   "agents": [
     {
-      "name": "dotnet-ai",
-      "title": ".NET AI",
-      "description": "AI-focused orchestration agent for Microsoft Agent Framework, Microsoft.Extensions.AI, Semantic Kernel, MCP, and ML.NET. Use when the dominant problem is .NET AI architecture, model integration, agent workflows, tool calling, embeddings, or platform selection.",
+      "name": "dotnet-aspire-orchestrator",
+      "title": ".NET Aspire Orchestrator",
+      "description": "Specialist orchestration agent for .NET Aspire work. Use when the problem is clearly about AppHost design, ServiceDefaults, first-party versus CommunityToolkit/Aspire integrations, dashboard and testing, `DistributedApplicationTestingBuilder`, `WebApplicationFactory` integration, or Azure deployment choices within an Aspire solution.",
       "skills": [
-        "dotnet-semantic-kernel",
-        "dotnet-microsoft-agent-framework",
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-mcp",
-        "dotnet-mlnet",
-        "dotnet-mixed-reality"
+        "dotnet-aspire",
+        "dotnet-aspnet-core",
+        "dotnet-web-api",
+        "dotnet-minimal-apis",
+        "dotnet-worker-services",
+        "dotnet-orleans",
+        "dotnet-azure-functions",
+        "dotnet-microsoft-extensions"
       ],
       "tools": "Read, Edit, Glob, Grep, Bash",
       "model": "inherit",
-      "path": "agents/dotnet-ai/"
-    },
-    {
-      "name": "dotnet-build",
-      "title": ".NET Build",
-      "description": "Build-focused orchestration agent for .NET restore, build, test, packaging, CI failures, diagnostics, and environment drift. Use when the dominant problem is getting a .NET solution to restore, build, pack, or pass automation reliably.",
-      "skills": [
-        "dotnet-project-setup",
-        "dotnet-quality-ci",
-        "dotnet-code-analysis",
-        "dotnet-profiling",
-        "dotnet-coverlet",
-        "dotnet-reportgenerator"
-      ],
-      "tools": "Read, Edit, Glob, Grep, Bash",
-      "model": "inherit",
-      "path": "agents/dotnet-build/"
+      "package": "Aspire",
+      "type": "Frameworks",
+      "path": "catalog/Frameworks/Aspire/agents/dotnet-aspire-orchestrator/"
     },
     {
       "name": "dotnet-data",
@@ -44,7 +32,62 @@
       ],
       "tools": "Read, Edit, Glob, Grep, Bash",
       "model": "inherit",
-      "path": "agents/dotnet-data/"
+      "package": "Entity-Framework-Core",
+      "type": "Frameworks",
+      "path": "catalog/Frameworks/Entity-Framework-Core/agents/dotnet-data/"
+    },
+    {
+      "name": "agent-framework-router",
+      "title": "Microsoft Agent Framework Router",
+      "description": "Microsoft Agent Framework routing agent for agent-vs-workflow decisions, agent types, AgentThread or AgentSession state, tools, workflows, hosting protocols, durable agents, and migration from Semantic Kernel or AutoGen. Use when the repo is already clearly on Microsoft Agent Framework and the remaining ambiguity is inside framework-specific design choices.",
+      "skills": [
+        "dotnet-microsoft-agent-framework",
+        "dotnet-microsoft-extensions-ai",
+        "dotnet-mcp",
+        "dotnet-azure-functions",
+        "dotnet-aspnet-core",
+        "dotnet-semantic-kernel"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "package": "Microsoft-Agent-Framework",
+      "type": "Frameworks",
+      "path": "catalog/Frameworks/Microsoft-Agent-Framework/agents/agent-framework-router/"
+    },
+    {
+      "name": "dotnet-orleans-specialist",
+      "title": "Orleans Specialist",
+      "description": "Orleans specialist agent for grain design, silo topology, persistence, streams, transactions, serialization, event sourcing, placement, testing, Aspire integration, `WebApplicationFactory` host access, and operational decisions.",
+      "skills": [
+        "dotnet-orleans",
+        "dotnet-aspire",
+        "dotnet-worker-services",
+        "dotnet-managedcode-orleans-signalr",
+        "dotnet-managedcode-orleans-graph"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "package": "Orleans",
+      "type": "Frameworks",
+      "path": "catalog/Frameworks/Orleans/agents/dotnet-orleans-specialist/"
+    },
+    {
+      "name": "dotnet-ai",
+      "title": ".NET AI",
+      "description": "AI-focused orchestration agent for Microsoft Agent Framework, Microsoft.Extensions.AI, Semantic Kernel, MCP, and ML.NET. Use when the dominant problem is .NET AI architecture, model integration, agent workflows, tool calling, embeddings, or platform selection.",
+      "skills": [
+        "dotnet-semantic-kernel",
+        "dotnet-microsoft-agent-framework",
+        "dotnet-microsoft-extensions-ai",
+        "dotnet-mcp",
+        "dotnet-mlnet",
+        "dotnet-mixed-reality"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "package": "Semantic-Kernel",
+      "type": "Frameworks",
+      "path": "catalog/Frameworks/Semantic-Kernel/agents/dotnet-ai/"
     },
     {
       "name": "dotnet-frontend",
@@ -64,23 +107,9 @@
       ],
       "tools": "Read, Edit, Glob, Grep, Bash",
       "model": "inherit",
-      "path": "agents/dotnet-frontend/"
-    },
-    {
-      "name": "dotnet-modernization",
-      "title": ".NET Modernization",
-      "description": "Modernization orchestration agent for upgrades, legacy migrations, compatibility planning, and staged adoption of modern .NET patterns. Use when the main problem is moving old .NET code or architecture toward a modern target without reckless rewrites.",
-      "skills": [
-        "dotnet-modern-csharp",
-        "dotnet-project-setup",
-        "dotnet-legacy-aspnet",
-        "dotnet-wcf",
-        "dotnet-workflow-foundation",
-        "dotnet-entity-framework6"
-      ],
-      "tools": "Read, Edit, Glob, Grep, Bash",
-      "model": "inherit",
-      "path": "agents/dotnet-modernization/"
+      "package": "Biome",
+      "type": "Tools",
+      "path": "catalog/Tools/Biome/agents/dotnet-frontend/"
     },
     {
       "name": "dotnet-review",
@@ -98,7 +127,27 @@
       ],
       "tools": "Read, Glob, Grep",
       "model": "inherit",
-      "path": "agents/dotnet-review/"
+      "package": "Code-Review",
+      "type": "Platform",
+      "path": "catalog/Platform/Code-Review/agents/dotnet-review/"
+    },
+    {
+      "name": "dotnet-build",
+      "title": ".NET Build",
+      "description": "Build-focused orchestration agent for .NET restore, build, test, packaging, CI failures, diagnostics, and environment drift. Use when the dominant problem is getting a .NET solution to restore, build, pack, or pass automation reliably.",
+      "skills": [
+        "dotnet-project-setup",
+        "dotnet-quality-ci",
+        "dotnet-code-analysis",
+        "dotnet-profiling",
+        "dotnet-coverlet",
+        "dotnet-reportgenerator"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "package": "DotNet",
+      "type": "Platform",
+      "path": "catalog/Platform/DotNet/agents/dotnet-build/"
     },
     {
       "name": "dotnet-router",
@@ -112,7 +161,27 @@
       ],
       "tools": "Read, Glob, Grep, Bash",
       "model": "inherit",
-      "path": "agents/dotnet-router/"
+      "package": "DotNet",
+      "type": "Platform",
+      "path": "catalog/Platform/DotNet/agents/dotnet-router/"
+    },
+    {
+      "name": "dotnet-modernization",
+      "title": ".NET Modernization",
+      "description": "Modernization orchestration agent for upgrades, legacy migrations, compatibility planning, and staged adoption of modern .NET patterns. Use when the main problem is moving old .NET code or architecture toward a modern target without reckless rewrites.",
+      "skills": [
+        "dotnet-modern-csharp",
+        "dotnet-project-setup",
+        "dotnet-legacy-aspnet",
+        "dotnet-wcf",
+        "dotnet-workflow-foundation",
+        "dotnet-entity-framework6"
+      ],
+      "tools": "Read, Edit, Glob, Grep, Bash",
+      "model": "inherit",
+      "package": "Legacy-ASP.NET",
+      "type": "Platform",
+      "path": "catalog/Platform/Legacy-ASP.NET/agents/dotnet-modernization/"
     }
   ]
 }

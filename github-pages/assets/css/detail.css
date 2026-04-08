@@ -1,0 +1,109 @@
+/* ================================================================
+   Detail — article copy, sidebar, command rows, credits
+   ================================================================ */
+
+.article-copy { display: grid; gap: 12px; }
+
+.article-copy section, .sidebar-card, .detail-card, .credits-block {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border-radius: var(--r2);
+}
+
+.article-copy section {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
+}
+
+.sidebar-card, .detail-card, .credits-block {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
+}
+
+.article-copy h2, .article-copy h3 { margin-top: 0; letter-spacing: -0.02em; }
+.article-copy section > h2, .article-copy section > h3 { margin-bottom: 10px; }
+
+.article-copy ul, .article-copy ol {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+}
+
+.article-copy code, .directory-card code, .sidebar-card code, .credits-table code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  background: var(--bg-sunken);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.article-copy pre {
+  overflow-x: auto;
+  padding: 14px;
+  border-radius: var(--r);
+  background: var(--bg-code);
+  color: #d4d4d4;
+}
+
+.article-copy pre code { background: transparent; padding: 0; border-radius: 0; }
+
+.article-copy .doc-link-list { display: grid; gap: 6px; }
+.article-copy .doc-link-list a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+
+.detail-card-label {
+  margin-bottom: 6px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.command-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.command-row code, .command-block code {
+  display: inline-flex;
+  align-items: center;
+  flex: 1 1 200px;
+  min-width: 0;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: var(--r);
+  background: var(--bg-code);
+  color: #e0e0e0;
+  overflow-x: auto;
+  font-size: 11px;
+  border: none;
+}
+
+/* ---- Credits ---- */
+
+.credits-table-wrap { overflow-x: auto; }
+.credits-table { width: 100%; border-collapse: collapse; }
+
+.credits-table th, .credits-table td {
+  padding: 8px 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  font-size: 13px;
+}
+
+.credits-table th {
+  color: var(--ink-3);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.credits-block + .credits-block { margin-top: 10px; }

@@ -1,0 +1,11 @@
+{
+  "name": "Orleans",
+  "title": "Microsoft Orleans",
+  "description": "Distributed virtual actor model for building scalable .NET apps",
+  "icon": "icon.svg",
+  "links": {
+    "docs": "https://learn.microsoft.com/en-us/dotnet/orleans/",
+    "nuget": "https://www.nuget.org/packages/Microsoft.Orleans.Server",
+    "github": "https://github.com/dotnet/orleans"
+  }
+}

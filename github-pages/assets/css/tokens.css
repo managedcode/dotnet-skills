@@ -1,0 +1,53 @@
+/* ================================================================
+   Design tokens — colors, spacing, shadows, radii
+   ================================================================ */
+
+:root {
+  --bg:           #f8f8f6;
+  --bg-elevated:  #ffffff;
+  --bg-sunken:    #f0efec;
+  --bg-hover:     #e8e7e4;
+  --bg-code:      #1c1c1c;
+
+  --ink:          #171717;
+  --ink-2:        #525252;
+  --ink-3:        #a3a3a3;
+  --ink-inverse:  #fafaf9;
+
+  /* Brand accent — indigo */
+  --accent:       #6366f1;
+  --accent-soft:  rgba(99,102,241,0.08);
+  --accent-text:  #4f46e5;
+  --accent-glow:  rgba(99,102,241,0.25);
+
+  /* Type colors */
+  --type-framework: #3b82f6;
+  --type-library:   #10b981;
+  --type-tool:      #f59e0b;
+  --type-testing:   #f43f5e;
+  --type-platform:  #8b5cf6;
+
+  /* Tag colors */
+  --tag-blue-bg:  rgba(59,130,246,0.08);
+  --tag-blue:     #2563eb;
+  --tag-green-bg: rgba(16,185,129,0.08);
+  --tag-green:    #059669;
+  --tag-amber-bg: rgba(245,158,11,0.08);
+  --tag-amber:    #d97706;
+  --tag-rose-bg:  rgba(244,63,94,0.06);
+  --tag-rose:     #e11d48;
+
+  --line:         rgba(0, 0, 0, 0.06);
+  --line-strong:  rgba(0, 0, 0, 0.12);
+
+  --shadow-xs:    0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-lg:    0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-xl:    0 20px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+
+  --r:  6px;
+  --r2: 10px;
+  --r3: 14px;
+  --shell: 1100px;
+}

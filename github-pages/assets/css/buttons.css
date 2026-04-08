@@ -1,0 +1,73 @@
+/* ================================================================
+   Buttons — primary, ghost, link, icon
+   ================================================================ */
+
+.button, .icon-button {
+  border: 0;
+  border-radius: var(--r);
+  cursor: pointer;
+  font: inherit;
+  transition: all 120ms ease;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 14px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.button:hover, .icon-button:hover { transform: none; }
+
+.button-primary {
+  background: var(--ink);
+  color: var(--ink-inverse);
+  box-shadow: var(--shadow-xs);
+}
+
+.button-primary:hover {
+  background: #2a2a2a;
+  box-shadow: var(--shadow-sm);
+}
+
+.page-hero .button-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(99,102,241,0.2);
+}
+
+.page-hero .button-primary:hover {
+  background: #818cf8;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+}
+
+.button-ghost, .icon-button {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+}
+
+.button-ghost:hover, .icon-button:hover {
+  background: var(--bg-sunken);
+  border-color: var(--line-strong);
+}
+
+.button-link {
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.icon-button {
+  width: 28px;
+  height: 28px;
+  font-size: 1rem;
+  flex: 0 0 auto;
+  border-radius: var(--r);
+  display: inline-grid;
+  place-items: center;
+}

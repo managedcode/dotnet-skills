@@ -1,0 +1,57 @@
+/* ================================================================
+   Listing — toolbar, search, filter tabs
+   ================================================================ */
+
+.listing-toolbar { display: grid; gap: 10px; margin-bottom: 16px; }
+
+.search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--r);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  box-shadow: var(--shadow-xs);
+}
+
+.search-input::placeholder { color: var(--ink-3); }
+.search-input:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.filter-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.filter-tab {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--bg-elevated);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 100ms;
+}
+
+.filter-tab:hover { background: var(--bg-sunken); color: var(--ink); }
+
+.filter-tab.is-active {
+  background: var(--ink);
+  color: var(--ink-inverse);
+  border-color: var(--ink);
+}
+
+.empty-state, .note-strip { padding: 16px; border-radius: var(--r); }
+.empty-state {
+  text-align: center;
+  color: var(--ink-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
+}

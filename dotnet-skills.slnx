@@ -2,9 +2,9 @@
   <Folder Name="/tests/">
     <Project Path="tests/ManagedCode.DotnetSkills.Tests/ManagedCode.DotnetSkills.Tests.csproj" />
   </Folder>
-  <Folder Name="/tools/">
-    <Project Path="tools/ManagedCode.Agents/ManagedCode.Agents.csproj" />
-    <Project Path="tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj" />
-    <Project Path="tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj" />
+  <Folder Name="/cli/">
+    <Project Path="cli/ManagedCode.Agents/ManagedCode.Agents.csproj" />
+    <Project Path="cli/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj" />
+    <Project Path="cli/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj" />
   </Folder>
 </Solution>

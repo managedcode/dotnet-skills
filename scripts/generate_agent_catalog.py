@@ -10,8 +10,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-AGENTS_DIR = ROOT / "agents"
-MANIFEST_PATH = ROOT / "catalog" / "agents.json"
+CATALOG_DIR = ROOT / "catalog"
+MANIFEST_PATH = CATALOG_DIR / "agents.json"
+
+TYPE_DIRS = ["Frameworks", "Libraries", "Tools", "Testing", "Platform"]
 
 
 def unquote(value: str) -> str:
@@ -80,31 +82,47 @@ def parse_title(body: str, path: Path) -> str:
 
 
 def collect_agents() -> list[dict[str, str | list[str]]]:
+    """Scan catalog/{Type}/{Package}/agents/ for agents."""
     agents: list[dict[str, str | list[str]]] = []
-    for agent_dir in sorted(path for path in AGENTS_DIR.iterdir() if path.is_dir()):
-        agent_path = agent_dir / "AGENT.md"
-        if not agent_path.exists():
+
+    for type_dir_name in TYPE_DIRS:
+        type_dir = CATALOG_DIR / type_dir_name
+        if not type_dir.is_dir():
             continue
 
-        metadata, body = parse_frontmatter(agent_path)
-        title = parse_title(body, agent_path)
+        for package_dir in sorted(p for p in type_dir.iterdir() if p.is_dir()):
+            agents_dir = package_dir / "agents"
+            if not agents_dir.is_dir():
+                continue
 
-        required = ["name", "description"]
-        missing = [key for key in required if key not in metadata or not str(metadata[key]).strip()]
-        if missing:
-            raise ValueError(f"{agent_path} is missing required frontmatter keys: {', '.join(missing)}")
+            for agent_dir in sorted(p for p in agents_dir.iterdir() if p.is_dir()):
+                agent_path = agent_dir / "AGENT.md"
+                if not agent_path.exists():
+                    continue
 
-        agents.append(
-            {
-                "name": str(metadata["name"]),
-                "title": title,
-                "description": str(metadata["description"]),
-                "skills": metadata.get("skills", []),
-                "tools": metadata.get("tools", ""),
-                "model": metadata.get("model", "inherit"),
-                "path": f"agents/{agent_dir.name}/",
-            }
-        )
+                metadata, body = parse_frontmatter(agent_path)
+                title = parse_title(body, agent_path)
+
+                required = ["name", "description"]
+                missing = [key for key in required if key not in metadata or not str(metadata[key]).strip()]
+                if missing:
+                    raise ValueError(f"{agent_path} is missing required frontmatter keys: {', '.join(missing)}")
+
+                rel_path = f"catalog/{type_dir_name}/{package_dir.name}/agents/{agent_dir.name}/"
+
+                agents.append(
+                    {
+                        "name": str(metadata["name"]),
+                        "title": title,
+                        "description": str(metadata["description"]),
+                        "skills": metadata.get("skills", []),
+                        "tools": metadata.get("tools", ""),
+                        "model": metadata.get("model", "inherit"),
+                        "package": package_dir.name,
+                        "type": type_dir_name,
+                        "path": rel_path,
+                    }
+                )
 
     return agents
 

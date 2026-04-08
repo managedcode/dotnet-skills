@@ -1,5 +1,22 @@
 <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="128" height="128" rx="36" fill="#17172D"/>
-  <circle cx="36" cy="64" r="14" fill="#FF7E5D"/>
-  <path d="M63 40H76.5L98 88H84L78.75 76H60.5L55.25 88H41L63 40ZM74 65L69.5 54.5L65 65H74Z" fill="white"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="28" y1="32" x2="100" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="url(#bg)"/>
+  <!-- Terminal cursor bracket -->
+  <path d="M38 40L56 64L38 88" stroke="url(#accent)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Dot grid representing skills -->
+  <circle cx="76" cy="52" r="5" fill="#818cf8" opacity="0.9"/>
+  <circle cx="92" cy="52" r="5" fill="#818cf8" opacity="0.6"/>
+  <circle cx="76" cy="68" r="5" fill="#818cf8" opacity="0.7"/>
+  <circle cx="92" cy="68" r="5" fill="#818cf8" opacity="0.4"/>
+  <circle cx="76" cy="84" r="5" fill="#818cf8" opacity="0.5"/>
+  <circle cx="92" cy="84" r="5" fill="#818cf8" opacity="0.3"/>
 </svg>

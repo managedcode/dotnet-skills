@@ -10,7 +10,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 README_PATH = ROOT / "README.md"
-SKILLS_DIR = ROOT / "skills"
 MANIFEST_PATH = ROOT / "catalog" / "skills.json"
 
 BEGIN_MARKER = "<!-- BEGIN GENERATED CATALOG -->"
@@ -43,6 +42,16 @@ CATEGORY_ORDER = [
     "Architecture",
     "Metrics",
 ]
+
+TYPE_DIRS = ["Frameworks", "Libraries", "Tools", "Testing", "Platform"]
+
+TYPE_SINGULAR: dict[str, str] = {
+    "Frameworks": "Framework",
+    "Libraries": "Library",
+    "Tools": "Tool",
+    "Testing": "Testing",
+    "Platform": "Platform",
+}
 
 CURATED_PACKAGES = [
     {
@@ -121,34 +130,54 @@ def parse_title(body: str, path: Path) -> str:
 
 def collect_skills() -> list[dict[str, str]]:
     skills: list[dict[str, str]] = []
-    for skill_dir in sorted(path for path in SKILLS_DIR.iterdir() if path.is_dir()):
-        skill_path = skill_dir / "SKILL.md"
-        if not skill_path.exists():
+
+    catalog_root = ROOT / "catalog"
+    for type_dir_name in TYPE_DIRS:
+        type_dir = catalog_root / type_dir_name
+        if not type_dir.is_dir():
             continue
 
-        metadata, body = parse_frontmatter(skill_path)
-        title = parse_title(body, skill_path)
+        skill_type = TYPE_SINGULAR[type_dir_name]
 
-        required = ["name", "version", "category", "description", "compatibility"]
-        missing = [key for key in required if key not in metadata or not metadata[key].strip()]
-        if missing:
-            raise ValueError(f"{skill_path} is missing required frontmatter keys: {', '.join(missing)}")
+        for package_dir in sorted(p for p in type_dir.iterdir() if p.is_dir()):
+            skills_subdir = package_dir / "skills"
+            if not skills_subdir.is_dir():
+                continue
 
-        category = metadata["category"]
-        if category not in CATEGORY_ORDER:
-            raise ValueError(f"{skill_path} has unsupported category: {category}")
+            package_name = package_dir.name
 
-        skills.append(
-            {
-                "name": metadata["name"],
-                "title": title,
-                "version": metadata["version"],
-                "category": category,
-                "description": metadata["description"],
-                "compatibility": metadata["compatibility"],
-                "path": f"skills/{skill_dir.name}/",
-            }
-        )
+            for skill_dir in sorted(p for p in skills_subdir.iterdir() if p.is_dir()):
+                skill_path = skill_dir / "SKILL.md"
+                if not skill_path.exists():
+                    continue
+
+                metadata, body = parse_frontmatter(skill_path)
+                title = parse_title(body, skill_path)
+
+                required = ["name", "version", "category", "description", "compatibility"]
+                missing = [key for key in required if key not in metadata or not metadata[key].strip()]
+                if missing:
+                    raise ValueError(f"{skill_path} is missing required frontmatter keys: {', '.join(missing)}")
+
+                category = metadata["category"]
+                if category not in CATEGORY_ORDER:
+                    raise ValueError(f"{skill_path} has unsupported category: {category}")
+
+                skill_name = metadata["name"]
+
+                skills.append(
+                    {
+                        "name": skill_name,
+                        "title": title,
+                        "version": metadata["version"],
+                        "category": category,
+                        "type": skill_type,
+                        "package": package_name,
+                        "description": metadata["description"],
+                        "compatibility": metadata["compatibility"],
+                        "path": f"catalog/{type_dir_name}/{package_name}/skills/{skill_dir.name}/",
+                    }
+                )
 
     return skills
 

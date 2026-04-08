@@ -1,0 +1,107 @@
+/* ================================================================
+   Pixel art — decorative dot patterns and retro accents
+   ================================================================ */
+
+/* Pixel dot pattern background for hero */
+.page-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background-image:
+    radial-gradient(circle, rgba(99,102,241,0.3) 1px, transparent 1px),
+    radial-gradient(circle, rgba(99,102,241,0.15) 1px, transparent 1px);
+  background-size: 16px 16px, 8px 8px;
+  background-position: 0 0, 4px 4px;
+  mask-image: linear-gradient(135deg, transparent 20%, rgba(0,0,0,0.6) 50%, transparent 80%);
+  -webkit-mask-image: linear-gradient(135deg, transparent 20%, rgba(0,0,0,0.6) 50%, transparent 80%);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Pixel grid accent on section headers */
+.section-header h2::after {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  vertical-align: middle;
+  background-image:
+    radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
+  background-size: 4px 4px;
+  opacity: 0.4;
+}
+
+/* Pixel art corner decoration on cards */
+.directory-card .card-type-dot {
+  /* Override circle with pixel square */
+  border-radius: 2px;
+  box-shadow:
+    4px 0 0 0 currentColor,
+    0 4px 0 0 currentColor;
+  opacity: 0.8;
+}
+
+/* Pixel pattern on quickstart step numbers */
+.card-kicker::before {
+  content: ":: ";
+  font-family: "JetBrains Mono", monospace;
+  opacity: 0.3;
+}
+
+/* Dotted pixel border on metric cards in hero */
+.page-hero .metric-card {
+  border-style: dashed;
+  border-width: 1px;
+  border-color: rgba(255,255,255,0.15);
+}
+
+/* Pixel cursor blink for install commands */
+.card-cmd::after {
+  content: "▋";
+  display: inline;
+  margin-left: 2px;
+  animation: pixel-blink 1.2s step-end infinite;
+  color: var(--card-accent, var(--accent));
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+@keyframes pixel-blink {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0; }
+}
+
+/* Braille-style dots for agent cards */
+.agent-card-meta .card-kicker::before {
+  content: "⠿ ";
+  font-family: monospace;
+  opacity: 0.5;
+}
+
+/* Pixel scanline effect on hover for category cards */
+.category-card:hover::after {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(var(--card-accent-rgb), 0.03) 2px,
+    rgba(var(--card-accent-rgb), 0.03) 4px
+  );
+}
+
+/* Small pixel grid decoration in footer */
+.footer-brand::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 16px;
+  margin-bottom: 8px;
+  background-image:
+    radial-gradient(circle, var(--ink-3) 1px, transparent 1px);
+  background-size: 4px 4px;
+  opacity: 0.3;
+}
