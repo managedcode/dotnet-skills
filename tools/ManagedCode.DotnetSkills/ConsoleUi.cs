@@ -252,7 +252,7 @@ internal static class ConsoleUi
 
         if (scanResult.Recommendations.Count == 0)
         {
-            AnsiConsole.Write(new Panel(new Markup("No direct package-based matches were found. Nothing was installed. Start with [bold]dotnet[/] and [bold]dotnet-modern-csharp[/] if you want a baseline .NET skill set."))
+            AnsiConsole.Write(new Panel(new Markup("No direct package or project-signal matches were found. Nothing was installed. Start with [bold]dotnet[/] and [bold]dotnet-modern-csharp[/] if you want a baseline .NET skill set."))
                 .Header("Recommendations")
                 .Expand());
             return;
@@ -262,6 +262,7 @@ internal static class ConsoleUi
         table.Title = new TableTitle("Recommendations");
         table.AddColumn("Skill");
         table.AddColumn("Confidence");
+        table.AddColumn("Auto");
         table.AddColumn("Status");
         table.AddColumn("Signals");
 
@@ -271,6 +272,7 @@ internal static class ConsoleUi
             table.AddRow(
                 BuildSkillCell(recommendation.Skill),
                 FormatConfidence(recommendation.Confidence),
+                FormatAutoSyncCandidate(recommendation),
                 FormatRecommendationStatus(installed),
                 Escape(string.Join(Environment.NewLine, recommendation.Reasons)));
         }
@@ -284,22 +286,141 @@ internal static class ConsoleUi
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Take(6)
             .ToArray();
+        var autoInstallableSkills = scanResult.Recommendations
+            .Where(recommendation => recommendation.IsAutoInstallCandidate)
+            .Select(recommendation => ToAlias(recommendation.Skill.Name))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(6)
+            .ToArray();
 
-        if (installableSkills.Length > 0)
+        if (installableSkills.Length > 0 || autoInstallableSkills.Length > 0)
         {
-            var command = $"dotnet skills install {string.Join(' ', installableSkills)}";
-            var text = string.Join(
-                Environment.NewLine,
-                "Scan complete. Nothing is installed automatically.",
-                "Review the proposed skills and run install only if the list looks right.",
-                string.Empty,
-                "Suggested command:",
-                $"[green]{Escape(command)}[/]");
+            var lines = new List<string>
+            {
+                "Scan complete. Nothing is installed automatically unless you opt into auto mode.",
+                "Use the manual install command when you want exact control, or auto mode when you want package- and app-model-driven syncing."
+            };
 
-            AnsiConsole.Write(new Panel(new Markup(text))
+            if (installableSkills.Length > 0)
+            {
+                lines.Add(string.Empty);
+                lines.Add("Manual install:");
+                lines.Add($"[green]{Escape($"dotnet skills install {string.Join(' ', installableSkills)}")}[/]");
+            }
+
+            if (autoInstallableSkills.Length > 0)
+            {
+                lines.Add(string.Empty);
+                lines.Add("Auto-manage project-matched skills:");
+                lines.Add($"[green]{Escape("dotnet skills install --auto")}[/]");
+                lines.Add($"[green]{Escape("dotnet skills install --auto --prune")}[/]");
+                lines.Add("[grey]`--prune` removes stale auto-managed skills but keeps protected diagnostics and graphify-dotnet.[/]");
+            }
+
+            AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, lines)))
                 .Header("Review and confirm")
                 .Expand());
         }
+    }
+
+    public static void RenderAutoSyncSummary(
+        SkillCatalogPackage catalog,
+        SkillInstallLayout layout,
+        ProjectSkillAutoSyncPlan plan,
+        IReadOnlyList<SkillActionRow> installRows,
+        SkillInstallSummary installSummary,
+        IReadOnlyList<SkillActionRow> removeRows,
+        SkillRemoveSummary removeSummary,
+        bool pruneRequested)
+    {
+        WriteTitle("dotnet skills install --auto");
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().NoWrap());
+        grid.AddColumn();
+        grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
+        grid.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(plan.ScanResult.ProjectRoot.FullName)));
+        grid.AddRow(new Markup("[grey]Target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
+        grid.AddRow(new Markup("[grey]Projects scanned[/]"), new Markup(plan.ScanResult.ProjectFiles.Count.ToString()));
+        grid.AddRow(new Markup("[grey]Auto-managed matches[/]"), new Markup(plan.DesiredSkills.Count.ToString()));
+        grid.AddRow(new Markup("[grey]Written[/]"), new Markup(installSummary.InstalledCount.ToString()));
+        grid.AddRow(new Markup("[grey]Skipped[/]"), new Markup(installSummary.SkippedExisting.Count.ToString()));
+
+        if (pruneRequested)
+        {
+            grid.AddRow(new Markup("[grey]Removed stale[/]"), new Markup(removeSummary.RemovedCount.ToString()));
+            grid.AddRow(new Markup("[grey]Protected kept[/]"), new Markup(plan.ProtectedStaleSkills.Count.ToString()));
+        }
+
+        AnsiConsole.Write(new Panel(grid).Header("Auto sync").Expand());
+        AnsiConsole.WriteLine();
+
+        if (installRows.Count == 0)
+        {
+            AnsiConsole.Write(new Panel(new Markup(
+                    "No auto-installable skills matched the detected project signals."
+                    + Environment.NewLine
+                    + "Manual baseline skills such as [bold]dotnet[/] and [bold]dotnet-modern-csharp[/] remain opt-in."))
+                .Header("Install results")
+                .Expand());
+        }
+        else
+        {
+            AnsiConsole.Write(BuildOperationTable("Auto-managed skills", installRows));
+        }
+
+        AnsiConsole.WriteLine();
+
+        if (pruneRequested)
+        {
+            if (!plan.MatchedPreviousProject)
+            {
+                AnsiConsole.Write(new Panel(new Markup(
+                        "No previous auto-managed state matched this project root, so prune did not remove anything."
+                        + Environment.NewLine
+                        + "Run [green]dotnet skills install --auto[/] once first, then use [green]--prune[/] on later syncs."))
+                    .Header("Prune state")
+                    .Expand());
+            }
+            else if (removeRows.Count == 0)
+            {
+                AnsiConsole.Write(new Panel(new Markup("No stale auto-managed skills needed removal."))
+                    .Header("Prune results")
+                    .Expand());
+            }
+            else
+            {
+                AnsiConsole.Write(BuildOperationTable("Pruned skills", removeRows));
+            }
+
+            if (plan.ProtectedStaleSkills.Count > 0)
+            {
+                AnsiConsole.WriteLine();
+                AnsiConsole.Write(new Panel(new Markup(
+                        Escape(string.Join(", ", plan.ProtectedStaleSkills
+                            .OrderBy(skill => skill.Name, StringComparer.Ordinal)
+                            .Select(skill => ToAlias(skill.Name))))))
+                    .Header("Protected skills kept")
+                    .Expand());
+            }
+
+            AnsiConsole.WriteLine();
+        }
+
+        var nextSteps = new List<string>
+        {
+            layout.ReloadHint,
+            "Use [green]dotnet skills recommend[/] when you want to inspect the scan before changing installs."
+        };
+
+        if (!pruneRequested)
+        {
+            nextSteps.Add("Use [green]dotnet skills install --auto --prune[/] on later runs to remove stale auto-managed skills.");
+        }
+
+        AnsiConsole.Write(new Panel(new Markup(string.Join(Environment.NewLine, nextSteps)))
+            .Header("Next steps")
+            .Expand());
     }
 
     public static void RenderSyncSummary(SkillCatalogPackage catalog)
@@ -430,6 +551,8 @@ internal static class ConsoleUi
         table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} version")}[/]", "Show the current tool version and check whether NuGet has a newer release.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} recommend")}[/]", "Scan `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install aspire orleans")}[/]", "Install one or more skills by slug or short alias.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install --auto")}[/]", "Scan the project and install skills that match detected packages or strong app-model signals.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install --auto --prune")}[/]", "Reconcile auto-managed skills with the current project and remove stale ones from the project scope.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} install package ai")}[/]", "Install a package that expands into a related multi-skill set.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} package install orleans")}[/]", "Alias for package installation when you prefer the package-first command shape.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.SkillsDisplayCommand} remove --all")}[/]", "Remove installed catalog skills from the selected target.");
@@ -455,6 +578,8 @@ internal static class ConsoleUi
             "- `--bundled` skips the network and uses the catalog packaged with the tool.",
             "- `--catalog-version <version>` pins a specific remote catalog release.",
             "- `--refresh` forces `install` or `update` to redownload the selected remote catalog first.",
+            "- `install --auto` uses package, SDK, and strong project-property signals from local `*.csproj` files to install matching skills.",
+            "- `install --auto --prune` is project-scope only and removes stale auto-managed skills while keeping protected diagnostics and `graphify-dotnet`.",
             "- Short aliases work everywhere: `aspire` resolves to `dotnet-aspire`.",
             $"- Package installs expand into multiple skills. Example: `{ToolIdentity.SkillsDisplayCommand} install package code-quality`.",
             $"- Set `{ToolIdentity.SkipUpdateEnvironmentVariable}=1` to suppress automatic tool update notices on startup.",
@@ -611,6 +736,7 @@ internal static class ConsoleUi
         grid.AddRow(new Markup("[grey]Project root[/]"), new Markup(Escape(scanResult.ProjectRoot.FullName)));
         grid.AddRow(new Markup("[grey]Projects[/]"), new Markup(scanResult.ProjectFiles.Count.ToString()));
         grid.AddRow(new Markup("[grey]Frameworks[/]"), new Markup(scanResult.TargetFrameworks.Count == 0 ? "unknown" : Escape(string.Join(", ", scanResult.TargetFrameworks))));
+        grid.AddRow(new Markup("[grey]Auto-manageable[/]"), new Markup(scanResult.Recommendations.Count(recommendation => recommendation.IsAutoInstallCandidate).ToString()));
         grid.AddRow(new Markup("[grey]Catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [grey]({Escape(catalog.CatalogVersion)})[/]"));
         grid.AddRow(new Markup("[grey]Install target[/]"), new Markup(Escape(layout.PrimaryRoot.FullName)));
         return new Panel(grid).Header("Scan").Expand();
@@ -708,7 +834,7 @@ internal static class ConsoleUi
                 Escape(row.FromVersion),
                 Escape(row.ToVersion),
                 FormatAction(row.Action),
-                Escape(row.Skill.Description));
+                Escape(CompactDescription(row.Skill.Description)));
         }
 
         return table;
@@ -740,6 +866,9 @@ internal static class ConsoleUi
             lines.Add($"Install a package:{Environment.NewLine}[green]{Escape($"dotnet skills install package {featuredPackage.Name}")}[/]");
             lines.Add($"Browse all packages:{Environment.NewLine}[green]{Escape("dotnet skills package list")}[/]");
         }
+
+        lines.Add($"Auto-sync package-matched skills:{Environment.NewLine}[green]{Escape("dotnet skills install --auto")}[/]");
+        lines.Add($"Auto-sync and prune stale project skills:{Environment.NewLine}[green]{Escape("dotnet skills install --auto --prune")}[/]");
 
         var alternateScope = scopeInventory.FirstOrDefault(row => row.Scope != layout.Scope);
         if (alternateScope is not null)
@@ -780,6 +909,13 @@ internal static class ConsoleUi
         RecommendationConfidence.Low => "[grey]Low[/]",
         _ => Escape(confidence.ToString()),
     };
+
+    private static string FormatAutoSyncCandidate(ProjectSkillRecommendation recommendation)
+    {
+        return recommendation.IsAutoInstallCandidate
+            ? "[green]Yes[/]"
+            : "[grey]Manual only[/]";
+    }
 
     private static string FormatRecommendationStatus(InstalledSkillRecord? installed)
     {

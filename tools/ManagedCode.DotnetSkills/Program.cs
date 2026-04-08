@@ -259,6 +259,8 @@ internal static class Program
         string? catalogVersion = null;
         string? projectDirectory = null;
         var installAll = false;
+        var autoInstall = false;
+        var pruneAutoManaged = false;
         var force = false;
         var bundledOnly = false;
         var refreshCatalog = false;
@@ -271,6 +273,12 @@ internal static class Program
             {
                 case "--all":
                     installAll = true;
+                    break;
+                case "--auto":
+                    autoInstall = true;
+                    break;
+                case "--prune":
+                    pruneAutoManaged = true;
                     break;
                 case "--force":
                     force = true;
@@ -323,10 +331,57 @@ internal static class Program
             }
         }
 
+        if (autoInstall)
+        {
+            if (installAll)
+            {
+                throw new InvalidOperationException("`dotnet skills install --auto` scans the project and does not support --all.");
+            }
+
+            if (packageMode || requestedSkills.Count > 0)
+            {
+                throw new InvalidOperationException("`dotnet skills install --auto` does not accept explicit skill or package names.");
+            }
+        }
+        else if (pruneAutoManaged)
+        {
+            throw new InvalidOperationException("`--prune` is only available together with `dotnet skills install --auto`.");
+        }
+
+        if (pruneAutoManaged && scope != InstallScope.Project)
+        {
+            throw new InvalidOperationException("`dotnet skills install --auto --prune` requires --scope project because global skill roots are shared across repositories.");
+        }
+
         await MaybeShowToolUpdateAsync(cachePath);
 
         var catalog = await ResolveCatalogForInstallAsync(bundledOnly, cachePath, catalogVersion, refreshCatalog);
         var installer = new SkillInstaller(catalog);
+        if (autoInstall)
+        {
+            var autoSyncService = new ProjectSkillAutoSyncService(catalog);
+
+            if (ShouldUseAutoDetectedLayouts(targetPath, agent))
+            {
+                var layouts = SkillInstallTarget.ResolveAllDetected(projectDirectory, scope);
+                for (var index = 0; index < layouts.Count; index++)
+                {
+                    if (index > 0)
+                    {
+                        Console.WriteLine();
+                    }
+
+                    ExecuteAutoInstallIntoLayout(catalog, installer, autoSyncService, layouts[index], projectDirectory, force, pruneAutoManaged);
+                }
+
+                return 0;
+            }
+
+            var autoLayout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
+            ExecuteAutoInstallIntoLayout(catalog, installer, autoSyncService, autoLayout, projectDirectory, force, pruneAutoManaged);
+            return 0;
+        }
+
         var selectedSkills = packageMode
             ? installer.SelectSkillsFromPackages(requestedSkills)
             : installer.SelectSkills(requestedSkills, installAll);
@@ -742,6 +797,39 @@ internal static class Program
             })
             .OrderBy(row => row.Skill.Name, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static void ExecuteAutoInstallIntoLayout(
+        SkillCatalogPackage catalog,
+        SkillInstaller installer,
+        ProjectSkillAutoSyncService autoSyncService,
+        SkillInstallLayout layout,
+        string? projectDirectory,
+        bool force,
+        bool pruneAutoManaged)
+    {
+        var installedBefore = installer.GetInstalledSkills(layout)
+            .ToDictionary(record => record.Skill.Name, StringComparer.OrdinalIgnoreCase);
+        var plan = autoSyncService.BuildPlan(projectDirectory, layout, installer, pruneAutoManaged);
+        var installSummary = installer.Install(plan.DesiredSkills, layout, force);
+        var installRows = BuildInstallRows(plan.DesiredSkills, installedBefore, force, installSummary);
+        var removeSummary = installer.Remove(plan.SkillsToRemove, layout);
+        var removeRows = BuildRemoveRows(plan.SkillsToRemove, installedBefore, removeSummary);
+
+        if (plan.DesiredSkills.Count > 0 || plan.MatchedPreviousProject)
+        {
+            autoSyncService.SaveState(layout, plan);
+        }
+
+        ConsoleUi.RenderAutoSyncSummary(
+            catalog,
+            layout,
+            plan,
+            installRows,
+            installSummary,
+            removeRows,
+            removeSummary,
+            pruneAutoManaged);
     }
 
     private static string ReadValue(string[] args, int index, string optionName)

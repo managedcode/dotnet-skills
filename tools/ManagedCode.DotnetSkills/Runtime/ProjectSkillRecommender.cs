@@ -32,33 +32,33 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
     {
         var builders = new Dictionary<string, RecommendationBuilder>(StringComparer.OrdinalIgnoreCase);
 
-        Add("dotnet", RecommendationConfidence.Low, $"Detected {projectCount} .NET project file(s).", builders);
-        Add("dotnet-modern-csharp", RecommendationConfidence.Low, FormatFrameworkReason(inventory.TargetFrameworks), builders);
+        Add("dotnet", RecommendationConfidence.Low, $"Detected {projectCount} .NET project file(s).", RecommendationSignalKind.Project, builders);
+        Add("dotnet-modern-csharp", RecommendationConfidence.Low, FormatFrameworkReason(inventory.TargetFrameworks), RecommendationSignalKind.TargetFramework, builders);
 
         if (projectCount > 1 || HasSolutionFile(rootPath))
         {
-            Add("dotnet-project-setup", RecommendationConfidence.Medium, $"Repository layout includes {projectCount} projects.", builders);
+            Add("dotnet-project-setup", RecommendationConfidence.Medium, $"Repository layout includes {projectCount} projects.", RecommendationSignalKind.Project, builders);
         }
 
         if (inventory.HasSdk("Microsoft.NET.Sdk.Web"))
         {
-            Add("dotnet-aspnet-core", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.Web.", builders);
-            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "ASP.NET Core apps rely on the Microsoft.Extensions hosting stack.", builders);
+            Add("dotnet-aspnet-core", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.Web.", RecommendationSignalKind.Sdk, builders);
+            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "ASP.NET Core apps rely on the Microsoft.Extensions hosting stack.", RecommendationSignalKind.Sdk, builders);
         }
 
         if (inventory.HasSdk("Microsoft.NET.Sdk.BlazorWebAssembly"))
         {
-            Add("dotnet-blazor", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.BlazorWebAssembly.", builders);
+            Add("dotnet-blazor", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.BlazorWebAssembly.", RecommendationSignalKind.Sdk, builders);
         }
 
         if (inventory.HasSdk("Aspire.AppHost.Sdk"))
         {
-            Add("dotnet-aspire", RecommendationConfidence.High, "Project uses Aspire.AppHost.Sdk.", builders);
+            Add("dotnet-aspire", RecommendationConfidence.High, "Project uses Aspire.AppHost.Sdk.", RecommendationSignalKind.Sdk, builders);
         }
 
         if (inventory.HasSdkPrefix("Uno."))
         {
-            Add("dotnet-uno-platform", RecommendationConfidence.High, "Project uses an Uno SDK.", builders);
+            Add("dotnet-uno-platform", RecommendationConfidence.High, "Project uses an Uno SDK.", RecommendationSignalKind.Sdk, builders);
         }
 
         AddPackagePrefixRecommendation("dotnet-blazor", RecommendationConfidence.High, builders, inventory, "Microsoft.AspNetCore.Components", "Detected Blazor component packages.");
@@ -94,25 +94,36 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
         AddPackagePrefixRecommendation("dotnet-stryker", RecommendationConfidence.High, builders, inventory, "Stryker", "Detected Stryker.NET packages.");
         AddPackagePrefixRecommendation("dotnet-reportgenerator", RecommendationConfidence.High, builders, inventory, "ReportGenerator", "Detected ReportGenerator packages.");
 
-        if (inventory.HasSdk("Microsoft.NET.Sdk.Worker") || inventory.HasPackage("Microsoft.Extensions.Hosting"))
+        if (inventory.HasSdk("Microsoft.NET.Sdk.Worker"))
         {
-            Add("dotnet-worker-services", RecommendationConfidence.Medium, "Detected worker-service hosting dependencies.", builders);
-            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "Worker services are built on Microsoft.Extensions hosting primitives.", builders);
+            Add("dotnet-worker-services", RecommendationConfidence.Medium, "Project uses Microsoft.NET.Sdk.Worker.", RecommendationSignalKind.Sdk, builders);
+            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "Worker services are built on Microsoft.Extensions hosting primitives.", RecommendationSignalKind.Sdk, builders);
         }
 
-        if (inventory.UsesMaui || inventory.HasPackagePrefix("Microsoft.Maui"))
+        if (inventory.HasPackage("Microsoft.Extensions.Hosting"))
         {
-            Add("dotnet-maui", RecommendationConfidence.High, "Detected .NET MAUI configuration or packages.", builders);
+            Add("dotnet-worker-services", RecommendationConfidence.Medium, "Detected Microsoft.Extensions.Hosting package usage.", RecommendationSignalKind.Package, builders);
+            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "Detected Microsoft.Extensions.Hosting package usage.", RecommendationSignalKind.Package, builders);
+        }
+
+        if (inventory.UsesMaui)
+        {
+            Add("dotnet-maui", RecommendationConfidence.High, "Project enables UseMaui.", RecommendationSignalKind.ProjectProperty, builders);
+        }
+
+        if (inventory.HasPackagePrefix("Microsoft.Maui"))
+        {
+            Add("dotnet-maui", RecommendationConfidence.High, "Detected Microsoft.Maui packages.", RecommendationSignalKind.Package, builders);
         }
 
         if (inventory.UsesWpf)
         {
-            Add("dotnet-wpf", RecommendationConfidence.High, "Project enables UseWPF.", builders);
+            Add("dotnet-wpf", RecommendationConfidence.High, "Project enables UseWPF.", RecommendationSignalKind.ProjectProperty, builders);
         }
 
         if (inventory.UsesWindowsForms)
         {
-            Add("dotnet-winforms", RecommendationConfidence.High, "Project enables UseWindowsForms.", builders);
+            Add("dotnet-winforms", RecommendationConfidence.High, "Project enables UseWindowsForms.", RecommendationSignalKind.ProjectProperty, builders);
         }
 
         return builders.Values
@@ -158,7 +169,7 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
     {
         if (inventory.HasPackage(packageId))
         {
-            Add(skillName, confidence, reason, builders);
+            Add(skillName, confidence, reason, RecommendationSignalKind.Package, builders);
         }
     }
 
@@ -172,7 +183,7 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
     {
         if (inventory.HasPackagePrefix(packagePrefix))
         {
-            Add(skillName, confidence, reason, builders);
+            Add(skillName, confidence, reason, RecommendationSignalKind.Package, builders);
         }
     }
 
@@ -180,6 +191,7 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
         string skillName,
         RecommendationConfidence confidence,
         string reason,
+        RecommendationSignalKind signal,
         IDictionary<string, RecommendationBuilder> builders)
     {
         if (!builders.TryGetValue(skillName, out var builder))
@@ -188,7 +200,7 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
             builders[skillName] = builder;
         }
 
-        builder.Add(confidence, reason);
+        builder.Add(confidence, reason, signal);
     }
 }
 
@@ -201,7 +213,12 @@ internal sealed record ProjectScanResult(
 internal sealed record ProjectSkillRecommendation(
     SkillEntry Skill,
     RecommendationConfidence Confidence,
-    IReadOnlyList<string> Reasons);
+    IReadOnlyList<string> Reasons,
+    IReadOnlyList<RecommendationSignalKind> Signals)
+{
+    public bool IsAutoInstallCandidate =>
+        Signals.Any(signal => signal is RecommendationSignalKind.Package or RecommendationSignalKind.Sdk or RecommendationSignalKind.ProjectProperty);
+}
 
 internal enum RecommendationConfidence
 {
@@ -210,18 +227,30 @@ internal enum RecommendationConfidence
     High = 3,
 }
 
+internal enum RecommendationSignalKind
+{
+    Project,
+    TargetFramework,
+    Sdk,
+    Package,
+    ProjectProperty,
+}
+
 internal sealed class RecommendationBuilder(string skillName)
 {
     private readonly List<string> reasons = [];
+    private readonly HashSet<RecommendationSignalKind> signals = [];
 
     public RecommendationConfidence Confidence { get; private set; } = RecommendationConfidence.Low;
 
-    public void Add(RecommendationConfidence confidence, string reason)
+    public void Add(RecommendationConfidence confidence, string reason, RecommendationSignalKind signal)
     {
         if (!reasons.Contains(reason, StringComparer.Ordinal))
         {
             reasons.Add(reason);
         }
+
+        signals.Add(signal);
 
         if (confidence > Confidence)
         {
@@ -232,7 +261,7 @@ internal sealed class RecommendationBuilder(string skillName)
     public ProjectSkillRecommendation? Build(SkillCatalogPackage catalog)
     {
         var skill = catalog.Skills.FirstOrDefault(candidate => string.Equals(candidate.Name, skillName, StringComparison.OrdinalIgnoreCase));
-        return skill is null ? null : new ProjectSkillRecommendation(skill, Confidence, reasons);
+        return skill is null ? null : new ProjectSkillRecommendation(skill, Confidence, reasons, signals.OrderBy(signal => signal).ToArray());
     }
 }
 

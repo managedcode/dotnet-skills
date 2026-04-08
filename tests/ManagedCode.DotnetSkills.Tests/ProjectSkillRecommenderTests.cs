@@ -40,4 +40,33 @@ public sealed class ProjectSkillRecommenderTests
         Assert.Contains("dotnet-xunit", recommendations);
         Assert.Contains("dotnet-microsoft-extensions", recommendations);
     }
+
+    [Fact]
+    public void Analyze_FlagsAutoInstallCandidates_OnlyForStrongProjectSignals()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+        var projectPath = System.IO.Path.Combine(tempDirectory.Path, "App.csproj");
+        File.WriteAllText(
+            projectPath,
+            """
+            <Project Sdk="Microsoft.NET.Sdk.Web">
+              <PropertyGroup>
+                <TargetFramework>net10.0</TargetFramework>
+              </PropertyGroup>
+              <ItemGroup>
+                <PackageReference Include="xunit" Version="2.9.3" />
+              </ItemGroup>
+            </Project>
+            """);
+
+        var recommendations = new ProjectSkillRecommender(TestCatalog.Load())
+            .Analyze(tempDirectory.Path)
+            .Recommendations
+            .ToDictionary(item => item.Skill.Name, StringComparer.OrdinalIgnoreCase);
+
+        Assert.False(recommendations["dotnet"].IsAutoInstallCandidate);
+        Assert.False(recommendations["dotnet-modern-csharp"].IsAutoInstallCandidate);
+        Assert.True(recommendations["dotnet-aspnet-core"].IsAutoInstallCandidate);
+        Assert.True(recommendations["dotnet-xunit"].IsAutoInstallCandidate);
+    }
 }
