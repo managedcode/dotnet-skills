@@ -745,7 +745,6 @@ def render_package_card(package: dict, root_prefix: str) -> str:
 
     chips = [
         f'<span class="chip">{escape_html(package["kind_label"])}</span>',
-        f'<span class="chip command-chip">{escape_html(install_command)}</span>',
     ]
     if package.get("sourceCategory") and package.get("source_category_slug"):
         chips.insert(
