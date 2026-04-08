@@ -74,7 +74,8 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - For interactive CLI UX changes in the publishable tools, run a dedicated Claude-led design pass before finalizing the console presentation.
 - Do not ship flat menus where every entry has the same visual weight. Interactive menus must expose clear hierarchy, differentiated sections, and obvious primary flows.
 - When the CLI has package-aware workflows, surface NuGet/package entry points clearly in the interactive shell instead of burying them behind generic labels.
-- In public UX and docs, never call catalog bundle installs just `packages` when that could be confused with real NuGet packages from a user's project. Use `skill packages`, `skill stacks`, or `package bundles` for catalog bundles, and say `NuGet packages` explicitly for project-detected package flows.
+- In public UX, docs, CLI commands, and generated site content, always use `bundles` for grouped multi-skill installs (e.g. `dotnet skills install bundle ai`). The word `packages` means NuGet library packages — concrete individual libraries such as AutoMapper, MediatR, Sep, etc. — and the skills that correspond to them. Never conflate these two concepts.
+- Skill metadata (`SKILL.md` frontmatter) should declare a `packages` list or `package_prefix` to indicate which NuGet packages trigger auto-installation of that skill. Frameworks like Orleans or Aspire are large surfaces that contain many NuGet packages, but that detail is handled by the prefix or explicit package list, not by renaming the framework to a package.
 
 ### Issue Workflow
 

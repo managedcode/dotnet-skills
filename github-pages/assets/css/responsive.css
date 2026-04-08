@@ -34,7 +34,12 @@
 
 @media (max-width: 1240px) {
   body.page-agents .agent-grid { grid-template-columns: 1fr; }
+  body.page-home .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body.page-skills #listing-grid, body.page-categories .panel #listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  body.page-home .agent-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
@@ -47,6 +52,10 @@
   .site-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 2px; }
   .nav-link { padding: 4px 0; text-align: center; font-size: 11px; }
   .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qs-row { grid-template-columns: 32px 1fr auto; padding: 8px 12px; gap: 0 6px; }
+  .qs-label { min-width: 44px; font-size: 10px; }
+  .qs-cmd { font-size: 11px; padding: 5px 8px; }
+  .qs-hint { font-size: 10px; }
   .hero-actions, .command-row, .sidebar-links, .section-links { display: grid; grid-template-columns: 1fr; }
   .hero-actions .button, .command-row .button, .sidebar-links .pill-link, .section-links .pill-link { width: 100%; }
   .card-actions-inline { display: grid; grid-template-columns: 1fr; }

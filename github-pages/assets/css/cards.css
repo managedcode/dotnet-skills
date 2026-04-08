@@ -20,18 +20,18 @@
 }
 
 .directory-card:hover {
-  border-color: rgba(var(--card-accent-rgb), 0.3);
+  border-color: rgba(var(--card-accent-rgb), 0.35);
   transform: translateY(-2px);
   box-shadow:
-    0 2px 12px -2px rgba(var(--card-accent-rgb), 0.12),
-    0 0 0 1px rgba(var(--card-accent-rgb), 0.08);
+    0 4px 16px -2px rgba(var(--card-accent-rgb), 0.15),
+    0 0 0 1px rgba(var(--card-accent-rgb), 0.12);
 }
 
 /* Accent top bar */
-.skill-card    { border-top: 2px solid var(--card-accent); }
-.agent-card    { border-top: 2px solid var(--card-accent); }
-.package-card  { border-top: 2px solid var(--card-accent); }
-.category-card { border-top: 2px solid var(--card-accent); }
+.skill-card    { border-top: 3px solid var(--card-accent); }
+.agent-card    { border-top: 3px solid var(--card-accent); }
+.bundle-card  { border-top: 3px solid var(--card-accent); }
+.category-card { border-top: 3px solid var(--card-accent); }
 
 .directory-card.is-clickable { cursor: pointer; }
 
@@ -48,9 +48,9 @@
 .card-type-testing    { --card-accent: var(--type-testing);    --card-accent-rgb: 244, 63, 94; }
 .card-type-platform   { --card-accent: var(--type-platform);  --card-accent-rgb: 139, 92, 246; }
 
-/* Agent and package cards */
+/* Agent and bundle cards */
 .agent-card    { --card-accent: var(--tag-amber);       --card-accent-rgb: 217, 119, 6; }
-.package-card  { --card-accent: var(--type-library);    --card-accent-rgb: 16, 185, 129; }
+.bundle-card  { --card-accent: var(--type-library);    --card-accent-rgb: 16, 185, 129; }
 .category-card { --card-accent: var(--type-framework);  --card-accent-rgb: 59, 130, 246; }
 .support-card  { --card-accent: var(--ink-3);           --card-accent-rgb: 163, 163, 163; }
 
@@ -249,8 +249,9 @@
 /* ---- Agent card ---- */
 
 .agent-card {
-  gap: 10px;
-  padding: 20px;
+  gap: 8px;
+  padding: 16px 18px;
+  height: auto;
 }
 
 .agent-card h3 { font-size: 1rem; line-height: 1.25; }

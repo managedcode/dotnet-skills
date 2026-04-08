@@ -93,6 +93,41 @@
   );
 }
 
+/* Terminal panel pixel accents */
+.qs-panel {
+  position: relative;
+}
+
+.qs-panel::after {
+  content: "";
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  width: 40px;
+  height: 32px;
+  background-image:
+    radial-gradient(circle, rgba(99,102,241,0.25) 1px, transparent 1px);
+  background-size: 4px 4px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Blinking prompt on first command */
+.qs-row.is-first .qs-cmd::before {
+  content: "> ";
+  color: #28c840;
+  opacity: 0.7;
+}
+
+.qs-row.is-first .qs-cmd::after {
+  content: "▋";
+  display: inline;
+  margin-left: 2px;
+  animation: pixel-blink 1.2s step-end infinite;
+  color: #a5b4fc;
+  font-size: 0.85em;
+}
+
 /* Small pixel grid decoration in footer */
 .footer-brand::before {
   content: "";

@@ -37,13 +37,13 @@
   --tag-rose-bg:  rgba(244,63,94,0.06);
   --tag-rose:     #e11d48;
 
-  --line:         rgba(0, 0, 0, 0.06);
-  --line-strong:  rgba(0, 0, 0, 0.12);
+  --line:         rgba(0, 0, 0, 0.10);
+  --line-strong:  rgba(0, 0, 0, 0.18);
 
-  --shadow-xs:    0 1px 2px rgba(0,0,0,0.05);
-  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:    0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-lg:    0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-xs:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm:    0 2px 4px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg:    0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
   --shadow-xl:    0 20px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
 
   --r:  6px;

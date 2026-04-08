@@ -53,10 +53,10 @@ TYPE_SINGULAR: dict[str, str] = {
     "Platform": "Platform",
 }
 
-CURATED_PACKAGES = [
+CURATED_BUNDLES = [
     {
         "name": "mcaf",
-        "title": "MCAF package",
+        "title": "MCAF bundle",
         "description": "Install the locally mirrored MCAF governance skills in one command, including adoption, delivery workflow, developer experience, documentation, feature specs, review planning, NFRs, source-control policy, UI/UX, and ML/AI delivery guidance.",
         "kind": "curated",
         "skills": [
@@ -74,7 +74,7 @@ CURATED_PACKAGES = [
     },
     {
         "name": "orleans",
-        "title": "Orleans package",
+        "title": "Orleans bundle",
         "description": "Install the main Orleans stack in one command, including Orleans core guidance, adjacent ManagedCode integrations, worker-hosting patterns, Aspire orchestration, and SignalR delivery support.",
         "kind": "curated",
         "skills": [
@@ -182,25 +182,25 @@ def collect_skills() -> list[dict[str, str]]:
     return skills
 
 
-def build_packages(skills: list[dict[str, str]]) -> list[dict[str, object]]:
+def build_bundles(skills: list[dict[str, str]]) -> list[dict[str, object]]:
     skills_by_name = {skill["name"]: skill for skill in skills}
-    packages: list[dict[str, object]] = []
+    bundles: list[dict[str, object]] = []
 
-    for package in CURATED_PACKAGES:
-        missing = [skill_name for skill_name in package["skills"] if skill_name not in skills_by_name]
+    for bundle in CURATED_BUNDLES:
+        missing = [skill_name for skill_name in bundle["skills"] if skill_name not in skills_by_name]
         if missing:
             raise ValueError(
-                f"Curated package {package['name']} references unknown skills: {', '.join(sorted(missing))}"
+                f"Curated bundle {bundle['name']} references unknown skills: {', '.join(sorted(missing))}"
             )
 
-        packages.append(
+        bundles.append(
             {
-                "name": package["name"],
-                "title": package["title"],
-                "description": package["description"],
-                "kind": package["kind"],
+                "name": bundle["name"],
+                "title": bundle["title"],
+                "description": bundle["description"],
+                "kind": bundle["kind"],
                 "sourceCategory": "",
-                "skills": package["skills"],
+                "skills": bundle["skills"],
             }
         )
 
@@ -212,10 +212,10 @@ def build_packages(skills: list[dict[str, str]]) -> list[dict[str, object]]:
         if not category_skills:
             continue
 
-        packages.append(
+        bundles.append(
             {
                 "name": slugify(category),
-                "title": f"{category} package",
+                "title": f"{category} bundle",
                 "description": f"Install all {len(category_skills)} skills from the {category} category in one command.",
                 "kind": "category",
                 "sourceCategory": category,
@@ -223,7 +223,7 @@ def build_packages(skills: list[dict[str, str]]) -> list[dict[str, object]]:
             }
         )
 
-    return packages
+    return bundles
 
 
 def render_catalog(skills: list[dict[str, str]]) -> str:
@@ -323,20 +323,20 @@ def check_readme(rendered_catalog: str, skill_count: int) -> bool:
     return render_readme(readme, rendered_catalog, skill_count) == readme
 
 
-def write_manifest(skills: list[dict[str, str]], packages: list[dict[str, object]]) -> None:
-    write_manifest_to_path(MANIFEST_PATH, skills, packages)
+def write_manifest(skills: list[dict[str, str]], bundles: list[dict[str, object]]) -> None:
+    write_manifest_to_path(MANIFEST_PATH, skills, bundles)
 
 
-def write_manifest_to_path(path: Path, skills: list[dict[str, str]], packages: list[dict[str, object]]) -> None:
+def write_manifest_to_path(path: Path, skills: list[dict[str, str]], bundles: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({"skills": skills, "packages": packages}, indent=2, sort_keys=False) + "\n")
+    path.write_text(json.dumps({"skills": skills, "bundles": bundles}, indent=2, sort_keys=False) + "\n")
 
 
-def check_manifest(skills: list[dict[str, str]], packages: list[dict[str, object]]) -> bool:
+def check_manifest(skills: list[dict[str, str]], bundles: list[dict[str, object]]) -> bool:
     if not MANIFEST_PATH.exists():
         return False
     current = json.loads(MANIFEST_PATH.read_text())
-    return current == {"skills": skills, "packages": packages}
+    return current == {"skills": skills, "bundles": bundles}
 
 
 def parse_args() -> argparse.Namespace:
@@ -362,21 +362,21 @@ def main() -> int:
         return 2
 
     skills = collect_skills()
-    packages = build_packages(skills)
+    bundles = build_bundles(skills)
     rendered_catalog = render_catalog(skills)
 
     if args.manifest_output is not None:
-        write_manifest_to_path(args.manifest_output, skills, packages)
+        write_manifest_to_path(args.manifest_output, skills, bundles)
         print(f"Wrote manifest to {args.manifest_output}")
         return 0
 
     if args.validate_only:
-        print(f"Catalog metadata is valid for {len(skills)} skills and {len(packages)} packages.")
+        print(f"Catalog metadata is valid for {len(skills)} skills and {len(bundles)} bundles.")
         return 0
 
     if args.check:
         readme_ok = check_readme(rendered_catalog, len(skills))
-        manifest_ok = check_manifest(skills, packages)
+        manifest_ok = check_manifest(skills, bundles)
         if not readme_ok or not manifest_ok:
             if not readme_ok:
                 print("README.md catalog section is out of date.", file=sys.stderr)
@@ -387,8 +387,8 @@ def main() -> int:
         return 0
 
     update_readme(rendered_catalog, len(skills))
-    write_manifest(skills, packages)
-    print(f"Generated catalog for {len(skills)} skills and {len(packages)} packages.")
+    write_manifest(skills, bundles)
+    print(f"Generated catalog for {len(skills)} skills and {len(bundles)} bundles.")
     return 0
 
 
