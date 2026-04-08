@@ -59,41 +59,35 @@ internal sealed class InteractiveConsoleApp
                     "What would you like to do?",
                     new[]
                     {
-                        new MenuOption<HomeAction>("Browse catalog", HomeAction.BrowseSkillCatalog),
-                        new MenuOption<HomeAction>("Installed skills", HomeAction.InstalledSkills),
-                        new MenuOption<HomeAction>("Packages", HomeAction.Packages),
+                        new MenuOption<HomeAction>("Sync with project", HomeAction.SyncProject),
+                        new MenuOption<HomeAction>("Install skill stack", HomeAction.InstallSkillStack),
+                        new MenuOption<HomeAction>("Install skills", HomeAction.InstallSkills),
+                        new MenuOption<HomeAction>("Manage installed", HomeAction.ManageInstalled),
                         new MenuOption<HomeAction>("Agents", HomeAction.Agents),
-                        new MenuOption<HomeAction>("Session target", HomeAction.SessionTarget),
-                        new MenuOption<HomeAction>("Refresh catalog", HomeAction.RefreshCatalog),
-                        new MenuOption<HomeAction>("Help", HomeAction.Help),
+                        new MenuOption<HomeAction>("Settings", HomeAction.Settings),
                         new MenuOption<HomeAction>("Exit", HomeAction.Exit),
                     },
                     option => option.Label);
 
                 switch (action.Value)
                 {
-                    case HomeAction.BrowseSkillCatalog:
+                    case HomeAction.SyncProject:
+                        ShowProjectSync();
+                        break;
+                    case HomeAction.InstallSkillStack:
+                        ShowPackages();
+                        break;
+                    case HomeAction.InstallSkills:
                         await ShowCatalogSkillsAsync();
                         break;
-                    case HomeAction.InstalledSkills:
+                    case HomeAction.ManageInstalled:
                         ShowInstalledSkills();
-                        break;
-                    case HomeAction.Packages:
-                        ShowPackages();
                         break;
                     case HomeAction.Agents:
                         ShowAgents();
                         break;
-                    case HomeAction.SessionTarget:
-                        ShowSessionTarget();
-                        break;
-                    case HomeAction.RefreshCatalog:
-                        await RefreshCatalogAsync();
-                        break;
-                    case HomeAction.Help:
-                        AnsiConsole.Clear();
-                        ConsoleUi.RenderUsage();
-                        prompts.Pause("Press any key to return to the interactive shell...");
+                    case HomeAction.Settings:
+                        await ShowSettingsAsync();
                         break;
                     case HomeAction.Exit:
                         return 0;
@@ -160,6 +154,9 @@ internal sealed class InteractiveConsoleApp
         overview.AddRow(new Markup("[dim]packages[/]"), new Markup($"{skillCatalog.Packages.Count} available"));
         overview.AddRow(new Markup("[dim]agents[/]"), new Markup($"{agentCatalog.Agents.Count} [dim]({Escape(agentStatus.Summary)})[/]"));
         AnsiConsole.Write(new Panel(overview).Header("[deepskyblue1]workspace[/]").Border(BoxBorder.Rounded).Expand());
+
+        // Compact quick-reference hints
+        AnsiConsole.MarkupLine("[dim]  Sync with project \u2022 Install skill stack \u2022 Install skills \u2022 Manage installed \u2022 Agents \u2022 Settings[/]");
         AnsiConsole.WriteLine();
     }
 
@@ -544,6 +541,83 @@ internal sealed class InteractiveConsoleApp
         }
     }
 
+    private void ShowProjectSync()
+    {
+        var layout = ResolveSkillLayout();
+        var installer = new SkillInstaller(skillCatalog);
+        var autoSyncService = new ProjectSkillAutoSyncService(skillCatalog);
+
+        ProjectSkillAutoSyncPlan plan;
+        try
+        {
+            plan = autoSyncService.BuildPlan(Session.ProjectDirectory, layout, installer, prune: false);
+        }
+        catch (InvalidOperationException exception)
+        {
+            RenderInfo(exception.Message);
+            return;
+        }
+
+        if (plan.DesiredSkills.Count == 0)
+        {
+            RenderInfo("No NuGet packages in this project matched catalog skills for auto-install.");
+            return;
+        }
+
+        var installedBefore = installer.GetInstalledSkills(layout)
+            .ToDictionary(record => record.Skill.Name, StringComparer.OrdinalIgnoreCase);
+
+        var newSkills = plan.DesiredSkills
+            .Where(skill => !installedBefore.ContainsKey(skill.Name))
+            .ToArray();
+
+        AnsiConsole.Clear();
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().NoWrap());
+        grid.AddColumn();
+        grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(plan.ScanResult.ProjectRoot.FullName)}[/]"));
+        grid.AddRow(new Markup("[dim]scanned[/]"), new Markup($"{plan.ScanResult.ProjectFiles.Count} .csproj files"));
+        grid.AddRow(new Markup("[dim]matched[/]"), new Markup($"{plan.DesiredSkills.Count} skills"));
+        grid.AddRow(new Markup("[dim]new[/]"), new Markup(newSkills.Length > 0 ? $"[green]{newSkills.Length}[/]" : "0"));
+        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]project sync[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.WriteLine();
+
+        var table = new Table().Expand();
+        table.AddColumn("Skill");
+        table.AddColumn("Confidence");
+        table.AddColumn("Status");
+
+        foreach (var recommendation in plan.ScanResult.Recommendations
+                     .Where(recommendation => recommendation.IsAutoInstallCandidate)
+                     .OrderByDescending(recommendation => recommendation.Confidence)
+                     .ThenBy(recommendation => recommendation.Skill.Name, StringComparer.Ordinal))
+        {
+            var isInstalled = installedBefore.ContainsKey(recommendation.Skill.Name);
+            table.AddRow(
+                Escape(ToAlias(recommendation.Skill.Name)),
+                Escape(recommendation.Confidence.ToString()),
+                isInstalled ? "[dim]already installed[/]" : "[green]new[/]");
+        }
+
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
+
+        if (newSkills.Length == 0)
+        {
+            AnsiConsole.MarkupLine("[dim]All matched skills are already installed.[/]");
+            prompts.Pause("Press any key to continue...");
+            return;
+        }
+
+        if (prompts.Confirm($"Install {newSkills.Length} new skill(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+        {
+            InstallSkills(plan.DesiredSkills, force: false);
+            autoSyncService.SaveState(layout, plan);
+        }
+    }
+
     private void ShowAgents()
     {
         while (true)
@@ -716,11 +790,11 @@ internal sealed class InteractiveConsoleApp
             RenderSessionTargetPanel();
 
             var action = prompts.Select(
-                "Session target actions",
+                "Destination settings",
                 new[]
                 {
-                    new MenuOption<SessionTargetAction>("Change platform", SessionTargetAction.Platform),
-                    new MenuOption<SessionTargetAction>("Change scope", SessionTargetAction.Scope),
+                    new MenuOption<SessionTargetAction>("Platform", SessionTargetAction.Platform),
+                    new MenuOption<SessionTargetAction>("Scope", SessionTargetAction.Scope),
                     new MenuOption<SessionTargetAction>("Back", SessionTargetAction.Back),
                 },
                 option => option.Label);
@@ -746,6 +820,43 @@ internal sealed class InteractiveConsoleApp
                     break;
                 }
                 case SessionTargetAction.Back:
+                    return;
+            }
+        }
+    }
+
+    private async Task ShowSettingsAsync()
+    {
+        while (true)
+        {
+            AnsiConsole.Clear();
+            RenderSessionTargetPanel();
+
+            var action = prompts.Select(
+                "Settings",
+                new[]
+                {
+                    new MenuOption<SettingsAction>("Install destination", SettingsAction.InstallDestination),
+                    new MenuOption<SettingsAction>("Refresh catalog", SettingsAction.RefreshCatalog),
+                    new MenuOption<SettingsAction>("Help", SettingsAction.Help),
+                    new MenuOption<SettingsAction>("Back", SettingsAction.Back),
+                },
+                option => option.Label);
+
+            switch (action.Value)
+            {
+                case SettingsAction.InstallDestination:
+                    ShowSessionTarget();
+                    break;
+                case SettingsAction.RefreshCatalog:
+                    await RefreshCatalogAsync();
+                    break;
+                case SettingsAction.Help:
+                    AnsiConsole.Clear();
+                    ConsoleUi.RenderUsage();
+                    prompts.Pause("Press any key to return to the interactive shell...");
+                    break;
+                case SettingsAction.Back:
                     return;
             }
         }
@@ -899,10 +1010,10 @@ internal sealed class InteractiveConsoleApp
         grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))}[/]"));
         grid.AddRow(new Markup("[dim]skill target[/]"), new Markup($"[dim]{Escape(skillLayout.PrimaryRoot.FullName)}[/]"));
         grid.AddRow(new Markup("[dim]agent target[/]"), new Markup($"[dim]{(agentLayout is null ? Escape(agentLayoutError ?? "Unavailable") : Escape(agentLayout.PrimaryRoot.FullName))}[/]"));
-        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]session[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]install destination[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
-        AnsiConsole.MarkupLine("[dim]Use a concrete platform for predictable roots. Keep Auto for fallback behavior.[/]");
+        AnsiConsole.MarkupLine("[dim]Choose the platform and scope that control where skills and agents are installed. Keep Auto for fallback behavior.[/]");
     }
 
     private void RenderAgentFallback(string message)
@@ -1205,14 +1316,21 @@ internal sealed record AgentLayoutStatus(AgentInstallLayout? Layout, string Summ
 
 internal enum HomeAction
 {
-    BrowseSkillCatalog,
-    InstalledSkills,
-    Packages,
+    SyncProject,
+    InstallSkillStack,
+    InstallSkills,
+    ManageInstalled,
     Agents,
-    SessionTarget,
+    Settings,
+    Exit,
+}
+
+internal enum SettingsAction
+{
+    InstallDestination,
     RefreshCatalog,
     Help,
-    Exit,
+    Back,
 }
 
 internal enum SkillCatalogAction

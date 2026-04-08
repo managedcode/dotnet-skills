@@ -19,11 +19,13 @@ public sealed class InteractiveConsoleAppTests
     public async Task RunAsync_CanChangePlatformAndScope()
     {
         var prompts = new FakeInteractivePrompts(
-            "Session target",
-            "Change platform",
+            "Settings",
+            "Install destination",
+            "Platform",
             "Codex",
-            "Change scope",
+            "Scope",
             "Global",
+            "Back",
             "Back",
             "Exit");
 
@@ -43,8 +45,8 @@ public sealed class InteractiveConsoleAppTests
         var catalog = TestCatalog.Load();
         var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
-            "Browse catalog",
-            "Install skills",
+            "Install skills",  // home menu
+            "Install skills",  // catalog action
             new[] { aspireSkill },
             true,
             "Back",

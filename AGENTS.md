@@ -71,6 +71,10 @@ Update this file when the user gives:
 
 Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do this again" as strong signals that a durable rule should likely be captured here.
 
+- For interactive CLI UX changes in the publishable tools, run a dedicated Claude-led design pass before finalizing the console presentation.
+- Do not ship flat menus where every entry has the same visual weight. Interactive menus must expose clear hierarchy, differentiated sections, and obvious primary flows.
+- When the CLI has package-aware workflows, surface NuGet/package entry points clearly in the interactive shell instead of burying them behind generic labels.
+
 ### Issue Workflow
 
 - When repository work is driven by GitHub issues, complete the implementation end-to-end: inspect the issue, make the repo changes, validate them, commit, push, and close the resolved issues.
