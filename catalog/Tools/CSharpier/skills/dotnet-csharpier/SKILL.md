@@ -1,7 +1,5 @@
 ---
 name: dotnet-csharpier
-version: "1.0.0"
-category: "Code Quality"
 description: "Use the open-source free `CSharpier` formatter for C# and XML. Use when a .NET repo intentionally wants one opinionated formatter instead of a highly configurable `dotnet format`-driven style model."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---

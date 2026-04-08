@@ -1,7 +1,5 @@
 ---
 name: dotnet
-version: "1.0.0"
-category: "Core"
 description: "Primary router skill for broad .NET work. Classify the repo by app model and cross-cutting concern first, then switch to the narrowest matching .NET skill instead of staying at a generic layer."
 compatibility: "Requires a .NET repository, solution, or project tree."
 ---

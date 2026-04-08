@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace ManagedCode.DotnetSkills.Runtime;
 
 internal sealed class SkillInstaller(SkillCatalogPackage catalog)
@@ -179,7 +181,26 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
 
     private static string ReadInstalledVersion(SkillEntry skill, SkillInstallLayout layout)
     {
-        return ReadFrontMatterValue(Path.Combine(layout.PrimaryRoot.FullName, skill.Name, "SKILL.md"), "version") ?? "unknown";
+        return ReadManifestValue(Path.Combine(layout.PrimaryRoot.FullName, skill.Name, "manifest.json"), "version")
+            ?? ReadFrontMatterValue(Path.Combine(layout.PrimaryRoot.FullName, skill.Name, "SKILL.md"), "version")
+            ?? "unknown";
+    }
+
+    private static string? ReadManifestValue(string filePath, string key)
+    {
+        if (!File.Exists(filePath))
+        {
+            return null;
+        }
+
+        using var document = JsonDocument.Parse(File.ReadAllText(filePath));
+        if (!document.RootElement.TryGetProperty(key, out var value) || value.ValueKind != JsonValueKind.String)
+        {
+            return null;
+        }
+
+        var result = value.GetString();
+        return string.IsNullOrWhiteSpace(result) ? null : result.Trim();
     }
 
     private static string? ReadFrontMatterValue(string filePath, string key)

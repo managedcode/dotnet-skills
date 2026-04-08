@@ -1,7 +1,5 @@
 ---
 name: dotnet-cloc
-version: "1.0.0"
-category: "Metrics"
 description: "Use the open-source free `cloc` tool for line-count, language-mix, and diff statistics in .NET repositories. Use when a repo needs C# and solution footprint metrics, branch-to-branch LOC comparison, or repeatable code-size reporting in local workflows and CI."
 compatibility: "Requires a repository with .NET source files or a Git checkout; respects the repo's `AGENTS.md` commands first."
 ---

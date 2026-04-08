@@ -59,16 +59,6 @@
   border-color: rgba(255,255,255,0.15);
 }
 
-/* Pixel cursor blink for install commands */
-.card-cmd::after {
-  content: "▋";
-  display: inline;
-  margin-left: 2px;
-  animation: pixel-blink 1.2s step-end infinite;
-  color: var(--card-accent, var(--accent));
-  font-size: 0.8em;
-  opacity: 0.6;
-}
 
 @keyframes pixel-blink {
   0%, 100% { opacity: 0.6; }

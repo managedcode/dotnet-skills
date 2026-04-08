@@ -4,8 +4,8 @@
   "description": "AI orchestration SDK for building intelligent .NET apps",
   "icon": "icon.svg",
   "links": {
+    "repository": "https://github.com/microsoft/semantic-kernel",
     "docs": "https://learn.microsoft.com/en-us/semantic-kernel/",
-    "nuget": "https://www.nuget.org/packages/Microsoft.SemanticKernel",
-    "github": "https://github.com/microsoft/semantic-kernel"
+    "nuget": "https://www.nuget.org/packages/Microsoft.SemanticKernel"
   }
 }

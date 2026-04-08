@@ -657,8 +657,9 @@ internal static class Program
         try
         {
             var manifest = await client.LoadManifestAsync(catalogVersion, CancellationToken.None);
-            return SkillCatalogPackage.LoadFromDirectory(
-                await MaterializeManifestOnlyCatalogAsync(client.ResolveCacheRoot(), manifest, catalogVersion),
+            return SkillCatalogPackage.LoadFromManifest(
+                client.ResolveCacheRoot(),
+                manifest,
                 string.IsNullOrWhiteSpace(catalogVersion) ? "latest GitHub catalog manifest" : $"GitHub catalog manifest {catalogVersion}",
                 string.IsNullOrWhiteSpace(catalogVersion) ? "latest" : catalogVersion);
         }
@@ -694,27 +695,6 @@ internal static class Program
     private static GitHubCatalogReleaseClient CreateReleaseClient(string? cachePath)
     {
         return new GitHubCatalogReleaseClient(ResolveCacheRoot(cachePath));
-    }
-
-    private static async Task<DirectoryInfo> MaterializeManifestOnlyCatalogAsync(DirectoryInfo cacheRoot, SkillManifest manifest, string? catalogVersion)
-    {
-        var versionSuffix = string.IsNullOrWhiteSpace(catalogVersion) ? "latest" : catalogVersion;
-        var directory = new DirectoryInfo(Path.Combine(cacheRoot.FullName, ".manifest", versionSuffix));
-        directory.Create();
-
-        var catalogDirectory = new DirectoryInfo(Path.Combine(directory.FullName, "catalog"));
-        var skillsDirectory = new DirectoryInfo(Path.Combine(directory.FullName, "skills"));
-        catalogDirectory.Create();
-        skillsDirectory.Create();
-
-        var manifestPath = Path.Combine(catalogDirectory.FullName, "skills.json");
-        await File.WriteAllTextAsync(
-            manifestPath,
-            System.Text.Json.JsonSerializer.Serialize(
-                manifest,
-                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
-
-        return directory;
     }
 
     internal static IReadOnlyList<InstalledSkillRecord> ResolveInstalledSkillsToUpdate(

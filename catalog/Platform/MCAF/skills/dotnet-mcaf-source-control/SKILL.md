@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-source-control
-version: "1.0.0"
-category: "Core"
 description: "Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. Use when bootstrapping a repo, tightening PR flow, or documenting branch and release policy."
 compatibility: "Requires repository access; may update contribution docs, AGENTS rules, or repository policy files."
 ---

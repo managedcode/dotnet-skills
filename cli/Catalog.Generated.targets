@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <CatalogDefinitionsGeneratedFile>$(BaseIntermediateOutputPath)Generated/CatalogGeneratedDefinitions.g.cs</CatalogDefinitionsGeneratedFile>
+    <CatalogPythonExecutable Condition="'$(CatalogPythonExecutable)' == '' and '$(OS)' == 'Windows_NT'">py -3</CatalogPythonExecutable>
+    <CatalogPythonExecutable Condition="'$(CatalogPythonExecutable)' == '' and '$(OS)' != 'Windows_NT'">python3</CatalogPythonExecutable>
+  </PropertyGroup>
+
+  <Target Name="GenerateCatalogDefinitionsSource" BeforeTargets="CoreCompile">
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(CatalogDefinitionsGeneratedFile)'))" />
+    <Exec
+      WorkingDirectory="$(MSBuildProjectDirectory)"
+      Command='$(CatalogPythonExecutable) ../../scripts/generate_catalog_definitions.py --csharp-output "$(CatalogDefinitionsGeneratedFile)"' />
+    <ItemGroup>
+      <Compile Include="$(CatalogDefinitionsGeneratedFile)" Visible="false" />
+    </ItemGroup>
+  </Target>
+</Project>

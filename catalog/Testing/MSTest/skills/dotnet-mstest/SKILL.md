@@ -1,7 +1,5 @@
 ---
 name: dotnet-mstest
-version: "1.0.0"
-category: "Testing"
 description: "Write, run, or repair .NET tests that use MSTest. Use when a repo uses `MSTest.Sdk`, `MSTest`, `[TestClass]`, `[TestMethod]`, `DataRow`, or Microsoft.Testing.Platform-based MSTest execution."
 compatibility: "Requires a .NET solution or project with MSTest packages; respects the repo's `AGENTS.md` commands first."
 ---

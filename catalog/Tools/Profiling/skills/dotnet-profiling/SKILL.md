@@ -1,7 +1,5 @@
 ---
 name: dotnet-profiling
-version: "1.0.0"
-category: "Metrics"
 description: "Use the free official .NET diagnostics CLI tools for profiling and runtime investigation in .NET repositories. Use when a repo needs CPU tracing, live counters, GC and allocation investigation, exception or contention tracing, heap snapshots, or startup diagnostics without GUI-only tooling."
 compatibility: "Requires a .NET app or process to inspect; respects the repo's `AGENTS.md` commands first."
 ---

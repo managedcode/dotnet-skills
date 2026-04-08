@@ -1,7 +1,5 @@
 ---
 name: dotnet-mixed-reality
-version: "1.0.0"
-category: "AI"
 description: "Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack."
 compatibility: "Best for HoloLens, MRTK, Unity+C#, and service integrations around mixed reality."
 ---

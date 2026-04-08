@@ -1,7 +1,5 @@
 ---
 name: dotnet-workflow-foundation
-version: "1.0.0"
-category: "Legacy"
 description: "Maintain or assess Workflow Foundation-based solutions on .NET Framework, especially where long-lived process logic or legacy designer artifacts still matter."
 compatibility: "Requires WF or a migration plan away from it."
 ---

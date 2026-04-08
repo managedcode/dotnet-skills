@@ -1,7 +1,5 @@
 ---
 name: dotnet-libvlc
-version: 1.0.0
-category: Desktop
 description: Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding.
 compatibility: .NET 6+, .NET Standard 2.0+, .NET Framework 4.6.1+
 ---

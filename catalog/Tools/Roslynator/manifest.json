@@ -2,5 +2,9 @@
   "name": "Roslynator",
   "title": "Roslynator",
   "description": "",
-  "links": {}
+  "links": {
+    "repository": "https://github.com/dotnet/roslynator",
+    "docs": "https://josefpihrt.github.io/docs/roslynator/",
+    "nuget": "https://www.nuget.org/packages/Roslynator.Analyzers"
+  }
 }

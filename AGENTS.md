@@ -14,8 +14,8 @@ This file defines how AI agents work in this repository.
 - Root `AGENTS.md` holds the global workflow, repository structure, release and automation policy, and skill-catalog maintenance rules.
 - This repository currently uses only the root `AGENTS.md`; add a nearer local `AGENTS.md` only when a subtree needs stricter or more specialized rules.
 - The repository has three equally important responsibilities:
-  1. Maintain a high-quality `skills/` catalog for modern and legacy `.NET`.
-  2. Maintain repo-owned orchestration `agents/` that route broader tasks into the right skills or narrower agents.
+  1. Maintain a high-quality scanned catalog under `catalog/<type>/<package>/` for modern and legacy `.NET`.
+  2. Maintain repo-owned orchestration agents in top-level `agents/` and package-owned catalog agents in `catalog/<type>/<package>/agents/`.
   3. Maintain automation that watches official upstream releases and documentation so the catalog can be refreshed when the ecosystem changes.
 
 If this repository contains executable code, it must exist only to distribute or install the skill catalog itself, for example as a publishable `dotnet tool`.
@@ -29,11 +29,13 @@ Follow official or documented agent standards where they exist; do not present a
 - Solution root: `.`
 - Areas with specialized responsibilities:
   - `agents/`: top-level orchestration agents that sit above the skill catalog, one folder per agent
-  - `skills/`: canonical skill catalog
-  - `tools/ManagedCode.DotnetAgents/`: publishable `dotnet-agents` installer tool for repo-owned orchestration agents
-  - `tools/ManagedCode.Agents/`: publishable `agents` installer tool for the same repo-owned orchestration agents
-  - `tools/ManagedCode.DotnetSkills/`: publishable `dotnet-skills` installer tool
+  - `catalog/`: canonical scanned catalog tree, including package manifests plus nested skills and package-owned agents
+  - `catalog-sources/`: mapping files for vendir-managed external repositories that are normalized into `catalog/`
+  - `cli/ManagedCode.DotnetAgents/`: publishable `dotnet-agents` installer tool for repo-owned orchestration agents
+  - `cli/ManagedCode.Agents/`: publishable `agents` installer tool for the same repo-owned orchestration agents
+  - `cli/ManagedCode.DotnetSkills/`: publishable `dotnet-skills` installer tool
   - `scripts/`: catalog generation and upstream-watch automation
+  - `upstreams/`: vendir-managed checked-in snapshots of external source repositories
   - `.github/workflows/`: CI, release, and scheduled automation
 - Local `AGENTS.md` files currently present: none
 
@@ -48,7 +50,7 @@ Follow official or documented agent standards where they exist; do not present a
 ## Path And Linking Rules
 
 - Never commit personal or machine-specific absolute filesystem paths such as `/Users/...`, `/home/...`, or `C:\Users\...` in repository docs, generated site files, manifests, examples, or contributor guidance.
-- In repository-facing Markdown, prefer repo-relative links such as `README.md`, `skills/`, or `.github/workflows/publish-catalog.yml` instead of workstation-local absolute paths.
+- In repository-facing Markdown, prefer repo-relative links such as `README.md`, `catalog/`, or `.github/workflows/publish-catalog.yml` instead of workstation-local absolute paths.
 - For path examples, use portable placeholders such as `~/...`, `/path/to/...`, `<repo-root>/...`, or product-native paths that are not tied to one contributor machine.
 - Before committing docs or generated artifacts, scan the diff for leaked local paths and remove them.
 
@@ -75,7 +77,13 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - Do not ship flat menus where every entry has the same visual weight. Interactive menus must expose clear hierarchy, differentiated sections, and obvious primary flows.
 - When the CLI has package-aware workflows, surface NuGet/package entry points clearly in the interactive shell instead of burying them behind generic labels.
 - In public UX, docs, CLI commands, and generated site content, always use `bundles` for grouped multi-skill installs (e.g. `dotnet skills install bundle ai`). The word `packages` means NuGet library packages — concrete individual libraries such as AutoMapper, MediatR, Sep, etc. — and the skills that correspond to them. Never conflate these two concepts.
-- Skill metadata (`SKILL.md` frontmatter) should declare a `packages` list or `package_prefix` to indicate which NuGet packages trigger auto-installation of that skill. Frameworks like Orleans or Aspire are large surfaces that contain many NuGet packages, but that detail is handled by the prefix or explicit package list, not by renaming the framework to a package.
+- Skill- or agent-specific manifest metadata belongs in the nearest sibling `manifest.json` next to that `SKILL.md` or `AGENT.md`, not in package-level keyed maps and not in `SKILL.md` frontmatter. For skills, keep `version`, `category`, `packages`, and `package_prefix` in that sibling manifest. Keep package `manifest.json` for package-level metadata such as title, icon, and upstream links.
+- Package `manifest.json` should also hold upstream source metadata for the package surface: repository URL plus docs and NuGet links when known. Catalog generators should read those links from manifests and propagate them into exported catalog data and the public site instead of hardcoding or inferring them ad hoc.
+- Do not hardcode catalog category lists or catalog type-directory lists as root constants in Python or C#. Derive them from the scanned catalog or a generated artifact sourced from the catalog manifests, so adding a new manifest category or catalog type does not require manual constant edits in runtime code.
+- External repositories that contribute skills or agents must be synced declaratively via `vendir.yml` and pinned in `vendir.lock.yml`, with checked-in snapshots under `upstreams/`. Do not copy external repositories into `catalog/` by hand.
+- Normalize vendir-managed upstream content into `catalog/` through a repo script and a checked-in config under `catalog-sources/`, so multiple repositories can be imported consistently.
+- Imported official upstream skills or agents may keep their upstream canonical ids instead of being renamed to fit the local `dotnet-*` convention.
+- If an imported official upstream skill or agent is a true duplicate of a repo-authored local entry, prefer the official upstream source and remove the local duplicate instead of keeping two copies.
 
 ### Issue Workflow
 
@@ -112,7 +120,7 @@ Do not record:
 
 List only the skills this repository actually uses for its own maintenance workflows.
 
-- `skill-creator` - when creating or restructuring skills in `skills/`
+- `skill-creator` - when creating or restructuring skills in `catalog/`
 - `mcaf-solution-governance` - when changing `AGENTS.md`, repository governance, or maintenance policy
 - `mcaf-documentation` - when changing durable repo docs such as `README.md`, `CONTRIBUTING.md`, or policy docs
 - `mcaf-ci-cd` - when changing GitHub Actions, release flow, or automation policy
@@ -128,8 +136,8 @@ If work touches `.NET` code in this repository:
 
 ## Canonical Layout
 
-The canonical skill tree is [`skills/`](skills).
-The canonical top-level agent tree is [`agents/`](agents).
+The canonical scanned catalog tree is [`catalog/`](catalog).
+The canonical top-level orchestration-agent tree is [`agents/`](agents).
 
 Expected layout:
 
@@ -142,17 +150,25 @@ agents/
     ├── references/     # optional
     └── assets/         # optional
 
-skills/<skill-slug>/
-├── SKILL.md
-├── scripts/            # optional
-├── agents/             # optional skill-scoped agents
-│   └── <agent-slug>/
-│       ├── AGENT.md
-│       ├── scripts/    # optional
-│       ├── references/ # optional
-│       └── assets/     # optional
-├── references/         # optional
-└── assets/             # optional
+catalog/
+└── <Type>/
+    └── <Package>/
+        ├── manifest.json
+        ├── icon.svg           # optional
+        ├── skills/
+        │   └── <skill-slug>/
+        │       ├── SKILL.md
+        │       ├── manifest.json
+        │       ├── scripts/     # optional
+        │       ├── references/  # optional
+        │       └── assets/      # optional
+        └── agents/
+            └── <agent-slug>/
+                ├── AGENT.md
+                ├── manifest.json # optional
+                ├── scripts/      # optional
+                ├── references/   # optional
+                └── assets/       # optional
 ```
 
 Other important repository files:
@@ -163,21 +179,29 @@ Other important repository files:
 - [`README.md`](README.md): public catalog and repository overview.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contributor workflow for skills, versions, descriptions, and watch entries.
 - [`agents/README.md`](agents/README.md): index of repo-owned orchestration agents and layout conventions.
-- [`catalog/skills.json`](catalog/skills.json): machine-readable generated skill manifest used for release packaging and tool fallback content.
+- [`catalog-sources/*.json`](catalog-sources/): source-import mapping files that describe how vendir-managed repositories are converted into catalog packages.
+- [`catalog/*/*/manifest.json`](catalog/): package manifests that hold package metadata and upstream links for the scanned catalog tree.
+- [`catalog/*/*/skills/*/manifest.json`](catalog/): sibling skill manifests that hold skill-specific metadata such as `version`, `category`, `packages`, and `package_prefix`.
+- [`catalog/*/*/agents/*/manifest.json`](catalog/): sibling agent manifests for agent-specific metadata when needed.
+- [`upstreams/`](upstreams): vendir-managed snapshots of external source repositories used by import scripts.
+- [`vendir.yml`](vendir.yml): declarative source-sync config for vendir-managed repositories.
+- [`vendir.lock.yml`](vendir.lock.yml): resolved vendir lock file with pinned upstream SHAs.
 - [`.github/workflows/catalog-check.yml`](.github/workflows/catalog-check.yml): pull-request validation workflow for generated catalog outputs and tool smoke checks.
 - [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml): unified 04:00 UTC release workflow for `catalog-v*` assets, NuGet tool publish, and GitHub Pages deployment.
 - [`.github/upstream-watch.json`](.github/upstream-watch.json): base upstream watch metadata file for labels and shared defaults.
 - [`.github/upstream-watch*.json`](.github/): optional upstream watch config shards that hold the human-maintained `github_releases` and `documentation` lists.
 - [`.github/upstream-watch-state.json`](.github/upstream-watch-state.json): machine-maintained baseline state.
 - [`.github/workflows/upstream-watch.yml`](.github/workflows/upstream-watch.yml): scheduled workflow.
-- [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj): publishable `.NET` tool that installs the catalog through `dotnet skills ...`.
-- [`tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj`](tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj): publishable `.NET` tool that installs orchestration agents through `dotnet agents ...`.
-- [`tools/ManagedCode.Agents/ManagedCode.Agents.csproj`](tools/ManagedCode.Agents/ManagedCode.Agents.csproj): publishable `.NET` tool that installs orchestration agents through `agents ...`.
+- [`cli/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](cli/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj): publishable `.NET` tool that installs the catalog through `dotnet skills ...`.
+- [`cli/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj`](cli/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj): publishable `.NET` tool that installs orchestration agents through `dotnet agents ...`.
+- [`cli/ManagedCode.Agents/ManagedCode.Agents.csproj`](cli/ManagedCode.Agents/ManagedCode.Agents.csproj): publishable `.NET` tool that installs orchestration agents through `agents ...`.
 - [`dotnet-skills.slnx`](dotnet-skills.slnx): canonical solution entry point for repository-level `dotnet build` and `dotnet pack` commands.
-- [`scripts/generate_catalog.py`](scripts/generate_catalog.py): catalog generator and checker.
-- [`scripts/generate_agent_catalog.py`](scripts/generate_agent_catalog.py): agent catalog generator for the public site and installer metadata.
+- [`scripts/generate_catalog.py`](scripts/generate_catalog.py): catalog scanner, README generator, and validation entry point.
+- [`scripts/generate_catalog_definitions.py`](scripts/generate_catalog_definitions.py): build-time generator that derives catalog categories and type directories from scanned manifests and emits `.g.cs` definitions for the CLI runtime.
+- [`scripts/generate_agent_catalog.py`](scripts/generate_agent_catalog.py): agent-catalog validation and optional export helper.
 - [`scripts/smoke_test_tool.sh`](scripts/smoke_test_tool.sh): CI smoke test for the installable tool package.
 - [`scripts/upstream_watch.py`](scripts/upstream_watch.py): watch runner.
+- [`cli/Catalog.Generated.targets`](cli/Catalog.Generated.targets): shared MSBuild import that runs the Python catalog-definitions generator before C# compilation.
 - [`github-pages/index.html`](github-pages/index.html): template for the public skills directory website.
 - [`scripts/generate_pages.py`](scripts/generate_pages.py): generates the GitHub Pages site with embedded skills and agents data.
 
@@ -192,7 +216,8 @@ Use clean `.NET` skill names:
 
 Rules:
 
-- Use the `dotnet-*` prefix for all catalog skills in this repository.
+- Use the `dotnet-*` prefix for repo-authored catalog skills in this repository.
+- Vendir-imported upstream skills may preserve their upstream canonical ids.
 - Keep one clear responsibility per skill.
 - Prefer framework or capability names that match official Microsoft naming.
 - Do not invent vanity prefixes.
@@ -203,7 +228,7 @@ Rules:
 
 Before adding a new skill:
 
-1. Check whether the capability already exists in [`skills/`](skills).
+1. Check whether the capability already exists in [`catalog/`](catalog).
 2. Confirm the framework or feature is important enough to justify a dedicated skill.
 3. Prefer official Microsoft or first-party documentation to shape the content.
 4. Check whether the capability is already covered indirectly by a broader skill such as `dotnet`, `dotnet-architecture`, or `dotnet-aspire`.
@@ -211,12 +236,13 @@ Before adding a new skill:
 
 When creating a new skill:
 
-1. Create `skills/<skill-slug>/`.
-2. Add `SKILL.md`.
-3. Add `agents/` only when the skill needs one or more tightly coupled specialist agents that should live next to that skill.
+1. Choose the destination package under `catalog/<type>/<package>/`, or create a new package there with a package `manifest.json`.
+2. Create `catalog/<type>/<package>/skills/<skill-slug>/`.
+3. Add `SKILL.md` plus sibling `manifest.json`.
 4. Add `references/` for the heavy material: official docs snapshots, API maps, long examples, migration notes, provider matrices, and other supporting documentation that would bloat `SKILL.md`.
-5. Update any related [`README.md`](README.md) notes and regenerate the catalog outputs.
-6. If the skill tracks a major framework or Microsoft surface, update the relevant upstream watch shard under [`.github/upstream-watch*.json`](.github/).
+5. Do not create `agents/` under a skill folder. If specialist routing is needed, add a package-owned agent under `catalog/<type>/<package>/agents/` or a top-level orchestrator under `agents/`.
+6. Update any related [`README.md`](README.md) notes and regenerate the catalog outputs.
+7. If the skill tracks a major framework or Microsoft surface, update the relevant upstream watch shard under [`.github/upstream-watch*.json`](.github/).
 
 ## When Adding or Updating an Agent
 
@@ -225,15 +251,15 @@ Agents are a parallel orchestration layer above the skill catalog.
 Use these placement rules:
 
 1. Put broad, reusable routing agents in [`agents/`](agents).
-2. Put tightly coupled specialist agents in `skills/<skill-slug>/agents/<agent-slug>/AGENT.md` when they only make sense next to one skill or one framework surface.
-3. Use top-level agents when they orchestrate a group of related skills; use skill-scoped agents when they should travel with one specific skill and rely on that skill for detailed implementation guidance.
+2. Put package-owned agents only in `catalog/<type>/<package>/agents/<agent-slug>/AGENT.md`.
+3. Do not create `agents/` folders under `skills/<skill-slug>/`. Skill-scoped agents are not part of this repository layout.
 4. Keep agents focused on triage, routing, orchestration, and bounded role behavior; keep detailed implementation guidance in `SKILL.md`.
 5. Make the linked skill set explicit, so reviewers can see what the agent is expected to orchestrate.
 6. Update [`README.md`](README.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md) when the public agent catalog shape changes.
 
 When creating a new agent:
 
-1. Choose whether it belongs in `agents/<agent-slug>/AGENT.md` or `skills/<skill-slug>/agents/<agent-slug>/AGENT.md`.
+1. Put it in `agents/<agent-slug>/AGENT.md` or `catalog/<type>/<package>/agents/<agent-slug>/AGENT.md`, depending on whether it is a top-level index entry or package-owned catalog content.
 2. Keep each agent in its own folder; flat loose agent files in the repo are not the canonical source layout.
 3. Add `AGENT.md` with a clear role and routing scope.
 4. Prefer concise, role-based agent slugs. Avoid awkward names that simply repeat the full parent skill slug with a generic suffix like `-specialist` when a shorter slug such as `agent-framework-router` or `aspire-orchestrator` would be clearer.
@@ -246,10 +272,15 @@ When creating a new agent:
 Every skill must include YAML frontmatter:
 
 - `name`
-- `version`
-- `category`
 - `description`
 - `compatibility`
+
+Every skill must also include a sibling `manifest.json` that defines:
+
+- `version`
+- `category`
+- optional `packages`
+- optional `package_prefix`
 
 Recommended structure:
 
@@ -268,8 +299,8 @@ Content rules:
 - Avoid user-facing marketing language.
 - Avoid obsolete guidance copied from old blog posts or samples.
 - `description` must be an exact, reusable one-line description of what the skill is for, because the README catalog copies it directly.
-- `version` must use semantic versioning and must be bumped when the skill guidance materially changes.
-- `category` must match the supported README catalog categories.
+- `version` must live in the sibling `manifest.json`, use semantic versioning, and be bumped when the skill guidance materially changes.
+- `category` must live in the sibling `manifest.json` and match the supported README catalog categories.
 - Treat `SKILL.md` as the control plane for the skill: trigger conditions, selection logic, workflow, deliverables, and validation. Move large documentation bodies, reference tables, long examples, and mirrored upstream material into `references/`.
 - Optimize for token economy. Prefer a short `Load References` section with topic-focused files over one large `SKILL.md` or one giant omnibus reference file.
 - When a skill explains non-trivial implementation details, integration flow, component boundaries, or decision logic, add at least one Mermaid diagram instead of leaving the explanation text-only.
@@ -299,22 +330,21 @@ Rules:
 
 Whenever you add, rename, split, merge, or remove a skill:
 
-1. Update the skill frontmatter first.
+1. Update `SKILL.md` frontmatter only for `name`, `description`, or `compatibility`, and update the sibling `manifest.json` for `version`, `category`, `packages`, or `package_prefix`.
 2. Update the skill count if it is listed.
 3. Update automation notes if watch coverage changes.
 4. Let the release workflows generate fresh catalog outputs in CI; run `python3 scripts/generate_catalog.py` locally only when you need a preview.
 
-The source of truth is `skills/*/SKILL.md`, not checked-in generated artifacts.
+The source of truth is the scanned `catalog/<type>/<package>/` tree: package `manifest.json`, nested `skills/*/SKILL.md`, and nested `agents/*/AGENT.md`. Do not introduce or rely on checked-in aggregate catalog JSON files as the source of truth.
 Do not hand-edit the generated catalog section between `<!-- BEGIN GENERATED CATALOG -->` and `<!-- END GENERATED CATALOG -->`.
 
 Generated catalog outputs:
 
 - [`README.md`](README.md) catalog section
-- [`catalog/skills.json`](catalog/skills.json) machine-readable manifest
 
 Canonical generation point:
 
-- [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) for remote catalog releases, the bundled fallback catalog inside the published `.nupkg`, and GitHub Pages deployment
+- [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) for remote catalog releases, transient exported manifests when needed for release assets, the bundled fallback catalog inside the published `.nupkg`, and GitHub Pages deployment
 
 ## Dotnet Tool Rules
 
@@ -374,7 +404,7 @@ Rules:
 - `catalog-v*` releases must publish intentional release notes, not a one-line automation placeholder. Release notes should summarize the change window, list merged PRs or commits, call out contributors, and explicitly identify first-time contributors when any appear in that release window.
 - The tool should use the newest non-draft `catalog-v*` GitHub release by default and fall back to bundled content only when the remote catalog is unavailable.
 - The bare `dotnet skills` usage view is still a normal startup path and must surface the same automatic self-update notice as other startup commands, unless update checks are explicitly suppressed.
-- Local `dotnet build` and `dotnet pack` for the tool may generate a temporary manifest in `obj/` from `skills/*/SKILL.md`; release CI remains the canonical place that generates checked catalog outputs and release assets.
+- Local `dotnet build` and `dotnet pack` for the tool may generate a temporary manifest in `obj/` from the scanned `catalog/<type>/<package>/` tree; release CI remains the canonical place that generates checked catalog outputs and release assets.
 
 ## GitHub Pages Rules
 
@@ -383,7 +413,7 @@ The repository publishes a public skills directory website to GitHub Pages.
 Rules:
 
 - The website source lives in `github-pages/index.html` as a template with a `SKILLS_DATA_PLACEHOLDER` marker.
-- `scripts/generate_pages.py` reads `catalog/skills.json` and `catalog/agents.json` and injects the public catalog data into the template.
+- `scripts/generate_pages.py` scans the `catalog/` tree directly and injects the public catalog data into the template.
 - The generated site is output to `artifacts/github-pages/` which is gitignored.
 - GitHub Pages deployment runs inside `publish-catalog.yml` as part of the unified nightly release.
 - The public site must show the current published `catalog-v*` release version as a visible page element, not only in metadata.
@@ -530,9 +560,9 @@ For skill and docs changes:
 
 For agent and docs changes:
 
-- Verify the new agent folder exists in `agents/<agent>/` or `skills/<skill>/agents/<agent>/`.
+- Verify the new agent folder exists in `agents/<agent>/` or `catalog/<type>/<package>/agents/<agent>/`.
 - Verify `AGENT.md` exists inside that folder.
-- Verify the placement matches the intended scope: broad agents top-level, tightly coupled agents under a skill.
+- Verify the placement matches the intended scope: broad agents top-level, package-owned agents under the package root.
 - Verify README and contributing docs explain the new agent surface accurately.
 
 For dotnet tool changes:
@@ -593,7 +623,7 @@ This repository should behave like a maintainable documentation-and-automation s
 - English-only durable docs and skill content.
 - Catalog manifest generation in CI release workflows instead of relying on contributor-local regeneration.
 - Compact, readable CLI output that favors grouped summaries and short status views over giant wrapped tables.
-- Top-level orchestration agents for broad `.NET` routing, with optional skill-scoped specialist agents that live next to the relevant skill when they are tightly coupled.
+- Top-level orchestration agents for broad `.NET` routing, with package-owned agents living only under `catalog/<type>/<package>/agents/` when they belong to one package surface.
 - Folder-per-agent source layout, so every agent can carry its own references, assets, scripts, and future adapter metadata.
 - The public landing page Quick Start section must look polished and intentionally composed; it should be one of the strongest visual sections on the site, not a loose grid of equally weighted cards.
 - Public site copy should frame Claude Code, GitHub Copilot, Gemini, and Codex as supported platforms with recognizable brand-style presentation, not as "AI agents".
@@ -613,8 +643,8 @@ This repository should behave like a maintainable documentation-and-automation s
 - Numbered upstream-watch fragments such as `10/20/30` and `.d` directory indirection for a config that should stay simple.
 - User-facing command examples that require the `dotnet-` prefix when the CLI can resolve a short alias.
 - Local contributor workflows built around `dotnet tool install --add-source artifacts/nuget`.
-- Treating checked-in `catalog/skills.json` as the source of truth instead of `skills/*/SKILL.md`.
-- Forcing every new agent into either only the top-level catalog or only the skill tree; broad agents and skill-scoped agents are both valid when used deliberately.
+- Treating a checked-in aggregate catalog JSON file as the source of truth instead of scanning `catalog/<type>/<package>/manifest.json` together with nested `skills/*/SKILL.md` and `agents/*/AGENT.md`.
+- Nesting agents under `skills/<skill>/agents/`; agents belong at the top level or under `catalog/<type>/<package>/agents/`, never inside a skill folder.
 - Flat loose `.agent.md` files as the canonical repo source format for agents.
 - Default CLI views that dump the entire catalog as a wide multi-line table with heavily wrapped descriptions.
 - Weak or awkward Quick Start layout on the public landing page, especially when the onboarding steps look visually scattered or poorly prioritized.

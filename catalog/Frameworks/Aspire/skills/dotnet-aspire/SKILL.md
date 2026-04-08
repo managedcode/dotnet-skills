@@ -1,7 +1,5 @@
 ---
 name: dotnet-aspire
-version: "1.3.1"
-category: "Cloud"
 description: "Build, upgrade, and operate .NET Aspire application hosts with current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, and Azure deployment patterns for distributed apps."
 compatibility: "Best for current Aspire 13-era tooling on .NET 10; use version-aware upgrade guidance for older 8.x or 9.x Aspire solutions."
 ---

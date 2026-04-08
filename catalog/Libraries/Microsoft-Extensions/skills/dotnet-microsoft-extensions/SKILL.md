@@ -1,7 +1,5 @@
 ---
 name: dotnet-microsoft-extensions
-version: "1.0.0"
-category: "Core"
 description: "Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns."
 compatibility: "Relevant to console apps, workers, ASP.NET Core apps, functions, and reusable libraries."
 ---

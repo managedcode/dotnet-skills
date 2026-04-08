@@ -1,7 +1,5 @@
 ---
 name: dotnet-stryker
-version: "1.0.0"
-category: "Testing"
 description: "Use the open-source free `Stryker.NET` mutation testing tool for .NET. Use when a repo needs to measure whether tests actually catch faults, especially in critical libraries or domains."
 compatibility: "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first."
 ---

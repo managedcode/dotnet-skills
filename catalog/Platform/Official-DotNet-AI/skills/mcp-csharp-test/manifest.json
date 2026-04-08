@@ -1,0 +1,8 @@
+{
+  "version": "0.1.0",
+  "category": "AI",
+  "packages": [
+    "ModelContextProtocol",
+    "ModelContextProtocol.AspNetCore"
+  ]
+}

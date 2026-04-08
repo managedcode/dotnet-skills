@@ -1,7 +1,5 @@
 ---
 name: dotnet-sep
-version: "1.0.0"
-category: "Data"
 description: "Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows."
 compatibility: "Requires a .NET project that can reference the `Sep` package and accept span/ref-struct row/column APIs for row-by-row processing."
 ---

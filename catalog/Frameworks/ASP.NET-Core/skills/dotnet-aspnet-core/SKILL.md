@@ -1,7 +1,5 @@
 ---
 name: dotnet-aspnet-core
-version: "1.0.0"
-category: "Web"
 description: "Build, debug, modernize, or review ASP.NET Core applications with correct hosting, middleware, security, configuration, logging, and deployment patterns on current .NET."
 compatibility: "Requires an ASP.NET Core project or solution."
 ---

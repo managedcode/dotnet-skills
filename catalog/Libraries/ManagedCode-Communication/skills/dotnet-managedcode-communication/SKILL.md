@@ -1,7 +1,5 @@
 ---
 name: dotnet-managedcode-communication
-version: "1.0.0"
-category: "Core"
 description: "Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow."
 compatibility: "Requires a .NET application, service layer, or API boundary that integrates ManagedCode.Communication."
 ---

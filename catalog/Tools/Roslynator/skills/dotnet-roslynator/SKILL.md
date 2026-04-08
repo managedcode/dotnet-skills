@@ -1,7 +1,5 @@
 ---
 name: dotnet-roslynator
-version: "1.0.0"
-category: "Code Quality"
 description: "Use the open-source free `Roslynator` analyzer packages and optional CLI for .NET. Use when a repo wants broad C# static analysis, auto-fix flows, dead-code detection, optional CLI checks, or extra rules beyond the SDK analyzers."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---

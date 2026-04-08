@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-feature-spec
-version: "1.0.0"
-category: "Architecture"
 description: "Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. Use when the user asks for a feature spec, executable requirements, acceptance criteria, behaviour documentation, or a pre-implementation plan for non-trivial behaviour changes."
 compatibility: "Requires repository write access; produces Markdown docs with Mermaid diagrams and executable verification steps."
 ---

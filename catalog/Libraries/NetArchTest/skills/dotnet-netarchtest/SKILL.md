@@ -1,7 +1,5 @@
 ---
 name: dotnet-netarchtest
-version: "1.0.0"
-category: "Architecture"
 description: "Use the open-source free `NetArchTest.Rules` library for architecture rules in .NET unit tests. Use when a repo wants lightweight, fluent architecture assertions for namespaces, dependencies, or layering."
 compatibility: "Requires a .NET test project; works with any unit-test framework."
 ---

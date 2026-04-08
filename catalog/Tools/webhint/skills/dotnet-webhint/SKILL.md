@@ -1,7 +1,5 @@
 ---
 name: dotnet-webhint
-version: "1.0.0"
-category: "Code Quality"
 description: "Use webhint in .NET repositories that ship browser-facing frontends. Use when a repo needs CLI audits for accessibility, performance, security headers, PWA signals, SEO, or runtime page quality against a served site or built frontend output."
 compatibility: "Requires a .NET repository with a browser-facing site or frontend build output; works best against a reachable local or deployed URL and a checked-in `.hintrc`."
 ---

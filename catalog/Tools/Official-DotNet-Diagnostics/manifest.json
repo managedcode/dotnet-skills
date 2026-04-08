@@ -1,0 +1,9 @@
+{
+  "name": "dotnet-diag",
+  "title": "Official .NET skills: dotnet-diag",
+  "description": "Skills for .NET performance investigations, debugging, and incident analysis. Imported from dotnet/skills via vendir.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-diag"
+  }
+}

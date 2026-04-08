@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-nfr
-version: "1.0.0"
-category: "Architecture"
 description: "Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. Use when a feature or architecture change needs explicit quality attributes and trade-offs."
 compatibility: "Requires repository access when NFRs are documented in feature docs, ADRs, or architecture docs."
 ---

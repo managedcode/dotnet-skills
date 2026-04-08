@@ -1,135 +1,20 @@
 #!/usr/bin/env python3
-"""Generate the agents catalog manifest from agent metadata."""
+"""Validate or export the agents catalog by scanning catalog package folders."""
 from __future__ import annotations
 
 import argparse
 import json
-import re
-import sys
 from pathlib import Path
 
+from catalog_index import build_agent_manifest, collect_agents
 
 ROOT = Path(__file__).resolve().parents[1]
-CATALOG_DIR = ROOT / "catalog"
-MANIFEST_PATH = CATALOG_DIR / "agents.json"
-
-TYPE_DIRS = ["Frameworks", "Libraries", "Tools", "Testing", "Platform"]
+MANIFEST_PATH = ROOT / "artifacts" / "agent-catalog.json"
 
 
-def unquote(value: str) -> str:
-    value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
-        return value[1:-1]
-    return value
-
-
-def parse_frontmatter(path: Path) -> tuple[dict[str, str | list[str]], str]:
-    text = path.read_text()
-    if not text.startswith("---\n"):
-        raise ValueError(f"{path} is missing YAML frontmatter")
-
-    match = re.match(r"^---\n(.*?)\n---\n(.*)$", text, flags=re.DOTALL)
-    if not match:
-        raise ValueError(f"{path} has invalid frontmatter")
-
-    raw_frontmatter, body = match.groups()
-    data: dict[str, str | list[str]] = {}
-    current_key: str | None = None
-    current_list: list[str] = []
-
-    for line in raw_frontmatter.splitlines():
-        if not line.strip():
-            continue
-
-        # Check for list continuation
-        if line.startswith("  - "):
-            if current_key:
-                current_list.append(line.strip()[2:].strip())
-            continue
-
-        # Save previous list if any
-        if current_key and current_list:
-            data[current_key] = current_list
-            current_list = []
-            current_key = None
-
-        if ":" not in line:
-            raise ValueError(f"{path} has malformed frontmatter line: {line}")
-
-        key, value = line.split(":", 1)
-        key = key.strip()
-        value = value.strip()
-
-        if not value:
-            # Start of a list
-            current_key = key
-            current_list = []
-        else:
-            data[key] = unquote(value)
-
-    # Save last list if any
-    if current_key and current_list:
-        data[current_key] = current_list
-
-    return data, body
-
-
-def parse_title(body: str, path: Path) -> str:
-    for line in body.splitlines():
-        if line.startswith("# "):
-            return line[2:].strip()
-    raise ValueError(f"{path} is missing an H1 title")
-
-
-def collect_agents() -> list[dict[str, str | list[str]]]:
-    """Scan catalog/{Type}/{Package}/agents/ for agents."""
-    agents: list[dict[str, str | list[str]]] = []
-
-    for type_dir_name in TYPE_DIRS:
-        type_dir = CATALOG_DIR / type_dir_name
-        if not type_dir.is_dir():
-            continue
-
-        for package_dir in sorted(p for p in type_dir.iterdir() if p.is_dir()):
-            agents_dir = package_dir / "agents"
-            if not agents_dir.is_dir():
-                continue
-
-            for agent_dir in sorted(p for p in agents_dir.iterdir() if p.is_dir()):
-                agent_path = agent_dir / "AGENT.md"
-                if not agent_path.exists():
-                    continue
-
-                metadata, body = parse_frontmatter(agent_path)
-                title = parse_title(body, agent_path)
-
-                required = ["name", "description"]
-                missing = [key for key in required if key not in metadata or not str(metadata[key]).strip()]
-                if missing:
-                    raise ValueError(f"{agent_path} is missing required frontmatter keys: {', '.join(missing)}")
-
-                rel_path = f"catalog/{type_dir_name}/{package_dir.name}/agents/{agent_dir.name}/"
-
-                agents.append(
-                    {
-                        "name": str(metadata["name"]),
-                        "title": title,
-                        "description": str(metadata["description"]),
-                        "skills": metadata.get("skills", []),
-                        "tools": metadata.get("tools", ""),
-                        "model": metadata.get("model", "inherit"),
-                        "package": package_dir.name,
-                        "type": type_dir_name,
-                        "path": rel_path,
-                    }
-                )
-
-    return agents
-
-
-def write_manifest(output_path: Path, agents: list[dict[str, str | list[str]]]) -> None:
+def write_manifest(output_path: Path, agents: list[dict[str, object]]) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps({"agents": agents}, indent=2, sort_keys=False) + "\n")
+    output_path.write_text(json.dumps(build_agent_manifest(agents), indent=2, sort_keys=False) + "\n", encoding="utf-8")
 
 
 def parse_args() -> argparse.Namespace:
@@ -138,7 +23,12 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=MANIFEST_PATH,
-        help="Write the generated manifest to this path.",
+        help="Write a transient exported manifest to this path.",
+    )
+    parser.add_argument(
+        "--validate-only",
+        action="store_true",
+        help="Validate agent metadata without writing an output file.",
     )
     return parser.parse_args()
 
@@ -146,6 +36,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     agents = collect_agents()
+    if args.validate_only:
+        print(f"Agent metadata is valid for {len(agents)} agents.")
+        return 0
+
     output_path = args.output.resolve()
     write_manifest(output_path, agents)
     print(f"Generated agent catalog for {len(agents)} agents at {output_path}.")

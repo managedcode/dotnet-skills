@@ -1,0 +1,61 @@
+name: Catalog maintenance
+description: Propose an update to an existing catalog package, skill, agent, manifest, or contributor-facing docs.
+title: "[catalog-maintenance] "
+labels:
+  - catalog
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for updates to existing catalog content.
+
+        Quick routing:
+
+        - package metadata and upstream links -> `catalog/<type>/<package>/manifest.json`
+        - skill metadata -> `catalog/<type>/<package>/skills/<skill>/manifest.json`
+        - skill guidance -> `catalog/<type>/<package>/skills/<skill>/SKILL.md`
+        - repo-owned routing agent -> `catalog/<type>/<package>/agents/<agent>/AGENT.md`
+        - contributor workflow or site wording -> `README.md`, `CONTRIBUTING.md`, `scripts/generate_pages.py`, or GitHub templates
+  - type: input
+    id: package_path
+    attributes:
+      label: Catalog package path
+      description: Example: `catalog/Tools/Roslynator/`
+      placeholder: catalog/<type>/<package>/
+    validations:
+      required: true
+  - type: dropdown
+    id: change_kind
+    attributes:
+      label: What needs to change
+      options:
+        - manifest metadata
+        - skill guidance
+        - repo-owned agent
+        - contributor docs
+        - public site wording
+        - upstream watch
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: requested_change
+    attributes:
+      label: Requested change
+      description: Be explicit about what is wrong today and what the corrected catalog shape should be.
+    validations:
+      required: true
+  - type: textarea
+    id: manifest_details
+    attributes:
+      label: Manifest details, if relevant
+      description: Mention package `links.repository`, `links.docs`, `links.nuget`, or sibling skill/agent `version` / `category` / `packages` / `package_prefix` changes here.
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Rules acknowledged
+      options:
+        - label: I will not put `version`, `category`, `packages`, or `package_prefix` in `SKILL.md` frontmatter
+          required: true
+        - label: I understand that the scanned `catalog/<type>/<package>/` tree is the source of truth
+          required: true

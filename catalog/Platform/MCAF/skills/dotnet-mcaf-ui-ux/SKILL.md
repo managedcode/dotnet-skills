@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-ui-ux
-version: "1.0.0"
-category: "Cross-Platform UI"
 description: "Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. Use when bootstrapping a UI project, choosing front-end stack, or tightening design and accessibility practices."
 compatibility: "Requires repository access when UI docs, component guidance, or design system rules live in the repo."
 ---

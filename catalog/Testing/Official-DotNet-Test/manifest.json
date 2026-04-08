@@ -1,0 +1,9 @@
+{
+  "name": "dotnet-test",
+  "title": "Official .NET skills: dotnet-test",
+  "description": "Skills for running, diagnosing, and migrating .NET tests: test execution, filtering, platform detection, and MSTest workflows. Imported from dotnet/skills via vendir.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-test"
+  }
+}

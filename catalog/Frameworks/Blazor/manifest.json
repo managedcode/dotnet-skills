@@ -4,8 +4,8 @@
   "description": "Build interactive web UIs with C# instead of JavaScript",
   "icon": "icon.svg",
   "links": {
+    "repository": "https://github.com/dotnet/aspnetcore",
     "docs": "https://learn.microsoft.com/en-us/aspnet/core/blazor/",
-    "nuget": "https://www.nuget.org/packages/Microsoft.AspNetCore.Components",
-    "github": "https://github.com/dotnet/aspnetcore"
+    "nuget": "https://www.nuget.org/packages/Microsoft.AspNetCore.Components"
   }
 }

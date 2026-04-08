@@ -1,7 +1,5 @@
 ---
 name: dotnet-managedcode-mimetypes
-version: "1.0.0"
-category: "Core"
 description: "Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses."
 compatibility: "Requires a .NET application that integrates ManagedCode.MimeTypes or evaluates MIME type mapping behavior."
 ---

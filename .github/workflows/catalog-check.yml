@@ -18,12 +18,21 @@ jobs:
           python-version: "3.12"
 
       - name: Validate automation scripts
-        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/upstream_watch.py
+        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_catalog_definitions.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/import_external_catalog_sources.py scripts/upstream_watch.py
+
+      - name: Validate external catalog source config
+        run: python3 scripts/import_external_catalog_sources.py --validate-config
+
+      - name: Normalize vendored external sources
+        run: python3 scripts/import_external_catalog_sources.py
+
+      - name: Verify imported external sources are committed
+        run: git diff --exit-code -- catalog
 
       - name: Validate catalog source metadata
         run: |
           python3 scripts/generate_catalog.py --validate-only
-          python3 scripts/generate_agent_catalog.py --output /tmp/dotnet-agents-manifest.json
+          python3 scripts/generate_agent_catalog.py --validate-only
 
       - name: Validate upstream watch config
         run: python3 scripts/upstream_watch.py --validate-config

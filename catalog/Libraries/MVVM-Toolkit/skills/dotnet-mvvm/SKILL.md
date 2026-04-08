@@ -1,7 +1,5 @@
 ---
 name: dotnet-mvvm
-version: "1.0.0"
-category: "Cross-Platform UI"
 description: "Implement the Model-View-ViewModel pattern in .NET applications with proper separation of concerns, data binding, commands, and testable ViewModels using MVVM Toolkit."
 compatibility: "Applies to WPF, MAUI, WinUI, Uno Platform, Avalonia, and Blazor projects."
 ---

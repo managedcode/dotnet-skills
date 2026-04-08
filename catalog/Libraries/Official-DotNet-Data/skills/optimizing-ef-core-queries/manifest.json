@@ -1,0 +1,5 @@
+{
+  "version": "0.1.0",
+  "category": "Data",
+  "package_prefix": "Microsoft.EntityFrameworkCore"
+}

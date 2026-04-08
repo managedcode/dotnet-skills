@@ -1,7 +1,5 @@
 ---
 name: dotnet-managedcode-orleans-signalr
-version: "1.0.0"
-category: "Distributed"
 description: "Use ManagedCode.Orleans.SignalR when a distributed .NET application needs Orleans-based coordination of SignalR real-time messaging, hub delivery, and grain-driven push flows."
 compatibility: "Requires a .NET application that combines Orleans and SignalR through ManagedCode.Orleans.SignalR."
 ---

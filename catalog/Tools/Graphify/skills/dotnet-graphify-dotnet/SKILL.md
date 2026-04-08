@@ -1,7 +1,5 @@
 ---
 name: dotnet-graphify-dotnet
-version: "1.0.0"
-category: "Architecture"
 description: "Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships."
 compatibility: "Requires the `graphify-dotnet` global tool and a .NET 10 SDK; AST-only extraction works with zero model setup, while semantic enrichment needs Azure OpenAI, Ollama, or GitHub Copilot SDK."
 ---

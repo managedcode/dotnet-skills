@@ -1,7 +1,5 @@
 ---
 name: dotnet-semantic-kernel
-version: "1.0.0"
-category: "AI"
 description: "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable."
 compatibility: "Requires Semantic Kernel 1.x packages (.NET 8+)."
 ---

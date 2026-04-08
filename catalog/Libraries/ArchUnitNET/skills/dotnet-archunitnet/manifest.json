@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "category": "Architecture",
+  "packages": [
+    "ArchUnitNET",
+    "ArchUnitNET.xUnit",
+    "ArchUnitNET.NUnit",
+    "ArchUnitNET.MSTest"
+  ]
+}

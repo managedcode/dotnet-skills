@@ -1,7 +1,5 @@
 ---
 name: dotnet-modern-csharp
-version: "1.0.0"
-category: "Code Quality"
 description: "Write modern, version-aware C# for .NET repositories. Use when choosing language features across C# versions, especially C# 13 and C# 14, while staying compatible with the repo's target framework and `LangVersion`."
 compatibility: "Requires a C# or .NET repository; respects explicit `LangVersion` and target framework settings."
 ---

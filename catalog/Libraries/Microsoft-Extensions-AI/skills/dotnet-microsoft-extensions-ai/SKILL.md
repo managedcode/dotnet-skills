@@ -1,7 +1,5 @@
 ---
 name: dotnet-microsoft-extensions-ai
-version: "1.3.0"
-category: "AI"
 description: "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation."
 compatibility: "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration."
 ---

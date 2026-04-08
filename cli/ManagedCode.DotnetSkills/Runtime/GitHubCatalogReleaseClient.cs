@@ -57,10 +57,9 @@ internal sealed class GitHubCatalogReleaseClient
     {
         var release = await ResolveReleaseAsync(catalogVersion, cancellationToken);
         var releaseDirectory = new DirectoryInfo(Path.Combine(cacheRoot.FullName, release.TagName));
-        var cachedManifest = new FileInfo(Path.Combine(releaseDirectory.FullName, "catalog", "skills.json"));
-        var cachedSkillsRoot = new DirectoryInfo(Path.Combine(releaseDirectory.FullName, "skills"));
+        var cachedCatalogRoot = new DirectoryInfo(Path.Combine(releaseDirectory.FullName, "catalog"));
 
-        if (!force && cachedManifest.Exists && cachedSkillsRoot.Exists)
+        if (!force && cachedCatalogRoot.Exists)
         {
             return SkillCatalogPackage.LoadFromDirectory(releaseDirectory, $"GitHub release {release.TagName}", release.Version);
         }
@@ -88,15 +87,13 @@ internal sealed class GitHubCatalogReleaseClient
                 releaseDirectory.Delete(recursive: true);
             }
 
-            var extractedSkillsDirectory = new DirectoryInfo(Path.Combine(tempDirectory.FullName, "skills"));
             var extractedCatalogDirectory = new DirectoryInfo(Path.Combine(tempDirectory.FullName, "catalog"));
-            if (!extractedSkillsDirectory.Exists || !extractedCatalogDirectory.Exists)
+            if (!extractedCatalogDirectory.Exists)
             {
-                throw new InvalidOperationException($"Release asset {CatalogPayloadAssetName} from {release.TagName} is missing the expected skills/ and catalog/ folders.");
+                throw new InvalidOperationException($"Release asset {CatalogPayloadAssetName} from {release.TagName} is missing the expected catalog/ folder.");
             }
 
             releaseDirectory.Create();
-            SkillInstaller.CopyDirectory(extractedSkillsDirectory, new DirectoryInfo(Path.Combine(releaseDirectory.FullName, "skills")));
             SkillInstaller.CopyDirectory(extractedCatalogDirectory, new DirectoryInfo(Path.Combine(releaseDirectory.FullName, "catalog")));
 
             return SkillCatalogPackage.LoadFromDirectory(releaseDirectory, $"GitHub release {release.TagName}", release.Version);

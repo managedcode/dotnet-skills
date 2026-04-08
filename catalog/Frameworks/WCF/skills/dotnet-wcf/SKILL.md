@@ -1,7 +1,5 @@
 ---
 name: dotnet-wcf
-version: "1.0.0"
-category: "Legacy"
 description: "Work on WCF services, clients, bindings, contracts, and migration decisions for SOAP and multi-transport service-oriented systems on .NET Framework or compatible stacks."
 compatibility: "Requires WCF or a concrete migration off WCF."
 ---

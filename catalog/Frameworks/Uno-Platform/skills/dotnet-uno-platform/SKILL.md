@@ -1,7 +1,5 @@
 ---
 name: dotnet-uno-platform
-version: "1.0.0"
-category: "Cross-Platform UI"
 description: "Build cross-platform .NET applications with Uno Platform targeting WebAssembly, iOS, Android, macOS, Linux, and Windows from a single XAML/C# codebase."
 compatibility: "Requires Uno Platform SDK and workloads for target platforms."
 ---

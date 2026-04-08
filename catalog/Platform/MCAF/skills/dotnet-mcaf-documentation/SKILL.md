@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-documentation
-version: "1.0.0"
-category: "Architecture"
 description: "Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. Use when a repo’s docs are missing, stale, duplicated, or hard to navigate, or when adding new durable engineering guidance."
 compatibility: "Requires repository write access; updates docs and documentation structure."
 ---

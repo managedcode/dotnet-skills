@@ -1,7 +1,5 @@
 ---
 name: dotnet-project-setup
-version: "1.0.0"
-category: "Core"
 description: "Create or reorganize .NET solutions with clean project boundaries, repeatable SDK settings, and a maintainable baseline for libraries, apps, tests, CI, and local development."
 compatibility: "Best for new repositories or structural refactors of existing .NET solutions."
 ---

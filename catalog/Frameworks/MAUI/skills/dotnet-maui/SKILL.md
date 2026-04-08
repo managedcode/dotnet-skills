@@ -1,7 +1,5 @@
 ---
 name: dotnet-maui
-version: "1.0.0"
-category: "Cross-Platform UI"
 description: "Build, review, or migrate .NET MAUI applications across Android, iOS, macOS, and Windows with correct cross-platform UI, platform integration, and native packaging assumptions."
 compatibility: "Requires .NET MAUI workload (.NET 8+)."
 ---

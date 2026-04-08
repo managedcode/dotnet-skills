@@ -1,7 +1,5 @@
 ---
 name: dotnet-code-review
-version: "1.0.0"
-category: "Core"
 description: "Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them."
 compatibility: "Works for application code, libraries, tests, tooling, and infrastructure changes."
 ---

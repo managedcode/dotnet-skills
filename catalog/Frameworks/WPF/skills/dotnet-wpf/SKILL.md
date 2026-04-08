@@ -1,7 +1,5 @@
 ---
 name: dotnet-wpf
-version: "1.0.0"
-category: "Desktop"
 description: "Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions."
 compatibility: "Requires a WPF project on .NET or .NET Framework."
 ---

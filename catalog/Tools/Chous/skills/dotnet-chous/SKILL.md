@@ -1,7 +1,5 @@
 ---
 name: dotnet-chous
-version: "1.0.0"
-category: "Code Quality"
 description: "Use Chous in .NET repositories that ship sizeable frontend codebases and want file-structure linting, naming convention enforcement, and folder-layout policy as a CLI gate. Use when the problem is frontend architecture drift in the file tree rather than semantic code issues inside the files."
 compatibility: "Requires a repository with a meaningful frontend file tree and Node-based tooling or `npx`; Chous complements code linters and does not replace ESLint, Stylelint, or runtime site audits."
 ---

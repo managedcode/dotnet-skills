@@ -1,7 +1,5 @@
 ---
 name: dotnet-stylelint
-version: "1.1.0"
-category: "Code Quality"
 description: "Use Stylelint in .NET repositories that ship CSS, SCSS, or other stylesheet assets alongside web frontends. Use when a repo needs a dedicated CLI lint gate for selectors, properties, duplicate styles, naming conventions, or design-system rule enforcement."
 compatibility: "Requires a .NET repository with stylesheet assets such as `wwwroot/`, `ClientApp/`, `src/`, or other frontend folders managed with Node tooling."
 ---

@@ -1,7 +1,5 @@
 ---
 name: dotnet-legacy-aspnet
-version: "1.0.0"
-category: "Legacy"
 description: "Maintain classic ASP.NET applications on .NET Framework, including Web Forms, older MVC, and legacy hosting patterns, while planning realistic modernization boundaries."
 compatibility: "Requires classic ASP.NET on .NET Framework."
 ---

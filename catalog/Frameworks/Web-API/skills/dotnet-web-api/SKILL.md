@@ -1,7 +1,5 @@
 ---
 name: dotnet-web-api
-version: "1.0.0"
-category: "Web"
 description: "Build or maintain controller-based ASP.NET Core APIs when the project needs controller conventions, advanced model binding, validation extensions, OData, JsonPatch, or existing API patterns."
 compatibility: "Requires an ASP.NET Core API project that uses or should use controllers."
 ---

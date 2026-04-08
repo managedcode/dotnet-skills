@@ -1,7 +1,5 @@
 ---
 name: dotnet-format
-version: "1.0.0"
-category: "Code Quality"
 description: "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. Use when a .NET repo needs formatting commands, `--verify-no-changes` CI checks, or `.editorconfig`-driven code style enforcement."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---

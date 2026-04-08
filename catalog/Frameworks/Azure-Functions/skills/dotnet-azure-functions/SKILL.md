@@ -1,7 +1,5 @@
 ---
 name: dotnet-azure-functions
-version: "1.0.0"
-category: "Cloud"
 description: "Build, review, or migrate Azure Functions in .NET with correct execution model, isolated worker setup, bindings, DI, and Durable Functions patterns."
 compatibility: "Requires an Azure Functions project or a migration plan for one."
 ---

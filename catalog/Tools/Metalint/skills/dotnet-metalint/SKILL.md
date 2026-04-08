@@ -1,7 +1,5 @@
 ---
 name: dotnet-metalint
-version: "1.0.0"
-category: "Code Quality"
 description: "Use Metalint in .NET repositories that ship Node-based frontend assets and want one CLI entrypoint over several underlying linters. Use when a repo wants to orchestrate ESLint, Stylelint, HTMLHint, and related frontend checks from a single checked-in `.metalint/` configuration."
 compatibility: "Requires a .NET repository with a Node-based frontend and multiple underlying linters; Metalint is an orchestrator, not a replacement for the actual linter configs it delegates to."
 ---

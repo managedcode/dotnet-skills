@@ -4,8 +4,8 @@
   "description": "Cloud-native app host for distributed .NET apps",
   "icon": "icon.svg",
   "links": {
+    "repository": "https://github.com/dotnet/aspire",
     "docs": "https://learn.microsoft.com/en-us/dotnet/aspire/",
-    "nuget": "https://www.nuget.org/packages/Aspire.Hosting",
-    "github": "https://github.com/dotnet/aspire"
+    "nuget": "https://www.nuget.org/packages/Aspire.Hosting"
   }
 }

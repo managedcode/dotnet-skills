@@ -1,0 +1,9 @@
+{
+  "name": "dotnet-data",
+  "title": "Official .NET skills: dotnet-data",
+  "description": "Skills for .NET data access and Entity Framework related tasks. Imported from dotnet/skills via vendir.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-data"
+  }
+}

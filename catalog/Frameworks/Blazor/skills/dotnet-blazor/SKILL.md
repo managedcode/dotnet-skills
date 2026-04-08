@@ -1,7 +1,5 @@
 ---
 name: dotnet-blazor
-version: "1.0.0"
-category: "Web"
 description: "Build and review Blazor applications across server, WebAssembly, web app, and hybrid scenarios with correct component design, state flow, rendering, and hosting choices."
 compatibility: "Requires Blazor project (.NET 6+, preferably .NET 8+ for unified model)."
 ---

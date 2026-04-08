@@ -1,7 +1,5 @@
 ---
 name: dotnet-winui
-version: "1.0.1"
-category: "Desktop"
 description: "Build or review WinUI 3 applications with the Windows App SDK, including MVVM patterns, packaging decisions, navigation, theming, windowing, and interop boundaries with other .NET stacks. Use when building modern Windows-native desktop UI."
 compatibility: "Requires a WinUI 3, Windows App SDK, or MAUI-on-Windows integration scenario."
 ---

@@ -1,0 +1,95 @@
+name: New catalog package
+description: Propose a new package folder under catalog/<type>/<package>/ for a library, framework, tool, testing surface, or platform skill.
+title: "[catalog-package] "
+labels:
+  - catalog
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form when you want to add a new package to the catalog.
+
+        Canonical structure:
+
+        - `catalog/<type>/<package>/manifest.json` stores package metadata and upstream links
+        - `catalog/<type>/<package>/skills/<skill>/SKILL.md` stores routing and implementation guidance
+        - `catalog/<type>/<package>/skills/<skill>/manifest.json` stores `version`, `category`, `packages`, or `package_prefix` for that concrete skill
+        - `catalog/<type>/<package>/agents/<agent>/AGENT.md` is optional for repo-owned routing agents
+
+        Keep `version`, `category`, `packages`, and `package_prefix` in `manifest.json`, not in `SKILL.md` frontmatter.
+  - type: dropdown
+    id: package_type
+    attributes:
+      label: Package type
+      options:
+        - Frameworks
+        - Libraries
+        - Tools
+        - Testing
+        - Platform
+    validations:
+      required: true
+  - type: input
+    id: package_folder
+    attributes:
+      label: Package folder name
+      description: Example: `Roslynator`, `Semantic-Kernel`, `Entity-Framework-Core`
+      placeholder: Package folder
+    validations:
+      required: true
+  - type: input
+    id: skill_ids
+    attributes:
+      label: Skill ids
+      description: Comma-separated `dotnet-*` ids you expect under this package
+      placeholder: dotnet-example, dotnet-example-advanced
+    validations:
+      required: true
+  - type: input
+    id: repository_url
+    attributes:
+      label: Upstream repository URL
+      description: Put this in the package-level `links.repository`
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+  - type: input
+    id: docs_url
+    attributes:
+      label: Primary docs URL
+      description: Put this in the package-level `links.docs`
+      placeholder: https://learn.microsoft.com/... or project docs URL
+  - type: input
+    id: nuget_url
+    attributes:
+      label: Representative NuGet package URL
+      description: Put this in the package-level `links.nuget`
+      placeholder: https://www.nuget.org/packages/Package.Id
+  - type: textarea
+    id: scope
+    attributes:
+      label: Why this package needs a dedicated catalog entry
+      description: Explain the main use cases, boundaries, and why an existing package is not enough.
+    validations:
+      required: true
+  - type: textarea
+    id: triggers
+    attributes:
+      label: Auto-install triggers
+      description: List the exact NuGet packages or a package prefix that should live in each skill's sibling `manifest.json`.
+      placeholder: |
+        dotnet-example -> packages: Example.Core, Example.Hosting
+        dotnet-example-advanced -> package_prefix: Example.Advanced
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked whether the capability already exists in the catalog
+          required: true
+        - label: I understand that package links belong in the package manifest, while trigger metadata belongs in sibling skill manifests
+          required: true
+        - label: I understand that `SKILL.md` should focus on routing, workflow, deliverables, and validation
+          required: true

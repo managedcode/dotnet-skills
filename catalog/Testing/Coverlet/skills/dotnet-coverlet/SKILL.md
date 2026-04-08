@@ -1,7 +1,5 @@
 ---
 name: dotnet-coverlet
-version: "1.0.0"
-category: "Testing"
 description: "Use the open-source free `coverlet` toolchain for .NET code coverage. Use when a repo needs line and branch coverage, collector versus MSBuild driver selection, or CI-safe coverage commands."
 compatibility: "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first."
 ---

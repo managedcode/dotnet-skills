@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "category": "Data",
+  "packages": [
+    "ManagedCode.Storage.Core",
+    "ManagedCode.Storage.Azure",
+    "ManagedCode.Storage.Aws",
+    "ManagedCode.Storage.Gcp"
+  ]
+}

@@ -12,8 +12,8 @@ The goal is to make usage of a library or project explicit, concrete, and reusab
 
 Please contribute:
 
-- New `dotnet-*` skills for important libraries, frameworks, and integrations.
-- New orchestration agents in `agents/` for broad routing roles, or in `skills/<skill>/agents/` for tightly coupled specialist behavior.
+- New repo-authored `dotnet-*` skills for important libraries, frameworks, and integrations, or new vendir-managed upstream source mappings when official repositories should be imported instead.
+- New orchestration agents in `agents/` for broad routing roles, or in `catalog/<type>/<package>/agents/` for package-owned specialist behavior.
 - Improvements to existing skills when usage guidance is incomplete or outdated.
 - Upstream watch entries for projects that should trigger refresh issues when a new release or documentation change happens.
 - Documentation improvements when a skill description, version, category, or compatibility statement is unclear.
@@ -23,7 +23,7 @@ Please contribute:
 If you want people to use your library well, please add:
 
 1. Your project to the right upstream watch shard under [`.github/upstream-watch*.json`](.github/)
-2. A dedicated skill under [`skills/`](skills) when the project is important enough to justify one
+2. A dedicated skill under `catalog/<type>/<package>/skills/` when the project is important enough to justify one
 3. Clear guidance in that skill about:
    - what the library is
    - why someone should use it
@@ -64,17 +64,23 @@ Only add extra fields such as `match_tag_regex` or `id` when you actually need t
 Every `SKILL.md` must include these frontmatter fields:
 
 - `name`
-- `version`
-- `category`
 - `description`
 - `compatibility`
 
+Every skill must also include a sibling `manifest.json` next to `SKILL.md` with:
+
+- `version`
+- `category`
+- optional `packages`
+- optional `package_prefix`
+
 Rules:
 
-- `version` is required and is shown in the README catalog.
+- `version` is required, lives in the sibling skill manifest, and is shown in the README catalog.
 - `description` must be a clear, exact statement of what the skill is and when it should be used.
 - `description` is copied into the README catalog, so write it carefully.
-- `category` must match one of the supported catalog categories.
+- `category` is required and lives in the sibling skill manifest.
+- category and catalog type lists are discovered from the scanned catalog and generated into build artifacts; do not add matching root constants in Python or C# when introducing a new category or top-level catalog type.
 
 ## Skill Versioning Policy
 
@@ -118,14 +124,18 @@ Write precise descriptions like:
 Create:
 
 ```text
-skills/<skill-slug>/
-├── SKILL.md
-├── scripts/       # optional
-├── references/    # optional
-└── assets/        # optional
+catalog/<type>/<package>/
+├── manifest.json
+└── skills/
+    └── <skill-slug>/
+        ├── SKILL.md
+        ├── manifest.json
+        ├── scripts/       # optional
+        ├── references/    # optional
+        └── assets/        # optional
 ```
 
-`SKILL.md` is the only required file. It uses the universal Agent Skills format with YAML frontmatter (name, description) that works across Claude, Copilot, Gemini, and Codex.
+`SKILL.md` plus its sibling `manifest.json` are the required skill files. `SKILL.md` uses the universal Agent Skills format with YAML frontmatter (`name`, `description`, `compatibility`) that works across Claude, Copilot, Gemini, and Codex.
 
 Treat `SKILL.md` as the control plane, not the full documentation dump:
 
@@ -140,18 +150,14 @@ Treat `SKILL.md` as the control plane, not the full documentation dump:
 Agent placement depends on scope:
 
 - broad orchestration agents live in `agents/<agent-slug>/AGENT.md`
-- tightly coupled specialist agents live in `skills/<skill-slug>/agents/<agent-slug>/AGENT.md`
-- top-level agents usually orchestrate a group of related skills, while skill-scoped agents usually ship as a narrow companion to one skill
-
-Current skill-scoped example:
-
-- `skills/dotnet-orleans/agents/dotnet-orleans-specialist/AGENT.md` for Orleans-only triage next to the `dotnet-orleans` skill
-- `skills/dotnet-aspire/agents/dotnet-aspire-orchestrator/AGENT.md` for AppHost, integration, deployment, and Community Toolkit routing next to the `dotnet-aspire` skill
+- package-owned specialist agents live in `catalog/<type>/<package>/agents/<agent-slug>/AGENT.md`
+- do not create `agents/` under `skills/<skill-slug>/`; skill folders contain skill content only
 
 Use this decision rule:
 
 - if the agent routes across multiple skills or domains, put it in `agents/`
-- if the agent only makes sense next to one skill or one framework surface, put it under that skill
+- if the agent belongs to one catalog package, put it in that package's `agents/` folder
+- if the agent only makes sense next to one skill or one framework surface, keep it as a package-owned agent in that package's `agents/` folder
 
 A minimal top-level layout:
 
@@ -169,30 +175,56 @@ An agent file should:
 
 - define the role clearly
 - say when to invoke it
-- list the `dotnet-*` skills it is expected to orchestrate
+- list the catalog skills it is expected to orchestrate
 - explain its boundaries and what it should hand off
 
 Keep `AGENT.md` short. Use it for routing, triage, and bounded role behavior. Put deep framework notes, large decision tables, protocol details, and other heavy material in `references/` or in the paired skill instead of bloating the agent entry file.
 Do not store agents as loose flat `.agent.md` source files in the repo; folder-per-agent is the canonical source layout here.
 
-Current skill-scoped specialist examples:
+Current package-owned specialist examples:
 
-- `skills/dotnet-orleans/agents/dotnet-orleans-specialist/AGENT.md`
-- `skills/dotnet-microsoft-agent-framework/agents/agent-framework-router/AGENT.md`
+- `catalog/Frameworks/Orleans/agents/dotnet-orleans-specialist/AGENT.md`
+- `catalog/Frameworks/Microsoft-Agent-Framework/agents/agent-framework-router/AGENT.md`
 
 ## README and Catalog
 
-The source of truth is the skill metadata in `skills/*/SKILL.md`.
+The source of truth is the scanned catalog tree in `catalog/<type>/<package>/`: package `manifest.json`, nested `skills/*/SKILL.md`, and nested `agents/*/AGENT.md`.
 
-The release catalog manifest is generated in CI during release workflows.
-Do not treat the checked-in `catalog/skills.json` file as the canonical source.
+Package manifests also carry package-scope metadata:
+
+- `links.repository` for the upstream repository URL
+- `links.docs` for the primary documentation URL when known
+- `links.nuget` for the representative NuGet package URL when known
+
+Nearest sibling skill or agent manifests carry entity-specific metadata:
+
+- `skills/<skill>/manifest.json` for `version`, `category`, `packages`, or `package_prefix`
+- `agents/<agent>/manifest.json` for future agent-scoped metadata when needed
+
+The release catalog manifest is generated on demand in CI during release workflows.
+Do not introduce or treat a checked-in aggregate catalog JSON file as the canonical source.
+
+External upstream repositories are handled separately:
+
+- `vendir.yml` declares which repositories are synced into `upstreams/`
+- `vendir.lock.yml` pins the resolved upstream SHAs
+- `catalog-sources/*.json` describes how vendored upstream plugins are normalized into `catalog/<type>/<package>/`
+- `scripts/import_external_catalog_sources.py` performs the normalization step
+
+For imported official upstream skills, keep the upstream skill or agent id unless there is a real compatibility reason to rename it.
 
 Do not hand-edit the generated catalog tables.
 
 Instead:
 
-1. Edit the skill metadata in `SKILL.md`
-2. If you want a local preview of generated outputs, run:
+1. Edit package metadata in the package `manifest.json`, and edit trigger metadata in the nearest sibling `skills/<skill>/manifest.json` or `agents/<agent>/manifest.json`
+2. If you changed vendored upstream content, run:
+
+```bash
+bash scripts/sync_external_catalog_sources.sh
+```
+
+3. If you want a local preview of generated outputs, run:
 
 ```bash
 python3 scripts/generate_catalog.py
@@ -201,7 +233,6 @@ python3 scripts/generate_catalog.py
 This preview updates:
 
 - the generated catalog section in [`README.md`](README.md)
-- the machine-readable manifest in [`catalog/skills.json`](catalog/skills.json)
 
 For metadata-only validation without rewriting generated files:
 
@@ -233,7 +264,8 @@ Do not trigger ad-hoc publish runs for every merge; the unified `04:00` UTC rele
 
 CLI naming rule:
 
-- keep canonical skill IDs in the catalog as `dotnet-*`
+- keep repo-authored canonical skill IDs in the catalog as `dotnet-*`
+- allow vendir-imported official upstream skills to preserve their upstream ids
 - allow short aliases in commands, for example `dotnet skills install aspire`
 - treat the CLI alias layer as user-facing convenience, not as a replacement for stable skill names in `skills/`
 
@@ -259,7 +291,7 @@ Publishing is handled by [`.github/workflows/publish-catalog.yml`](.github/workf
 Preferred publish model:
 
 1. Add the `NUGET_API_KEY` repository secret
-2. Keep the same manual base version in [`tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj), [`tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj`](tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj), and [`tools/ManagedCode.Agents/ManagedCode.Agents.csproj`](tools/ManagedCode.Agents/ManagedCode.Agents.csproj) as `<VersionPrefix>major.minor</VersionPrefix>`
+2. Keep the same manual base version in [`cli/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj`](cli/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj), [`cli/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj`](cli/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj), and [`cli/ManagedCode.Agents/ManagedCode.Agents.csproj`](cli/ManagedCode.Agents/ManagedCode.Agents.csproj) as `<VersionPrefix>major.minor</VersionPrefix>`
 3. Let [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) publish automatically at `04:00` UTC after merges to `main`, or trigger it manually only for a backfill or rerun
 
 The workflow resolves the publish version in CI as `<VersionPrefix>.<GITHUB_RUN_NUMBER>` and pushes the produced `.nupkg` files to NuGet. For example, a checked-in `0.0` base version becomes `0.0.412` on run `412`.
@@ -278,7 +310,7 @@ Rules:
 - the automatic catalog version format is `<year>.<month>.<day>.<daily-build-index>`, for example `2026.3.15.0`
 - the daily build index is UTC-based: first release for that UTC date is `.0`, second is `.1`, and so on
 - the normal flow is automatic by schedule; do not treat manual dispatch as the primary release path
-- the workflow generates fresh catalog outputs in CI from `skills/*/SKILL.md`
+- the workflow generates fresh catalog outputs in CI by scanning `catalog/<type>/<package>/manifest.json` with nested `skills/*/SKILL.md` and `agents/*/AGENT.md`
 - the tool resolves the latest remote catalog from the newest non-draft `catalog-v*` GitHub release
 - the workflow uploads two assets:
   - `dotnet-skills-manifest.json`
@@ -317,7 +349,7 @@ Official references:
 If you add a project to the watch list:
 
 1. Add an entry to the right list in the relevant shard under [`.github/upstream-watch*.json`](.github/)
-2. Map it to the affected `dotnet-*` skills
+2. Map it to the affected catalog skills
 3. Add `match_tag_regex` if the repository publishes multiple release streams
 4. Validate the config:
 
@@ -348,7 +380,7 @@ Keep it simple:
 
 - add GitHub repositories to `github_releases`
 - add docs pages to `documentation`
-- map each entry to the relevant `dotnet-*` skills
+- map each entry to the relevant catalog skills
 - keep optional fields for exceptions only
 
 ### What Happens After I Add A Watch?
@@ -360,7 +392,7 @@ flowchart LR
   C --> D["Commit the config and state baseline"]
   D --> E["Scheduled upstream-watch.yml checks sources every day"]
   E --> F["If a release or doc page changes, automation opens or updates an issue"]
-  F --> G["Update the linked dotnet-* skills and docs"]
+  F --> G["Update the linked catalog skills and docs"]
 ```
 
 ### GitHub Release Watch Example

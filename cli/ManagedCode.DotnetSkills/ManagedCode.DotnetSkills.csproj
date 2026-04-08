@@ -24,29 +24,11 @@
     <PackageOutputPath>../../artifacts/nuget</PackageOutputPath>
     <IncludeContentInPack>true</IncludeContentInPack>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <DotnetSkillsGeneratedDir>$(BaseIntermediateOutputPath)dotnet-skills-generated</DotnetSkillsGeneratedDir>
-    <DotnetSkillsGeneratedManifestPath>$(DotnetSkillsGeneratedDir)/catalog/skills.json</DotnetSkillsGeneratedManifestPath>
-    <DotnetSkillsGeneratedAgentsManifestPath>$(DotnetSkillsGeneratedDir)/catalog/agents.json</DotnetSkillsGeneratedAgentsManifestPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="../../skills/**/*" Exclude="../../skills/**/.DS_Store">
-      <Link>skills/%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>false</Pack>
-    </Content>
-    <Content Include="../../agents/**/*" Exclude="../../agents/**/.DS_Store">
-      <Link>agents/%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>false</Pack>
-    </Content>
-    <Content Include="$(DotnetSkillsGeneratedManifestPath)">
-      <Link>catalog/skills.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>false</Pack>
-    </Content>
-    <Content Include="$(DotnetSkillsGeneratedAgentsManifestPath)">
-      <Link>catalog/agents.json</Link>
+    <Content Include="../../catalog/**/*" Exclude="../../catalog/**/.DS_Store">
+      <Link>catalog/%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>false</Pack>
     </Content>
@@ -75,9 +57,6 @@
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.CacheDirectoryName" Value="dotnet-skills" />
   </ItemGroup>
 
-  <Target Name="GenerateBundledCatalogManifest" BeforeTargets="PrepareForBuild">
-    <MakeDir Directories="$(DotnetSkillsGeneratedDir)/catalog" />
-    <Exec Command="python3 ../../scripts/generate_catalog.py --manifest-output &quot;$(DotnetSkillsGeneratedManifestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
-    <Exec Command="python3 ../../scripts/generate_agent_catalog.py --output &quot;$(DotnetSkillsGeneratedAgentsManifestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
-  </Target>
+  <Import Project="../Catalog.Generated.targets" />
+
 </Project>

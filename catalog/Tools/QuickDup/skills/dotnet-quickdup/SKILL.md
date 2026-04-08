@@ -1,7 +1,5 @@
 ---
 name: dotnet-quickdup
-version: "1.0.0"
-category: "Metrics"
 description: "Use the open-source free `QuickDup` clone detector for .NET repositories. Use when a repo needs duplicate C# code discovery, structural clone detection, DRY refactoring candidates, or repeatable duplication scans in local workflows and CI."
 compatibility: "Requires a repository with C# source files; respects the repo's `AGENTS.md` commands first."
 ---

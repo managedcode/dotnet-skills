@@ -1,7 +1,5 @@
 ---
 name: dotnet-signalr
-version: "1.0.0"
-category: "Web"
 description: "Implement or review SignalR hubs, streaming, reconnection, transport, and real-time delivery patterns in ASP.NET Core applications."
 compatibility: "Requires ASP.NET Core SignalR server or client code."
 ---

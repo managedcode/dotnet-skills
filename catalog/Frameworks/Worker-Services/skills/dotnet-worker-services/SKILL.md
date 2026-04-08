@@ -1,7 +1,5 @@
 ---
 name: dotnet-worker-services
-version: "1.0.0"
-category: "Distributed"
 description: "Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons."
 compatibility: "Requires a worker, hosted service, or background-processing scenario."
 ---

@@ -25,7 +25,7 @@ env:
   DOTNET_SKILLS_SITE_URL: https://skills.managed-code.com/
   DOTNET_VERSION: "10.0.x"
   SOLUTION_FILE: "dotnet-skills.slnx"
-  TOOL_PROJECTS: "tools/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj tools/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj tools/ManagedCode.Agents/ManagedCode.Agents.csproj"
+  TOOL_PROJECTS: "cli/ManagedCode.DotnetSkills/ManagedCode.DotnetSkills.csproj cli/ManagedCode.DotnetAgents/ManagedCode.DotnetAgents.csproj cli/ManagedCode.Agents/ManagedCode.Agents.csproj"
   PACKAGE_SOURCE: "https://api.nuget.org/v3/index.json"
   PACKAGE_OUTPUT_GLOB: "artifacts/nuget/*.nupkg"
 
@@ -232,13 +232,12 @@ jobs:
         shell: bash
         run: |
           rm -rf artifacts/catalog-release artifacts/catalog-payload
-          mkdir -p artifacts/catalog-release artifacts/catalog-payload/catalog
-          cp -R skills artifacts/catalog-payload/skills
-          cp catalog/skills.json artifacts/catalog-payload/catalog/skills.json
-          cp catalog/skills.json artifacts/catalog-release/dotnet-skills-manifest.json
+          mkdir -p artifacts/catalog-release artifacts/catalog-payload
+          python3 scripts/generate_catalog.py --manifest-output artifacts/catalog-release/dotnet-skills-manifest.json
+          cp -R catalog artifacts/catalog-payload/catalog
           (
             cd artifacts/catalog-payload
-            zip -r ../catalog-release/dotnet-skills-catalog.zip skills catalog
+            zip -r ../catalog-release/dotnet-skills-catalog.zip catalog
           )
 
       - name: Upload packaged catalog artifacts
@@ -330,9 +329,6 @@ jobs:
 
       - name: Generate GitHub Pages payload
         run: python3 scripts/generate_catalog.py
-
-      - name: Generate agent catalog
-        run: python3 scripts/generate_agent_catalog.py
 
       - name: Render GitHub Pages
         env:

@@ -7,10 +7,11 @@ import re
 import sys
 from pathlib import Path
 
+from catalog_index import build_bundles, build_skill_manifest, collect_skills, resolve_category_order
+
 
 ROOT = Path(__file__).resolve().parents[1]
 README_PATH = ROOT / "README.md"
-MANIFEST_PATH = ROOT / "catalog" / "skills.json"
 
 BEGIN_MARKER = "<!-- BEGIN GENERATED CATALOG -->"
 END_MARKER = "<!-- END GENERATED CATALOG -->"
@@ -27,207 +28,9 @@ README_SKILLS_INTRO_LINE_TEMPLATE = (
     " actually knows modern .NET.\n"
 )
 
-CATEGORY_ORDER = [
-    "Core",
-    "Web",
-    "Cloud",
-    "Distributed",
-    "Desktop",
-    "Cross-Platform UI",
-    "Data",
-    "AI",
-    "Legacy",
-    "Testing",
-    "Code Quality",
-    "Architecture",
-    "Metrics",
-]
-
-TYPE_DIRS = ["Frameworks", "Libraries", "Tools", "Testing", "Platform"]
-
-TYPE_SINGULAR: dict[str, str] = {
-    "Frameworks": "Framework",
-    "Libraries": "Library",
-    "Tools": "Tool",
-    "Testing": "Testing",
-    "Platform": "Platform",
-}
-
-CURATED_BUNDLES = [
-    {
-        "name": "mcaf",
-        "title": "MCAF bundle",
-        "description": "Install the locally mirrored MCAF governance skills in one command, including adoption, delivery workflow, developer experience, documentation, feature specs, review planning, NFRs, source-control policy, UI/UX, and ML/AI delivery guidance.",
-        "kind": "curated",
-        "skills": [
-            "dotnet-mcaf",
-            "dotnet-mcaf-agile-delivery",
-            "dotnet-mcaf-devex",
-            "dotnet-mcaf-documentation",
-            "dotnet-mcaf-feature-spec",
-            "dotnet-mcaf-human-review-planning",
-            "dotnet-mcaf-ml-ai-delivery",
-            "dotnet-mcaf-nfr",
-            "dotnet-mcaf-source-control",
-            "dotnet-mcaf-ui-ux",
-        ],
-    },
-    {
-        "name": "orleans",
-        "title": "Orleans bundle",
-        "description": "Install the main Orleans stack in one command, including Orleans core guidance, adjacent ManagedCode integrations, worker-hosting patterns, Aspire orchestration, and SignalR delivery support.",
-        "kind": "curated",
-        "skills": [
-            "dotnet-orleans",
-            "dotnet-managedcode-orleans-graph",
-            "dotnet-managedcode-orleans-signalr",
-            "dotnet-worker-services",
-            "dotnet-aspire",
-            "dotnet-signalr",
-        ],
-    }
-]
-
-
-def unquote(value: str) -> str:
-    value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
-        return value[1:-1]
-    return value
-
-
-def slugify(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
-
-
-def parse_frontmatter(path: Path) -> tuple[dict[str, str], str]:
-    text = path.read_text()
-    if not text.startswith("---\n"):
-        raise ValueError(f"{path} is missing YAML frontmatter")
-
-    match = re.match(r"^---\n(.*?)\n---\n(.*)$", text, flags=re.DOTALL)
-    if not match:
-        raise ValueError(f"{path} has invalid frontmatter")
-
-    raw_frontmatter, body = match.groups()
-    data: dict[str, str] = {}
-    for line in raw_frontmatter.splitlines():
-        if not line.strip():
-            continue
-        if ":" not in line:
-            raise ValueError(f"{path} has malformed frontmatter line: {line}")
-        key, value = line.split(":", 1)
-        data[key.strip()] = unquote(value)
-    return data, body
-
-
-def parse_title(body: str, path: Path) -> str:
-    for line in body.splitlines():
-        if line.startswith("# "):
-            return line[2:].strip()
-    raise ValueError(f"{path} is missing an H1 title")
-
-
-def collect_skills() -> list[dict[str, str]]:
-    skills: list[dict[str, str]] = []
-
-    catalog_root = ROOT / "catalog"
-    for type_dir_name in TYPE_DIRS:
-        type_dir = catalog_root / type_dir_name
-        if not type_dir.is_dir():
-            continue
-
-        skill_type = TYPE_SINGULAR[type_dir_name]
-
-        for package_dir in sorted(p for p in type_dir.iterdir() if p.is_dir()):
-            skills_subdir = package_dir / "skills"
-            if not skills_subdir.is_dir():
-                continue
-
-            package_name = package_dir.name
-
-            for skill_dir in sorted(p for p in skills_subdir.iterdir() if p.is_dir()):
-                skill_path = skill_dir / "SKILL.md"
-                if not skill_path.exists():
-                    continue
-
-                metadata, body = parse_frontmatter(skill_path)
-                title = parse_title(body, skill_path)
-
-                required = ["name", "version", "category", "description", "compatibility"]
-                missing = [key for key in required if key not in metadata or not metadata[key].strip()]
-                if missing:
-                    raise ValueError(f"{skill_path} is missing required frontmatter keys: {', '.join(missing)}")
-
-                category = metadata["category"]
-                if category not in CATEGORY_ORDER:
-                    raise ValueError(f"{skill_path} has unsupported category: {category}")
-
-                skill_name = metadata["name"]
-
-                skills.append(
-                    {
-                        "name": skill_name,
-                        "title": title,
-                        "version": metadata["version"],
-                        "category": category,
-                        "type": skill_type,
-                        "package": package_name,
-                        "description": metadata["description"],
-                        "compatibility": metadata["compatibility"],
-                        "path": f"catalog/{type_dir_name}/{package_name}/skills/{skill_dir.name}/",
-                    }
-                )
-
-    return skills
-
-
-def build_bundles(skills: list[dict[str, str]]) -> list[dict[str, object]]:
-    skills_by_name = {skill["name"]: skill for skill in skills}
-    bundles: list[dict[str, object]] = []
-
-    for bundle in CURATED_BUNDLES:
-        missing = [skill_name for skill_name in bundle["skills"] if skill_name not in skills_by_name]
-        if missing:
-            raise ValueError(
-                f"Curated bundle {bundle['name']} references unknown skills: {', '.join(sorted(missing))}"
-            )
-
-        bundles.append(
-            {
-                "name": bundle["name"],
-                "title": bundle["title"],
-                "description": bundle["description"],
-                "kind": bundle["kind"],
-                "sourceCategory": "",
-                "skills": bundle["skills"],
-            }
-        )
-
-    for category in CATEGORY_ORDER:
-        category_skills = sorted(
-            (skill for skill in skills if skill["category"] == category),
-            key=lambda item: item["name"],
-        )
-        if not category_skills:
-            continue
-
-        bundles.append(
-            {
-                "name": slugify(category),
-                "title": f"{category} bundle",
-                "description": f"Install all {len(category_skills)} skills from the {category} category in one command.",
-                "kind": "category",
-                "sourceCategory": category,
-                "skills": [skill["name"] for skill in category_skills],
-            }
-        )
-
-    return bundles
-
-
 def render_catalog(skills: list[dict[str, str]]) -> str:
-    grouped: dict[str, list[dict[str, str]]] = {category: [] for category in CATEGORY_ORDER}
+    category_order = resolve_category_order(skills)
+    grouped: dict[str, list[dict[str, str]]] = {category: [] for category in category_order}
     for skill in skills:
         grouped[skill["category"]].append(skill)
 
@@ -236,7 +39,7 @@ def render_catalog(skills: list[dict[str, str]]) -> str:
 
     lines: list[str] = [BEGIN_MARKER, "", f"This catalog currently contains **{len(skills)}** skills.", ""]
 
-    for category in CATEGORY_ORDER:
+    for category in category_order:
         items = grouped[category]
         if not items:
             continue
@@ -323,34 +126,23 @@ def check_readme(rendered_catalog: str, skill_count: int) -> bool:
     return render_readme(readme, rendered_catalog, skill_count) == readme
 
 
-def write_manifest(skills: list[dict[str, str]], bundles: list[dict[str, object]]) -> None:
-    write_manifest_to_path(MANIFEST_PATH, skills, bundles)
-
-
-def write_manifest_to_path(path: Path, skills: list[dict[str, str]], bundles: list[dict[str, object]]) -> None:
+def write_manifest_to_path(path: Path, skills: list[dict[str, object]], bundles: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({"skills": skills, "bundles": bundles}, indent=2, sort_keys=False) + "\n")
-
-
-def check_manifest(skills: list[dict[str, str]], bundles: list[dict[str, object]]) -> bool:
-    if not MANIFEST_PATH.exists():
-        return False
-    current = json.loads(MANIFEST_PATH.read_text())
-    return current == {"skills": skills, "bundles": bundles}
+    path.write_text(json.dumps(build_skill_manifest(skills, bundles), indent=2, sort_keys=False) + "\n", encoding="utf-8")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate the README catalog and skills manifest from skill metadata.")
+    parser = argparse.ArgumentParser(description="Scan the catalog tree, validate metadata, and update the generated README catalog.")
     parser.add_argument("--check", action="store_true", help="Fail if generated files are out of date.")
     parser.add_argument(
         "--validate-only",
         action="store_true",
-        help="Validate skill metadata and catalog rendering without writing or checking generated files.",
+        help="Validate catalog metadata and rendering without writing generated files.",
     )
     parser.add_argument(
         "--manifest-output",
         type=Path,
-        help="Write only the machine-readable manifest to a custom path without mutating README.md.",
+        help="Export a transient machine-readable manifest to a custom path without mutating README.md.",
     )
     return parser.parse_args()
 
@@ -376,19 +168,14 @@ def main() -> int:
 
     if args.check:
         readme_ok = check_readme(rendered_catalog, len(skills))
-        manifest_ok = check_manifest(skills, bundles)
-        if not readme_ok or not manifest_ok:
-            if not readme_ok:
-                print("README.md catalog section is out of date.", file=sys.stderr)
-            if not manifest_ok:
-                print("catalog/skills.json is out of date.", file=sys.stderr)
+        if not readme_ok:
+            print("README.md catalog section is out of date.", file=sys.stderr)
             return 1
         print("Catalog is up to date.")
         return 0
 
     update_readme(rendered_catalog, len(skills))
-    write_manifest(skills, bundles)
-    print(f"Generated catalog for {len(skills)} skills and {len(bundles)} bundles.")
+    print(f"Generated README catalog for {len(skills)} skills and {len(bundles)} bundles.")
     return 0
 
 

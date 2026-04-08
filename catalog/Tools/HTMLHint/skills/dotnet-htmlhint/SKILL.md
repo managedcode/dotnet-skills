@@ -1,7 +1,5 @@
 ---
 name: dotnet-htmlhint
-version: "1.0.0"
-category: "Code Quality"
 description: "Use HTMLHint in .NET repositories that ship static HTML output or standalone frontend templates. Use when a repo needs a focused CLI lint gate for DOM structure, invalid attributes, and basic HTML correctness checks on static pages."
 compatibility: "Requires a .NET repository with static HTML assets or generated frontend output; use on rendered output rather than raw Razor or Blazor source files."
 ---

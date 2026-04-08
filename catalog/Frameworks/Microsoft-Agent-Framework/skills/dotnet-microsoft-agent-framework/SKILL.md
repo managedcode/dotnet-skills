@@ -1,7 +1,5 @@
 ---
 name: dotnet-microsoft-agent-framework
-version: "1.8.0"
-category: "AI"
 description: "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails."
 compatibility: "Requires preview-era Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration."
 ---

@@ -1,7 +1,5 @@
 ---
 name: dotnet-codeql
-version: "1.0.0"
-category: "Metrics"
 description: "Use the open-source CodeQL ecosystem for .NET security analysis. Use when a repo needs CodeQL query packs, CLI-based analysis on open source codebases, or GitHub Action setup with explicit licensing caveats for private repositories."
 compatibility: "Requires a GitHub-based or CLI-based CodeQL workflow; respects the repo's `AGENTS.md` commands first."
 ---

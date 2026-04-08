@@ -1,7 +1,5 @@
 ---
 name: dotnet-nunit
-version: "1.0.0"
-category: "Testing"
 description: "Write, run, or repair .NET tests that use NUnit. Use when a repo uses `NUnit`, `[Test]`, `[TestCase]`, `[TestFixture]`, or NUnit3TestAdapter for VSTest or Microsoft.Testing.Platform execution."
 compatibility: "Requires NUnit 3.x or 4.x packages and appropriate test adapter."
 ---

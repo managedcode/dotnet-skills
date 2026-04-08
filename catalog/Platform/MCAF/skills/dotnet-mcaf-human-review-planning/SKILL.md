@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-human-review-planning
-version: "1.0.0"
-category: "Core"
 description: "Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the files a human should inspect first. Use when the codebase is too large to review line-by-line and you need a practical review sequence plus a prioritized file list."
 compatibility: "Requires repository read access; may write a `HUMAN_REVIEW_PLAN.md` file under docs, or to an exact docs path the user specifies, when the user asks for a saved review plan."
 ---

@@ -1,7 +1,5 @@
 ---
 name: dotnet-architecture
-version: "1.0.0"
-category: "Core"
 description: "Design or review .NET solution architecture across modular monoliths, clean architecture, vertical slices, microservices, DDD, CQRS, and cloud-native boundaries without over-engineering."
 compatibility: "Best when project structure, service boundaries, or long-term maintainability are in scope."
 ---

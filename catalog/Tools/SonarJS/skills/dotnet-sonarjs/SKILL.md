@@ -1,7 +1,5 @@
 ---
 name: dotnet-sonarjs
-version: "1.0.0"
-category: "Code Quality"
 description: "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. Use when the repo wants `eslint-plugin-sonarjs` locally or already runs SonarQube or SonarCloud in CI."
 compatibility: "Requires a .NET repository with JS or TS frontend assets; local developer loops normally use `eslint-plugin-sonarjs`, while full SonarQube or SonarCloud analysis should follow the repo's existing scanner pipeline and documented licensing posture."
 ---

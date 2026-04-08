@@ -1,7 +1,5 @@
 ---
 name: dotnet-mlnet
-version: "1.0.0"
-category: "AI"
 description: "Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations."
 compatibility: "Requires ML.NET, Model Builder, or ML.NET CLI scenarios."
 ---

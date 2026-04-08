@@ -10,17 +10,14 @@ internal sealed class AgentCatalogPackage
         PropertyNameCaseInsensitive = true,
     };
 
-    private AgentCatalogPackage(DirectoryInfo catalogRoot, DirectoryInfo agentsRoot, IReadOnlyList<AgentEntry> agents, string sourceLabel)
+    private AgentCatalogPackage(DirectoryInfo catalogRoot, IReadOnlyList<AgentEntry> agents, string sourceLabel)
     {
         CatalogRoot = catalogRoot;
-        AgentsRoot = agentsRoot;
         Agents = agents;
         SourceLabel = sourceLabel;
     }
 
     public DirectoryInfo CatalogRoot { get; }
-
-    public DirectoryInfo AgentsRoot { get; }
 
     public IReadOnlyList<AgentEntry> Agents { get; }
 
@@ -34,30 +31,15 @@ internal sealed class AgentCatalogPackage
 
     public static AgentCatalogPackage LoadFromDirectory(DirectoryInfo rootDirectory, string sourceLabel)
     {
-        var agentsRoot = new DirectoryInfo(Path.Combine(rootDirectory.FullName, "agents"));
-        var manifestPath = new FileInfo(Path.Combine(rootDirectory.FullName, "catalog", "agents.json"));
-
-        if (!agentsRoot.Exists)
-        {
-            // Return empty catalog if agents directory doesn't exist
-            return new AgentCatalogPackage(rootDirectory, agentsRoot, [], sourceLabel);
-        }
-
-        if (!manifestPath.Exists)
-        {
-            // Return empty catalog if manifest doesn't exist
-            return new AgentCatalogPackage(rootDirectory, agentsRoot, [], sourceLabel);
-        }
-
-        var manifest = JsonSerializer.Deserialize<AgentManifest>(File.ReadAllText(manifestPath.FullName), JsonOptions)
-            ?? throw new InvalidOperationException($"Could not parse {manifestPath.FullName}");
-
-        return new AgentCatalogPackage(rootDirectory, agentsRoot, manifest.Agents, sourceLabel);
+        var agents = CatalogScanner.ScanAgents(rootDirectory);
+        return new AgentCatalogPackage(rootDirectory, agents, sourceLabel);
     }
 
     public DirectoryInfo ResolveAgentSource(string agentName)
     {
-        var directory = new DirectoryInfo(Path.Combine(AgentsRoot.FullName, agentName));
+        var agent = Agents.FirstOrDefault(candidate => string.Equals(candidate.Name, agentName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Agent metadata is missing for {agentName} in {SourceLabel}");
+        var directory = new DirectoryInfo(Path.Combine(CatalogRoot.FullName, agent.Path.Replace('/', Path.DirectorySeparatorChar)));
         if (!directory.Exists)
         {
             throw new InvalidOperationException($"Agent payload is missing for {agentName} in {SourceLabel}");
@@ -93,6 +75,21 @@ internal sealed class AgentEntry
     [JsonPropertyName("model")]
     public string Model { get; init; } = "inherit";
 
+    [JsonPropertyName("package")]
+    public string Package { get; init; } = string.Empty;
+
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = string.Empty;
+
     [JsonPropertyName("path")]
     public string Path { get; init; } = string.Empty;
+
+    [JsonPropertyName("packages")]
+    public List<string> Packages { get; init; } = [];
+
+    [JsonPropertyName("package_prefix")]
+    public string PackagePrefix { get; init; } = string.Empty;
+
+    [JsonPropertyName("links")]
+    public CatalogLinks Links { get; init; } = CatalogLinks.Empty;
 }

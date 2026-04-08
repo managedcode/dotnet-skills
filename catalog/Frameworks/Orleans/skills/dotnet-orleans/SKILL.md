@@ -1,7 +1,5 @@
 ---
 name: dotnet-orleans
-version: "2.1.0"
-category: "Distributed"
 description: "Build or review distributed .NET applications with Orleans grains, silos, persistence, streaming, reminders, placement, transactions, serialization, event sourcing, testing, and cloud-native hosting."
 compatibility: "Prefer current Orleans releases (10.x / 9.x) with `UseOrleans`, `IPersistentState<TState>`, `RegisterGrainTimer`, `[GenerateSerializer]`, modern providers, and production-grade clustering."
 ---

@@ -1,7 +1,5 @@
 ---
 name: dotnet-entity-framework-core
-version: "1.0.0"
-category: "Data"
 description: "Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications."
 compatibility: "Requires EF Core 7+ (preferably 8/9 for latest features)."
 ---

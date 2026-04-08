@@ -14,9 +14,9 @@ import subprocess
 import sys
 from urllib.parse import urljoin, urlparse
 
+from catalog_index import build_bundles, collect_agents, collect_skills
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CATALOG_PATH = REPO_ROOT / "catalog" / "skills.json"
-AGENTS_CATALOG_PATH = REPO_ROOT / "catalog" / "agents.json"
 README_PATH = REPO_ROOT / "README.md"
 TEMPLATE_PATH = REPO_ROOT / "github-pages" / "index.html"
 OUTPUT_DIR = REPO_ROOT / "artifacts" / "github-pages"
@@ -442,6 +442,9 @@ def load_skill_documents(skills: list[dict], site_url: str) -> list[dict]:
                 "detail_url": build_absolute_url(site_url, detail_path),
                 "source_url": source_url,
                 "source_file": f"{skill['path']}/SKILL.md",
+                "repository_url": str(skill.get("links", {}).get("repository", "")),
+                "docs_url": str(skill.get("links", {}).get("docs", "")),
+                "nuget_url": str(skill.get("links", {}).get("nuget", "")),
                 "sections": sections,
                 "lastmod": get_git_last_modified([f"{skill['path']}/SKILL.md", skill["path"]]),
             }
@@ -472,6 +475,9 @@ def load_agent_documents(agents: list[dict], site_url: str) -> list[dict]:
                 "detail_url": build_absolute_url(site_url, detail_path),
                 "source_url": source_url,
                 "source_file": f"{agent['path']}/AGENT.md",
+                "repository_url": str(agent.get("links", {}).get("repository", "")),
+                "docs_url": str(agent.get("links", {}).get("docs", "")),
+                "nuget_url": str(agent.get("links", {}).get("nuget", "")),
                 "sections": sections,
                 "lastmod": get_git_last_modified([f"{agent['path']}/AGENT.md", agent["path"]]),
             }
@@ -582,6 +588,85 @@ def render_button(label: str, href: str, variant: str = "ghost", external: bool 
     return f'<a class="button button-{variant}" href="{escape_html(href)}"{attrs}>{escape_html(label)}</a>'
 
 
+def render_external_pill_links(links: list[tuple[str, str]]) -> str:
+    """Render a row of external pill links."""
+    if not links:
+        return ""
+
+    html_links = "".join(
+        f'<a class="pill-link" href="{escape_html(href)}" target="_blank" rel="noopener noreferrer">{escape_html(label)}</a>'
+        for label, href in links
+    )
+    return f'<div class="sidebar-links">{html_links}</div>'
+
+
+def build_upstream_links(item: dict) -> list[tuple[str, str]]:
+    """Build ordered upstream link tuples from manifest metadata."""
+    links = item.get("links", {})
+    if not isinstance(links, dict):
+        return []
+
+    ordered_links: list[tuple[str, str]] = []
+    if links.get("repository"):
+        ordered_links.append(("Repository", str(links["repository"])))
+    if links.get("docs"):
+        ordered_links.append(("Docs", str(links["docs"])))
+    if links.get("nuget"):
+        ordered_links.append(("NuGet", str(links["nuget"])))
+    return ordered_links
+
+
+def render_upstream_sidebar(item: dict, label: str = "Upstream") -> str:
+    """Render a sidebar card for upstream package links."""
+    links = build_upstream_links(item)
+    if not links:
+        return ""
+
+    return f"""
+          <div class="sidebar-card">
+            <div class="detail-card-label">{escape_html(label)}</div>
+            {render_external_pill_links(links)}
+          </div>
+    """.strip()
+
+
+def render_nuget_sidebar(skill: dict) -> str:
+    """Render a sidebar card showing NuGet packages that trigger this skill."""
+    packages = skill.get("packages", [])
+    prefix = skill.get("package_prefix", "")
+    if not packages and not prefix:
+        return ""
+    items = []
+    if prefix:
+        items.append(f'<span class="chip nuget-chip nuget-prefix">{escape_html(prefix)}.*</span>')
+    for pkg in packages:
+        items.append(f'<span class="chip nuget-chip">{escape_html(pkg)}</span>')
+    return f"""
+          <div class="sidebar-card">
+            <div class="detail-card-label">NuGet packages</div>
+            <p class="nuget-sidebar-hint">Auto-detected from .csproj</p>
+            <div class="nuget-sidebar-list">{"".join(items)}</div>
+          </div>
+    """.strip()
+
+
+def render_nuget_pills(skill: dict) -> str:
+    """Render NuGet package pills for a skill card or detail page."""
+    packages = skill.get("packages", [])
+    prefix = skill.get("package_prefix", "")
+    if not packages and not prefix:
+        return ""
+    pills = []
+    if prefix:
+        pills.append(f'<span class="chip nuget-chip nuget-prefix">{escape_html(prefix)}.*</span>')
+    for pkg in packages[:3]:
+        pills.append(f'<span class="chip nuget-chip">{escape_html(pkg)}</span>')
+    overflow = max(0, len(packages) - 3)
+    if overflow:
+        pills.append(f'<span class="chip nuget-chip nuget-more">+{overflow}</span>')
+    return f'<div class="nuget-row">{"".join(pills)}</div>'
+
+
 def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) -> str:
     """Render a skill card with type indicator and gradient glow border."""
     detail_href = f"{root_prefix}{skill['detail_path']}"
@@ -599,22 +684,30 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
                 skill["category"],
                 skill_type,
                 skill.get("compatibility", ""),
+                *skill.get("packages", []),
+                skill.get("package_prefix", ""),
             ]
         )
     )
+    nuget_pills = render_nuget_pills(skill)
     return f"""
       <article class="directory-card skill-card {type_class} is-clickable js-filter-card" data-category="{escape_html(skill['category'])}" data-type="{escape_html(skill_type)}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
-        <div class="card-top">
-          <div>
-            <span class="card-type-indicator"><span class="card-type-dot"></span>{escape_html(skill_type)}</span>
-            <h3><a href="{escape_html(detail_href)}">{escape_html(skill['title'])}</a></h3>
+        <div class="card-head">
+          <h3><a href="{escape_html(detail_href)}">{escape_html(skill['title'])}</a></h3>
+          <div class="card-tags">
+            <span class="card-tag card-tag-type">{escape_html(skill_type)}</span>
+            <a class="card-tag card-tag-category" href="{escape_html(category_href)}">{escape_html(skill['category'])}</a>
           </div>
-          <a class="chip card-category-chip" href="{escape_html(category_href)}">{escape_html(skill['category'])}</a>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
+        {nuget_pills}
         <div class="card-footer">
-          <code class="card-cmd">{escape_html(install_command)}</code>
-          <a class="card-inline-link" href="{escape_html(detail_href)}">View<span class="card-inline-arrow">→</span></a>
+          <div class="card-cmd-row">
+            <code class="card-cmd">{escape_html(install_command)}</code>
+            <button type="button" class="card-copy-btn" data-copy="{escape_html(install_command)}" aria-label="Copy command">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
         </div>
       </article>
     """.strip()
@@ -1134,6 +1227,9 @@ def build_skill_payload(skills: list[dict], root_prefix: str) -> list[dict]:
             "compatibility": skill.get("compatibility", ""),
             "detailUrl": f"{root_prefix}{skill['detail_path']}",
             "sourceUrl": skill["source_url"],
+            "repositoryUrl": skill.get("repository_url", ""),
+            "docsUrl": skill.get("docs_url", ""),
+            "nugetUrl": skill.get("nuget_url", ""),
             "installCommand": f"dotnet skills install {skill['short_name']}",
         }
         for skill in skills
@@ -1259,12 +1355,15 @@ def render_skill_detail_page(skill: dict, related_skills: list[dict], related_ag
             <p>{escape_html(skill.get('compatibility', 'Works with current .NET projects.'))}</p>
           </div>
 
+          {render_nuget_sidebar(skill)}
+          {render_upstream_sidebar(skill, "Package links")}
+
           <div class="sidebar-card">
             <div class="detail-card-label">Explore next</div>
             <div class="sidebar-links">
               <a class="pill-link" href="{escape_html(root_prefix + 'skills/')}">All skills</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'categories/' + skill['category_slug'] + '/')}">{escape_html(skill['category'])} category</a>
-              <a class="pill-link" href="{escape_html(skill['source_url'])}" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+              <a class="pill-link" href="{escape_html(skill['source_url'])}" target="_blank" rel="noopener noreferrer">Catalog source</a>
             </div>
           </div>
         </aside>
@@ -1311,10 +1410,12 @@ def render_agent_detail_page(agent: dict, linked_skills: list[dict], root_prefix
             <p class="card-summary">Alternate command: <code>dotnet agents install {escape_html(agent['short_name'])}</code></p>
           </div>
 
+          {render_upstream_sidebar(agent, "Package links")}
+
           <div class="sidebar-card">
             <div class="detail-card-label">Source</div>
             <div class="sidebar-links">
-              <a class="pill-link" href="{escape_html(agent['source_url'])}" target="_blank" rel="noopener noreferrer">Open on GitHub</a>
+              <a class="pill-link" href="{escape_html(agent['source_url'])}" target="_blank" rel="noopener noreferrer">Catalog source</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'agents/')}">All agents</a>
             </div>
           </div>
@@ -1510,6 +1611,90 @@ def render_bundle_detail_page(bundle: dict, root_prefix: str) -> str:
     """.strip()
 
 
+def build_nuget_package_index(skills: list[dict]) -> list[dict]:
+    """Build an inverted index: NuGet package/prefix → skill."""
+    entries: list[dict] = []
+    for skill in skills:
+        packages = skill.get("packages", [])
+        prefix = skill.get("package_prefix", "")
+        if prefix:
+            entries.append({
+                "nuget_id": f"{prefix}.*",
+                "kind": "prefix",
+                "skill": skill,
+            })
+        for pkg in packages:
+            entries.append({
+                "nuget_id": pkg,
+                "kind": "exact",
+                "skill": skill,
+            })
+    entries.sort(key=lambda e: e["nuget_id"].lower())
+    return entries
+
+
+def render_packages_index_page(skills: list[dict], root_prefix: str) -> tuple[str, dict]:
+    """Render the NuGet packages directory page."""
+    entries = build_nuget_package_index(skills)
+    skills_with_packages = len({e["skill"]["name"] for e in entries})
+
+    rows = []
+    for entry in entries:
+        skill = entry["skill"]
+        skill_href = f"{root_prefix}{skill['detail_path']}"
+        kind_class = "nuget-kind-prefix" if entry["kind"] == "prefix" else "nuget-kind-exact"
+        rows.append(
+            f'<tr class="nuget-table-row {kind_class} js-filter-card" data-filtertext="{escape_html(entry["nuget_id"] + " " + skill["title"] + " " + skill["short_name"])}">'
+            f'<td class="nuget-table-id"><code>{escape_html(entry["nuget_id"])}</code></td>'
+            f'<td class="nuget-table-skill"><a href="{escape_html(skill_href)}">{escape_html(skill["title"])}</a></td>'
+            f'<td class="nuget-table-cmd"><code class="card-cmd">dotnet skills install {escape_html(skill["short_name"])}</code></td>'
+            f'</tr>'
+        )
+
+    breadcrumb = render_breadcrumb([("Home", root_prefix or "./"), ("Packages", None)])
+    rows_html = "\n".join(rows)
+    entry_count = len(entries)
+
+    body = f"""
+      {breadcrumb}
+      <section class="page-hero">
+        <div class="eyebrow-row">
+          <span class="eyebrow">NuGet package index</span>
+          <span class="tag tag-accent">{entry_count} packages</span>
+        </div>
+        <h1 class="page-title">NuGet <span class="accent">packages</span></h1>
+        <p class="page-lead">When <code>dotnet skills install --auto</code> scans your .csproj, it matches these NuGet package names and prefixes to install the right skills automatically. {skills_with_packages} skills are linked to at least one NuGet package.</p>
+      </section>
+      <section class="panel">
+        <div class="section-header">
+          <div><h2>All packages</h2><p>Search by NuGet package name to find the matching skill.</p></div>
+        </div>
+        <div class="toolbar">
+          <input class="search-input" id="search-input" type="search" placeholder="Search by NuGet package name..." autocomplete="off">
+        </div>
+        <div class="nuget-table-wrap">
+          <table class="nuget-table">
+            <thead>
+              <tr>
+                <th>NuGet package</th>
+                <th>Skill</th>
+                <th>Install command</th>
+              </tr>
+            </thead>
+            <tbody id="listing-grid">
+              {rows_html}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    """.strip()
+
+    page_data: dict = {
+        "querySyncPath": "packages/",
+    }
+    return body, page_data
+
+
 def render_agents_index_page(agents: list[dict], skills: list[dict], root_prefix: str) -> str:
     """Render the orchestration agent hub page."""
     return f"""
@@ -1604,7 +1789,15 @@ def render_about_page(
           </section>
           <section>
             <h2>How updates land</h2>
-            <p>The catalog is published through a unified release workflow that produces GitHub releases, NuGet bundles, and GitHub Pages output together. Upstream-watch automation monitors official releases and docs so the catalog can be refreshed when major framework guidance changes.</p>
+            <p>The catalog is published through a unified release workflow that produces GitHub releases, NuGet bundles, and GitHub Pages output together. Upstream-watch automation monitors official releases, docs, and vendir-managed upstream repositories so the catalog can be refreshed when major guidance changes land elsewhere.</p>
+          </section>
+          <section>
+            <h2>How catalog packages are structured</h2>
+            <p>The human-maintained source of truth is the scanned <code>catalog/&lt;type&gt;/&lt;package&gt;/</code> tree. Each package owns one package-level <code>manifest.json</code>, optional package assets such as icons, one or more skills under <code>skills/&lt;skill&gt;/SKILL.md</code> with required sibling <code>manifest.json</code> files, and optional repo-owned agents under <code>agents/&lt;agent&gt;/AGENT.md</code> with their own sibling manifests when needed. Some packages are repo-authored, while official upstream packages are vendir-managed under <code>upstreams/</code> and normalized into the same shape through checked-in import configs.</p>
+          </section>
+          <section>
+            <h2>What belongs in manifest.json</h2>
+            <p>Package manifests carry package-level metadata such as <code>links.repository</code>, <code>links.docs</code>, and <code>links.nuget</code>. Skill-specific metadata such as <code>version</code>, <code>category</code>, <code>packages</code>, and <code>package_prefix</code> belongs in the nearest sibling manifest next to that <code>SKILL.md</code>. <code>SKILL.md</code> should stay focused on routing, workflow, deliverables, and validation instead of duplicating catalog metadata.</p>
           </section>
           <section>
             <h2>Why there are multiple page types now</h2>
@@ -1625,9 +1818,10 @@ def render_about_page(
           </div>
           <div class="sidebar-card">
             <div class="detail-card-label">Contribute</div>
-            <p>Want your project credited or your library represented? Add or improve a skill, then send a pull request against the catalog.</p>
+            <p>Want your project credited or your library represented? Add or improve a catalog package, keep package metadata in <code>manifest.json</code>, and send a pull request against the catalog.</p>
             <div class="sidebar-links">
               <a class="pill-link" href="{escape_html(GITHUB_REPOSITORY_URL + '/blob/main/CONTRIBUTING.md')}" target="_blank" rel="noopener noreferrer">Contribution guide</a>
+              <a class="pill-link" href="{escape_html(GITHUB_REPOSITORY_URL + '/issues/new/choose')}" target="_blank" rel="noopener noreferrer">Issue templates</a>
             </div>
           </div>
         </aside>
@@ -1865,20 +2059,9 @@ def maybe_write_cname(site_url: str) -> None:
 
 def main() -> int:
     """Generate the public multi-page site."""
-    if not CATALOG_PATH.exists():
-        print(f"Error: Catalog not found at {CATALOG_PATH}", file=sys.stderr)
-        return 1
-
-    if not AGENTS_CATALOG_PATH.exists():
-        print(f"Error: Agent catalog not found at {AGENTS_CATALOG_PATH}", file=sys.stderr)
-        return 1
-
     if not TEMPLATE_PATH.exists():
         print(f"Error: Template not found at {TEMPLATE_PATH}", file=sys.stderr)
         return 1
-
-    catalog = json.loads(read_text(CATALOG_PATH))
-    agent_catalog = json.loads(read_text(AGENTS_CATALOG_PATH))
 
     site_url = normalize_site_url(os.environ.get("DOTNET_SKILLS_SITE_URL", DEFAULT_SITE_URL))
     release_version = resolve_release_version()
@@ -1890,10 +2073,14 @@ def main() -> int:
         shutil.rmtree(OUTPUT_DIR)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    skills = load_skill_documents(catalog.get("skills", []), site_url)
+    raw_skills = collect_skills()
+    raw_bundles = build_bundles(raw_skills)
+    raw_agents = collect_agents()
+
+    skills = load_skill_documents(raw_skills, site_url)
     skills_by_name = {skill["name"]: skill for skill in skills}
-    bundles = load_bundle_documents(catalog.get("bundles", catalog.get("packages", [])), skills_by_name, site_url)
-    agents = load_agent_documents(agent_catalog.get("agents", []), site_url)
+    bundles = load_bundle_documents(raw_bundles, skills_by_name, site_url)
+    agents = load_agent_documents(raw_agents, site_url)
     category_infos = build_category_infos(skills, agents)
     credits = parse_credits_from_readme()
 
@@ -1965,10 +2152,32 @@ def main() -> int:
         body_class="page-home",
         main_content=root_body,
         json_ld=build_root_json_ld(site_url, site_url, release_version),
-        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog/skills.json", "catalog/agents.json"]),
+        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog"]),
         page_data=root_page_data,
         og_type="website",
         priority="1.0",
+    )
+
+    packages_body, packages_page_data = render_packages_index_page(skills, "../")
+    add_page(
+        path="packages/",
+        title="NuGet Packages | dotnet-skills",
+        description="Browse NuGet packages mapped to dotnet-skills. Auto-detect which skills to install based on the NuGet packages in your .csproj.",
+        keywords=["nuget packages", "auto-install skills", "dotnet skills auto", "package detection", "csproj scan"],
+        body_class="page-packages",
+        main_content=packages_body,
+        json_ld=build_collection_json_ld(
+            site_url,
+            build_absolute_url(site_url, "packages/"),
+            "NuGet Packages",
+            "NuGet package index for the dotnet-skills catalog",
+            [],
+            [("Home", site_url), ("Packages", build_absolute_url(site_url, "packages/"))],
+        ),
+        lastmod=get_git_last_modified(["scripts/generate_pages.py", "catalog"]),
+        page_data=packages_page_data,
+        og_type="website",
+        priority="0.95",
     )
 
     bundles_body, bundles_page_data = render_bundles_index_page(bundles, "../")
@@ -1987,7 +2196,7 @@ def main() -> int:
             [(bundle["title"], bundle["detail_url"]) for bundle in bundles],
             [("Home", site_url), ("Bundles", build_absolute_url(site_url, "bundles/"))],
         ),
-        lastmod=get_git_last_modified(["scripts/generate_pages.py", "catalog/skills.json"]),
+        lastmod=get_git_last_modified(["scripts/generate_pages.py", "catalog"]),
         page_data=bundles_page_data,
         og_type="website",
         priority="0.94",
@@ -2009,7 +2218,7 @@ def main() -> int:
             [(skill["title"], skill["detail_url"]) for skill in skills],
             [("Home", site_url), ("Skills", build_absolute_url(site_url, "skills/"))],
         ),
-        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog/skills.json"]),
+        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog"]),
         page_data=skills_page_data,
         og_type="website",
         priority="0.95",
@@ -2034,7 +2243,7 @@ def main() -> int:
             ],
             [("Home", site_url), ("Categories", build_absolute_url(site_url, "categories/"))],
         ),
-        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog/skills.json"]),
+        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog"]),
         page_data={"querySyncPath": "categories/"},
         og_type="website",
         priority="0.9",
@@ -2056,7 +2265,7 @@ def main() -> int:
             [(agent["title"], agent["detail_url"]) for agent in agents],
             [("Home", site_url), ("Agents", build_absolute_url(site_url, "agents/"))],
         ),
-        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog/agents.json"]),
+        lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog"]),
         page_data={},
         og_type="website",
         priority="0.88",

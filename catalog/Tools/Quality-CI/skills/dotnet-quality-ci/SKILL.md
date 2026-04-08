@@ -1,7 +1,5 @@
 ---
 name: dotnet-quality-ci
-version: "1.0.0"
-category: "Code Quality"
 description: "Set up or refine open-source .NET code-quality gates for CI: formatting, `.editorconfig`, SDK analyzers, third-party analyzers, coverage, mutation testing, architecture tests, and security scanning. Use when a .NET repo needs an explicit quality stack in `AGENTS.md`, docs, or pipeline YAML."
 compatibility: "Requires a .NET solution or project; may update `AGENTS.md`, CI workflows, a repo-root `.editorconfig`, `Directory.Build.props`, or analyzer package references."
 ---

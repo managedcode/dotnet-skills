@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf
-version: "1.2.1"
-category: "Core"
 description: "Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. Use when bootstrapping or updating MCAF alongside the dotnet-skills catalog."
 compatibility: "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work."
 ---

@@ -4,8 +4,8 @@
   "description": "Modern ORM for .NET data access",
   "icon": "icon.svg",
   "links": {
+    "repository": "https://github.com/dotnet/efcore",
     "docs": "https://learn.microsoft.com/en-us/ef/core/",
-    "nuget": "https://www.nuget.org/packages/Microsoft.EntityFrameworkCore",
-    "github": "https://github.com/dotnet/efcore"
+    "nuget": "https://www.nuget.org/packages/Microsoft.EntityFrameworkCore"
   }
 }

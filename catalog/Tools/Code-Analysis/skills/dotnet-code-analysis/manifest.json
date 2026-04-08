@@ -1,0 +1,7 @@
+{
+  "version": "1.0.1",
+  "category": "Code Quality",
+  "packages": [
+    "Microsoft.CodeAnalysis.NetAnalyzers"
+  ]
+}

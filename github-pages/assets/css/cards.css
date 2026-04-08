@@ -14,8 +14,8 @@
   padding: 16px 18px;
   border-radius: var(--r2);
   background: var(--bg-elevated);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-xs);
+  border: 1px solid rgba(var(--card-accent-rgb), 0.12);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   transition: box-shadow 300ms ease, border-color 200ms ease, transform 200ms ease;
 }
 
@@ -50,12 +50,67 @@
 
 /* Agent and bundle cards */
 .agent-card    { --card-accent: var(--tag-amber);       --card-accent-rgb: 217, 119, 6; }
-.bundle-card  { --card-accent: var(--type-library);    --card-accent-rgb: 16, 185, 129; }
+.bundle-card  { --card-accent: var(--accent);           --card-accent-rgb: 99, 102, 241; }
 .category-card { --card-accent: var(--type-framework);  --card-accent-rgb: 59, 130, 246; }
 .support-card  { --card-accent: var(--ink-3);           --card-accent-rgb: 163, 163, 163; }
 
 /* ---- Type indicator dot ---- */
 
+/* ---- Card head (new layout) ---- */
+
+.card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.card-tag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.card-tag-type {
+  background: rgba(var(--card-accent-rgb), 0.12);
+  color: var(--card-accent);
+}
+
+.card-tag-category {
+  background: var(--card-accent);
+  color: #fff;
+}
+
+.card-tag-category:hover {
+  filter: brightness(1.1);
+}
+
+/* Legacy card-top (agents, bundles) */
+.card-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 6px 10px;
+}
+
+.card-top > :first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+/* Legacy type indicator (agents, bundles) */
 .card-type-indicator {
   display: inline-flex;
   align-items: center;
@@ -112,59 +167,65 @@
   align-self: start;
 }
 
-/* ---- Card top ---- */
-
-.card-top {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 6px 10px;
-}
-
-.card-top > :first-child {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-}
-
-/* Category chip — colored by card type */
-.card-category-chip {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  align-self: start;
-  background: rgba(var(--card-accent-rgb), 0.1);
-  color: var(--card-accent);
-  font-weight: 600;
-  border: 1px solid rgba(var(--card-accent-rgb), 0.15);
-}
-
 /* ---- Card footer ---- */
 
 .card-footer {
+  margin-top: auto;
+  padding-top: 8px;
+  width: 100%;
+}
+
+.card-cmd-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
+  align-items: stretch;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(99,102,241,0.15);
+  background: #1e1e2e;
+}
+
+.card-cmd-row .card-cmd {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-copy-btn {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  color: #a5b4fc;
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+.card-copy-btn:hover {
+  background: rgba(255,255,255,0.12);
 }
 
 .card-cmd {
   display: inline-block;
   padding: 4px 10px;
   border-radius: 5px;
-  background: #1a1a2e;
-  color: #a5b4fc;
+  background: #1e1e2e;
+  color: #c4b5fd;
   font-family: "JetBrains Mono", monospace;
   font-size: 10.5px;
   line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 70%;
-  border: 1px solid rgba(99,102,241,0.15);
+  max-width: 100%;
+  border: 1px solid rgba(99,102,241,0.2);
 }
 
 .card-footer .card-inline-link {
@@ -245,6 +306,120 @@
 }
 
 .card-actions-inline .button { min-width: 0; }
+
+/* ---- NuGet package pills ---- */
+
+.nuget-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+}
+
+.nuget-chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(130, 80, 223, 0.08);
+  color: #8250df;
+  border: 1px solid rgba(130, 80, 223, 0.15);
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.nuget-prefix {
+  background: rgba(130, 80, 223, 0.12);
+  font-weight: 600;
+}
+
+.nuget-more {
+  background: rgba(130, 80, 223, 0.05);
+  color: rgba(130, 80, 223, 0.6);
+}
+
+.nuget-sidebar-hint {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin: 0 0 6px;
+}
+
+.nuget-sidebar-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.nuget-sidebar-list .nuget-chip {
+  font-size: 11px;
+  padding: 3px 10px;
+}
+
+/* ---- NuGet packages table ---- */
+
+.nuget-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nuget-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.nuget-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 1;
+}
+
+.nuget-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--line-strong);
+}
+
+.nuget-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.nuget-table-row:hover {
+  background: rgba(130, 80, 223, 0.03);
+}
+
+.nuget-table-id code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12.5px;
+  color: #8250df;
+  font-weight: 500;
+}
+
+.nuget-kind-prefix .nuget-table-id code {
+  font-weight: 700;
+}
+
+.nuget-table-skill a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nuget-table-skill a:hover {
+  color: var(--accent);
+}
+
+.nuget-table-cmd code {
+  font-size: 11px;
+}
 
 /* ---- Agent card ---- */
 
@@ -356,6 +531,7 @@
   border: none;
 }
 
+
 .chip-row { gap: 4px; }
 .skill-meta-row { margin-top: 2px; }
 .skill-command-row { margin-top: 0; }
@@ -367,3 +543,4 @@
 }
 
 .article-copy section::before, .sidebar-card::before, .credits-block::before { display: none; }
+

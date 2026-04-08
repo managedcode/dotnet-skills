@@ -1,7 +1,5 @@
 ---
 name: dotnet-eslint
-version: "1.0.0"
-category: "Code Quality"
 description: "Use ESLint in .NET repositories that ship JavaScript, TypeScript, React, or other Node-based frontend assets. Use when a repo needs a configurable CLI lint gate for frontend correctness, import hygiene, unsafe patterns, or framework-specific rules."
 compatibility: "Requires a .NET repository with Node-based frontend assets such as `package.json`, `ClientApp/`, `src/`, or separate web frontend folders."
 ---

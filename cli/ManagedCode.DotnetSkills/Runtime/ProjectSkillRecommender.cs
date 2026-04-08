@@ -61,38 +61,12 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
             Add("dotnet-uno-platform", RecommendationConfidence.High, "Project uses an Uno SDK.", RecommendationSignalKind.Sdk, builders);
         }
 
-        AddPackagePrefixRecommendation("dotnet-blazor", RecommendationConfidence.High, builders, inventory, "Microsoft.AspNetCore.Components", "Detected Blazor component packages.");
-        AddPackagePrefixRecommendation("dotnet-entity-framework-core", RecommendationConfidence.High, builders, inventory, "Microsoft.EntityFrameworkCore", "Detected EF Core packages.");
-        AddPackagePrefixRecommendation("dotnet-azure-functions", RecommendationConfidence.High, builders, inventory, "Microsoft.Azure.Functions.Worker", "Detected Azure Functions isolated worker packages.");
-        AddPackagePrefixRecommendation("dotnet-aspire", RecommendationConfidence.High, builders, inventory, "Aspire.", "Detected .NET Aspire packages.");
-        AddPackagePrefixRecommendation("dotnet-orleans", RecommendationConfidence.High, builders, inventory, "Microsoft.Orleans", "Detected Orleans packages.");
-        AddPackagePrefixRecommendation("dotnet-orleans", RecommendationConfidence.High, builders, inventory, "Orleans.", "Detected Orleans packages.");
-        AddPackagePrefixRecommendation("dotnet-grpc", RecommendationConfidence.High, builders, inventory, "Grpc.", "Detected gRPC packages.");
+        AddManifestDrivenPackageRecommendations(builders, inventory);
         AddPackageRecommendation("dotnet-grpc", RecommendationConfidence.High, builders, inventory, "Google.Protobuf", "Detected Google.Protobuf alongside gRPC-style dependencies.");
-        AddPackagePrefixRecommendation("dotnet-signalr", RecommendationConfidence.High, builders, inventory, "Microsoft.AspNetCore.SignalR", "Detected SignalR packages.");
-        AddPackagePrefixRecommendation("dotnet-semantic-kernel", RecommendationConfidence.High, builders, inventory, "Microsoft.SemanticKernel", "Detected Semantic Kernel packages.");
-        AddPackagePrefixRecommendation("dotnet-microsoft-extensions-ai", RecommendationConfidence.High, builders, inventory, "Microsoft.Extensions.AI", "Detected Microsoft.Extensions.AI packages.");
-        AddPackagePrefixRecommendation("dotnet-microsoft-extensions", RecommendationConfidence.Medium, builders, inventory, "Microsoft.Extensions.", "Detected Microsoft.Extensions packages.");
-        AddPackageRecommendation("dotnet-mvvm", RecommendationConfidence.High, builders, inventory, "CommunityToolkit.Mvvm", "Detected MVVM Toolkit packages.");
-        AddPackagePrefixRecommendation("dotnet-mlnet", RecommendationConfidence.High, builders, inventory, "Microsoft.ML", "Detected ML.NET packages.");
-        AddPackagePrefixRecommendation("dotnet-winui", RecommendationConfidence.High, builders, inventory, "Microsoft.WindowsAppSDK", "Detected Windows App SDK packages.");
+        AddPackagePrefixRecommendation("dotnet-orleans", RecommendationConfidence.High, builders, inventory, "Orleans.", "Detected Orleans packages.");
         AddPackagePrefixRecommendation("dotnet-uno-platform", RecommendationConfidence.High, builders, inventory, "Uno.", "Detected Uno Platform packages.");
-        AddPackagePrefixRecommendation("dotnet-wcf", RecommendationConfidence.Medium, builders, inventory, "System.ServiceModel", "Detected WCF client or contract packages.");
         AddPackagePrefixRecommendation("dotnet-wcf", RecommendationConfidence.Medium, builders, inventory, "CoreWCF", "Detected CoreWCF packages.");
-
-        AddPackageRecommendation("dotnet-xunit", RecommendationConfidence.High, builders, inventory, "xunit", "Detected xUnit test packages.");
-        AddPackageRecommendation("dotnet-nunit", RecommendationConfidence.High, builders, inventory, "NUnit", "Detected NUnit test packages.");
-        AddPackagePrefixRecommendation("dotnet-mstest", RecommendationConfidence.High, builders, inventory, "MSTest", "Detected MSTest packages.");
-        AddPackageRecommendation("dotnet-tunit", RecommendationConfidence.High, builders, inventory, "TUnit", "Detected TUnit packages.");
-
-        AddPackagePrefixRecommendation("dotnet-coverlet", RecommendationConfidence.High, builders, inventory, "coverlet", "Detected coverlet coverage packages.");
-        AddPackageRecommendation("dotnet-stylecop-analyzers", RecommendationConfidence.High, builders, inventory, "StyleCop.Analyzers", "Detected StyleCop analyzers.");
-        AddPackageRecommendation("dotnet-meziantou-analyzer", RecommendationConfidence.High, builders, inventory, "Meziantou.Analyzer", "Detected Meziantou analyzer.");
-        AddPackagePrefixRecommendation("dotnet-roslynator", RecommendationConfidence.High, builders, inventory, "Roslynator", "Detected Roslynator packages.");
-        AddPackageRecommendation("dotnet-archunitnet", RecommendationConfidence.High, builders, inventory, "ArchUnitNET", "Detected ArchUnitNET packages.");
-        AddPackageRecommendation("dotnet-netarchtest", RecommendationConfidence.High, builders, inventory, "NetArchTest.Rules", "Detected NetArchTest rules.");
-        AddPackagePrefixRecommendation("dotnet-stryker", RecommendationConfidence.High, builders, inventory, "Stryker", "Detected Stryker.NET packages.");
-        AddPackagePrefixRecommendation("dotnet-reportgenerator", RecommendationConfidence.High, builders, inventory, "ReportGenerator", "Detected ReportGenerator packages.");
+        AddPackageRecommendation("dotnet-mvvm", RecommendationConfidence.High, builders, inventory, "CommunityToolkit.Mvvm", "Detected MVVM Toolkit packages.");
 
         if (inventory.HasSdk("Microsoft.NET.Sdk.Worker"))
         {
@@ -201,6 +175,41 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
         }
 
         builder.Add(confidence, reason, signal);
+    }
+
+    private void AddManifestDrivenPackageRecommendations(
+        IDictionary<string, RecommendationBuilder> builders,
+        ProjectInventory inventory)
+    {
+        foreach (var skill in catalog.Skills)
+        {
+            if (!string.IsNullOrWhiteSpace(skill.PackagePrefix) && inventory.HasPackagePrefix(skill.PackagePrefix))
+            {
+                Add(
+                    skill.Name,
+                    skill.Name.Equals("dotnet-microsoft-extensions", StringComparison.OrdinalIgnoreCase)
+                        ? RecommendationConfidence.Medium
+                        : RecommendationConfidence.High,
+                    $"Detected packages with prefix {skill.PackagePrefix}.",
+                    RecommendationSignalKind.Package,
+                    builders);
+            }
+
+            foreach (var packageId in skill.Packages)
+            {
+                if (!inventory.HasPackage(packageId))
+                {
+                    continue;
+                }
+
+                Add(
+                    skill.Name,
+                    RecommendationConfidence.High,
+                    $"Detected package {packageId}.",
+                    RecommendationSignalKind.Package,
+                    builders);
+            }
+        }
     }
 }
 
@@ -375,4 +384,5 @@ internal sealed class ProjectInventory
             sdks.Add(sdkName);
         }
     }
+
 }

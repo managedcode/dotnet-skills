@@ -1,0 +1,9 @@
+{
+  "name": "dotnet-experimental",
+  "title": "Official .NET skills: dotnet-experimental",
+  "description": "Experimental skills under active evaluation that may change or graduate to stable plugins. Imported from dotnet/skills via vendir.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-experimental"
+  }
+}

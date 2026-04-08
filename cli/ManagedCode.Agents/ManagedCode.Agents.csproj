@@ -27,8 +27,6 @@
     <PackageOutputPath>../../artifacts/nuget</PackageOutputPath>
     <IncludeContentInPack>true</IncludeContentInPack>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <AgentsGeneratedDir>$(BaseIntermediateOutputPath)agents-generated</AgentsGeneratedDir>
-    <AgentsGeneratedManifestPath>$(AgentsGeneratedDir)/catalog/agents.json</AgentsGeneratedManifestPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,13 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="../../agents/**/*" Exclude="../../agents/**/.DS_Store">
-      <Link>agents/%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>false</Pack>
-    </Content>
-    <Content Include="$(AgentsGeneratedManifestPath)">
-      <Link>catalog/agents.json</Link>
+    <Content Include="../../catalog/**/*" Exclude="../../catalog/**/.DS_Store">
+      <Link>catalog/%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>false</Pack>
     </Content>
@@ -71,8 +64,6 @@
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.CacheDirectoryName" Value="agents" />
   </ItemGroup>
 
-  <Target Name="GenerateBundledAgentCatalogManifest" BeforeTargets="PrepareForBuild">
-    <MakeDir Directories="$(AgentsGeneratedDir)/catalog" />
-    <Exec Command="python3 ../../scripts/generate_agent_catalog.py --output &quot;$(AgentsGeneratedManifestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
-  </Target>
+  <Import Project="../Catalog.Generated.targets" />
+
 </Project>

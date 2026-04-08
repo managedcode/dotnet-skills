@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-devex
-version: "1.0.0"
-category: "Core"
 description: "Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into."
 compatibility: "Requires repository access; may update docs, task runners, devcontainer guidance, or local setup conventions."
 ---

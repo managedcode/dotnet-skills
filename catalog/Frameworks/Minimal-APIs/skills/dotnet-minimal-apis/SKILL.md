@@ -1,7 +1,5 @@
 ---
 name: dotnet-minimal-apis
-version: "1.0.0"
-category: "Web"
 description: "Design and implement Minimal APIs in ASP.NET Core using handler-first endpoints, route groups, filters, and lightweight composition suited to modern .NET services."
 compatibility: "Requires ASP.NET Core 6+, preferably .NET 8+ for full features."
 ---

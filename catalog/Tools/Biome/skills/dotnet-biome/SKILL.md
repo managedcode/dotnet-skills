@@ -1,7 +1,5 @@
 ---
 name: dotnet-biome
-version: "1.0.0"
-category: "Code Quality"
 description: "Use Biome in .NET repositories that ship Node-based frontend assets and want a fast combined formatter-linter-import organizer for JavaScript, TypeScript, CSS, JSON, GraphQL, or HTML. Use when a repo prefers a modern all-in-one CLI over a larger ESLint plus Prettier style stack."
 compatibility: "Requires a .NET repository with frontend assets managed through Node or a standalone Biome binary workflow; keep ownership explicit versus ESLint, Stylelint, and webhint."
 ---

@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcp
-version: "1.1.1"
-category: "AI"
 description: "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation."
 compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.1.x SDK."
 ---

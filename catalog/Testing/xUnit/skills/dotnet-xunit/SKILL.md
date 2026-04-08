@@ -1,7 +1,5 @@
 ---
 name: dotnet-xunit
-version: "1.0.0"
-category: "Testing"
 description: "Write, run, or repair .NET tests that use xUnit. Use when a repo uses `xunit`, `xunit.v3`, `[Fact]`, `[Theory]`, or `xunit.runner.visualstudio`, and you need the right CLI, package, and runner guidance for xUnit on VSTest or Microsoft.Testing.Platform."
 compatibility: "Requires a .NET solution or project with xUnit packages; respects the repo's `AGENTS.md` commands first."
 ---

@@ -1,0 +1,9 @@
+{
+  "name": "dotnet",
+  "title": "Official .NET skills: dotnet",
+  "description": "Common everyday C#/.NET coding skills. Expected to be useful to all .NET developers. Imported from dotnet/skills via vendir.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet"
+  }
+}

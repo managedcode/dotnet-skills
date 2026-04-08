@@ -1,7 +1,5 @@
 ---
 name: dotnet-managedcode-storage
-version: "1.0.0"
-category: "Data"
 description: "Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept behind one library contract."
 compatibility: "Requires a .NET application that integrates ManagedCode.Storage or evaluates it as a storage abstraction."
 ---

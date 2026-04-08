@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "category": "Testing",
+  "packages": [
+    "xunit",
+    "xunit.v3"
+  ]
+}

@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-agile-delivery
-version: "1.0.0"
-category: "Core"
 description: "Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements."
 compatibility: "Requires repository access only when the repo stores delivery docs or governance guidance."
 ---

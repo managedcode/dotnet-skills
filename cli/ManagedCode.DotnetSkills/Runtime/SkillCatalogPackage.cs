@@ -12,14 +12,12 @@ internal sealed class SkillCatalogPackage
 
     private SkillCatalogPackage(
         DirectoryInfo catalogRoot,
-        DirectoryInfo skillsRoot,
         IReadOnlyList<SkillEntry> skills,
         IReadOnlyList<SkillPackageEntry> packages,
         string sourceLabel,
         string catalogVersion)
     {
         CatalogRoot = catalogRoot;
-        SkillsRoot = skillsRoot;
         Skills = skills;
         Packages = packages;
         SourceLabel = sourceLabel;
@@ -27,8 +25,6 @@ internal sealed class SkillCatalogPackage
     }
 
     public DirectoryInfo CatalogRoot { get; }
-
-    public DirectoryInfo SkillsRoot { get; }
 
     public IReadOnlyList<SkillEntry> Skills { get; }
 
@@ -46,37 +42,20 @@ internal sealed class SkillCatalogPackage
 
     public static SkillCatalogPackage LoadFromDirectory(DirectoryInfo rootDirectory, string sourceLabel, string catalogVersion)
     {
-        var skillsRoot = ResolveSkillsRoot(rootDirectory);
-        var manifestPath = new FileInfo(Path.Combine(rootDirectory.FullName, "catalog", "skills.json"));
-
-        if (!manifestPath.Exists)
-        {
-            throw new InvalidOperationException($"skills manifest was not found under {manifestPath.FullName}");
-        }
-
-        var manifest = JsonSerializer.Deserialize<SkillManifest>(File.ReadAllText(manifestPath.FullName), JsonOptions)
-            ?? throw new InvalidOperationException($"Could not parse {manifestPath.FullName}");
-
-        return new SkillCatalogPackage(rootDirectory, skillsRoot, manifest.Skills, manifest.Packages, sourceLabel, catalogVersion);
+        var scan = CatalogScanner.ScanSkills(rootDirectory);
+        return new SkillCatalogPackage(rootDirectory, scan.Skills, scan.Packages, sourceLabel, catalogVersion);
     }
 
-    private static DirectoryInfo ResolveSkillsRoot(DirectoryInfo rootDirectory)
+    public static SkillCatalogPackage LoadFromManifest(DirectoryInfo catalogRoot, SkillManifest manifest, string sourceLabel, string catalogVersion)
     {
-        foreach (var candidateName in new[] { "skills", "Skills" })
-        {
-            var candidate = new DirectoryInfo(Path.Combine(rootDirectory.FullName, candidateName));
-            if (candidate.Exists)
-            {
-                return candidate;
-            }
-        }
-
-        throw new InvalidOperationException($"skills directory was not found under {rootDirectory.FullName}");
+        return new SkillCatalogPackage(catalogRoot, manifest.Skills, manifest.Packages, sourceLabel, catalogVersion);
     }
 
     public DirectoryInfo ResolveSkillSource(string skillName)
     {
-        var directory = new DirectoryInfo(Path.Combine(SkillsRoot.FullName, skillName));
+        var skill = Skills.FirstOrDefault(candidate => string.Equals(candidate.Name, skillName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Skill metadata is missing for {skillName} in {SourceLabel}");
+        var directory = new DirectoryInfo(Path.Combine(CatalogRoot.FullName, skill.Path.Replace('/', Path.DirectorySeparatorChar)));
         if (!directory.Exists)
         {
             throw new InvalidOperationException($"Skill payload is missing for {skillName} in {SourceLabel}");
@@ -91,7 +70,7 @@ internal sealed class SkillManifest
     [JsonPropertyName("skills")]
     public List<SkillEntry> Skills { get; init; } = [];
 
-    [JsonPropertyName("packages")]
+    [JsonPropertyName("bundles")]
     public List<SkillPackageEntry> Packages { get; init; } = [];
 }
 
@@ -109,6 +88,12 @@ internal sealed class SkillEntry
     [JsonPropertyName("category")]
     public string Category { get; init; } = string.Empty;
 
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = string.Empty;
+
+    [JsonPropertyName("package")]
+    public string Package { get; init; } = string.Empty;
+
     [JsonPropertyName("description")]
     public string Description { get; init; } = string.Empty;
 
@@ -117,6 +102,15 @@ internal sealed class SkillEntry
 
     [JsonPropertyName("path")]
     public string Path { get; init; } = string.Empty;
+
+    [JsonPropertyName("packages")]
+    public List<string> Packages { get; init; } = [];
+
+    [JsonPropertyName("package_prefix")]
+    public string PackagePrefix { get; init; } = string.Empty;
+
+    [JsonPropertyName("links")]
+    public CatalogLinks Links { get; init; } = CatalogLinks.Empty;
 }
 
 internal sealed class SkillPackageEntry
@@ -138,4 +132,18 @@ internal sealed class SkillPackageEntry
 
     [JsonPropertyName("skills")]
     public List<string> Skills { get; init; } = [];
+}
+
+internal sealed class CatalogLinks
+{
+    public static CatalogLinks Empty { get; } = new();
+
+    [JsonPropertyName("repository")]
+    public string Repository { get; init; } = string.Empty;
+
+    [JsonPropertyName("docs")]
+    public string Docs { get; init; } = string.Empty;
+
+    [JsonPropertyName("nuget")]
+    public string NuGet { get; init; } = string.Empty;
 }

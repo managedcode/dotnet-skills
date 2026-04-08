@@ -1,0 +1,165 @@
+{
+  "id": "dotnet-skills",
+  "repository": "https://github.com/dotnet/skills",
+  "sourceRoot": "upstreams/dotnet-skills",
+  "docsBase": "https://github.com/dotnet/skills/tree/main/plugins",
+  "managedPackagePrefix": "Official-DotNet",
+  "replaceSkillConflicts": true,
+  "replaceAgentConflicts": true,
+  "plugins": {
+    "dotnet": {
+      "type": "Platform",
+      "package": "Official-DotNet",
+      "title": "Official .NET skills: dotnet",
+      "category": "Core",
+      "compatibility": "Requires a .NET repository or solution."
+    },
+    "dotnet-ai": {
+      "type": "Platform",
+      "package": "Official-DotNet-AI",
+      "title": "Official .NET skills: dotnet-ai",
+      "category": "AI",
+      "compatibility": "Requires a .NET repository working with AI, ML, or MCP workloads.",
+      "skillOverrides": {
+        "mcp-csharp-create": {
+          "packages": [
+            "ModelContextProtocol",
+            "ModelContextProtocol.AspNetCore"
+          ]
+        },
+        "mcp-csharp-debug": {
+          "packages": [
+            "ModelContextProtocol",
+            "ModelContextProtocol.AspNetCore"
+          ]
+        },
+        "mcp-csharp-publish": {
+          "packages": [
+            "ModelContextProtocol",
+            "ModelContextProtocol.AspNetCore"
+          ]
+        },
+        "mcp-csharp-test": {
+          "packages": [
+            "ModelContextProtocol",
+            "ModelContextProtocol.AspNetCore"
+          ]
+        }
+      }
+    },
+    "dotnet-aspnet": {
+      "type": "Frameworks",
+      "package": "Official-DotNet-ASPNet",
+      "title": "Official .NET skills: dotnet-aspnet",
+      "category": "Web",
+      "compatibility": "Requires an ASP.NET Core project or solution.",
+      "skillOverrides": {
+        "configuring-opentelemetry-dotnet": {
+          "package_prefix": "OpenTelemetry"
+        },
+        "minimal-api-file-upload": {
+          "package_prefix": "Microsoft.AspNetCore"
+        }
+      }
+    },
+    "dotnet-data": {
+      "type": "Libraries",
+      "package": "Official-DotNet-Data",
+      "title": "Official .NET skills: dotnet-data",
+      "category": "Data",
+      "compatibility": "Requires a .NET repository using Entity Framework Core or similar data-access patterns.",
+      "skillOverrides": {
+        "optimizing-ef-core-queries": {
+          "package_prefix": "Microsoft.EntityFrameworkCore"
+        }
+      }
+    },
+    "dotnet-diag": {
+      "type": "Tools",
+      "package": "Official-DotNet-Diagnostics",
+      "title": "Official .NET skills: dotnet-diag",
+      "category": "Metrics",
+      "compatibility": "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
+    },
+    "dotnet-experimental": {
+      "type": "Platform",
+      "package": "Official-DotNet-Experimental",
+      "title": "Official .NET skills: dotnet-experimental",
+      "category": "Testing",
+      "compatibility": "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable.",
+      "skillOverrides": {
+        "exp-simd-vectorization": {
+          "category": "Core"
+        }
+      }
+    },
+    "dotnet-maui": {
+      "type": "Frameworks",
+      "package": "Official-DotNet-MAUI",
+      "title": "Official .NET skills: dotnet-maui",
+      "category": "Cross-Platform UI",
+      "compatibility": "Requires a .NET MAUI project or solution.",
+      "skillDefaults": {
+        "package_prefix": "Microsoft.Maui"
+      }
+    },
+    "dotnet-msbuild": {
+      "type": "Tools",
+      "package": "Official-DotNet-MSBuild",
+      "title": "Official .NET skills: dotnet-msbuild",
+      "category": "Core",
+      "compatibility": "Requires a .NET repository with MSBuild project or solution files."
+    },
+    "dotnet-nuget": {
+      "type": "Tools",
+      "package": "Official-DotNet-NuGet",
+      "title": "Official .NET skills: dotnet-nuget",
+      "category": "Core",
+      "compatibility": "Requires a .NET repository using NuGet package management."
+    },
+    "dotnet-template-engine": {
+      "type": "Tools",
+      "package": "Official-DotNet-Template-Engine",
+      "title": "Official .NET skills: dotnet-template-engine",
+      "category": "Core",
+      "compatibility": "Requires a .NET repository using dotnet new templates or template authoring workflows."
+    },
+    "dotnet-test": {
+      "type": "Testing",
+      "package": "Official-DotNet-Test",
+      "title": "Official .NET skills: dotnet-test",
+      "category": "Testing",
+      "compatibility": "Requires a .NET test project or solution.",
+      "skillOverrides": {
+        "coverage-analysis": {
+          "packages": [
+            "coverlet.collector",
+            "coverlet.msbuild"
+          ]
+        },
+        "migrate-mstest-v1v2-to-v3": {
+          "package_prefix": "MSTest"
+        },
+        "migrate-mstest-v3-to-v4": {
+          "package_prefix": "MSTest"
+        },
+        "migrate-xunit-to-xunit-v3": {
+          "packages": [
+            "xunit",
+            "xunit.v3"
+          ]
+        },
+        "writing-mstest-tests": {
+          "package_prefix": "MSTest"
+        }
+      }
+    },
+    "dotnet-upgrade": {
+      "type": "Platform",
+      "package": "Official-DotNet-Upgrade",
+      "title": "Official .NET skills: dotnet-upgrade",
+      "category": "Legacy",
+      "compatibility": "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
+    }
+  }
+}

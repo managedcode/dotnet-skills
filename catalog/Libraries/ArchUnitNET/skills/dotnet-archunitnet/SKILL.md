@@ -1,7 +1,5 @@
 ---
 name: dotnet-archunitnet
-version: "1.0.0"
-category: "Architecture"
 description: "Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide."
 compatibility: "Requires a .NET test project; supports dedicated integrations for xUnit, xUnit v3, MSTest, TUnit, and others where available."
 ---

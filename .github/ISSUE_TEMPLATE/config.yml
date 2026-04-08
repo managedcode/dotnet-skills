@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Contribution guide
+    url: https://github.com/managedcode/dotnet-skills/blob/main/CONTRIBUTING.md
+    about: Read the catalog structure, manifest rules, and validation workflow before opening a contribution issue or PR.

@@ -1,7 +1,5 @@
 ---
 name: dotnet-mcaf-ml-ai-delivery
-version: "1.0.0"
-category: "AI"
 description: "Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. Use when the repo includes model training, inference, data science workflows, or ML-specific delivery planning."
 compatibility: "Requires repository access when ML/AI docs, experiments, or delivery guidance live in the repo."
 ---

@@ -1,7 +1,5 @@
 ---
 name: dotnet-managedcode-markitdown
-version: "1.0.0"
-category: "Data"
 description: "Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows."
 compatibility: "Requires a .NET application that integrates ManagedCode.MarkItDown or evaluates document conversion into Markdown."
 ---
