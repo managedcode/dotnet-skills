@@ -96,3 +96,12 @@ body.page-categories .panel #listing-grid { grid-template-columns: repeat(3, min
 }
 
 .sidebar-stack { display: grid; gap: 12px; }
+
+.featured-subheading {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}

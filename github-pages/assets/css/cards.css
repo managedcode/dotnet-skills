@@ -1,12 +1,6 @@
 /* ================================================================
-   Cards — directory cards with animated conic gradient glow
+   Cards — clean directory cards
    ================================================================ */
-
-@property --card-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
 
 .directory-card {
   --card-accent: var(--accent);
@@ -22,75 +16,22 @@
   background: var(--bg-elevated);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-xs);
-  transition: box-shadow 400ms ease, border-color 300ms ease, transform 300ms ease;
-}
-
-/* Animated conic gradient border on hover */
-.directory-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(
-    from var(--card-angle),
-    transparent 0%,
-    var(--card-accent) 25%,
-    transparent 50%,
-    var(--card-accent) 75%,
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 400ms ease;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Soft category-matched glow behind the card */
-.directory-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: 0 0 0 0 transparent;
-  transition: box-shadow 400ms ease;
-  pointer-events: none;
+  transition: box-shadow 300ms ease, border-color 200ms ease, transform 200ms ease;
 }
 
 .directory-card:hover {
-  border-color: transparent;
-  transform: translateY(-3px);
-}
-
-.directory-card:hover::before {
-  opacity: 1;
-  animation: card-border-spin 3s linear infinite;
-}
-
-.directory-card:hover::after {
+  border-color: rgba(var(--card-accent-rgb), 0.3);
+  transform: translateY(-2px);
   box-shadow:
-    0 0 0 1px rgba(var(--card-accent-rgb), 0.15),
-    0 4px 20px -4px rgba(var(--card-accent-rgb), 0.2),
-    0 0 40px -8px rgba(var(--card-accent-rgb), 0.08);
+    0 2px 12px -2px rgba(var(--card-accent-rgb), 0.12),
+    0 0 0 1px rgba(var(--card-accent-rgb), 0.08);
 }
 
-@keyframes card-border-spin {
-  to { --card-angle: 360deg; }
-}
-
-/* Permanent colored left accent stripe */
-.skill-card    { border-left: 3px solid var(--card-accent); }
-.agent-card    { border-left: 3px solid var(--card-accent); }
-.package-card  { border-left: 3px solid var(--card-accent); }
-.category-card { border-left: 3px solid var(--card-accent); }
-
-/* Subtle type-tinted background */
-.directory-card.skill-card {
-  background: linear-gradient(135deg, var(--bg-elevated) 85%, rgba(var(--card-accent-rgb), 0.04) 100%);
-}
+/* Accent top bar */
+.skill-card    { border-top: 2px solid var(--card-accent); }
+.agent-card    { border-top: 2px solid var(--card-accent); }
+.package-card  { border-top: 2px solid var(--card-accent); }
+.category-card { border-top: 2px solid var(--card-accent); }
 
 .directory-card.is-clickable { cursor: pointer; }
 

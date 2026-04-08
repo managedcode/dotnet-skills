@@ -504,7 +504,7 @@ def load_package_documents(packages: list[dict], skills_by_name: dict[str, dict]
                 "slug": package_name,
                 "short_name": package_name,
                 "kind": kind,
-                "kind_label": "Category stack" if kind == "category" else "Curated skill stack",
+                "kind_label": "Category package" if kind == "category" else "Curated package",
                 "source_category_slug": slugify(source_category) if source_category else "",
                 "detail_path": detail_path,
                 "detail_url": build_absolute_url(site_url, detail_path),
@@ -732,7 +732,7 @@ def render_package_card(package: dict, root_prefix: str) -> str:
 
     skill_count = len(package['skills'])
     return f"""
-      <article class="directory-card package-card is-clickable js-filter-card" data-category="{escape_html(package['kind'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(package['title'])} skill stack">
+      <article class="directory-card package-card is-clickable js-filter-card" data-category="{escape_html(package['kind'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(package['title'])} package">
         <div class="card-top">
           <div>
             <h3><a href="{escape_html(detail_href)}">{escape_html(package['title'])}</a></h3>
@@ -769,9 +769,9 @@ def render_filter_tabs(category_infos: dict[str, dict], current_category: str = 
 def render_package_filter_tabs(current_kind: str = "all") -> str:
     """Render package-kind filter tabs."""
     options = [
-        ("all", "All skill stacks"),
+        ("all", "All packages"),
         ("curated", "Curated"),
-        ("category", "Category stacks"),
+        ("category", "Category packages"),
     ]
     return "".join(
         f'<button class="filter-tab {"is-active" if current_kind == value else ""}" type="button" data-filter="{value}">{label}</button>'
@@ -902,7 +902,7 @@ def render_package_listing_section(
 
     cards_html = "\n".join(render_package_card(package, root_prefix) for package in packages)
     tabs_html = render_package_filter_tabs() if include_tabs else ""
-    links = [("Skill stacks", f"{root_prefix}packages/")] if show_index_link else []
+    links = [("Packages", f"{root_prefix}packages/")] if show_index_link else []
     if any(package.get("sourceCategory") for package in packages):
         links.append(("Categories", f"{root_prefix}categories/"))
 
@@ -911,7 +911,7 @@ def render_package_listing_section(
     if include_tabs:
         toolbar_html = f"""
         <div class="listing-toolbar">
-          <input class="search-input" id="search-input" type="search" placeholder="Search skill stacks by name, category, or included skill" autocomplete="off">
+          <input class="search-input" id="search-input" type="search" placeholder="Search packages by name, category, or included skill" autocomplete="off">
           <div class="filter-tabs">
             {tabs_html}
           </div>
@@ -942,8 +942,8 @@ def render_quickstart_panel() -> str:
     steps = [
         ("Install the CLI", "dotnet tool install --global dotnet-skills", "Get the catalog onto your machine."),
         ("Install skills for NuGet packages", "dotnet skills install --auto", "Scan local .csproj files and install matching skills for the NuGet packages you already use."),
-        ("Browse skill stacks", "dotnet skills package list", "See the curated and category-based bundles that install multiple skills at once."),
-        ("Install a skill stack", "dotnet skills install package ai", "Add a ready-made skill bundle when you want broad coverage quickly."),
+        ("Browse packages", "dotnet skills package list", "See the curated and category-based bundles that install multiple skills at once."),
+        ("Install a package", "dotnet skills install package ai", "Add a ready-made package when you want broad coverage quickly."),
         ("Install exact skills", "dotnet skills install aspire blazor", "Add individual topics when you want a smaller custom setup."),
     ]
     cards = []
@@ -1017,6 +1017,40 @@ def render_support_panel(root_prefix: str) -> str:
     """.strip()
 
 
+def render_featured_section(
+    skills: list[dict],
+    agents: list[dict],
+    category_infos: dict[str, dict],
+    root_prefix: str,
+    linked_skills: dict[str, dict],
+) -> str:
+    """Render combined featured skills and agents section."""
+    skill_cards = "\n".join(render_skill_card(skill, root_prefix) for skill in skills)
+    agent_cards = "\n".join(render_agent_card(agent, root_prefix, linked_skills) for agent in agents)
+
+    links = render_panel_links([("Skills", f"{root_prefix}skills/"), ("Agents", f"{root_prefix}agents/")])
+
+    return f"""
+      <section class="section-stack">
+        <div class="section-header">
+          <div>
+            <h2>Featured</h2>
+            <p>A selection of skills and orchestration agents from the catalog.</p>
+          </div>
+          {links}
+        </div>
+        <h3 class="featured-subheading">Skills</h3>
+        <div class="directory-grid">
+          {skill_cards}
+        </div>
+        <h3 class="featured-subheading">Agents</h3>
+        <div class="agent-grid">
+          {agent_cards}
+        </div>
+      </section>
+    """.strip()
+
+
 def render_home_page(
     skills: list[dict],
     packages: list[dict],
@@ -1034,15 +1068,15 @@ def render_home_page(
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
         <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>
-        <p class="page-lead">Start by installing skills for the NuGet packages already in your project, or use a skill stack when you want broader ready-made coverage. Drop into categories, skills, and orchestration agents when you want more exact .NET guidance for the coding platform you already use.</p>
+        <p class="page-lead">Start by installing skills for the NuGet packages already in your project, or use a package when you want broader ready-made coverage. Drop into categories, skills, and orchestration agents when you want more exact .NET guidance for the coding platform you already use.</p>
         <div class="hero-actions">
-          {render_button("Browse skill stacks", f"{root_prefix}packages/", "primary")}
+          {render_button("Browse packages", f"{root_prefix}packages/", "primary")}
           {render_button("Browse categories", f"{root_prefix}categories/", "ghost")}
           {render_button("Read about the catalog", f"{root_prefix}about/", "ghost")}
         </div>
         <div class="metric-grid">
           {render_metric_card(str(len(skills)), "Skills")}
-          {render_metric_card(str(len(packages)), "Skill stacks")}
+          {render_metric_card(str(len(packages)), "Packages")}
           {render_metric_card(str(len(agents)), "Agents")}
           {render_metric_card(str(len(category_infos)), "Categories")}
           {render_metric_card("5", "Platforms")}
@@ -1050,32 +1084,23 @@ def render_home_page(
       </section>
     """
 
+    featured_section = render_featured_section(skills[:6], agents[:3], category_infos, root_prefix, {skill["name"]: skill for skill in skills})
+
     sections = [
         hero,
         render_quickstart_panel(),
+        featured_section,
         render_package_listing_section(
             packages[:6],
             root_prefix,
-            "Install ready-made skill stacks",
-            "Use skill-stack installs when you want one command to lay down a broader, already-grouped skill set.",
+            "Install ready-made packages",
+            "Use packages when you want one command to lay down a broader, already-grouped skill set.",
             include_tabs=False,
             empty_message="",
             show_index_link=True,
         ),
         render_category_listing_section(category_infos, root_prefix),
-        render_agent_listing_section(agents[:6], root_prefix, {skill["name"]: skill for skill in skills}),
         render_support_panel(root_prefix),
-        render_skill_listing_section(
-            skills[:6],
-            category_infos,
-            root_prefix,
-            "Featured skills",
-            "A few representative entries from the catalog. Use the full directory when you want the searchable complete list.",
-            include_tabs=False,
-            empty_message="No skills match this combination yet.",
-            show_controls=False,
-            show_index_link=True,
-        ),
     ]
 
     page_data = {
@@ -1382,22 +1407,22 @@ def render_skills_index_page(skills: list[dict], category_infos: dict[str, dict]
 def render_packages_index_page(packages: list[dict], root_prefix: str) -> tuple[str, dict]:
     """Render the package directory page."""
     body = f"""
-      {render_breadcrumb([("Home", root_prefix or "./"), ("Skill Stacks", None)])}
+      {render_breadcrumb([("Home", root_prefix or "./"), ("Packages", None)])}
       <section class="page-hero">
         <div class="eyebrow-row">
-          <span class="eyebrow">Skill stack directory</span>
-          <span class="tag tag-accent">{len(packages)} skill stacks</span>
+          <span class="eyebrow">Package directory</span>
+          <span class="tag tag-accent">{len(packages)} packages</span>
         </div>
-        <h1 class="page-title">Install grouped <span class="accent">skill stacks</span></h1>
-        <p class="page-lead">Skill stacks expand one command into multiple related skills. Use curated stacks for common patterns such as Orleans, or category stacks when you want every skill under one topic.</p>
+        <h1 class="page-title">Install grouped <span class="accent">packages</span></h1>
+        <p class="page-lead">Packages expand one command into multiple related skills. Use curated packages for common patterns such as Orleans, or category packages when you want every skill under one topic.</p>
       </section>
       {render_package_listing_section(
           packages,
           root_prefix,
-          "All skill stacks",
-          "Search skill stacks, inspect the exact install command, and jump to detail pages for the included skills.",
+          "All packages",
+          "Search packages, inspect the exact install command, and jump to detail pages for the included skills.",
           include_tabs=True,
-          empty_message="No skill stacks match this search yet.",
+          empty_message="No packages match this search yet.",
           show_index_link=False,
       )}
     """.strip()
@@ -1429,7 +1454,7 @@ def render_package_detail_page(package: dict, root_prefix: str) -> str:
     )
 
     return f"""
-      {render_breadcrumb([("Home", root_prefix or "./"), ("Skill Stacks", f"{root_prefix}packages/"), (package["title"], None)])}
+      {render_breadcrumb([("Home", root_prefix or "./"), ("Packages", f"{root_prefix}packages/"), (package["title"], None)])}
       <section class="page-hero">
         <div class="eyebrow-row">
           <span class="eyebrow">{escape_html(package["kind_label"])}</span>
@@ -1438,7 +1463,7 @@ def render_package_detail_page(package: dict, root_prefix: str) -> str:
         <h1 class="page-title">{escape_html(package["title"])}</h1>
         <p class="page-lead">{escape_html(package["description"])}</p>
         <div class="hero-actions">
-          {render_button("Browse all skill stacks", f"{root_prefix}packages/", "ghost")}
+          {render_button("Browse all packages", f"{root_prefix}packages/", "ghost")}
           {render_button("See all skills", f"{root_prefix}skills/", "ghost")}
         </div>
       </section>
@@ -1447,20 +1472,20 @@ def render_package_detail_page(package: dict, root_prefix: str) -> str:
         <div class="article-copy">
           <section>
             <h2>Install command</h2>
-            <p>Run this command when you want the skill stack to install every linked skill in one pass.</p>
+            <p>Run this command when you want the package to install every linked skill in one pass.</p>
             <div class="command-row">
               <code>{escape_html(install_command)}</code>
               <button type="button" class="button button-ghost" data-copy="{escape_html(install_command)}">Copy</button>
             </div>
           </section>
           <section>
-            <h2>What this skill stack covers</h2>
+            <h2>What this package covers</h2>
             <p>{escape_html(package["description"])}</p>
           </section>
         </div>
         <aside class="sidebar-stack">
           <div class="sidebar-card">
-            <div class="detail-card-label">Skill stack info</div>
+            <div class="detail-card-label">Package info</div>
             <div class="sidebar-links">
               <span class="pill-link">{escape_html(package["kind_label"])}</span>
               <span class="pill-link">{len(package["skills"])} skills</span>
@@ -1551,7 +1576,7 @@ def render_about_page(
         <p class="page-lead">A structured .NET catalog, not a marketplace. The site is organized around categories, skill pages, agent pages, and project credits.</p>
         <div class="metric-grid">
           {render_metric_card(str(len(skills)), "Skills")}
-          {render_metric_card(str(len(packages)), "Skill stacks")}
+          {render_metric_card(str(len(packages)), "Packages")}
           {render_metric_card(str(len(agents)), "Agents")}
           {render_metric_card(str(len(category_infos)), "Categories")}
           {render_metric_card("MIT", "License")}
@@ -1572,14 +1597,14 @@ def render_about_page(
           </section>
           <section>
             <h2>Why there are multiple page types now</h2>
-            <p>Home still carries the full catalog and quick-view modal. Skill-stack pages provide one-command bundle installs, category pages group related work, skill pages expose real content from <code>SKILL.md</code>, agent pages explain routing behavior, and this about page captures the project context and credits.</p>
+            <p>Home still carries the full catalog and quick-view modal. Package pages provide one-command bundle installs, category pages group related work, skill pages expose real content from <code>SKILL.md</code>, agent pages explain routing behavior, and this about page captures the project context and credits.</p>
           </section>
         </div>
         <aside class="sidebar-stack">
           <div class="sidebar-card">
             <div class="detail-card-label">Explore</div>
             <div class="sidebar-links">
-              <a class="pill-link" href="{escape_html(root_prefix + 'packages/')}">Skill stacks</a>
+              <a class="pill-link" href="{escape_html(root_prefix + 'packages/')}">Packages</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'categories/')}">Categories</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'skills/')}">Skills</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'agents/')}">Agents</a>
@@ -1682,7 +1707,7 @@ def build_root_json_ld(site_url: str, canonical_url: str, release_version: str) 
                     "name": "What changed on the public site?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "The public site now includes dedicated pages for skill stacks, categories, skills, agents, and an about section so the catalog is easier to crawl and share.",
+                        "text": "The public site now includes dedicated pages for packages, categories, skills, agents, and an about section so the catalog is easier to crawl and share.",
                     },
                 },
             ],
@@ -1924,8 +1949,8 @@ def main() -> int:
     add_page(
         path="",
         title=".NET Skills for Modern Coding Platforms | dotnet-skills",
-        description="A shared .NET skill catalog for Claude Code, GitHub Copilot, Gemini, Codex, and Junie with NuGet package matching, skill stacks, category pages, skill pages, and agents.",
-        keywords=["dotnet", ".NET skills", ".NET skill stacks", "NuGet package matching", "Claude Code", "GitHub Copilot", "Gemini", "Codex", "Junie", "AI coding assistants", "skill catalog"],
+        description="A shared .NET skill catalog for Claude Code, GitHub Copilot, Gemini, Codex, and Junie with NuGet package matching, packages, category pages, skill pages, and agents.",
+        keywords=["dotnet", ".NET skills", ".NET packages", "NuGet package matching", "Claude Code", "GitHub Copilot", "Gemini", "Codex", "Junie", "AI coding assistants", "skill catalog"],
         body_class="page-home",
         main_content=root_body,
         json_ld=build_root_json_ld(site_url, site_url, release_version),
@@ -1938,18 +1963,18 @@ def main() -> int:
     packages_body, packages_page_data = render_packages_index_page(packages, "../")
     add_page(
         path="packages/",
-        title=".NET Skill Stacks | dotnet-skills",
-        description="Browse one-command .NET skill stacks, including curated stacks and category-wide installs such as AI, Code Quality, and Orleans.",
-        keywords=["dotnet skill stacks", "install package ai", "install package orleans", "code quality skill stack", "dotnet-skills skill stacks"],
+        title=".NET Packages | dotnet-skills",
+        description="Browse one-command .NET packages, including curated packages and category-wide installs such as AI, Code Quality, and Orleans.",
+        keywords=["dotnet packages", "install package ai", "install package orleans", "code quality package", "dotnet-skills packages"],
         body_class="page-packages",
         main_content=packages_body,
         json_ld=build_collection_json_ld(
             site_url,
             build_absolute_url(site_url, "packages/"),
-            ".NET Skill Stacks",
-            "One-command skill stacks for the dotnet-skills catalog",
+            ".NET Packages",
+            "One-command packages for the dotnet-skills catalog",
             [(package["title"], package["detail_url"]) for package in packages],
-            [("Home", site_url), ("Skill Stacks", build_absolute_url(site_url, "packages/"))],
+            [("Home", site_url), ("Packages", build_absolute_url(site_url, "packages/"))],
         ),
         lastmod=get_git_last_modified(["scripts/generate_pages.py", "catalog/skills.json"]),
         page_data=packages_page_data,
@@ -2052,7 +2077,7 @@ def main() -> int:
             path=package["detail_path"],
             title=f"{package['title']} | dotnet-skills",
             description=trim_text(package["description"], 156),
-            keywords=["dotnet skill stack", package["title"], package["name"], *[skill["short_name"] for skill in package["skills"][:4]]],
+            keywords=["dotnet package", package["title"], package["name"], *[skill["short_name"] for skill in package["skills"][:4]]],
             body_class="page-packages",
             main_content=package_body,
             json_ld=build_article_json_ld(
@@ -2063,7 +2088,7 @@ def main() -> int:
                 package["lastmod"],
                 [
                     ("Home", site_url),
-                    ("Skill Stacks", build_absolute_url(site_url, "packages/")),
+                    ("Packages", build_absolute_url(site_url, "packages/")),
                     (package["title"], package["detail_url"]),
                 ],
             ),

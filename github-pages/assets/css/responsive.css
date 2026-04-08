@@ -15,7 +15,6 @@
   .site-header-inner { flex-direction: column; align-items: stretch; padding: 10px 0; height: auto; }
   .brand { margin-right: 0; }
   .site-nav { justify-content: flex-start; }
-  .release-pill { align-self: flex-start; }
   body.page-home .page-hero { grid-template-columns: 1fr; }
   body.page-home .page-hero .metric-grid { grid-column: 1; grid-row: auto; margin-top: 16px; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -47,7 +46,6 @@
   body.page-home .page-title { max-width: none; }
   .site-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 2px; }
   .nav-link { padding: 4px 0; text-align: center; font-size: 11px; }
-  .release-pill { width: 100%; justify-content: space-between; }
   .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hero-actions, .command-row, .sidebar-links, .section-links { display: grid; grid-template-columns: 1fr; }
   .hero-actions .button, .command-row .button, .sidebar-links .pill-link, .section-links .pill-link { width: 100%; }
@@ -73,7 +71,6 @@
   .site-header-inner { gap: 6px; padding: 8px 0; }
   .site-nav { gap: 2px; }
   .nav-link { font-size: 10px; }
-  .release-pill { gap: 4px; padding: 2px 6px; }
   .site-main { padding-top: 12px; padding-bottom: 40px; }
   .page-hero { padding: 16px; border-radius: var(--r2); }
   .eyebrow-row, .breadcrumb { gap: 4px; margin-bottom: 8px; }
