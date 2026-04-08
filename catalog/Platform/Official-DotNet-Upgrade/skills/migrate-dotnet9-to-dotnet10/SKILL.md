@@ -1,8 +1,23 @@
 ---
 name: migrate-dotnet9-to-dotnet10
-description: "Migrate a .NET 9 project or solution to .NET 10 and resolve all breaking changes. USE FOR: upgrading TargetFramework from net9.0 to net10.0, fixing build errors after updating the .NET 10 SDK, resolving source and behavioral changes in .NET 10 / C# 14 / ASP.NET Core 10 / EF Core 10, updating Dockerfiles for Debian-to-Ubuntu base images, resolving obsoletion warnings (SYSLIB0058-SYSLIB0062), adapting to SDK/NuGet changes (NU1510, PrunePackageReference), migrating System.Linq.Async to built-in AsyncEnumerable, fixing OpenApi v2 API changes, cryptography renames, and C# 14 compiler changes (field keyword, extension keyword, span overloads). DO NOT USE FOR: .NET Framework migrations, upgrading from .NET 8 or earlier (use migrate-dotnet8-to-dotnet9 first), greenfield .NET 10 projects, or cosmetic modernization. LOADS REFERENCES: csharp-compiler, core-libraries, sdk-msbuild (always); aspnet-core, efcore, cryptography, extensions-hosting, serialization-networking, winforms-wpf, containers-interop (selective)."
-compatibility: "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
+description: >
+  Migrate a .NET 9 project or solution to .NET 10 and resolve all breaking changes.
+  USE FOR: upgrading TargetFramework from net9.0 to net10.0, fixing build errors
+  after updating the .NET 10 SDK, resolving source and behavioral changes in
+  .NET 10 / C# 14 / ASP.NET Core 10 / EF Core 10, updating Dockerfiles for
+  Debian-to-Ubuntu base images, resolving obsoletion warnings
+  (SYSLIB0058-SYSLIB0062), adapting to SDK/NuGet changes (NU1510,
+  PrunePackageReference), migrating System.Linq.Async to built-in
+  AsyncEnumerable, fixing OpenApi v2 API changes, cryptography renames, and
+  C# 14 compiler changes (field keyword, extension keyword, span overloads).
+  DO NOT USE FOR: .NET Framework migrations, upgrading from .NET 8 or earlier
+  (use migrate-dotnet8-to-dotnet9 first), greenfield .NET 10 projects, or
+  cosmetic modernization.
+  LOADS REFERENCES: csharp-compiler, core-libraries, sdk-msbuild (always);
+  aspnet-core, efcore, cryptography, extensions-hosting,
+  serialization-networking, winforms-wpf, containers-interop (selective).
 ---
+
 # .NET 9 → .NET 10 Migration
 
 Migrate a .NET 9 project or solution to .NET 10, systematically resolving all breaking changes. The outcome is a project targeting `net10.0` that builds cleanly, passes tests, and accounts for every behavioral, source-incompatible, and binary-incompatible change introduced in the .NET 10 release.

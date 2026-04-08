@@ -1,8 +1,16 @@
 ---
 name: dotnet-pinvoke
-description: "Correctly call native (C/C++) libraries from .NET using P/Invoke and LibraryImport. Covers function signatures, string marshalling, memory lifetime, SafeHandle, and cross-platform patterns. USE FOR: writing new P/Invoke or LibraryImport declarations, reviewing or debugging existing native interop code, wrapping a C or C++ library for use in .NET, diagnosing crashes, memory leaks, or corruption at the managed/native boundary. DO NOT USE FOR: COM interop, C++/CLI mixed-mode assemblies, or pure managed code with no native dependencies."
-compatibility: "Requires a .NET repository or solution."
+description: >
+  Correctly call native (C/C++) libraries from .NET using P/Invoke and LibraryImport.
+  Covers function signatures, string marshalling, memory lifetime, SafeHandle, and
+  cross-platform patterns.
+  USE FOR: writing new P/Invoke or LibraryImport declarations, reviewing or debugging
+  existing native interop code, wrapping a C or C++ library for use in .NET, diagnosing
+  crashes, memory leaks, or corruption at the managed/native boundary.
+  DO NOT USE FOR: COM interop, C++/CLI mixed-mode assemblies, or pure managed code with
+  no native dependencies.
 ---
+
 # .NET P/Invoke
 
 Calling native code from .NET is powerful but unforgiving. Incorrect signatures, garbled strings, and leaked or freed memory are the most common sources of bugs — all can manifest as intermittent crashes, silent data corruption, or access violations far from the actual defect.

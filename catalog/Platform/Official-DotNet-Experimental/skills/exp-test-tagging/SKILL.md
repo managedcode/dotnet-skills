@@ -1,8 +1,8 @@
 ---
 name: exp-test-tagging
 description: "Analyzes test suites and tags each test with a standardized set of traits (e.g., positive, negative, critical-path, boundary, smoke, regression). Use when the user wants to categorize, audit, or label tests with traits. Do not use for writing new tests, running tests, or migrating test frameworks."
-compatibility: "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable."
 ---
+
 # Test Trait Tagging
 
 Analyze an existing test suite and apply a standardized set of trait tags to each test method, giving teams visibility into their test distribution (positive vs. negative, critical-path coverage, smoke tests, etc.).

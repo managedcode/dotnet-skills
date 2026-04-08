@@ -1,8 +1,16 @@
 ---
 name: dotnet-maui-doctor
-description: "Diagnoses and fixes .NET MAUI development environment issues. Validates .NET SDK, workloads, Java JDK, Android SDK, Xcode, and Windows SDK. All version requirements discovered dynamically from NuGet WorkloadDependencies.json — never hardcoded. Use when: setting up MAUI development, build errors mentioning SDK/workload/JDK/Android, \"Android SDK not found\", \"Java version\" errors, \"Xcode not found\", environment verification after updates, or any MAUI toolchain issues. Do not use for: non-MAUI .NET projects, Xamarin.Forms apps, runtime app crashes unrelated to environment setup, or app store publishing issues. Works on macOS, Windows, and Linux."
-compatibility: "Requires a .NET MAUI project or solution."
+description: >-
+  Diagnoses and fixes .NET MAUI development environment issues. Validates .NET SDK,
+  workloads, Java JDK, Android SDK, Xcode, and Windows SDK. All version requirements
+  discovered dynamically from NuGet WorkloadDependencies.json — never hardcoded.
+  Use when: setting up MAUI development, build errors mentioning SDK/workload/JDK/Android,
+  "Android SDK not found", "Java version" errors, "Xcode not found", environment verification
+  after updates, or any MAUI toolchain issues. Do not use for: non-MAUI .NET projects,
+  Xamarin.Forms apps, runtime app crashes unrelated to environment setup, or app store
+  publishing issues. Works on macOS, Windows, and Linux.
 ---
+
 # .NET MAUI Doctor
 
 Validate and fix .NET MAUI development environments. All version requirements are discovered dynamically from NuGet APIs — never hardcode versions.

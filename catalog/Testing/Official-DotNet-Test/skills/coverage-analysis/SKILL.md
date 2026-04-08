@@ -1,8 +1,21 @@
 ---
 name: coverage-analysis
-description: "Automated, project-wide code coverage and CRAP (Change Risk Anti-Patterns) score analysis for .NET projects with existing unit tests. Auto-detects solution structure, runs coverage collection via `dotnet test` (supports both Microsoft.Testing.Extensions.CodeCoverage and Coverlet), generates reports via ReportGenerator, calculates CRAP scores per method, and surfaces risk hotspots — complex code with low test coverage that is dangerous to modify. Use when the user wants project-wide coverage analysis with risk prioritization, coverage gap identification, CRAP score computation across an entire solution, or to diagnose why coverage is stuck or plateaued and identify what methods are blocking improvement. DO NOT USE FOR: targeted single-method CRAP analysis (use crap-score skill), writing tests, general test execution unrelated to coverage/CRAP analysis, or coverage reporting without CRAP context."
-compatibility: "Requires a .NET test project or solution."
+description: >
+  Automated, project-wide code coverage and CRAP (Change Risk Anti-Patterns)
+  score analysis for .NET projects with existing unit tests. Auto-detects
+  solution structure, runs coverage collection via `dotnet test` (supports both
+  Microsoft.Testing.Extensions.CodeCoverage and Coverlet), generates reports via
+  ReportGenerator, calculates CRAP scores per method, and surfaces risk
+  hotspots — complex code with low test coverage that is dangerous to modify.
+  Use when the user wants project-wide coverage analysis with risk
+  prioritization, coverage gap identification, CRAP score computation
+  across an entire solution, or to diagnose why coverage is stuck or
+  plateaued and identify what methods are blocking improvement.
+  DO NOT USE FOR: targeted single-method CRAP analysis (use crap-score skill),
+  writing tests, general test execution unrelated to coverage/CRAP analysis,
+  or coverage reporting without CRAP context.
 ---
+
 # Coverage Analysis
 
 ## Purpose

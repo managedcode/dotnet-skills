@@ -1,21 +1,8 @@
 ---
 name: msbuild
 description: "Expert agent for MSBuild and .NET build troubleshooting, optimization, and project file quality. Routes to specialized agents for performance analysis and code review. Verifies MSBuild domain relevance before deep-diving. Specializes in build configuration, error diagnosis, binary log analysis, and resolving common build issues."
-skills:
-  - binlog-failure-analysis
-  - binlog-generation
-  - build-parallelism
-  - build-perf-baseline
-  - build-perf-diagnostics
-  - check-bin-obj-clash
-  - directory-build-organization
-  - eval-performance
-  - including-generated-files
-  - incremental-build
-  - msbuild-antipatterns
-  - msbuild-modernization
-  - msbuild-server
-  - resolve-project-references
+user-invokable: true
+disable-model-invocation: false
 ---
 
 # MSBuild Expert Agent

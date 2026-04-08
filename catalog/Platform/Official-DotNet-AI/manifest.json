@@ -1,7 +1,7 @@
 {
   "name": "dotnet-ai",
   "title": "Official .NET skills: dotnet-ai",
-  "description": "AI and ML skills for .NET: technology selection, LLM integration, agentic workflows, RAG pipelines, MCP, and classic ML with ML.NET. Imported from dotnet/skills via vendir.",
+  "description": "AI and ML skills for .NET: technology selection, LLM integration, agentic workflows, RAG pipelines, MCP, and classic ML with ML.NET.",
   "links": {
     "repository": "https://github.com/dotnet/skills",
     "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-ai"

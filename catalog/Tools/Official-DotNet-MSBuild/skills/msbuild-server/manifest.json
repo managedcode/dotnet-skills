@@ -1,4 +1,5 @@
 {
   "version": "0.1.0",
-  "category": "Core"
+  "category": "Core",
+  "compatibility": "Requires a .NET repository with MSBuild project or solution files."
 }

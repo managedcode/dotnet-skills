@@ -1,7 +1,7 @@
 {
   "name": "dotnet-upgrade",
   "title": "Official .NET skills: dotnet-upgrade",
-  "description": "Skills for migrating and upgrading .NET projects across framework versions, language features, and compatibility targets. Imported from dotnet/skills via vendir.",
+  "description": "Skills for migrating and upgrading .NET projects across framework versions, language features, and compatibility targets.",
   "links": {
     "repository": "https://github.com/dotnet/skills",
     "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-upgrade"

@@ -1,4 +1,5 @@
 {
   "version": "0.1.0",
-  "category": "AI"
+  "category": "AI",
+  "compatibility": "Requires a .NET repository working with AI, ML, or MCP workloads."
 }

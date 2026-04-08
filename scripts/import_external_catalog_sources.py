@@ -14,7 +14,7 @@ EXTERNAL_SOURCES_ROOT = ROOT / "external-sources"
 CONFIG_ROOT = EXTERNAL_SOURCES_ROOT / "imports"
 
 ALLOWED_TYPES = {"Frameworks", "Libraries", "Tools", "Testing", "Platform"}
-ALLOWED_SKILL_MANIFEST_KEYS = {"version", "category", "packages", "package_prefix"}
+ALLOWED_SKILL_MANIFEST_KEYS = {"version", "category", "compatibility", "packages", "package_prefix"}
 ALLOWED_PLUGIN_DEFAULT_KEYS = {"type", "category", "compatibility"}
 ALLOWED_PLUGIN_OVERRIDE_KEYS = {
     "type",
@@ -157,53 +157,6 @@ def titleize_slug(value: str) -> str:
     return " ".join(format_slug_token(word) for word in words) or value
 
 
-def ensure_top_level_heading(body: str, fallback_title: str) -> str:
-    stripped_body = body.lstrip("\n")
-    for line in stripped_body.splitlines():
-        if not line.strip():
-            continue
-        if line.startswith("# "):
-            return stripped_body
-        if line.startswith("#"):
-            heading_text = re.sub(r"^#+\s*", "", line).strip()
-            title = heading_text or fallback_title
-            return f"# {title}\n\n{stripped_body}"
-        break
-
-    return f"# {fallback_title}\n\n{stripped_body}" if stripped_body else f"# {fallback_title}\n"
-
-
-def render_skill_markdown(name: str, description: str, compatibility: str, body: str) -> str:
-    normalized_body = ensure_top_level_heading(body, titleize_slug(name))
-    frontmatter = [
-        "---",
-        f"name: {name}",
-        f"description: {json.dumps(description, ensure_ascii=False)}",
-        f"compatibility: {json.dumps(compatibility, ensure_ascii=False)}",
-        "---",
-        "",
-    ]
-    return "\n".join(frontmatter) + normalized_body
-
-
-def render_agent_markdown(name: str, description: str, skills: list[str], body: str) -> str:
-    frontmatter = [
-        "---",
-        f"name: {name}",
-        f"description: {json.dumps(description, ensure_ascii=False)}",
-    ]
-    if skills:
-        frontmatter.append("skills:")
-        frontmatter.extend(f"  - {skill}" for skill in skills)
-    frontmatter.extend(
-        [
-            "---",
-            "",
-        ]
-    )
-    return "\n".join(frontmatter) + body
-
-
 def remove_path(path: Path) -> None:
     if path.is_dir():
         shutil.rmtree(path)
@@ -340,14 +293,6 @@ def derive_package_name(managed_prefix: str, plugin_name: str) -> str:
     return f"{managed_prefix}-{format_package_suffix(suffix)}"
 
 
-def derive_repository_label(repository: str) -> str:
-    normalized = repository.rstrip("/")
-    match = re.match(r"^https?://github\.com/([^/]+)/([^/]+)$", normalized)
-    if match:
-        return f"{match.group(1)}/{match.group(2)}"
-    return normalized.rsplit("/", 1)[-1]
-
-
 def resolve_plugin_policy(config_path: Path, config: dict, plugin_name: str) -> dict[str, object]:
     managed_prefix = str(config["managedPackagePrefix"])
     title_prefix = str(config["titlePrefix"])
@@ -424,10 +369,11 @@ def validate_config(config_path: Path, config: dict) -> None:
         resolve_plugin_policy(config_path, config, plugin_name)
 
 
-def resolve_skill_manifest(plugin_policy: dict, skill_name: str, plugin_version: str) -> tuple[dict[str, object], str]:
+def resolve_skill_manifest(plugin_policy: dict, skill_name: str, plugin_version: str) -> dict[str, object]:
     manifest: dict[str, object] = {
         "version": plugin_version,
         "category": plugin_policy["category"],
+        "compatibility": normalize_text(plugin_policy["compatibility"]),
     }
 
     skill_defaults = plugin_policy.get("skillDefaults", {})
@@ -439,23 +385,22 @@ def resolve_skill_manifest(plugin_policy: dict, skill_name: str, plugin_version:
     skill_overrides = plugin_policy.get("skillOverrides", {})
     if isinstance(skill_overrides, dict) and isinstance(skill_overrides.get(skill_name), dict):
         override = skill_overrides[skill_name]
-        for key in ("version", "category", "packages", "package_prefix"):
+        for key in ("version", "category", "compatibility", "packages", "package_prefix"):
             if key in override:
                 manifest[key] = override[key]
-        compatibility = normalize_text(override.get("compatibility", plugin_policy["compatibility"]))
-    else:
-        compatibility = normalize_text(plugin_policy["compatibility"])
-
-    return manifest, compatibility
+    return manifest
 
 
 def validate_skill_manifest(manifest_path: Path, manifest: dict[str, object]) -> None:
     version = manifest.get("version")
     category = manifest.get("category")
+    compatibility = manifest.get("compatibility")
     if not isinstance(version, str) or not version.strip():
         raise ValueError(f"{manifest_path} field version must be a non-empty string")
     if not isinstance(category, str) or not category.strip():
         raise ValueError(f"{manifest_path} field category must be a non-empty string")
+    if not isinstance(compatibility, str) or not compatibility.strip():
+        raise ValueError(f"{manifest_path} field compatibility must be a non-empty string")
 
     packages = manifest.get("packages")
     if packages is not None:
@@ -531,7 +476,6 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
     docs_base = str(config["docsBase"]).rstrip("/")
     repository = str(config["repository"]).rstrip("/")
     managed_prefix = str(config["managedPackagePrefix"])
-    source_label = derive_repository_label(repository)
     plugins = discover_upstream_plugins(plugin_root)
     resolved_policies = {plugin_name: resolve_plugin_policy(config_path, config, plugin_name) for plugin_name in plugins}
 
@@ -571,7 +515,7 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
             package_manifest = {
                 "name": plugin_name,
                 "title": plugin_policy["title"],
-                "description": f"{normalize_text(plugin_manifest.get('description', ''))} Imported from {source_label} via vendir.".strip(),
+                "description": normalize_text(plugin_manifest.get("description", "")),
                 "links": {
                     "repository": repository,
                     "docs": f"{docs_base}/{plugin_name}",
@@ -579,11 +523,10 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
             }
             (temp_package_dir / "manifest.json").write_text(json.dumps(package_manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-            skill_names: list[str] = []
             skill_paths = expand_plugin_entries(plugin_dir, plugin_manifest.get("skills"), pattern="SKILL.md", entry_label="skills")
             for upstream_skill_md in skill_paths:
                 upstream_skill_dir = upstream_skill_md.parent
-                metadata, body = parse_markdown_frontmatter(upstream_skill_md)
+                metadata, _ = parse_markdown_frontmatter(upstream_skill_md)
                 skill_name = normalize_text(metadata.get("name"))
                 description = normalize_text(metadata.get("description"))
                 if not skill_name or not description:
@@ -601,19 +544,17 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
                 local_skill_dir.mkdir(parents=True, exist_ok=True)
                 copy_directory_contents(upstream_skill_dir, local_skill_dir, skip_names={"SKILL.md"})
 
-                manifest, compatibility = resolve_skill_manifest(plugin_policy, skill_name, normalize_text(plugin_manifest["version"]))
+                manifest = resolve_skill_manifest(plugin_policy, skill_name, normalize_text(plugin_manifest["version"]))
                 validate_skill_manifest(local_skill_dir / "manifest.json", manifest)
                 (local_skill_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-                rendered_skill = render_skill_markdown(skill_name, description, compatibility, body)
-                (local_skill_dir / "SKILL.md").write_text(rendered_skill, encoding="utf-8")
+                shutil.copy2(upstream_skill_md, local_skill_dir / "SKILL.md")
 
-                skill_names.append(skill_name)
                 imported_skill_count += 1
 
             agent_paths = expand_plugin_entries(plugin_dir, plugin_manifest.get("agents", []), pattern="*.agent.md", entry_label="agents")
             for upstream_agent_md in agent_paths:
-                metadata, body = parse_markdown_frontmatter(upstream_agent_md)
+                metadata, _ = parse_markdown_frontmatter(upstream_agent_md)
                 agent_name = normalize_text(metadata.get("name"))
                 description = normalize_text(metadata.get("description"))
                 if not agent_name or not description:
@@ -629,8 +570,7 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
 
                 local_agent_dir = temp_package_dir / "agents" / agent_name
                 local_agent_dir.mkdir(parents=True, exist_ok=True)
-                rendered_agent = render_agent_markdown(agent_name, description, skill_names, body)
-                (local_agent_dir / "AGENT.md").write_text(rendered_agent, encoding="utf-8")
+                shutil.copy2(upstream_agent_md, local_agent_dir / "AGENT.md")
                 imported_agent_count += 1
 
             for conflict_path in sorted(pending_skill_conflicts | pending_agent_conflicts):

@@ -1,8 +1,16 @@
 ---
 name: mcp-csharp-create
-description: "Create MCP servers using the C# SDK and .NET project templates. Covers scaffolding, tool/prompt/resource implementation, and transport configuration for stdio and HTTP. USE FOR: creating new MCP server projects, scaffolding with dotnet new mcpserver, adding MCP tools/prompts/resources, choosing stdio vs HTTP transport, configuring MCP hosting in Program.cs, setting up ASP.NET Core MCP endpoints with MapMcp. DO NOT USE FOR: debugging or running existing servers (use mcp-csharp-debug), writing tests (use mcp-csharp-test), publishing or deploying (use mcp-csharp-publish), building MCP clients, non-.NET MCP servers."
-compatibility: "Requires a .NET repository working with AI, ML, or MCP workloads."
+description: >
+  Create MCP servers using the C# SDK and .NET project templates. Covers scaffolding,
+  tool/prompt/resource implementation, and transport configuration for stdio and HTTP.
+  USE FOR: creating new MCP server projects, scaffolding with dotnet new mcpserver, adding
+  MCP tools/prompts/resources, choosing stdio vs HTTP transport, configuring MCP hosting in
+  Program.cs, setting up ASP.NET Core MCP endpoints with MapMcp.
+  DO NOT USE FOR: debugging or running existing servers (use mcp-csharp-debug), writing tests
+  (use mcp-csharp-test), publishing or deploying (use mcp-csharp-publish), building MCP
+  clients, non-.NET MCP servers.
 ---
+
 # C# MCP Server Creation
 
 Create Model Context Protocol servers using the official C# SDK (`ModelContextProtocol` NuGet package) and the `dotnet new mcpserver` project template. Servers expose tools, prompts, and resources that LLMs can discover and invoke via the MCP protocol.

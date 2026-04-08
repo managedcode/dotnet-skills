@@ -1,8 +1,16 @@
 ---
 name: mcp-csharp-test
-description: "Test C# MCP servers at multiple levels: unit tests for individual tools and integration tests using the MCP client SDK. USE FOR: unit testing MCP tool methods, integration testing with in-memory MCP client/server, end-to-end testing via MCP protocol, testing HTTP MCP servers with WebApplicationFactory, mocking dependencies in tool tests, creating evaluations for MCP servers, writing eval questions, measuring tool quality. DO NOT USE FOR: testing MCP clients (this is server testing only), load or performance testing, testing non-.NET MCP servers, debugging server issues (use mcp-csharp-debug)."
-compatibility: "Requires a .NET repository working with AI, ML, or MCP workloads."
+description: >
+  Test C# MCP servers at multiple levels: unit tests for individual tools and integration
+  tests using the MCP client SDK.
+  USE FOR: unit testing MCP tool methods, integration testing with in-memory MCP
+  client/server, end-to-end testing via MCP protocol,
+  testing HTTP MCP servers with WebApplicationFactory, mocking dependencies in tool tests,
+  creating evaluations for MCP servers, writing eval questions, measuring tool quality.
+  DO NOT USE FOR: testing MCP clients (this is server testing only), load or performance
+  testing, testing non-.NET MCP servers, debugging server issues (use mcp-csharp-debug).
 ---
+
 # C# MCP Server Testing
 
 Test MCP servers at two levels: unit tests for individual tool methods, and integration tests that exercise the full MCP protocol in-memory.

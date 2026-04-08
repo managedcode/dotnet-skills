@@ -1,8 +1,18 @@
 ---
 name: template-validation
-description: "Validates custom dotnet new templates for correctness before publishing. Catches missing fields, parameter bugs, shortName conflicts, constraint issues, and common authoring mistakes that cause templates to fail silently. USE FOR: checking template.json files for errors before publishing or testing, diagnosing why a template doesn't appear after installation, reviewing template parameter definitions for type mismatches and missing defaults, finding shortName conflicts with dotnet CLI commands, validating post-action and constraint configuration. DO NOT USE FOR: finding or using existing templates (use template-discovery), creating projects from templates (use template-instantiation), creating templates from existing projects (use template-authoring)."
-compatibility: "Requires a .NET repository using dotnet new templates or template authoring workflows."
+description: >
+  Validates custom dotnet new templates for correctness before publishing.
+  Catches missing fields, parameter bugs, shortName conflicts, constraint issues,
+  and common authoring mistakes that cause templates to fail silently.
+  USE FOR: checking template.json files for errors before publishing or testing,
+  diagnosing why a template doesn't appear after installation, reviewing template
+  parameter definitions for type mismatches and missing defaults, finding shortName
+  conflicts with dotnet CLI commands, validating post-action and constraint configuration.
+  DO NOT USE FOR: finding or using existing templates (use template-discovery),
+  creating projects from templates (use template-instantiation), creating templates
+  from existing projects (use template-authoring).
 ---
+
 # Template Validation
 
 This skill helps validate custom `dotnet new` templates for correctness before publishing. It encodes the validation rules that catch common authoring mistakes — issues that cause templates to silently fail, produce broken projects, or not appear in `dotnet new list`.

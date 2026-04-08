@@ -1,8 +1,8 @@
 ---
 name: minimal-api-file-upload
-description: "File upload endpoints in ASP.NET minimal APIs (.NET 8+)"
-compatibility: "Requires an ASP.NET Core project or solution."
+description: File upload endpoints in ASP.NET minimal APIs (.NET 8+)
 ---
+
 # Implementing File Uploads in ASP.NET Core Minimal APIs
 
 ## When to Use

@@ -1,8 +1,17 @@
 ---
 name: template-authoring
-description: "Guides creation and validation of custom dotnet new templates. Generates templates from existing projects and validates template.json for authoring issues. USE FOR: creating a reusable dotnet new template from an existing project, validating template.json files for schema compliance and parameter issues, bootstrapping .template.config/template.json with correct identity, shortName, parameters, and post-actions, packaging templates as NuGet packages for distribution. DO NOT USE FOR: finding or using existing templates (use template-discovery and template-instantiation), MSBuild project file issues unrelated to template authoring, NuGet package publishing (only template packaging structure)."
-compatibility: "Requires a .NET repository using dotnet new templates or template authoring workflows."
+description: >
+  Guides creation and validation of custom dotnet new templates. Generates templates
+  from existing projects and validates template.json for authoring issues.
+  USE FOR: creating a reusable dotnet new template from an existing project, validating
+  template.json files for schema compliance and parameter issues, bootstrapping
+  .template.config/template.json with correct identity, shortName, parameters, and
+  post-actions, packaging templates as NuGet packages for distribution.
+  DO NOT USE FOR: finding or using existing templates (use template-discovery and
+  template-instantiation), MSBuild project file issues unrelated to template authoring,
+  NuGet package publishing (only template packaging structure).
 ---
+
 # Template Authoring
 
 This skill helps an agent create and validate custom `dotnet new` templates. It guides bootstrapping templates from existing projects and validates `template.json` files for authoring issues before publishing.

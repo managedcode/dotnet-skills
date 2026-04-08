@@ -1,5 +1,6 @@
 {
   "version": "0.1.0",
   "category": "Data",
+  "compatibility": "Requires a .NET repository using Entity Framework Core or similar data-access patterns.",
   "package_prefix": "Microsoft.EntityFrameworkCore"
 }

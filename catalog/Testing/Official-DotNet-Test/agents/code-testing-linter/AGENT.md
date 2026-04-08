@@ -1,21 +1,9 @@
 ---
+description: >-
+  Runs code formatting/linting for any language. Discovers lint
+  command from project files if not specified.
 name: code-testing-linter
-description: "Runs code formatting/linting for any language. Discovers lint command from project files if not specified."
-skills:
-  - code-testing-agent
-  - coverage-analysis
-  - crap-score
-  - dotnet-test-frameworks
-  - filter-syntax
-  - migrate-mstest-v1v2-to-v3
-  - migrate-mstest-v3-to-v4
-  - migrate-vstest-to-mtp
-  - migrate-xunit-to-xunit-v3
-  - mtp-hot-reload
-  - platform-detection
-  - run-tests
-  - test-anti-patterns
-  - writing-mstest-tests
+user-invocable: false
 ---
 
 # Linter Agent

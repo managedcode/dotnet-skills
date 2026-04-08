@@ -135,7 +135,7 @@ catalog/<type>/<package>/
         └── assets/        # optional
 ```
 
-`SKILL.md` plus its sibling `manifest.json` are the required skill files. `SKILL.md` uses the universal Agent Skills format with YAML frontmatter (`name`, `description`, `compatibility`) that works across Claude, Copilot, Gemini, and Codex.
+`SKILL.md` plus its sibling `manifest.json` are the required skill files. For repo-authored skills, `SKILL.md` uses the universal Agent Skills format with YAML frontmatter (`name`, `description`, `compatibility`) that works across Claude, Copilot, Gemini, and Codex. Imported upstream skills keep their upstream markdown verbatim; any local-only metadata such as `compatibility` stays in the sibling `manifest.json`.
 
 Treat `SKILL.md` as the control plane, not the full documentation dump:
 
@@ -212,7 +212,7 @@ External upstream repositories are handled separately:
 - `scripts/import_external_catalog_sources.py` performs the normalization step
 
 Do not maintain a second manual plugin registry in local config.
-The importer auto-discovers upstream plugins from vendored `plugin.json` files and uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides.
+The importer auto-discovers upstream plugins from vendored `plugin.json` files and uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides. Imported `SKILL.md`, `AGENT.md`, and `references/` content should be copied verbatim from upstream rather than rewritten locally.
 
 For imported official upstream skills, keep the upstream skill or agent id unless there is a real compatibility reason to rename it.
 

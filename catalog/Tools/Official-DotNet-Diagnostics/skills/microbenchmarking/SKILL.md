@@ -1,8 +1,18 @@
 ---
 name: microbenchmarking
-description: "Activate this skill when BenchmarkDotNet (BDN) is involved in the task — creating, running, configuring, or reviewing BDN benchmarks. Also activate when microbenchmarking .NET code would be useful and BenchmarkDotNet is the likely tool. Consider activating when answering a .NET performance question requires measurement and BenchmarkDotNet may be needed. Covers microbenchmark design, BDN configuration and project setup, how to run BDN microbenchmarks efficiently and effectively, and using BDN for side-by-side performance comparisons. Do NOT use for profiling/tracing .NET code (dotnet-trace, PerfView), production telemetry, or load/stress testing (Crank, k6)."
-compatibility: "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
+description: >
+  Activate this skill when BenchmarkDotNet (BDN) is involved in the task — creating,
+  running, configuring, or reviewing BDN benchmarks. Also activate when
+  microbenchmarking .NET code would be useful and BenchmarkDotNet is the likely
+  tool. Consider activating when answering a .NET performance question requires
+  measurement and BenchmarkDotNet may be needed.
+  Covers microbenchmark design, BDN configuration and project setup, how to run
+  BDN microbenchmarks efficiently and effectively, and using BDN for side-by-side
+  performance comparisons.
+  Do NOT use for profiling/tracing .NET code (dotnet-trace, PerfView), production
+  telemetry, or load/stress testing (Crank, k6).
 ---
+
 # Benchmark Authoring Guidelines
 
 BenchmarkDotNet (BDN) is a .NET library for writing and running microbenchmarks. Throughout this skill, "BDN" refers to BenchmarkDotNet.

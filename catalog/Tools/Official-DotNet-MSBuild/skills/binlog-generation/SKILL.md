@@ -1,8 +1,8 @@
 ---
 name: binlog-generation
 description: "Generate MSBuild binary logs (binlogs) for build diagnostics and analysis. Only activate in MSBuild/.NET build context. USE FOR: adding /bl:{} to any dotnet build, test, pack, publish, or restore command to capture a full build execution trace, prerequisite for binlog-failure-analysis and build-perf-diagnostics skills, enabling post-build investigation of errors or performance. Requires MSBuild 17.8+ / .NET 8 SDK+ for {} placeholder; PowerShell needs -bl:{{}}. DO NOT USE FOR: non-MSBuild build systems (npm, Maven, CMake), analyzing an existing binlog (use binlog-failure-analysis instead). INVOKES: shell commands (dotnet build /bl:{})."
-compatibility: "Requires a .NET repository with MSBuild project or solution files."
 ---
+
 # Generate Binary Logs
 
 **Pass the `/bl` switch when running any MSBuild-based command.** This is a non-negotiable requirement for all .NET builds.

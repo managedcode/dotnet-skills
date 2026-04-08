@@ -97,6 +97,79 @@ def build_catalog_definitions(skills: list[dict[str, object]] | None = None) -> 
     }
 
 
+def parse_simple_yaml_mapping(path: Path, raw_frontmatter: str) -> dict[str, object]:
+    data: dict[str, object] = {}
+    lines = raw_frontmatter.splitlines()
+    index = 0
+
+    while index < len(lines):
+        line = lines[index]
+        stripped = line.strip()
+        if not stripped:
+            index += 1
+            continue
+
+        if ":" not in line:
+            raise ValueError(f"{path} has malformed frontmatter line: {line}")
+
+        key, raw_value = line.split(":", 1)
+        key = key.strip()
+        value = raw_value.strip()
+
+        if re.fullmatch(r"[>|][+-]?", value):
+            index += 1
+            block_lines: list[str] = []
+            while index < len(lines):
+                candidate = lines[index]
+                if candidate.startswith("  ") or candidate.startswith("\t"):
+                    block_lines.append(candidate.lstrip())
+                    index += 1
+                    continue
+                if not candidate.strip():
+                    block_lines.append("")
+                    index += 1
+                    continue
+                break
+            data[key] = " ".join(part for part in (segment.strip() for segment in block_lines) if part)
+            continue
+
+        if not value:
+            index += 1
+            items: list[str] = []
+            while index < len(lines):
+                candidate = lines[index]
+                if candidate.startswith("  - "):
+                    items.append(candidate[4:].strip())
+                    index += 1
+                    continue
+                if not candidate.strip():
+                    index += 1
+                    continue
+                break
+            data[key] = items
+            continue
+
+        index += 1
+        continuation_lines: list[str] = []
+        while index < len(lines):
+            candidate = lines[index]
+            if candidate.startswith("  ") or candidate.startswith("\t"):
+                continuation_lines.append(candidate.strip())
+                index += 1
+                continue
+            if not candidate.strip():
+                index += 1
+                continue
+            break
+
+        scalar_value = unquote(value)
+        if continuation_lines:
+            scalar_value = " ".join(part for part in [scalar_value, *continuation_lines] if part)
+        data[key] = scalar_value
+
+    return data
+
+
 def parse_frontmatter(path: Path) -> tuple[dict[str, str], str]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
@@ -107,14 +180,12 @@ def parse_frontmatter(path: Path) -> tuple[dict[str, str], str]:
         raise ValueError(f"{path} has invalid frontmatter")
 
     raw_frontmatter, body = match.groups()
+    parsed = parse_simple_yaml_mapping(path, raw_frontmatter)
     data: dict[str, str] = {}
-    for line in raw_frontmatter.splitlines():
-        if not line.strip():
-            continue
-        if ":" not in line:
-            raise ValueError(f"{path} has malformed frontmatter line: {line}")
-        key, value = line.split(":", 1)
-        data[key.strip()] = unquote(value)
+    for key, value in parsed.items():
+        if isinstance(value, list):
+            raise ValueError(f"{path} field {key!r} must be a scalar value")
+        data[key] = str(value)
     return data, body
 
 
@@ -128,49 +199,22 @@ def parse_frontmatter_with_lists(path: Path) -> tuple[dict[str, str | list[str]]
         raise ValueError(f"{path} has invalid frontmatter")
 
     raw_frontmatter, body = match.groups()
+    parsed = parse_simple_yaml_mapping(path, raw_frontmatter)
     data: dict[str, str | list[str]] = {}
-    current_key: str | None = None
-    current_list: list[str] = []
-
-    for line in raw_frontmatter.splitlines():
-        if not line.strip():
-            continue
-
-        if line.startswith("  - "):
-            if current_key is None:
-                raise ValueError(f"{path} has a list item without a parent key: {line}")
-            current_list.append(line.strip()[2:].strip())
-            continue
-
-        if current_key is not None:
-            data[current_key] = current_list
-            current_key = None
-            current_list = []
-
-        if ":" not in line:
-            raise ValueError(f"{path} has malformed frontmatter line: {line}")
-
-        key, value = line.split(":", 1)
-        key = key.strip()
-        value = value.strip()
-
-        if not value:
-            current_key = key
-            current_list = []
+    for key, value in parsed.items():
+        if isinstance(value, list):
+            data[key] = [str(item) for item in value]
         else:
-            data[key] = unquote(value)
-
-    if current_key is not None:
-        data[current_key] = current_list
-
+            data[key] = str(value)
     return data, body
 
 
-def parse_title(body: str, path: Path) -> str:
+def parse_title(body: str, path: Path, fallback_title: str) -> str:
     for line in body.splitlines():
-        if line.startswith("# "):
-            return line[2:].strip()
-    raise ValueError(f"{path} is missing an H1 title")
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            return re.sub(r"^#+\s*", "", stripped).strip() or fallback_title
+    return fallback_title
 
 
 def load_package_manifest(package_dir: Path) -> tuple[Path, dict]:
@@ -209,7 +253,7 @@ def _read_skill_manifest_metadata(manifest_path: Path | None, entity_manifest: d
     if not manifest_path or not entity_manifest:
         raise ValueError(f"{expected_manifest_path} is required and must define `version` and `category`")
 
-    allowed = {"version", "category", "packages", "package_prefix"}
+    allowed = {"version", "category", "compatibility", "packages", "package_prefix"}
     unknown = sorted(set(entity_manifest) - allowed)
     if unknown:
         raise ValueError(f"{manifest_path} has unsupported keys: {', '.join(unknown)}")
@@ -225,6 +269,12 @@ def _read_skill_manifest_metadata(manifest_path: Path | None, entity_manifest: d
     if not isinstance(category, str) or not category.strip():
         raise ValueError(f"{manifest_path} field `category` must be a non-empty string")
     result["category"] = category.strip()
+
+    if "compatibility" in entity_manifest:
+        compatibility = entity_manifest["compatibility"]
+        if not isinstance(compatibility, str) or not compatibility.strip():
+            raise ValueError(f"{manifest_path} field `compatibility` must be a non-empty string")
+        result["compatibility"] = compatibility.strip()
 
     if "packages" in entity_manifest:
         packages = entity_manifest["packages"]
@@ -325,9 +375,9 @@ def collect_skills() -> list[dict[str, object]]:
                 skill_manifest_path, skill_manifest = load_optional_entity_manifest(skill_dir)
 
                 metadata, body = parse_frontmatter(skill_path)
-                title = parse_title(body, skill_path)
+                title = parse_title(body, skill_path, metadata["name"])
 
-                required = ["name", "description", "compatibility"]
+                required = ["name", "description"]
                 missing = [key for key in required if key not in metadata or not metadata[key].strip()]
                 if missing:
                     raise ValueError(f"{skill_path} is missing required frontmatter keys: {', '.join(missing)}")
@@ -340,6 +390,11 @@ def collect_skills() -> list[dict[str, object]]:
 
                 skill_name = metadata["name"]
                 skill_manifest_metadata = _read_skill_manifest_metadata(skill_manifest_path, skill_manifest, skill_dir / "manifest.json")
+                compatibility = metadata.get("compatibility", "").strip() or str(skill_manifest_metadata.get("compatibility", "")).strip()
+                if not compatibility:
+                    raise ValueError(
+                        f"{skill_path} must define `compatibility` in frontmatter or in {skill_dir / 'manifest.json'}"
+                    )
 
                 skill_entry: dict[str, object] = {
                     "name": skill_name,
@@ -349,7 +404,7 @@ def collect_skills() -> list[dict[str, object]]:
                     "type": skill_type,
                     "package": package_name,
                     "description": metadata["description"],
-                    "compatibility": metadata["compatibility"],
+                    "compatibility": compatibility,
                     "path": f"catalog/{type_dir_name}/{package_name}/skills/{skill_dir.name}/",
                 }
 
@@ -387,7 +442,7 @@ def collect_agents() -> list[dict[str, object]]:
                 agent_manifest_path, agent_manifest = load_optional_entity_manifest(agent_dir)
 
                 metadata, body = parse_frontmatter_with_lists(agent_path)
-                title = parse_title(body, agent_path)
+                title = parse_title(body, agent_path, str(metadata["name"]))
 
                 required = ["name", "description"]
                 missing = [key for key in required if key not in metadata or not str(metadata[key]).strip()]

@@ -1,8 +1,8 @@
 ---
 name: optimizing-ef-core-queries
-description: "Optimize Entity Framework Core queries by fixing N+1 problems, choosing correct tracking modes, using compiled queries, and avoiding common performance traps. Use when EF Core queries are slow, generating excessive SQL, or causing high database load."
-compatibility: "Requires a .NET repository using Entity Framework Core or similar data-access patterns."
+description: Optimize Entity Framework Core queries by fixing N+1 problems, choosing correct tracking modes, using compiled queries, and avoiding common performance traps. Use when EF Core queries are slow, generating excessive SQL, or causing high database load.
 ---
+
 # Optimizing EF Core Queries
 
 ## When to Use

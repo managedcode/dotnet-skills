@@ -1,21 +1,10 @@
 ---
+description: >-
+  Creates structured test implementation plans from research
+  findings. Organizes tests into phases by priority and complexity. Works with any
+  language.
 name: code-testing-planner
-description: "Creates structured test implementation plans from research findings. Organizes tests into phases by priority and complexity. Works with any language."
-skills:
-  - code-testing-agent
-  - coverage-analysis
-  - crap-score
-  - dotnet-test-frameworks
-  - filter-syntax
-  - migrate-mstest-v1v2-to-v3
-  - migrate-mstest-v3-to-v4
-  - migrate-vstest-to-mtp
-  - migrate-xunit-to-xunit-v3
-  - mtp-hot-reload
-  - platform-detection
-  - run-tests
-  - test-anti-patterns
-  - writing-mstest-tests
+user-invocable: false
 ---
 
 # Test Planner

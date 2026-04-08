@@ -1,8 +1,8 @@
 ---
 name: csharp-scripts
-description: "Run single-file C# programs as scripts (file-based apps) for quick experimentation, prototyping, and concept testing. Use when the user wants to write and execute a small C# program without creating a full project."
-compatibility: "Requires a .NET repository or solution."
+description: Run single-file C# programs as scripts (file-based apps) for quick experimentation, prototyping, and concept testing. Use when the user wants to write and execute a small C# program without creating a full project.
 ---
+
 # C# Scripts
 
 ## When to Use

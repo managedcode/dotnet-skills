@@ -85,6 +85,7 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - Imported official upstream skills or agents may keep their upstream canonical ids instead of being renamed to fit the local `dotnet-*` convention.
 - If an imported official upstream skill or agent is a true duplicate of a repo-authored local entry, prefer the official upstream source and remove the local duplicate instead of keeping two copies.
 - Do not inject HTML provenance comments such as `Imported from ... via vendir` into generated `SKILL.md` or `AGENT.md` files. Keep imported content clean; provenance belongs in package metadata, external-source config, or importer logic, not inside the skill or agent body.
+- When importing upstream skills or agents, copy upstream `SKILL.md`, `AGENT.md`, and `references/` content verbatim. Do not rewrite their frontmatter, add local headings, inject `compatibility`, synthesize `skills:` lists, or otherwise mutate the markdown body. If local catalog metadata is still needed, keep it in sibling `manifest.json`, not inside the imported markdown.
 
 ### Issue Workflow
 
@@ -271,7 +272,7 @@ When creating a new agent:
 
 ## `SKILL.md` Requirements
 
-Every skill must include YAML frontmatter:
+Every repo-authored skill must include YAML frontmatter:
 
 - `name`
 - `description`
@@ -303,7 +304,8 @@ Content rules:
 - `description` must be an exact, reusable one-line description of what the skill is for, because the README catalog copies it directly.
 - `version` must live in the sibling `manifest.json`, use semantic versioning, and be bumped when the skill guidance materially changes.
 - `category` must live in the sibling `manifest.json` and match the supported README catalog categories.
-- Treat `SKILL.md` as the control plane for the skill: trigger conditions, selection logic, workflow, deliverables, and validation. Move large documentation bodies, reference tables, long examples, and mirrored upstream material into `references/`.
+- Treat repo-authored `SKILL.md` as the control plane for the skill: trigger conditions, selection logic, workflow, deliverables, and validation. Move large documentation bodies, reference tables, long examples, and mirrored upstream material into `references/`.
+- Imported upstream skills may keep their upstream frontmatter shape as-is. When the local catalog needs extra fields such as `compatibility`, store them in the sibling `manifest.json` instead of rewriting the upstream markdown.
 - Optimize for token economy. Prefer a short `Load References` section with topic-focused files over one large `SKILL.md` or one giant omnibus reference file.
 - When a skill explains non-trivial implementation details, integration flow, component boundaries, or decision logic, add at least one Mermaid diagram instead of leaving the explanation text-only.
 - When mirroring or bundling official documentation into a skill's `references/`, also extract the main operational guidance into `SKILL.md` or curated reference summaries. Do not leave the skill usable only as a raw documentation dump.
@@ -332,7 +334,7 @@ Rules:
 
 Whenever you add, rename, split, merge, or remove a skill:
 
-1. Update `SKILL.md` frontmatter only for `name`, `description`, or `compatibility`, and update the sibling `manifest.json` for `version`, `category`, `packages`, or `package_prefix`.
+1. For repo-authored entries, update `SKILL.md` frontmatter only for `name`, `description`, or `compatibility`, and update the sibling `manifest.json` for `version`, `category`, `packages`, or `package_prefix`. For imported upstream entries, keep `SKILL.md` verbatim and put any local-only metadata in the sibling `manifest.json`.
 2. Update the skill count if it is listed.
 3. Update automation notes if watch coverage changes.
 4. Let the release workflows generate fresh catalog outputs in CI; run `python3 scripts/generate_catalog.py` locally only when you need a preview.

@@ -1,7 +1,7 @@
 {
   "name": "dotnet-maui",
   "title": "Official .NET skills: dotnet-maui",
-  "description": "Skills for .NET MAUI development: environment setup, diagnostics, troubleshooting, navigation, data binding, dependency injection, layout, and theming. Imported from dotnet/skills via vendir.",
+  "description": "Skills for .NET MAUI development: environment setup, diagnostics, troubleshooting, navigation, data binding, dependency injection, layout, and theming.",
   "links": {
     "repository": "https://github.com/dotnet/skills",
     "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"

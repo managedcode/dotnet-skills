@@ -1,21 +1,10 @@
 ---
+description: >-
+  Implements a single phase from the test plan. Writes test
+  files and verifies they compile and pass. Calls builder, tester, and fixer agents as
+  needed.
 name: code-testing-implementer
-description: "Implements a single phase from the test plan. Writes test files and verifies they compile and pass. Calls builder, tester, and fixer agents as needed."
-skills:
-  - code-testing-agent
-  - coverage-analysis
-  - crap-score
-  - dotnet-test-frameworks
-  - filter-syntax
-  - migrate-mstest-v1v2-to-v3
-  - migrate-mstest-v3-to-v4
-  - migrate-vstest-to-mtp
-  - migrate-xunit-to-xunit-v3
-  - mtp-hot-reload
-  - platform-detection
-  - run-tests
-  - test-anti-patterns
-  - writing-mstest-tests
+user-invocable: false
 ---
 
 # Test Implementer

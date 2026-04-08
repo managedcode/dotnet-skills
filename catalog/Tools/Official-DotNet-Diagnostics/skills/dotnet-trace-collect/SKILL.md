@@ -1,8 +1,8 @@
 ---
 name: dotnet-trace-collect
-description: "Guide developers through capturing diagnostic artifacts to diagnose production .NET performance issues. Use when the user needs help choosing diagnostic tools, collecting performance data, or understanding tool trade-offs across different environments (Windows/Linux, .NET Framework/modern .NET, container/non-container)."
-compatibility: "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
+description: Guide developers through capturing diagnostic artifacts to diagnose production .NET performance issues. Use when the user needs help choosing diagnostic tools, collecting performance data, or understanding tool trade-offs across different environments (Windows/Linux, .NET Framework/modern .NET, container/non-container).
 ---
+
 # .NET Trace Collect
 
 This skill helps developers diagnose production performance issues by recommending the right diagnostic tools for their environment, guiding data collection, and suggesting analysis approaches. It does not analyze code for anti-patterns or perform the analysis itself.

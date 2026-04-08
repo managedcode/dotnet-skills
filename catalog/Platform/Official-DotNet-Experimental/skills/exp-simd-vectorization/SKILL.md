@@ -1,8 +1,8 @@
 ---
 name: exp-simd-vectorization
 description: "Optimizes hot-path scalar loops in .NET 8+ with cross-platform Vector128/Vector256/Vector512 SIMD intrinsics, or replaces manual math loops with single TensorPrimitives API calls. Covers byte-range validation, character counting, bulk bitwise ops, cross-type conversion, fused multi-array computations, and float/double math operations."
-compatibility: "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable."
 ---
+
 # SIMD Vectorization
 
 ## Decision Gate

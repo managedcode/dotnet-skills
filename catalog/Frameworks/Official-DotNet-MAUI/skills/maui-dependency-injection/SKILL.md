@@ -1,8 +1,18 @@
 ---
 name: maui-dependency-injection
-description: "Guidance for configuring dependency injection in .NET MAUI apps — service registration in MauiProgram.cs, lifetime selection (Singleton / Transient / Scoped), constructor injection, Shell navigation auto-resolution, platform-specific registrations, and testability patterns. USE FOR: \"dependency injection\", \"DI setup\", \"AddSingleton\", \"AddTransient\", \"AddScoped\", \"service registration\", \"constructor injection\", \"IServiceProvider\", \"MauiProgram DI\", \"register services\", \"BindingContext injection\". DO NOT USE FOR: data binding (use maui-data-binding), Shell route configuration (use maui-shell-navigation), unit-test mocking frameworks (use standard xUnit and NSubstitute patterns)."
-compatibility: "Requires a .NET MAUI project or solution."
+description: >
+  Guidance for configuring dependency injection in .NET MAUI apps — service
+  registration in MauiProgram.cs, lifetime selection (Singleton / Transient / Scoped),
+  constructor injection, Shell navigation auto-resolution, platform-specific
+  registrations, and testability patterns.
+  USE FOR: "dependency injection", "DI setup", "AddSingleton", "AddTransient",
+  "AddScoped", "service registration", "constructor injection", "IServiceProvider",
+  "MauiProgram DI", "register services", "BindingContext injection".
+  DO NOT USE FOR: data binding (use maui-data-binding), Shell route configuration
+  (use maui-shell-navigation), unit-test mocking frameworks (use standard xUnit
+  and NSubstitute patterns).
 ---
+
 # Dependency Injection in .NET MAUI
 
 .NET MAUI uses the same `Microsoft.Extensions.DependencyInjection` container as ASP.NET Core. All service registration happens in `MauiProgram.CreateMauiApp()` on `builder.Services`. The container is built once at startup and is immutable thereafter.

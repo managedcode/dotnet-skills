@@ -1,21 +1,8 @@
 ---
 name: msbuild-code-review
 description: "Agent that reviews MSBuild project files for anti-patterns, modernization opportunities, and best practices violations. Scans .csproj, .vbproj, .fsproj, .props, .targets files and produces actionable improvement suggestions. Invoke when asked to review, audit, or improve MSBuild project files."
-skills:
-  - binlog-failure-analysis
-  - binlog-generation
-  - build-parallelism
-  - build-perf-baseline
-  - build-perf-diagnostics
-  - check-bin-obj-clash
-  - directory-build-organization
-  - eval-performance
-  - including-generated-files
-  - incremental-build
-  - msbuild-antipatterns
-  - msbuild-modernization
-  - msbuild-server
-  - resolve-project-references
+user-invokable: true
+disable-model-invocation: false
 ---
 
 # MSBuild Code Review Agent

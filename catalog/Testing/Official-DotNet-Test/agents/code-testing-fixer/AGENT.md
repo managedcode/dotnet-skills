@@ -1,21 +1,9 @@
 ---
+description: >-
+  Fixes compilation errors in source or test files. Analyzes
+  error messages and applies corrections.
 name: code-testing-fixer
-description: "Fixes compilation errors in source or test files. Analyzes error messages and applies corrections."
-skills:
-  - code-testing-agent
-  - coverage-analysis
-  - crap-score
-  - dotnet-test-frameworks
-  - filter-syntax
-  - migrate-mstest-v1v2-to-v3
-  - migrate-mstest-v3-to-v4
-  - migrate-vstest-to-mtp
-  - migrate-xunit-to-xunit-v3
-  - mtp-hot-reload
-  - platform-detection
-  - run-tests
-  - test-anti-patterns
-  - writing-mstest-tests
+user-invocable: false
 ---
 
 # Fixer Agent

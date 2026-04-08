@@ -1,7 +1,7 @@
 {
   "name": "dotnet-msbuild",
   "title": "Official .NET skills: dotnet-msbuild",
-  "description": "Comprehensive MSBuild and .NET build skills: failure diagnosis, performance optimization, code quality, and modernization. Imported from dotnet/skills via vendir.",
+  "description": "Comprehensive MSBuild and .NET build skills: failure diagnosis, performance optimization, code quality, and modernization.",
   "links": {
     "repository": "https://github.com/dotnet/skills",
     "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"

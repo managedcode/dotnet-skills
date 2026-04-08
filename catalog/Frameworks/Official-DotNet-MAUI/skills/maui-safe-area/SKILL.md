@@ -1,8 +1,19 @@
 ---
 name: maui-safe-area
-description: ".NET MAUI safe area and edge-to-edge layout guidance for .NET 10+. Covers the new SafeAreaEdges property, SafeAreaRegions enum, per-edge control, keyboard avoidance, Blazor Hybrid CSS safe areas, migration from legacy iOS-only APIs, and platform-specific behavior for Android, iOS, and Mac Catalyst. USE FOR: \"safe area\", \"edge-to-edge\", \"SafeAreaEdges\", \"SafeAreaRegions\", \"keyboard avoidance\", \"notch insets\", \"status bar overlap\", \"iOS safe area\", \"Android edge-to-edge\", \"content behind status bar\", \"UseSafeArea migration\", \"soft input keyboard\", \"IgnoreSafeArea replacement\". DO NOT USE FOR: general layout or grid design (use Grid and StackLayout), app lifecycle handling (use maui-app-lifecycle), theming or styling (use maui-theming), or Shell navigation structure."
-compatibility: "Requires a .NET MAUI project or solution."
+description: >-
+  .NET MAUI safe area and edge-to-edge layout guidance for .NET 10+. Covers the
+  new SafeAreaEdges property, SafeAreaRegions enum, per-edge control, keyboard
+  avoidance, Blazor Hybrid CSS safe areas, migration from legacy iOS-only APIs,
+  and platform-specific behavior for Android, iOS, and Mac Catalyst.
+  USE FOR: "safe area", "edge-to-edge", "SafeAreaEdges", "SafeAreaRegions",
+  "keyboard avoidance", "notch insets", "status bar overlap", "iOS safe area",
+  "Android edge-to-edge", "content behind status bar", "UseSafeArea migration",
+  "soft input keyboard", "IgnoreSafeArea replacement".
+  DO NOT USE FOR: general layout or grid design (use Grid and StackLayout),
+  app lifecycle handling (use maui-app-lifecycle), theming or styling
+  (use maui-theming), or Shell navigation structure.
 ---
+
 # Safe Area & Edge-to-Edge Layout (.NET 10+)
 
 .NET 10 introduces a **brand-new, cross-platform safe area API** that replaces the legacy iOS-only `UseSafeArea` and the layout-level `IgnoreSafeArea` properties. The new `SafeAreaEdges` property and `SafeAreaRegions` flags enum give you per-edge, per-control safe area management on Android, iOS, and Mac Catalyst from a single API surface.

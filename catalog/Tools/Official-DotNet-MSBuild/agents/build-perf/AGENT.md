@@ -1,21 +1,8 @@
 ---
 name: build-perf
 description: "Agent for diagnosing and optimizing MSBuild build performance. Runs multi-step analysis: generates binlogs, analyzes timeline and bottlenecks, identifies expensive targets/tasks/analyzers, and suggests concrete optimizations. Invoke when builds are slow or when asked to optimize build times."
-skills:
-  - binlog-failure-analysis
-  - binlog-generation
-  - build-parallelism
-  - build-perf-baseline
-  - build-perf-diagnostics
-  - check-bin-obj-clash
-  - directory-build-organization
-  - eval-performance
-  - including-generated-files
-  - incremental-build
-  - msbuild-antipatterns
-  - msbuild-modernization
-  - msbuild-server
-  - resolve-project-references
+user-invokable: true
+disable-model-invocation: false
 ---
 
 # Build Performance Agent

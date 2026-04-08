@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace ManagedCode.DotnetSkills.Runtime;
 
@@ -88,13 +89,21 @@ internal static class CatalogScanner
                     var (skillManifestPath, skillManifest) = LoadOptionalEntityManifest(skillDirectory);
 
                     var (metadata, body) = ParseFrontmatter(skillPath);
-                    var title = ParseTitle(body, skillPath);
+                    var title = ParseTitle(body, skillPath, metadata["name"]);
                     var expectedManifestPath = new FileInfo(Path.Combine(skillDirectory.FullName, "manifest.json"));
                     EnsureRequiredSkillFields(metadata, skillPath);
                     EnsureNoInlineSkillMetadata(metadata, skillPath, expectedManifestPath);
 
                     var skillName = metadata["name"];
                     var manifestSkillMetadata = ReadSkillManifestMetadata(skillManifestPath, skillManifest, expectedManifestPath);
+                    var compatibility = metadata.TryGetValue("compatibility", out var inlineCompatibility) && !string.IsNullOrWhiteSpace(inlineCompatibility)
+                        ? inlineCompatibility
+                        : manifestSkillMetadata.Compatibility;
+                    if (string.IsNullOrWhiteSpace(compatibility))
+                    {
+                        throw new InvalidOperationException(
+                            $"{skillPath.FullName} must define compatibility in frontmatter or in {expectedManifestPath.FullName}.");
+                    }
 
                     skills.Add(
                         new SkillEntry
@@ -106,7 +115,7 @@ internal static class CatalogScanner
                             Type = skillType,
                             Package = packageDirectory.Name,
                             Description = metadata["description"],
-                            Compatibility = metadata["compatibility"],
+                            Compatibility = compatibility,
                             Path = BuildRelativePath(rootDirectory, skillDirectory),
                             Packages = manifestSkillMetadata.Packages,
                             PackagePrefix = manifestSkillMetadata.PackagePrefix,
@@ -162,7 +171,7 @@ internal static class CatalogScanner
 
                     var (metadata, body) = ParseFrontmatterWithLists(agentPath);
                     EnsureRequiredAgentFields(metadata, agentPath);
-                    var title = ParseTitle(body, agentPath);
+                    var title = ParseTitle(body, agentPath, GetString(metadata, "name"));
                     var agentManifestMetadata = ReadAgentManifestMetadata(agentManifestPath, agentManifest);
 
                     agents.Add(
@@ -253,9 +262,15 @@ internal static class CatalogScanner
             throw new InvalidOperationException($"{manifestPath.FullName} field package_prefix must be a non-empty string");
         }
 
+        if (manifest.Compatibility.Length > 0 && string.IsNullOrWhiteSpace(manifest.Compatibility))
+        {
+            throw new InvalidOperationException($"{manifestPath.FullName} field compatibility must be a non-empty string");
+        }
+
         return new SkillManifestMetadata(
             manifest.Version.Trim(),
             category,
+            manifest.Compatibility.Trim(),
             [.. manifest.Packages.Select(package => package.Trim())],
             manifest.PackagePrefix.Trim());
     }
@@ -439,7 +454,7 @@ internal static class CatalogScanner
 
     private static void EnsureRequiredSkillFields(IReadOnlyDictionary<string, string> metadata, FileInfo skillPath)
     {
-        var required = new[] { "name", "description", "compatibility" };
+        var required = new[] { "name", "description" };
         var missing = required.Where(key => !metadata.TryGetValue(key, out var value) || string.IsNullOrWhiteSpace(value)).ToArray();
         if (missing.Length > 0)
         {
@@ -474,17 +489,18 @@ internal static class CatalogScanner
         }
     }
 
-    private static string ParseTitle(string body, FileInfo path)
+    private static string ParseTitle(string body, FileInfo path, string fallbackTitle)
     {
         foreach (var line in body.Split('\n'))
         {
-            if (line.StartsWith("# ", StringComparison.Ordinal))
+            var trimmed = line.Trim();
+            if (trimmed.StartsWith('#'))
             {
-                return line[2..].Trim();
+                return Regex.Replace(trimmed, @"^#+\s*", string.Empty).Trim();
             }
         }
 
-        throw new InvalidOperationException($"{path.FullName} is missing an H1 title");
+        return fallbackTitle;
     }
 
     private static (Dictionary<string, string> Metadata, string Body) ParseFrontmatter(FileInfo path)
@@ -504,25 +520,17 @@ internal static class CatalogScanner
 
         var rawFrontmatter = text[4..markerIndex];
         var body = text[(markerIndex + marker.Length)..];
+        var parsed = ParseSimpleYamlMapping(path, rawFrontmatter);
         var metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var rawLine in rawFrontmatter.Split('\n'))
+        foreach (var (key, value) in parsed)
         {
-            var line = rawLine.TrimEnd('\r');
-            if (string.IsNullOrWhiteSpace(line))
+            if (value is List<string>)
             {
-                continue;
+                throw new InvalidOperationException($"{path.FullName} field {key} must be a scalar value");
             }
 
-            var separatorIndex = line.IndexOf(':', StringComparison.Ordinal);
-            if (separatorIndex < 0)
-            {
-                throw new InvalidOperationException($"{path.FullName} has malformed frontmatter line: {line}");
-            }
-
-            var key = line[..separatorIndex].Trim();
-            var value = line[(separatorIndex + 1)..].Trim();
-            metadata[key] = Unquote(value);
+            metadata[key] = value?.ToString() ?? string.Empty;
         }
 
         return (metadata, body);
@@ -545,34 +553,21 @@ internal static class CatalogScanner
 
         var rawFrontmatter = text[4..markerIndex];
         var body = text[(markerIndex + marker.Length)..];
-        var metadata = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        string? currentKey = null;
-        List<string>? currentList = null;
+        return (ParseSimpleYamlMapping(path, rawFrontmatter), body);
+    }
 
-        foreach (var rawLine in rawFrontmatter.Split('\n'))
+    private static Dictionary<string, object> ParseSimpleYamlMapping(FileInfo path, string rawFrontmatter)
+    {
+        var metadata = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        var lines = rawFrontmatter.Split('\n');
+
+        for (var index = 0; index < lines.Length;)
         {
-            var line = rawLine.TrimEnd('\r');
+            var line = lines[index].TrimEnd('\r');
             if (string.IsNullOrWhiteSpace(line))
             {
+                index++;
                 continue;
-            }
-
-            if (line.StartsWith("  - ", StringComparison.Ordinal))
-            {
-                if (currentKey is null || currentList is null)
-                {
-                    throw new InvalidOperationException($"{path.FullName} has a list item without a parent key: {line}");
-                }
-
-                currentList.Add(line[4..].Trim());
-                continue;
-            }
-
-            if (currentKey is not null && currentList is not null)
-            {
-                metadata[currentKey] = currentList;
-                currentKey = null;
-                currentList = null;
             }
 
             var separatorIndex = line.IndexOf(':', StringComparison.Ordinal);
@@ -584,22 +579,92 @@ internal static class CatalogScanner
             var key = line[..separatorIndex].Trim();
             var value = line[(separatorIndex + 1)..].Trim();
 
-            if (string.IsNullOrWhiteSpace(value))
+            if (Regex.IsMatch(value, @"^[>|][+-]?$"))
             {
-                currentKey = key;
-                currentList = [];
+                index++;
+                var blockLines = new List<string>();
+                while (index < lines.Length)
+                {
+                    var candidate = lines[index].TrimEnd('\r');
+                    if (candidate.StartsWith("  ", StringComparison.Ordinal) || candidate.StartsWith('\t'))
+                    {
+                        blockLines.Add(candidate.TrimStart());
+                        index++;
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(candidate))
+                    {
+                        blockLines.Add(string.Empty);
+                        index++;
+                        continue;
+                    }
+
+                    break;
+                }
+
+                metadata[key] = string.Join(" ", blockLines.Select(segment => segment.Trim()).Where(segment => segment.Length > 0));
                 continue;
             }
 
-            metadata[key] = Unquote(value);
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                index++;
+                var items = new List<string>();
+                while (index < lines.Length)
+                {
+                    var candidate = lines[index].TrimEnd('\r');
+                    if (candidate.StartsWith("  - ", StringComparison.Ordinal))
+                    {
+                        items.Add(candidate[4..].Trim());
+                        index++;
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(candidate))
+                    {
+                        index++;
+                        continue;
+                    }
+
+                    break;
+                }
+
+                metadata[key] = items;
+                continue;
+            }
+
+            index++;
+            var continuationLines = new List<string>();
+            while (index < lines.Length)
+            {
+                var candidate = lines[index].TrimEnd('\r');
+                if (candidate.StartsWith("  ", StringComparison.Ordinal) || candidate.StartsWith('\t'))
+                {
+                    continuationLines.Add(candidate.Trim());
+                    index++;
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(candidate))
+                {
+                    index++;
+                    continue;
+                }
+
+                break;
+            }
+
+            var scalarValue = Unquote(value);
+            if (continuationLines.Count > 0)
+            {
+                scalarValue = string.Join(" ", continuationLines.Prepend(scalarValue).Where(part => part.Length > 0));
+            }
+
+            metadata[key] = scalarValue;
         }
 
-        if (currentKey is not null && currentList is not null)
-        {
-            metadata[currentKey] = currentList;
-        }
-
-        return (metadata, body);
+        return metadata;
     }
 
     private static string Unquote(string value)
@@ -730,6 +795,9 @@ internal sealed class EntityManifest
     [JsonPropertyName("category")]
     public string Category { get; init; } = string.Empty;
 
+    [JsonPropertyName("compatibility")]
+    public string Compatibility { get; init; } = string.Empty;
+
     [JsonPropertyName("packages")]
     public List<string> Packages { get; init; } = [];
 
@@ -740,7 +808,7 @@ internal sealed class EntityManifest
     public Dictionary<string, JsonElement>? AdditionalData { get; init; }
 }
 
-internal sealed record SkillManifestMetadata(string Version, string Category, List<string> Packages, string PackagePrefix)
+internal sealed record SkillManifestMetadata(string Version, string Category, string Compatibility, List<string> Packages, string PackagePrefix)
 {
 }
 

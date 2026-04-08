@@ -1,8 +1,18 @@
 ---
 name: template-discovery
-description: "Helps find, inspect, and compare .NET project templates. Resolves natural-language project descriptions to ranked template matches with pre-filled parameters. USE FOR: finding the right dotnet new template for a task, comparing templates side by side, inspecting template parameters and constraints, understanding what a template produces before creating a project, resolving intent like \"web API with auth\" to concrete template + parameters. DO NOT USE FOR: actually creating projects (use template-instantiation), authoring custom templates (use template-authoring), MSBuild or build issues (use dotnet-msbuild plugin), NuGet package management unrelated to template packages."
-compatibility: "Requires a .NET repository using dotnet new templates or template authoring workflows."
+description: >
+  Helps find, inspect, and compare .NET project templates.
+  Resolves natural-language project descriptions to ranked template matches
+  with pre-filled parameters.
+  USE FOR: finding the right dotnet new template for a task, comparing templates side by
+  side, inspecting template parameters and constraints, understanding what a template
+  produces before creating a project, resolving intent like "web API with auth" to
+  concrete template + parameters.
+  DO NOT USE FOR: actually creating projects (use template-instantiation), authoring
+  custom templates (use template-authoring), MSBuild or build issues (use dotnet-msbuild
+  plugin), NuGet package management unrelated to template packages.
 ---
+
 # Template Discovery
 
 This skill helps an agent find, inspect, and select the right `dotnet new` template for a given task using `dotnet new` CLI commands for search, listing, and parameter inspection.
