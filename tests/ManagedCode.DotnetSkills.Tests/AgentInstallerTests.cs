@@ -69,4 +69,45 @@ public sealed class AgentInstallerTests
         Assert.Contains("name: dotnet-router", contents, StringComparison.Ordinal);
         Assert.Contains("# .NET Router", contents, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void Install_RejectsAgentNameThatEscapesLayoutRoot()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+        var sourceDirectory = Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Frameworks", "Aspire", "agents", "dotnet-safe-agent"));
+        File.WriteAllText(
+            Path.Combine(sourceDirectory.FullName, "AGENT.md"),
+            """
+            ---
+            name: dotnet-safe-agent
+            description: "safe"
+            ---
+
+            # Safe agent
+            """);
+
+        var manifest = new AgentManifest
+        {
+            Agents =
+            [
+                new AgentEntry
+                {
+                    Name = "../escape",
+                    Title = "Escape",
+                    Description = "Escape test",
+                    Path = "catalog/Frameworks/Aspire/agents/dotnet-safe-agent"
+                },
+            ],
+        };
+
+        var catalog = AgentCatalogPackage.LoadFromManifest(new DirectoryInfo(tempDirectory.Path), manifest, "test payload");
+        var installer = new AgentInstaller(catalog);
+        using var installDirectory = new TemporaryDirectory();
+        var layout = new AgentInstallLayout(AgentPlatform.Claude, InstallScope.Project, AgentInstallMode.MarkdownAgentFiles, new DirectoryInfo(installDirectory.Path), false);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => installer.Install(catalog.Agents, layout, force: false));
+
+        Assert.Contains("must stay within", exception.Message, StringComparison.Ordinal);
+        Assert.False(File.Exists(Path.Combine(tempDirectory.Path, "escape.md")));
+    }
 }

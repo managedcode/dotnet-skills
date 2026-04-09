@@ -306,7 +306,16 @@ internal sealed class ProjectInventory
 
         foreach (var projectFile in projectFiles)
         {
-            var document = XDocument.Load(projectFile.FullName, LoadOptions.None);
+            XDocument document;
+            try
+            {
+                document = XDocument.Load(projectFile.FullName, LoadOptions.None);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or System.Xml.XmlException)
+            {
+                continue;
+            }
+
             var projectElement = document.Root;
             if (projectElement is null)
             {

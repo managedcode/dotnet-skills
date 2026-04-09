@@ -57,7 +57,7 @@ public sealed class GitHubCatalogReleaseClientTests
 
             return url switch
             {
-                "https://api.github.com/repos/managedcode/dotnet-skills/releases?per_page=50" => JsonResponse(
+                "https://api.github.com/repos/managedcode/dotnet-skills/releases?per_page=50&page=1" => JsonResponse(
                     """
                     [
                       {
@@ -84,6 +84,7 @@ public sealed class GitHubCatalogReleaseClientTests
                       }
                     ]
                     """),
+                "https://api.github.com/repos/managedcode/dotnet-skills/releases?per_page=50&page=2" => JsonResponse("[]"),
                 "https://example.test/catalog-v2026.4.8.1.zip" => ZipResponse(oldArchive),
                 "https://example.test/catalog-v2026.4.10.0.zip" => ZipResponse(latestArchive),
                 _ => throw new InvalidOperationException($"Unexpected request: {url}"),
@@ -96,6 +97,120 @@ public sealed class GitHubCatalogReleaseClientTests
 
         Assert.Equal("2026.4.10.0", catalog.CatalogVersion);
         Assert.Contains(catalog.Skills, skill => skill.Name == "dotnet-aspire");
+        Assert.True(Directory.Exists(Path.Combine(tempDirectory.Path, "catalog-v2026.4.10.0", "catalog")));
+        Assert.True(catalog.ResolveSkillSource("dotnet-aspire").Exists);
+    }
+
+    [Fact]
+    public async Task SyncAsync_PreservesCachedReleaseWhenReplacementValidationFails()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+        var cacheRoot = new DirectoryInfo(tempDirectory.Path);
+        var existingReleaseDirectory = Directory.CreateDirectory(Path.Combine(cacheRoot.FullName, "catalog-v2026.4.10.0"));
+        SkillInstaller.CopyDirectory(
+            new DirectoryInfo(Path.Combine(ResolveRepositoryRoot().FullName, "catalog")),
+            new DirectoryInfo(Path.Combine(existingReleaseDirectory.FullName, "catalog")));
+
+        using var httpClient = new HttpClient(new StubHttpMessageHandler(request =>
+        {
+            var url = request.RequestUri?.ToString() ?? string.Empty;
+
+            return url switch
+            {
+                "https://api.github.com/repos/managedcode/dotnet-skills/releases/tags/catalog-v2026.4.10.0" => JsonResponse(
+                    """
+                    {
+                      "tag_name": "catalog-v2026.4.10.0",
+                      "draft": false,
+                      "prerelease": false,
+                      "assets": [
+                        {
+                          "name": "dotnet-skills-catalog.zip",
+                          "browser_download_url": "https://example.test/bad.zip"
+                        }
+                      ]
+                    }
+                    """),
+                "https://example.test/bad.zip" => ZipResponse(CreateArchive(("readme.txt", "broken"))),
+                _ => throw new InvalidOperationException($"Unexpected request: {url}"),
+            };
+        }));
+
+        var client = new GitHubCatalogReleaseClient(cacheRoot, httpClient);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => client.SyncAsync("2026.4.10.0", force: true, CancellationToken.None));
+
+        Assert.True(Directory.Exists(Path.Combine(existingReleaseDirectory.FullName, "catalog")));
+        Assert.True(File.Exists(Path.Combine(existingReleaseDirectory.FullName, "catalog", "skills.json")));
+    }
+
+    [Fact]
+    public async Task LoadManifestAsync_FetchesAdditionalReleasePages()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+        var pageOne = string.Join(
+            ",",
+            Enumerable.Range(0, 50).Select(index =>
+                $$"""
+                  {
+                    "tag_name": "release-v{{index}}",
+                    "draft": false,
+                    "prerelease": false,
+                    "assets": []
+                  }
+                """));
+
+        using var httpClient = new HttpClient(new StubHttpMessageHandler(request =>
+        {
+            var url = request.RequestUri?.ToString() ?? string.Empty;
+
+            return url switch
+            {
+                "https://api.github.com/repos/managedcode/dotnet-skills/releases?per_page=50&page=1" => JsonResponse($"[{pageOne}]"),
+                "https://api.github.com/repos/managedcode/dotnet-skills/releases?per_page=50&page=2" => JsonResponse(
+                    """
+                    [
+                      {
+                        "tag_name": "catalog-v2026.4.11.0",
+                        "draft": false,
+                        "prerelease": false,
+                        "assets": [
+                          {
+                            "name": "dotnet-skills-manifest.json",
+                            "browser_download_url": "https://example.test/manifest.json"
+                          }
+                        ]
+                      }
+                    ]
+                    """),
+                "https://example.test/manifest.json" => JsonResponse(
+                    """
+                    {
+                      "skills": [
+                        {
+                          "name": "dotnet-aspire",
+                          "title": ".NET Aspire",
+                          "version": "1.0.0",
+                          "category": "Cloud",
+                          "type": "Framework",
+                          "package": "Aspire",
+                          "description": "Aspire",
+                          "compatibility": "codex",
+                          "path": "catalog/Frameworks/Aspire/skills/dotnet-aspire"
+                        }
+                      ],
+                      "bundles": []
+                    }
+                    """),
+                _ => throw new InvalidOperationException($"Unexpected request: {url}"),
+            };
+        }));
+
+        var client = new GitHubCatalogReleaseClient(new DirectoryInfo(tempDirectory.Path), httpClient);
+
+        var manifest = await client.LoadManifestAsync(catalogVersion: null, CancellationToken.None);
+
+        Assert.Contains(manifest.Skills, skill => skill.Name == "dotnet-aspire");
     }
 
     private static HttpResponseMessage JsonResponse(string json)
@@ -139,6 +254,22 @@ public sealed class GitHubCatalogReleaseClientTests
         using var sourceStream = File.OpenRead(sourcePath);
         using var entryStream = entry.Open();
         sourceStream.CopyTo(entryStream);
+    }
+
+    private static byte[] CreateArchive(params (string Path, string Contents)[] entries)
+    {
+        using var stream = new MemoryStream();
+        using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            foreach (var (path, contents) in entries)
+            {
+                var entry = archive.CreateEntry(path);
+                using var writer = new StreamWriter(entry.Open(), Encoding.UTF8, leaveOpen: false);
+                writer.Write(contents);
+            }
+        }
+
+        return stream.ToArray();
     }
 
     private static DirectoryInfo ResolveRepositoryRoot()

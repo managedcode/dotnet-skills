@@ -73,4 +73,42 @@ public sealed class SkillInstallerTests
         Assert.Contains(selected, skill => skill.Name == "dotnet-format");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
+
+    [Fact]
+    public void Install_RejectsSkillNameThatEscapesLayoutRoot()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+        var sourceDirectory = Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Frameworks", "Aspire", "skills", "dotnet-safe"));
+        File.WriteAllText(Path.Combine(sourceDirectory.FullName, "SKILL.md"), "# Safe");
+        File.WriteAllText(Path.Combine(sourceDirectory.FullName, "manifest.json"), """{"version":"1.0.0"}""");
+
+        var manifest = new SkillManifest
+        {
+            Skills =
+            [
+                new SkillEntry
+                {
+                    Name = "../escape",
+                    Title = "Escape",
+                    Version = "1.0.0",
+                    Category = "Test",
+                    Type = "Framework",
+                    Package = "Aspire",
+                    Description = "Escape test",
+                    Compatibility = "codex",
+                    Path = "catalog/Frameworks/Aspire/skills/dotnet-safe"
+                },
+            ],
+        };
+
+        var catalog = SkillCatalogPackage.LoadFromManifest(new DirectoryInfo(tempDirectory.Path), manifest, "test payload", "test");
+        var installer = new SkillInstaller(catalog);
+        using var installDirectory = new TemporaryDirectory();
+        var layout = new SkillInstallLayout(AgentPlatform.Codex, InstallScope.Project, SkillInstallMode.SkillDirectories, new DirectoryInfo(installDirectory.Path), false);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => installer.Install(catalog.Skills, layout, force: false));
+
+        Assert.Contains("must stay within", exception.Message, StringComparison.Ordinal);
+        Assert.False(Directory.Exists(Path.Combine(tempDirectory.Path, "escape")));
+    }
 }

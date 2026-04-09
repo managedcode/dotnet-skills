@@ -76,7 +76,7 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
         foreach (var skill in skills)
         {
             var sourceDirectory = catalog.ResolveSkillSource(skill.Name);
-            var destinationDirectory = new DirectoryInfo(Path.Combine(layout.PrimaryRoot.FullName, skill.Name));
+            var destinationDirectory = ResolveInstalledSkillDirectory(layout, skill);
 
             if (destinationDirectory.Exists)
             {
@@ -103,7 +103,7 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
 
         foreach (var skill in skills)
         {
-            var destinationDirectory = new DirectoryInfo(Path.Combine(layout.PrimaryRoot.FullName, skill.Name));
+            var destinationDirectory = ResolveInstalledSkillDirectory(layout, skill);
             if (!destinationDirectory.Exists)
             {
                 missingSkills.Add(skill.Name);
@@ -119,7 +119,7 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
 
     public bool IsInstalled(SkillEntry skill, SkillInstallLayout layout)
     {
-        return Directory.Exists(Path.Combine(layout.PrimaryRoot.FullName, skill.Name));
+        return ResolveInstalledSkillDirectory(layout, skill).Exists;
     }
 
     public IReadOnlyList<InstalledSkillRecord> GetInstalledSkills(SkillInstallLayout layout)
@@ -179,10 +179,19 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
         return new string(value.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
     }
 
+    private static DirectoryInfo ResolveInstalledSkillDirectory(SkillInstallLayout layout, SkillEntry skill)
+    {
+        return PathSafety.ResolveDirectoryWithinRoot(
+            layout.PrimaryRoot,
+            skill.Name,
+            $"Installed skill path for {skill.Name}");
+    }
+
     private static string ReadInstalledVersion(SkillEntry skill, SkillInstallLayout layout)
     {
-        return ReadManifestValue(Path.Combine(layout.PrimaryRoot.FullName, skill.Name, "manifest.json"), "version")
-            ?? ReadFrontMatterValue(Path.Combine(layout.PrimaryRoot.FullName, skill.Name, "SKILL.md"), "version")
+        var skillDirectory = ResolveInstalledSkillDirectory(layout, skill);
+        return ReadManifestValue(Path.Combine(skillDirectory.FullName, "manifest.json"), "version")
+            ?? ReadFrontMatterValue(Path.Combine(skillDirectory.FullName, "SKILL.md"), "version")
             ?? "unknown";
     }
 

@@ -363,4 +363,35 @@ public sealed class SkillCatalogPackageTests
             "Create MCP servers using the C# SDK and .NET project templates. Covers scaffolding, tool implementation, and transport configuration.",
             skill.Description);
     }
+
+    [Fact]
+    public void ResolveSkillSource_RejectsEscapingManifestPath()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+
+        var manifest = new SkillManifest
+        {
+            Skills =
+            [
+                new SkillEntry
+                {
+                    Name = "dotnet-escape",
+                    Title = "Escape",
+                    Version = "1.0.0",
+                    Category = "Test",
+                    Type = "Library",
+                    Package = "Escape",
+                    Description = "Escape test",
+                    Compatibility = "codex",
+                    Path = "../outside"
+                },
+            ],
+        };
+
+        var package = SkillCatalogPackage.LoadFromManifest(new DirectoryInfo(tempDirectory.Path), manifest, "test payload", "test");
+
+        var exception = Assert.Throws<InvalidOperationException>(() => package.ResolveSkillSource("dotnet-escape"));
+
+        Assert.Contains("must stay within", exception.Message, StringComparison.Ordinal);
+    }
 }

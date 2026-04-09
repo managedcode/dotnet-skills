@@ -35,11 +35,19 @@ internal sealed class AgentCatalogPackage
         return new AgentCatalogPackage(rootDirectory, agents, sourceLabel);
     }
 
+    public static AgentCatalogPackage LoadFromManifest(DirectoryInfo catalogRoot, AgentManifest manifest, string sourceLabel)
+    {
+        return new AgentCatalogPackage(catalogRoot, manifest.Agents, sourceLabel);
+    }
+
     public DirectoryInfo ResolveAgentSource(string agentName)
     {
         var agent = Agents.FirstOrDefault(candidate => string.Equals(candidate.Name, agentName, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Agent metadata is missing for {agentName} in {SourceLabel}");
-        var directory = new DirectoryInfo(Path.Combine(CatalogRoot.FullName, agent.Path.Replace('/', Path.DirectorySeparatorChar)));
+        var directory = PathSafety.ResolveDirectoryWithinRoot(
+            CatalogRoot,
+            agent.Path,
+            $"Agent payload path for {agentName} in {SourceLabel}");
         if (!directory.Exists)
         {
             throw new InvalidOperationException($"Agent payload is missing for {agentName} in {SourceLabel}");

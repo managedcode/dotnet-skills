@@ -36,7 +36,7 @@ internal sealed class AgentInstaller(AgentCatalogPackage catalog)
         {
             var sourceDirectory = catalog.ResolveAgentSource(agent.Name);
             var fileName = $"{agent.Name}{layout.FileExtension}";
-            var destinationFile = new FileInfo(Path.Combine(layout.PrimaryRoot.FullName, fileName));
+            var destinationFile = ResolveInstalledAgentFile(layout, agent, fileName);
 
             if (destinationFile.Exists && !force)
             {
@@ -92,7 +92,7 @@ internal sealed class AgentInstaller(AgentCatalogPackage catalog)
         foreach (var agent in agents)
         {
             var fileName = $"{agent.Name}{layout.FileExtension}";
-            var destinationFile = new FileInfo(Path.Combine(layout.PrimaryRoot.FullName, fileName));
+            var destinationFile = ResolveInstalledAgentFile(layout, agent, fileName);
 
             if (!destinationFile.Exists)
             {
@@ -110,7 +110,7 @@ internal sealed class AgentInstaller(AgentCatalogPackage catalog)
     public bool IsInstalled(AgentEntry agent, AgentInstallLayout layout)
     {
         var fileName = $"{agent.Name}{layout.FileExtension}";
-        return File.Exists(Path.Combine(layout.PrimaryRoot.FullName, fileName));
+        return ResolveInstalledAgentFile(layout, agent, fileName).Exists;
     }
 
     public IReadOnlyList<InstalledAgentRecord> GetInstalledAgents(AgentInstallLayout layout)
@@ -138,6 +138,14 @@ internal sealed class AgentInstaller(AgentCatalogPackage catalog)
         }
 
         return false;
+    }
+
+    private static FileInfo ResolveInstalledAgentFile(AgentInstallLayout layout, AgentEntry agent, string fileName)
+    {
+        return PathSafety.ResolveFileWithinRoot(
+            layout.PrimaryRoot,
+            fileName,
+            $"Installed agent path for {agent.Name}");
     }
 
     private static void WriteMarkdownAgent(FileInfo destinationFile, DirectoryInfo sourceDirectory)

@@ -13,6 +13,7 @@ internal sealed class GitHubCatalogReleaseClient
     private const string CatalogTagPrefix = "catalog-v";
     private const string CatalogManifestAssetName = "dotnet-skills-manifest.json";
     private const string CatalogPayloadAssetName = "dotnet-skills-catalog.zip";
+    private const int ReleasesPerPage = 50;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -70,6 +71,7 @@ internal sealed class GitHubCatalogReleaseClient
         cacheRoot.Create();
 
         var tempDirectory = new DirectoryInfo(Path.Combine(cacheRoot.FullName, $".tmp-{Guid.NewGuid():N}"));
+        DirectoryInfo? stagedReleaseDirectory = new DirectoryInfo(Path.Combine(cacheRoot.FullName, $".stage-{Guid.NewGuid():N}"));
         tempDirectory.Create();
 
         try
@@ -85,15 +87,13 @@ internal sealed class GitHubCatalogReleaseClient
 
             ZipFile.ExtractToDirectory(archivePath, tempDirectory.FullName, overwriteFiles: true);
 
-            if (releaseDirectory.Exists)
-            {
-                releaseDirectory.Delete(recursive: true);
-            }
-
             var extractedCatalogDirectory = ResolveExtractedCatalogDirectory(tempDirectory);
 
-            releaseDirectory.Create();
-            SkillInstaller.CopyDirectory(extractedCatalogDirectory, new DirectoryInfo(Path.Combine(releaseDirectory.FullName, "catalog")));
+            stagedReleaseDirectory.Create();
+            SkillInstaller.CopyDirectory(extractedCatalogDirectory, new DirectoryInfo(Path.Combine(stagedReleaseDirectory.FullName, "catalog")));
+            SkillCatalogPackage.LoadFromDirectory(stagedReleaseDirectory, $"GitHub release {release.TagName}", release.Version);
+            ReplaceReleaseDirectory(stagedReleaseDirectory, releaseDirectory);
+            stagedReleaseDirectory = null;
 
             return SkillCatalogPackage.LoadFromDirectory(releaseDirectory, $"GitHub release {release.TagName}", release.Version);
         }
@@ -102,6 +102,11 @@ internal sealed class GitHubCatalogReleaseClient
             if (tempDirectory.Exists)
             {
                 tempDirectory.Delete(recursive: true);
+            }
+
+            if (stagedReleaseDirectory?.Exists == true)
+            {
+                stagedReleaseDirectory.Delete(recursive: true);
             }
         }
     }
@@ -177,11 +182,26 @@ internal sealed class GitHubCatalogReleaseClient
 
     private async Task<IReadOnlyList<GitHubRelease>> GetReleasesAsync(CancellationToken cancellationToken)
     {
-        using var response = await httpClient.GetAsync($"https://api.github.com/repos/{Owner}/{Repository}/releases?per_page=50", cancellationToken);
-        response.EnsureSuccessStatusCode();
+        var releases = new List<GitHubRelease>();
 
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        return await JsonSerializer.DeserializeAsync<List<GitHubRelease>>(stream, JsonOptions, cancellationToken) ?? [];
+        for (var page = 1; ; page++)
+        {
+            using var response = await httpClient.GetAsync(
+                $"https://api.github.com/repos/{Owner}/{Repository}/releases?per_page={ReleasesPerPage}&page={page}",
+                cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            var releasePage = await JsonSerializer.DeserializeAsync<List<GitHubRelease>>(stream, JsonOptions, cancellationToken) ?? [];
+            releases.AddRange(releasePage);
+
+            if (releasePage.Count < ReleasesPerPage)
+            {
+                break;
+            }
+        }
+
+        return releases;
     }
 
     private async Task<GitHubRelease> GetReleaseByTagAsync(string tag, CancellationToken cancellationToken)
@@ -196,7 +216,7 @@ internal sealed class GitHubCatalogReleaseClient
 
     private async Task<Stream> DownloadAssetAsync(string downloadUrl, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, downloadUrl);
+        using var request = new HttpRequestMessage(HttpMethod.Get, downloadUrl);
         using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
 
@@ -213,6 +233,36 @@ internal sealed class GitHubCatalogReleaseClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
         httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(ToolIdentity.PackageId, "0.0.1"));
         return httpClient;
+    }
+
+    private static void ReplaceReleaseDirectory(DirectoryInfo stagedReleaseDirectory, DirectoryInfo releaseDirectory)
+    {
+        DirectoryInfo? backupDirectory = null;
+
+        try
+        {
+            if (releaseDirectory.Exists)
+            {
+                backupDirectory = new DirectoryInfo(Path.Combine(releaseDirectory.Parent!.FullName, $".backup-{Guid.NewGuid():N}"));
+                releaseDirectory.MoveTo(backupDirectory.FullName);
+            }
+
+            stagedReleaseDirectory.MoveTo(releaseDirectory.FullName);
+
+            if (backupDirectory?.Exists == true)
+            {
+                backupDirectory.Delete(recursive: true);
+            }
+        }
+        catch
+        {
+            if (!releaseDirectory.Exists && backupDirectory?.Exists == true)
+            {
+                backupDirectory.MoveTo(releaseDirectory.FullName);
+            }
+
+            throw;
+        }
     }
 
     private static NuGetVersion? TryParseCatalogVersion(string tagName)

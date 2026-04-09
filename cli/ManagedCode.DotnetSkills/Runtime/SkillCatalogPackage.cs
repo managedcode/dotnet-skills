@@ -55,7 +55,10 @@ internal sealed class SkillCatalogPackage
     {
         var skill = Skills.FirstOrDefault(candidate => string.Equals(candidate.Name, skillName, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Skill metadata is missing for {skillName} in {SourceLabel}");
-        var directory = new DirectoryInfo(Path.Combine(CatalogRoot.FullName, skill.Path.Replace('/', Path.DirectorySeparatorChar)));
+        var directory = PathSafety.ResolveDirectoryWithinRoot(
+            CatalogRoot,
+            skill.Path,
+            $"Skill payload path for {skillName} in {SourceLabel}");
         if (!directory.Exists)
         {
             throw new InvalidOperationException($"Skill payload is missing for {skillName} in {SourceLabel}");

@@ -69,4 +69,40 @@ public sealed class ProjectSkillRecommenderTests
         Assert.True(recommendations["dotnet-aspnet-core"].IsAutoInstallCandidate);
         Assert.True(recommendations["dotnet-xunit"].IsAutoInstallCandidate);
     }
+
+    [Fact]
+    public void Analyze_SkipsMalformedProjectFiles()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+
+        File.WriteAllText(
+            System.IO.Path.Combine(tempDirectory.Path, "Broken.csproj"),
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <PropertyGroup>
+                <TargetFramework>net10.0
+            """);
+
+        File.WriteAllText(
+            System.IO.Path.Combine(tempDirectory.Path, "App.csproj"),
+            """
+            <Project Sdk="Microsoft.NET.Sdk.Web">
+              <PropertyGroup>
+                <TargetFramework>net10.0</TargetFramework>
+              </PropertyGroup>
+              <ItemGroup>
+                <PackageReference Include="xunit" Version="2.9.3" />
+              </ItemGroup>
+            </Project>
+            """);
+
+        var recommendations = new ProjectSkillRecommender(TestCatalog.Load())
+            .Analyze(tempDirectory.Path)
+            .Recommendations
+            .Select(item => item.Skill.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        Assert.Contains("dotnet-aspnet-core", recommendations);
+        Assert.Contains("dotnet-xunit", recommendations);
+    }
 }
