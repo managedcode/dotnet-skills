@@ -253,117 +253,24 @@ internal static class Program
 
     private static async Task<int> RunInstallAsync(string[] args)
     {
-        var requestedSkills = new List<string>();
-        string? targetPath = null;
-        string? cachePath = null;
-        string? catalogVersion = null;
-        string? projectDirectory = null;
-        var installAll = false;
-        var autoInstall = false;
-        var pruneAutoManaged = false;
-        var force = false;
-        var bundledOnly = false;
-        var refreshCatalog = false;
-        var agent = AgentPlatform.Auto;
-        var scope = InstallScope.Project;
+        var options = ParseInstallOptions(args);
 
-        for (var index = 0; index < args.Length; index++)
-        {
-            switch (args[index])
-            {
-                case "--all":
-                    installAll = true;
-                    break;
-                case "--auto":
-                    autoInstall = true;
-                    break;
-                case "--prune":
-                    pruneAutoManaged = true;
-                    break;
-                case "--force":
-                    force = true;
-                    break;
-                case "--target":
-                    targetPath = ReadValue(args, ++index, "--target");
-                    break;
-                case "--cache-dir":
-                    cachePath = ReadValue(args, ++index, "--cache-dir");
-                    break;
-                case "--catalog-version":
-                    catalogVersion = ReadValue(args, ++index, "--catalog-version");
-                    break;
-                case "--agent":
-                    agent = SkillInstallTarget.ParseAgent(ReadValue(args, ++index, "--agent"));
-                    break;
-                case "--scope":
-                    scope = SkillInstallTarget.ParseScope(ReadValue(args, ++index, "--scope"));
-                    break;
-                case "--project-dir":
-                    projectDirectory = ReadValue(args, ++index, "--project-dir");
-                    break;
-                case "--bundled":
-                    bundledOnly = true;
-                    break;
-                case "--refresh":
-                    refreshCatalog = true;
-                    break;
-                default:
-                    requestedSkills.Add(args[index]);
-                    break;
-            }
-        }
-
-        var packageMode = requestedSkills.Count > 0
-            && string.Equals(requestedSkills[0], "package", StringComparison.OrdinalIgnoreCase);
-
-        if (packageMode)
-        {
-            requestedSkills.RemoveAt(0);
-
-            if (installAll)
-            {
-                throw new InvalidOperationException("`dotnet skills install package` requires explicit package names and does not support --all.");
-            }
-
-            if (requestedSkills.Count == 0)
-            {
-                throw new InvalidOperationException("Specify one or more package names after `dotnet skills install package`.");
-            }
-        }
-
-        if (autoInstall)
-        {
-            if (installAll)
-            {
-                throw new InvalidOperationException("`dotnet skills install --auto` scans the project and does not support --all.");
-            }
-
-            if (packageMode || requestedSkills.Count > 0)
-            {
-                throw new InvalidOperationException("`dotnet skills install --auto` does not accept explicit skill or package names.");
-            }
-        }
-        else if (pruneAutoManaged)
-        {
-            throw new InvalidOperationException("`--prune` is only available together with `dotnet skills install --auto`.");
-        }
-
-        if (pruneAutoManaged && scope != InstallScope.Project)
+        if (options.PruneAutoManaged && options.Scope != InstallScope.Project)
         {
             throw new InvalidOperationException("`dotnet skills install --auto --prune` requires --scope project because global skill roots are shared across repositories.");
         }
 
-        await MaybeShowToolUpdateAsync(cachePath);
+        await MaybeShowToolUpdateAsync(options.CachePath);
 
-        var catalog = await ResolveCatalogForInstallAsync(bundledOnly, cachePath, catalogVersion, refreshCatalog);
+        var catalog = await ResolveCatalogForInstallAsync(options.BundledOnly, options.CachePath, options.CatalogVersion, options.RefreshCatalog);
         var installer = new SkillInstaller(catalog);
-        if (autoInstall)
+        if (options.AutoInstall)
         {
             var autoSyncService = new ProjectSkillAutoSyncService(catalog);
 
-            if (ShouldUseAutoDetectedLayouts(targetPath, agent))
+            if (ShouldUseAutoDetectedLayouts(options.TargetPath, options.Agent))
             {
-                var layouts = SkillInstallTarget.ResolveAllDetected(projectDirectory, scope);
+                var layouts = SkillInstallTarget.ResolveAllDetected(options.ProjectDirectory, options.Scope);
                 for (var index = 0; index < layouts.Count; index++)
                 {
                     if (index > 0)
@@ -371,30 +278,30 @@ internal static class Program
                         Console.WriteLine();
                     }
 
-                    ExecuteAutoInstallIntoLayout(catalog, installer, autoSyncService, layouts[index], projectDirectory, force, pruneAutoManaged);
+                    ExecuteAutoInstallIntoLayout(catalog, installer, autoSyncService, layouts[index], options.ProjectDirectory, options.Force, options.PruneAutoManaged);
                 }
 
                 return 0;
             }
 
-            var autoLayout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
-            ExecuteAutoInstallIntoLayout(catalog, installer, autoSyncService, autoLayout, projectDirectory, force, pruneAutoManaged);
+            var autoLayout = SkillInstallTarget.Resolve(options.TargetPath, options.Agent, options.Scope, options.ProjectDirectory);
+            ExecuteAutoInstallIntoLayout(catalog, installer, autoSyncService, autoLayout, options.ProjectDirectory, options.Force, options.PruneAutoManaged);
             return 0;
         }
 
-        var selectedSkills = packageMode
-            ? installer.SelectSkillsFromPackages(requestedSkills)
-            : installer.SelectSkills(requestedSkills, installAll);
-        if (ShouldUseAutoDetectedLayouts(targetPath, agent))
+        var selectedSkills = options.PackageMode
+            ? installer.SelectSkillsFromPackages(options.RequestedSkills)
+            : installer.SelectSkills(options.RequestedSkills, options.InstallAll);
+        if (ShouldUseAutoDetectedLayouts(options.TargetPath, options.Agent))
         {
             var batchResults = new List<SkillInstallBatchResult>();
 
-            foreach (var layout in SkillInstallTarget.ResolveAllDetected(projectDirectory, scope))
+            foreach (var layout in SkillInstallTarget.ResolveAllDetected(options.ProjectDirectory, options.Scope))
             {
                 var installedBefore = installer.GetInstalledSkills(layout)
                     .ToDictionary(record => record.Skill.Name, StringComparer.OrdinalIgnoreCase);
-                var summary = installer.Install(selectedSkills, layout, force);
-                var rows = BuildInstallRows(selectedSkills, installedBefore, force, summary);
+                var summary = installer.Install(selectedSkills, layout, options.Force);
+                var rows = BuildInstallRows(selectedSkills, installedBefore, options.Force, summary);
                 batchResults.Add(new SkillInstallBatchResult(layout, rows, summary));
             }
 
@@ -402,11 +309,11 @@ internal static class Program
             return 0;
         }
 
-        var singleLayout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
+        var singleLayout = SkillInstallTarget.Resolve(options.TargetPath, options.Agent, options.Scope, options.ProjectDirectory);
         var installedInSingleLayout = installer.GetInstalledSkills(singleLayout)
             .ToDictionary(record => record.Skill.Name, StringComparer.OrdinalIgnoreCase);
-        var singleSummary = installer.Install(selectedSkills, singleLayout, force);
-        var singleRows = BuildInstallRows(selectedSkills, installedInSingleLayout, force, singleSummary);
+        var singleSummary = installer.Install(selectedSkills, singleLayout, options.Force);
+        var singleRows = BuildInstallRows(selectedSkills, installedInSingleLayout, options.Force, singleSummary);
 
         ConsoleUi.RenderInstallSummary(catalog, singleLayout, singleRows, singleSummary);
         return 0;
@@ -832,6 +739,120 @@ internal static class Program
 
     internal static bool IsInteractiveStartup(string[] args) => args.Length == 0;
 
+    internal static InstallCommandOptions ParseInstallOptions(string[] args)
+    {
+        var requestedSkills = new List<string>();
+        string? targetPath = null;
+        string? cachePath = null;
+        string? catalogVersion = null;
+        string? projectDirectory = null;
+        var installAll = false;
+        var autoInstall = false;
+        var pruneAutoManaged = false;
+        var force = false;
+        var bundledOnly = false;
+        var refreshCatalog = false;
+        var agent = AgentPlatform.Auto;
+        var scope = InstallScope.Project;
+
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--all":
+                    installAll = true;
+                    break;
+                case "--auto":
+                    autoInstall = true;
+                    break;
+                case "--prune":
+                    pruneAutoManaged = true;
+                    break;
+                case "--force":
+                    force = true;
+                    break;
+                case "--target":
+                    targetPath = ReadValue(args, ++index, "--target");
+                    break;
+                case "--cache-dir":
+                    cachePath = ReadValue(args, ++index, "--cache-dir");
+                    break;
+                case "--catalog-version":
+                    catalogVersion = ReadValue(args, ++index, "--catalog-version");
+                    break;
+                case "--agent":
+                    agent = SkillInstallTarget.ParseAgent(ReadValue(args, ++index, "--agent"));
+                    break;
+                case "--scope":
+                    scope = SkillInstallTarget.ParseScope(ReadValue(args, ++index, "--scope"));
+                    break;
+                case "--project-dir":
+                    projectDirectory = ReadValue(args, ++index, "--project-dir");
+                    break;
+                case "--bundled":
+                    bundledOnly = true;
+                    break;
+                case "--refresh":
+                    refreshCatalog = true;
+                    break;
+                default:
+                    requestedSkills.Add(args[index]);
+                    break;
+            }
+        }
+
+        var packageMode = requestedSkills.Count > 0
+            && string.Equals(requestedSkills[0], "package", StringComparison.OrdinalIgnoreCase);
+
+        if (packageMode)
+        {
+            requestedSkills.RemoveAt(0);
+
+            if (installAll)
+            {
+                throw new InvalidOperationException("`dotnet skills install package` requires explicit package names and does not support --all.");
+            }
+
+            if (requestedSkills.Count == 0)
+            {
+                throw new InvalidOperationException("Specify one or more package names after `dotnet skills install package`.");
+            }
+        }
+
+        if (autoInstall)
+        {
+            if (installAll)
+            {
+                throw new InvalidOperationException("`dotnet skills install --auto` scans the project and does not support --all.");
+            }
+
+            if (packageMode || requestedSkills.Count > 0)
+            {
+                throw new InvalidOperationException("`dotnet skills install --auto` does not accept explicit skill or package names.");
+            }
+        }
+        else if (pruneAutoManaged)
+        {
+            throw new InvalidOperationException("`--prune` is only available together with `dotnet skills install --auto`.");
+        }
+
+        return new InstallCommandOptions(
+            requestedSkills.ToArray(),
+            targetPath,
+            cachePath,
+            catalogVersion,
+            projectDirectory,
+            installAll,
+            autoInstall,
+            pruneAutoManaged,
+            force,
+            bundledOnly,
+            refreshCatalog,
+            agent,
+            scope,
+            packageMode);
+    }
+
     private static bool IsVersionCommand(string command) =>
         string.Equals(command, "version", StringComparison.OrdinalIgnoreCase)
         || string.Equals(command, "--version", StringComparison.OrdinalIgnoreCase);
@@ -1213,3 +1234,19 @@ internal static class Program
         return 0;
     }
 }
+
+internal sealed record InstallCommandOptions(
+    IReadOnlyList<string> RequestedSkills,
+    string? TargetPath,
+    string? CachePath,
+    string? CatalogVersion,
+    string? ProjectDirectory,
+    bool InstallAll,
+    bool AutoInstall,
+    bool PruneAutoManaged,
+    bool Force,
+    bool BundledOnly,
+    bool RefreshCatalog,
+    AgentPlatform Agent,
+    InstallScope Scope,
+    bool PackageMode);

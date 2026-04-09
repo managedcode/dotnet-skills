@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NuGet.Versioning;
 
 namespace ManagedCode.DotnetSkills.Runtime;
 
@@ -18,13 +19,15 @@ internal sealed class GitHubCatalogReleaseClient
         PropertyNameCaseInsensitive = true,
     };
 
-    private static readonly HttpClient HttpClient = CreateHttpClient();
+    private static readonly HttpClient SharedHttpClient = CreateHttpClient();
 
     private readonly DirectoryInfo cacheRoot;
+    private readonly HttpClient httpClient;
 
-    public GitHubCatalogReleaseClient(DirectoryInfo cacheRoot)
+    public GitHubCatalogReleaseClient(DirectoryInfo cacheRoot, HttpClient? httpClient = null)
     {
         this.cacheRoot = cacheRoot;
+        this.httpClient = httpClient ?? SharedHttpClient;
     }
 
     public DirectoryInfo ResolveCacheRoot() => cacheRoot;
@@ -87,11 +90,7 @@ internal sealed class GitHubCatalogReleaseClient
                 releaseDirectory.Delete(recursive: true);
             }
 
-            var extractedCatalogDirectory = new DirectoryInfo(Path.Combine(tempDirectory.FullName, "catalog"));
-            if (!extractedCatalogDirectory.Exists)
-            {
-                throw new InvalidOperationException($"Release asset {CatalogPayloadAssetName} from {release.TagName} is missing the expected catalog/ folder.");
-            }
+            var extractedCatalogDirectory = ResolveExtractedCatalogDirectory(tempDirectory);
 
             releaseDirectory.Create();
             SkillInstaller.CopyDirectory(extractedCatalogDirectory, new DirectoryInfo(Path.Combine(releaseDirectory.FullName, "catalog")));
@@ -117,25 +116,77 @@ internal sealed class GitHubCatalogReleaseClient
         }
 
         var releases = await GetReleasesAsync(cancellationToken);
-        var latestCatalogRelease = releases
-            .FirstOrDefault(release => !release.Draft && !release.Prerelease && release.TagName.StartsWith(CatalogTagPrefix, StringComparison.Ordinal));
+        return ResolveLatestCatalogRelease(releases);
+    }
 
-        return latestCatalogRelease
+    internal static GitHubRelease ResolveLatestCatalogRelease(IReadOnlyList<GitHubRelease> releases)
+    {
+        var candidates = releases
+            .Where(release => !release.Draft && !release.Prerelease && release.TagName.StartsWith(CatalogTagPrefix, StringComparison.Ordinal))
+            .Select(release => new
+            {
+                Release = release,
+                Version = TryParseCatalogVersion(release.TagName),
+            })
+            .ToArray();
+
+        var latestParsed = candidates
+            .Where(candidate => candidate.Version is not null)
+            .OrderByDescending(candidate => candidate.Version!, VersionComparer.VersionRelease)
+            .Select(candidate => candidate.Release)
+            .FirstOrDefault();
+
+        return latestParsed
+            ?? candidates.FirstOrDefault()?.Release
             ?? throw new InvalidOperationException($"No GitHub catalog release with tag prefix {CatalogTagPrefix} was found in {Owner}/{Repository}.");
     }
 
-    private static async Task<IReadOnlyList<GitHubRelease>> GetReleasesAsync(CancellationToken cancellationToken)
+    internal static DirectoryInfo ResolveExtractedCatalogDirectory(DirectoryInfo extractionRoot)
     {
-        using var response = await HttpClient.GetAsync($"https://api.github.com/repos/{Owner}/{Repository}/releases?per_page=50", cancellationToken);
+        var directCatalog = new DirectoryInfo(Path.Combine(extractionRoot.FullName, "catalog"));
+        if (directCatalog.Exists)
+        {
+            return directCatalog;
+        }
+
+        if (LooksLikeCatalogRoot(extractionRoot))
+        {
+            return extractionRoot;
+        }
+
+        var nestedCatalogDirectories = extractionRoot.EnumerateDirectories()
+            .Select(directory => new DirectoryInfo(Path.Combine(directory.FullName, "catalog")))
+            .Where(directory => directory.Exists)
+            .ToArray();
+        if (nestedCatalogDirectories.Length == 1)
+        {
+            return nestedCatalogDirectories[0];
+        }
+
+        var nestedCatalogRoots = extractionRoot.EnumerateDirectories()
+            .Where(LooksLikeCatalogRoot)
+            .ToArray();
+        if (nestedCatalogRoots.Length == 1)
+        {
+            return nestedCatalogRoots[0];
+        }
+
+        throw new InvalidOperationException(
+            $"Release asset {CatalogPayloadAssetName} is missing a recognizable catalog payload. Expected catalog/ at the archive root or a single wrapped catalog directory.");
+    }
+
+    private async Task<IReadOnlyList<GitHubRelease>> GetReleasesAsync(CancellationToken cancellationToken)
+    {
+        using var response = await httpClient.GetAsync($"https://api.github.com/repos/{Owner}/{Repository}/releases?per_page=50", cancellationToken);
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         return await JsonSerializer.DeserializeAsync<List<GitHubRelease>>(stream, JsonOptions, cancellationToken) ?? [];
     }
 
-    private static async Task<GitHubRelease> GetReleaseByTagAsync(string tag, CancellationToken cancellationToken)
+    private async Task<GitHubRelease> GetReleaseByTagAsync(string tag, CancellationToken cancellationToken)
     {
-        using var response = await HttpClient.GetAsync($"https://api.github.com/repos/{Owner}/{Repository}/releases/tags/{tag}", cancellationToken);
+        using var response = await httpClient.GetAsync($"https://api.github.com/repos/{Owner}/{Repository}/releases/tags/{tag}", cancellationToken);
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -143,10 +194,10 @@ internal sealed class GitHubCatalogReleaseClient
             ?? throw new InvalidOperationException($"Could not parse GitHub release metadata for tag {tag}.");
     }
 
-    private static async Task<Stream> DownloadAssetAsync(string downloadUrl, CancellationToken cancellationToken)
+    private async Task<Stream> DownloadAssetAsync(string downloadUrl, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, downloadUrl);
-        using var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var memoryStream = new MemoryStream();
@@ -162,6 +213,29 @@ internal sealed class GitHubCatalogReleaseClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
         httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(ToolIdentity.PackageId, "0.0.1"));
         return httpClient;
+    }
+
+    private static NuGetVersion? TryParseCatalogVersion(string tagName)
+    {
+        if (!tagName.StartsWith(CatalogTagPrefix, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var versionText = tagName[CatalogTagPrefix.Length..];
+        return NuGetVersion.TryParse(versionText, out var parsed) ? parsed : null;
+    }
+
+    private static bool LooksLikeCatalogRoot(DirectoryInfo directory)
+    {
+        if (File.Exists(Path.Combine(directory.FullName, "skills.json")))
+        {
+            return true;
+        }
+
+        return directory.EnumerateDirectories()
+            .Any(typeDirectory => typeDirectory.EnumerateDirectories()
+                .Any(packageDirectory => File.Exists(Path.Combine(packageDirectory.FullName, "manifest.json"))));
     }
 }
 

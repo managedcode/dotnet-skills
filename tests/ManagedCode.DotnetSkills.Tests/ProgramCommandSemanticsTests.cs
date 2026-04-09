@@ -40,4 +40,24 @@ public sealed class ProgramCommandSemanticsTests
     {
         Assert.False(Program.IsInteractiveStartup(args));
     }
+
+    [Fact]
+    public void ParseInstallOptions_RecognizesAutoMode()
+    {
+        var options = Program.ParseInstallOptions(["--auto"]);
+
+        Assert.True(options.AutoInstall);
+        Assert.False(options.PackageMode);
+        Assert.Empty(options.RequestedSkills);
+    }
+
+    [Fact]
+    public void ParseInstallOptions_RecognizesPackageMode()
+    {
+        var options = Program.ParseInstallOptions(["package", "data"]);
+
+        Assert.True(options.PackageMode);
+        Assert.False(options.AutoInstall);
+        Assert.Equal(["data"], options.RequestedSkills);
+    }
 }

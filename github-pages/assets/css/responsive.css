@@ -14,6 +14,7 @@
   .site-header-inner, .footer-grid, .detail-layout { grid-template-columns: 1fr; }
   .site-header-inner { flex-direction: column; align-items: stretch; padding: 10px 0; height: auto; }
   .brand { margin-right: 0; }
+  .site-header-actions { justify-content: space-between; }
   .site-nav { justify-content: flex-start; }
   body.page-home .page-hero { grid-template-columns: 1fr; }
   body.page-home .page-hero .metric-grid { grid-column: 1; grid-row: auto; margin-top: 16px; }
@@ -49,8 +50,10 @@
   .page-hero, .panel, .directory-card, .article-copy section, .sidebar-card, .detail-card, .credits-block, .skill-modal, .agent-card { padding: 16px; }
   .page-title { font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
   body.page-home .page-title { max-width: none; }
+  .site-header-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 6px; }
   .site-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 2px; }
   .nav-link { padding: 4px 0; text-align: center; font-size: 11px; }
+  .header-icon-link { margin-top: 1px; }
   .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .qs-row { grid-template-columns: 32px 1fr auto; padding: 8px 12px; gap: 0 6px; }
   .qs-label { min-width: 44px; font-size: 10px; }

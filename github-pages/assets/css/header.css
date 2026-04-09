@@ -31,6 +31,12 @@
 
 .brand-logo { width: 22px; height: 22px; }
 
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .site-nav {
   display: flex;
   align-items: center;
@@ -51,6 +57,28 @@
   background: rgba(0,0,0,0.04);
 }
 
+.header-icon-link {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  transition: all 100ms ease;
+}
+
+.header-icon-link:hover {
+  background: rgba(0,0,0,0.04);
+  color: var(--ink);
+}
+
+.header-icon-link svg {
+  width: 15px;
+  height: 15px;
+}
+
 body.page-home .nav-link-home,
 body.page-packages .nav-link-packages,
 body.page-bundles .nav-link-bundles,
@@ -61,4 +89,3 @@ body.page-about .nav-link-about {
   color: var(--ink);
   background: rgba(0,0,0,0.06);
 }
-
