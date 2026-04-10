@@ -18,6 +18,8 @@ from urllib.parse import urlparse
 
 
 USER_AGENT = "dotnet-skills-upstream-watch"
+ISSUE_TITLE_PREFIX = "Upstream update: "
+MAX_ISSUE_TITLE_LENGTH = 256
 MARKER_RE = re.compile(r"<!-- upstream-watch:id=(?P<watch_id>[^>]+) -->")
 VALUE_MARKER_RE = re.compile(r"<!-- upstream-watch:value=(?P<value>[^>]+) -->")
 ISSUE_KEY_MARKER_RE = re.compile(r"<!-- upstream-watch:issue-key=(?P<issue_key>[^>]+) -->")
@@ -221,6 +223,15 @@ def default_issue_name(skills: list[str]) -> str:
     if len(ordered) == 1:
         return ordered[0]
     return " + ".join(ordered)
+
+
+def condensed_issue_name(skills: list[str]) -> str | None:
+    ordered = sorted(dict.fromkeys(skills))
+    if not ordered:
+        return None
+    if len(ordered) <= 3:
+        return " + ".join(ordered)
+    return f"{ordered[0]} + {ordered[1]} + {ordered[2]} + {len(ordered) - 3} more"
 
 
 def validate_issue_group_fields(normalized: dict[str, Any], raw_watch: dict[str, Any]) -> None:
@@ -584,7 +595,55 @@ def parse_open_issue(
 
 
 def issue_title(issue_name: str) -> str:
-    return f"Upstream update: {issue_name}"
+    return f"{ISSUE_TITLE_PREFIX}{issue_name}"
+
+
+def parse_issue_name_from_title(title: str | None) -> str | None:
+    if not isinstance(title, str):
+        return None
+    if not title.startswith(ISSUE_TITLE_PREFIX):
+        return None
+    issue_name = title[len(ISSUE_TITLE_PREFIX) :].strip()
+    return issue_name or None
+
+
+def truncate_issue_name(issue_name: str) -> str:
+    max_issue_name_length = MAX_ISSUE_TITLE_LENGTH - len(ISSUE_TITLE_PREFIX)
+    if max_issue_name_length <= 0 or len(issue_name) <= max_issue_name_length:
+        return issue_name
+    if max_issue_name_length <= 3:
+        return issue_name[:max_issue_name_length]
+    return issue_name[: max_issue_name_length - 3].rstrip() + "..."
+
+
+def resolve_issue_name(
+    *,
+    issue_key: str,
+    skills: list[str],
+    configured_issue_name: str | None = None,
+    existing_issue_name: str | None = None,
+) -> str:
+    candidates: list[str] = []
+    for candidate in (
+        configured_issue_name,
+        existing_issue_name,
+        default_issue_name(skills) if skills else None,
+        condensed_issue_name(skills),
+        issue_key,
+    ):
+        if not isinstance(candidate, str):
+            continue
+        cleaned = candidate.strip()
+        if not cleaned or cleaned in candidates:
+            continue
+        candidates.append(cleaned)
+
+    for candidate in candidates:
+        if len(issue_title(candidate)) <= MAX_ISSUE_TITLE_LENGTH:
+            return candidate
+
+    fallback = candidates[-1] if candidates else issue_key.strip() or "upstream-watch"
+    return truncate_issue_name(fallback)
 
 
 def issue_body(
@@ -757,10 +816,14 @@ def load_open_issue_groups(
                 "issues": [],
                 "pending_watches": {},
                 "skills": [],
+                "issue_name": None,
                 "fresh": False,
             },
         )
         group["issues"].append(issue)
+        issue_name = parse_issue_name_from_title(issue.get("title"))
+        if issue_name and not group.get("issue_name"):
+            group["issue_name"] = issue_name
 
         for skill in skills:
             if skill not in group["skills"]:
@@ -842,7 +905,11 @@ def reconcile_open_issues(
         canonical_issue = choose_canonical_issue(group["issues"])
         pending_watches = group["pending_watches"]
         skills = collect_group_skills(pending_watches, watch_index, fallback_skills=group.get("skills"))
-        issue_name = default_issue_name(skills) if skills else issue_key
+        issue_name = resolve_issue_name(
+            issue_key=issue_key,
+            skills=skills,
+            existing_issue_name=group.get("issue_name"),
+        )
         title = issue_title(issue_name)
         body = issue_body(
             issue_key=issue_key,
@@ -911,7 +978,12 @@ def rotate_issue(
     existing_watch_snapshot = pending_watches.get(watch["id"])
     pending_watches[watch["id"]] = minimal_snapshot(new_snapshot)
     skills = collect_group_skills(pending_watches, watch_index, fallback_skills=watch.get("skills"))
-    issue_name = default_issue_name(skills) if skills else watch.get("issue_name", issue_key)
+    issue_name = resolve_issue_name(
+        issue_key=issue_key,
+        skills=skills,
+        configured_issue_name=watch.get("issue_name"),
+        existing_issue_name=existing_group.get("issue_name") if existing_group else None,
+    )
     title = issue_title(issue_name)
     body = issue_body(
         issue_key=issue_key,
