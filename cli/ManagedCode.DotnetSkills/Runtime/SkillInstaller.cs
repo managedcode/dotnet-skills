@@ -31,7 +31,7 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
     {
         if (requestedPackages.Count == 0)
         {
-            throw new InvalidOperationException("Specify one or more package names.");
+            throw new InvalidOperationException("Specify one or more bundle names.");
         }
 
         var availableSkills = catalog.Skills.ToDictionary(skill => skill.Name, StringComparer.OrdinalIgnoreCase);
@@ -46,14 +46,14 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
         {
             if (!TryResolvePackage(availablePackages, packageName, out var package))
             {
-                throw new InvalidOperationException($"Unknown package: {packageName}");
+                throw new InvalidOperationException($"Unknown bundle: {packageName}");
             }
 
             foreach (var skillName in package.Skills)
             {
                 if (!availableSkills.TryGetValue(skillName, out var skill))
                 {
-                    throw new InvalidOperationException($"Package {package.Name} references unknown skill {skillName}.");
+                    throw new InvalidOperationException($"Bundle {package.Name} references unknown skill {skillName}.");
                 }
 
                 if (seen.Add(skill.Name))

@@ -1,5 +1,4 @@
 using ManagedCode.DotnetSkills.Runtime;
-using Spectre.Console;
 
 namespace ManagedCode.DotnetSkills;
 
@@ -479,31 +478,31 @@ internal static class ConsoleUi
 
     public static void RenderPackageList(SkillCatalogPackage catalog)
     {
-        WriteTitle("dotnet skills package list");
+        WriteTitle("dotnet skills bundle list");
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
         grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[dim]skill stacks[/]"), new Markup($"{catalog.Packages.Count}"));
+        grid.AddRow(new Markup("[dim]bundles[/]"), new Markup($"{catalog.Packages.Count}"));
         grid.AddRow(new Markup("[dim]skills covered[/]"), new Markup($"{catalog.Skills.Count}"));
-        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]skill stacks[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]bundles[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
         if (catalog.Packages.Count == 0)
         {
-            AnsiConsole.Write(new Panel(new Markup("No skill stacks are available in this catalog version yet."))
-                .Header("[dim]skill stacks[/]")
+            AnsiConsole.Write(new Panel(new Markup("No bundles are available in this catalog version yet."))
+                .Header("[dim]bundles[/]")
                 .Expand());
             return;
         }
 
         var table = new Table().Expand().Border(TableBorder.Rounded);
-        table.Title = new TableTitle("[bold]Available skill stacks[/]");
-        table.AddColumn("Package");
+        table.Title = new TableTitle("[bold]Available bundles[/]");
+        table.AddColumn("Bundle");
         table.AddColumn("Type");
         table.AddColumn("Skills");
-        table.AddColumn("Install");
+        table.AddColumn("Command");
         table.AddColumn("Includes");
 
         foreach (var package in catalog.Packages.OrderBy(FormatPackageSortKey, StringComparer.Ordinal))
@@ -517,7 +516,7 @@ internal static class ConsoleUi
                 $"[bold]{Escape(package.Name)}[/]",
                 Escape(FormatPackageKind(package)),
                 skillAliases.Length.ToString(),
-                Escape($"dotnet skills install package {package.Name}"),
+                Escape($"install bundle {package.Name}"),
                 Escape(string.Join(", ", skillAliases.Take(4)))
                     + (skillAliases.Length > 4 ? $" [grey](+{skillAliases.Length - 4} more)[/]" : string.Empty));
         }
@@ -528,7 +527,7 @@ internal static class ConsoleUi
         var suggested = catalog.Packages
             .OrderBy(FormatPackageSortKey, StringComparer.Ordinal)
             .Take(3)
-            .Select(package => $"dotnet skills install package {package.Name}")
+            .Select(package => $"dotnet skills install bundle {package.Name}")
             .ToArray();
 
         AnsiConsole.Write(new Panel(new Markup(
@@ -573,14 +572,14 @@ internal static class ConsoleUi
 
         Section("Catalog");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} list", "Inventory with scope comparison");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} package list", "Curated skill stacks");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} bundle list", "Curated bundles");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} recommend", "Scan .csproj and propose skills");
 
         Section("Install");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install aspire orleans", "Install by alias");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto", "Auto-install from project signals");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto --prune", "Reconcile stale auto-managed skills");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} install package ai", "Install a multi-skill skill stack");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} install bundle ai", "Install a multi-skill bundle");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} remove --all", "Remove all installed skills");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} update", "Update to latest catalog version");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} sync --force", "Refresh cached catalog");
@@ -632,7 +631,7 @@ internal static class ConsoleUi
         var notes = string.Join(
             Environment.NewLine,
             $"- `{ToolIdentity.DisplayCommand}` is the dedicated agent-only CLI. It does not install skills.",
-            $"- Use `{ToolIdentity.SkillsDisplayCommand} ...` when you want catalog skills or package installs.",
+            $"- Use `{ToolIdentity.SkillsDisplayCommand} ...` when you want catalog skills or bundle installs.",
             $"- `{ToolIdentity.DisplayCommand} list` and bare `{ToolIdentity.DisplayCommand}` both show the bundled agent catalog.",
             $"- `{ToolIdentity.DisplayCommand} version` and `{ToolIdentity.DisplayCommand} --version` both show the current tool version.",
             $"- Set `{ToolIdentity.SkipUpdateEnvironmentVariable}=1` to suppress automatic tool update notices on startup.",
@@ -917,7 +916,7 @@ internal static class ConsoleUi
         if (packages.Count > 0)
         {
             var featuredPackage = packages.OrderBy(FormatPackageSortKey, StringComparer.Ordinal).First();
-            lines.Add($"[green]{Escape($"dotnet skills install package {featuredPackage.Name}")}[/]");
+            lines.Add($"[green]{Escape($"dotnet skills install bundle {featuredPackage.Name}")}[/]");
         }
 
         lines.Add($"[green]dotnet skills install --auto[/] [dim]project-driven sync[/]");

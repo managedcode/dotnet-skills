@@ -45,7 +45,8 @@ internal static class Program
         return command switch
         {
             "list" => await RunListAsync(args[1..]),
-            "package" => await RunPackageAsync(args[1..]),
+            "bundle" => await RunPackageAsync(args[1..], "bundle"),
+            "package" => await RunPackageAsync(args[1..], "package"),
             "recommend" => await RunRecommendAsync(args[1..]),
             "install" => await RunInstallAsync(args[1..]),
             "remove" => await RunRemoveAsync(args[1..]),
@@ -802,7 +803,8 @@ internal static class Program
         }
 
         var packageMode = requestedSkills.Count > 0
-            && string.Equals(requestedSkills[0], "package", StringComparison.OrdinalIgnoreCase);
+            && (string.Equals(requestedSkills[0], "bundle", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(requestedSkills[0], "package", StringComparison.OrdinalIgnoreCase));
 
         if (packageMode)
         {
@@ -810,12 +812,12 @@ internal static class Program
 
             if (installAll)
             {
-                throw new InvalidOperationException("`dotnet skills install package` requires explicit package names and does not support --all.");
+                throw new InvalidOperationException("`dotnet skills install bundle` requires explicit bundle names and does not support --all.");
             }
 
             if (requestedSkills.Count == 0)
             {
-                throw new InvalidOperationException("Specify one or more package names after `dotnet skills install package`.");
+                throw new InvalidOperationException("Specify one or more bundle names after `dotnet skills install bundle`.");
             }
         }
 
@@ -828,7 +830,7 @@ internal static class Program
 
             if (packageMode || requestedSkills.Count > 0)
             {
-                throw new InvalidOperationException("`dotnet skills install --auto` does not accept explicit skill or package names.");
+                throw new InvalidOperationException("`dotnet skills install --auto` does not accept explicit skill or bundle names.");
             }
         }
         else if (pruneAutoManaged)
@@ -941,23 +943,23 @@ internal static class Program
 
     private static void WriteUsage() => ConsoleUi.RenderUsage();
 
-    private static async Task<int> RunPackageAsync(string[] args)
+    private static async Task<int> RunPackageAsync(string[] args, string commandName)
     {
         if (args.Length == 0)
         {
-            return await RunPackageListAsync([]);
+            return await RunPackageListAsync([], commandName);
         }
 
         var subCommand = args[0];
         return subCommand switch
         {
-            "list" => await RunPackageListAsync(args[1..]),
+            "list" => await RunPackageListAsync(args[1..], commandName),
             "install" => await RunPackageInstallAsync(args[1..]),
-            _ => UnknownCommand($"package {subCommand}"),
+            _ => UnknownCommand($"{commandName} {subCommand}"),
         };
     }
 
-    private static async Task<int> RunPackageListAsync(string[] args)
+    private static async Task<int> RunPackageListAsync(string[] args, string commandName)
     {
         string? cachePath = null;
         string? catalogVersion = null;
@@ -977,7 +979,7 @@ internal static class Program
                     bundledOnly = true;
                     break;
                 default:
-                    return UnknownCommand($"package list {string.Join(' ', args)}");
+                    return UnknownCommand($"{commandName} list {string.Join(' ', args)}");
             }
         }
 
@@ -991,7 +993,7 @@ internal static class Program
     private static Task<int> RunPackageInstallAsync(string[] args)
     {
         var forwardedArgs = new string[args.Length + 1];
-        forwardedArgs[0] = "package";
+        forwardedArgs[0] = "bundle";
         Array.Copy(args, 0, forwardedArgs, 1, args.Length);
         return RunInstallAsync(forwardedArgs);
     }

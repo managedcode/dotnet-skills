@@ -60,4 +60,14 @@ public sealed class ProgramCommandSemanticsTests
         Assert.False(options.AutoInstall);
         Assert.Equal(["data"], options.RequestedSkills);
     }
+
+    [Fact]
+    public void ParseInstallOptions_RecognizesBundleMode()
+    {
+        var options = Program.ParseInstallOptions(["bundle", "data"]);
+
+        Assert.True(options.PackageMode);
+        Assert.False(options.AutoInstall);
+        Assert.Equal(["data"], options.RequestedSkills);
+    }
 }

@@ -19,7 +19,7 @@ public sealed class InteractiveConsoleAppTests
     public async Task RunAsync_CanChangePlatformAndScope()
     {
         var prompts = new FakeInteractivePrompts(
-            "Settings",
+            "Workspace - destination and catalog",
             "Install destination",
             "Platform",
             "Codex",
@@ -45,7 +45,7 @@ public sealed class InteractiveConsoleAppTests
         var catalog = TestCatalog.Load();
         var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
-            "Install skills",  // home menu
+            "Skills - browse and install",  // home menu
             "Install skills",  // catalog action
             new[] { aspireSkill },
             true,
@@ -63,6 +63,79 @@ public sealed class InteractiveConsoleAppTests
 
         Assert.Equal(0, exitCode);
         Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", aspireSkill.Name)));
+    }
+
+    [Fact]
+    public async Task RunAsync_CanCopyInstalledSkillToAnotherTarget()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var sourceLayout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        new SkillInstaller(catalog).Install([aspireSkill], sourceLayout, force: true);
+
+        var prompts = new FakeInteractivePrompts(
+            "Installed - control skills",
+            "Copy or move skills to another target",
+            new[] { $"aspire ({aspireSkill.Version})" },
+            "Claude",
+            "Project",
+            false,
+            true,
+            "Back",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", aspireSkill.Name)));
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".claude", "skills", aspireSkill.Name)));
+    }
+
+    [Fact]
+    public async Task RunAsync_CanCopyInstalledAgentToAnotherTarget()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var agentCatalog = TestCatalog.LoadAgents();
+        var agent = agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal).First();
+        var agentLabel = agent.Name.StartsWith("dotnet-", StringComparison.OrdinalIgnoreCase)
+            ? agent.Name["dotnet-".Length..]
+            : agent.Name;
+        var sourceLayout = AgentInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        new AgentInstaller(agentCatalog).Install([agent], sourceLayout, force: true);
+
+        var prompts = new FakeInteractivePrompts(
+            "Agents - control agents",
+            "Copy or move agents to another target",
+            new[] { agentLabel },
+            "Claude",
+            "Project",
+            false,
+            true,
+            "Back",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+        var targetLayout = AgentInstallTarget.Resolve(null, AgentPlatform.Claude, InstallScope.Project, projectDirectory.Path);
+
+        Assert.Equal(0, exitCode);
+        Assert.True(new AgentInstaller(agentCatalog).IsInstalled(agent, sourceLayout));
+        Assert.True(new AgentInstaller(agentCatalog).IsInstalled(agent, targetLayout));
     }
 
     private static InteractiveConsoleApp CreateApp(
