@@ -26,6 +26,9 @@ jobs:
       - name: Validate automation scripts
         run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_catalog_definitions.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/import_external_catalog_sources.py scripts/upstream_watch.py
 
+      - name: Run automation regression tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+
       - name: Validate external catalog source config
         run: python3 scripts/import_external_catalog_sources.py --validate-config
 

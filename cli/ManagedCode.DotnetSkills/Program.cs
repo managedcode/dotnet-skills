@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ManagedCode.DotnetSkills.Runtime;
 
 namespace ManagedCode.DotnetSkills;
@@ -44,6 +45,7 @@ internal static class Program
 
         return command switch
         {
+            "catalog" => await RunCatalogAsync(args[1..]),
             "list" => await RunListAsync(args[1..]),
             "bundle" => await RunPackageAsync(args[1..], "bundle"),
             "package" => await RunPackageAsync(args[1..], "package"),
@@ -942,6 +944,58 @@ internal static class Program
     }
 
     private static void WriteUsage() => ConsoleUi.RenderUsage();
+
+    private static Task<int> RunCatalogAsync(string[] args)
+    {
+        if (args.Length == 0)
+        {
+            return Task.FromResult(UnknownCommand("catalog"));
+        }
+
+        return args[0] switch
+        {
+            "tokens" => RunCatalogTokensAsync(args[1..]),
+            _ => Task.FromResult(UnknownCommand($"catalog {args[0]}")),
+        };
+    }
+
+    private static Task<int> RunCatalogTokensAsync(string[] args)
+    {
+        string? catalogRoot = null;
+
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--catalog-root":
+                    catalogRoot = ReadValue(args, ++index, "--catalog-root");
+                    break;
+                default:
+                    return Task.FromResult(UnknownCommand($"catalog tokens {string.Join(' ', args)}"));
+            }
+        }
+
+        var rootDirectory = new DirectoryInfo(string.IsNullOrWhiteSpace(catalogRoot)
+            ? ResolveProjectRoot(projectDirectory: null)
+            : Path.GetFullPath(catalogRoot));
+        var catalog = SkillCatalogPackage.LoadFromDirectory(rootDirectory, "local catalog", "local");
+        var payload = new
+        {
+            tokenizer = SkillTokenCounter.ModelName,
+            skills = catalog.Skills
+                .OrderBy(skill => skill.Name, StringComparer.Ordinal)
+                .Select(skill => new
+                {
+                    skill.Name,
+                    skill.Path,
+                    skill.TokenCount,
+                })
+                .ToArray(),
+        };
+
+        Console.WriteLine(JsonSerializer.Serialize(payload));
+        return Task.FromResult(0);
+    }
 
     private static async Task<int> RunPackageAsync(string[] args, string commandName)
     {

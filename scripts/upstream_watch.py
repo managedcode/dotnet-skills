@@ -20,6 +20,11 @@ from urllib.parse import urlparse
 USER_AGENT = "dotnet-skills-upstream-watch"
 ISSUE_TITLE_PREFIX = "Upstream update: "
 MAX_ISSUE_TITLE_LENGTH = 256
+MAX_ISSUE_BODY_LENGTH = 60000
+MAX_VISIBLE_ISSUE_SKILLS = 12
+MAX_VISIBLE_PENDING_WATCHES = 25
+TRANSIENT_CURL_EXIT_CODES = {5, 6, 7, 18, 28, 35, 52, 55, 56}
+TRANSIENT_HTTP_STATUSES = {"408", "409", "425", "429", "500", "502", "503", "504"}
 MARKER_RE = re.compile(r"<!-- upstream-watch:id=(?P<watch_id>[^>]+) -->")
 VALUE_MARKER_RE = re.compile(r"<!-- upstream-watch:value=(?P<value>[^>]+) -->")
 ISSUE_KEY_MARKER_RE = re.compile(r"<!-- upstream-watch:issue-key=(?P<issue_key>[^>]+) -->")
@@ -307,6 +312,15 @@ def run_curl(
         cmd = [
             "curl",
             "-fsSL",
+            "--retry",
+            "3",
+            "--retry-delay",
+            "2",
+            "--retry-all-errors",
+            "--connect-timeout",
+            "20",
+            "--max-time",
+            "120",
             "-A",
             USER_AGENT,
             "-X",
@@ -347,6 +361,24 @@ def parse_headers(raw_headers: str) -> dict[str, str]:
         if parsed:
             return parsed
     return {}
+
+
+def is_transient_fetch_error(message: str) -> bool:
+    if not message:
+        return False
+
+    curl_exit_code_match = re.search(r"curl:\s+\((?P<code>\d+)\)", message)
+    if not curl_exit_code_match:
+        return False
+
+    curl_exit_code = int(curl_exit_code_match.group("code"))
+    if curl_exit_code in TRANSIENT_CURL_EXIT_CODES:
+        return True
+
+    if curl_exit_code == 22 and re.search(r"returned error:\s*(408|409|425|429|500|502|503|504)\b", message):
+        return True
+
+    return False
 
 
 def decode_json(body: bytes) -> Any:
@@ -500,7 +532,7 @@ def encode_issue_payload(issue_key: str, skills: list[str], pending_watches: dic
     payload = {
         "issue_key": issue_key,
         "skills": sorted(dict.fromkeys(skills)),
-        "watches": pending_watches,
+        "watch_ids": sorted(pending_watches),
     }
     raw = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
     return base64.urlsafe_b64encode(raw).decode("ascii")
@@ -539,6 +571,20 @@ def collect_group_skills(
                 skills.append(skill)
                 seen.add(skill)
     return sorted(skills)
+
+
+def snapshot_from_state_or_watch(
+    watch_id: str,
+    *,
+    state_watches: dict[str, dict[str, Any]],
+    watch_index: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    snapshot = minimal_snapshot(state_watches.get(watch_id, {}))
+    watch = watch_index.get(watch_id)
+    if watch:
+        snapshot.setdefault("kind", watch["kind"])
+        snapshot.setdefault("source_url", watch_source_url(watch))
+    return snapshot
 
 
 def parse_legacy_issue(
@@ -580,16 +626,31 @@ def parse_open_issue(
     issue_key_match = ISSUE_KEY_MARKER_RE.search(body)
     payload = decode_issue_payload(body)
 
-    if issue_key_match and payload and isinstance(payload.get("watches"), dict):
+    if issue_key_match and payload:
         issue_key = issue_key_match.group("issue_key")
         raw_skills = payload.get("skills", [])
         skills = [skill for skill in raw_skills if isinstance(skill, str) and skill]
-        pending_watches = {
-            watch_id: minimal_snapshot(snapshot)
-            for watch_id, snapshot in payload["watches"].items()
-            if isinstance(watch_id, str) and isinstance(snapshot, dict)
-        }
-        return issue_key, skills, pending_watches
+
+        raw_watch_ids = payload.get("watch_ids", [])
+        if isinstance(raw_watch_ids, list):
+            pending_watches: dict[str, dict[str, Any]] = {}
+            for watch_id in raw_watch_ids:
+                if not isinstance(watch_id, str) or not watch_id or watch_id in pending_watches:
+                    continue
+                pending_watches[watch_id] = snapshot_from_state_or_watch(
+                    watch_id,
+                    state_watches=state_watches,
+                    watch_index=watch_index,
+                )
+            return issue_key, skills, pending_watches
+
+        if isinstance(payload.get("watches"), dict):
+            pending_watches = {
+                watch_id: minimal_snapshot(snapshot)
+                for watch_id, snapshot in payload["watches"].items()
+                if isinstance(watch_id, str) and isinstance(snapshot, dict)
+            }
+            return issue_key, skills, pending_watches
 
     return parse_legacy_issue(body=body, watch_index=watch_index, state_watches=state_watches)
 
@@ -646,29 +707,32 @@ def resolve_issue_name(
     return truncate_issue_name(fallback)
 
 
-def issue_body(
+def summarize_code_items(items: list[str], *, max_visible: int) -> str:
+    unique_items = list(dict.fromkeys(item for item in items if item))
+    visible_items = unique_items[:max_visible]
+    rendered = ", ".join(f"`{item}`" for item in visible_items)
+    omitted = len(unique_items) - len(visible_items)
+    if omitted <= 0:
+        return rendered or "_none_"
+    suffix = f"(+{omitted} more)"
+    return f"{rendered}, {suffix}" if rendered else suffix
+
+
+def render_pending_watch_lines(
     *,
-    issue_key: str,
-    issue_name: str,
-    skills: list[str],
     pending_watches: dict[str, dict[str, Any]],
     watch_index: dict[str, dict[str, Any]],
-) -> str:
-    lines = [
-        f"Automation detected pending upstream changes for **{issue_name}**.",
-        "",
-        f"- Issue key: `{issue_key}`",
-        f"- Affected skills: {', '.join(f'`{skill}`' for skill in skills)}",
-        f"- Pending upstream watches: `{len(pending_watches)}`",
-        "",
-        "Pending upstream sources:",
-    ]
-
+    max_visible: int,
+    include_details: bool,
+) -> list[str]:
     sorted_pending = sorted(
         pending_watches.items(),
         key=lambda item: ((watch_index.get(item[0], {}).get("name") or item[0]).lower(), item[0]),
     )
-    for watch_id, snapshot in sorted_pending:
+    visible_pending = sorted_pending[:max_visible] if max_visible > 0 else []
+    lines: list[str] = []
+
+    for watch_id, snapshot in visible_pending:
         watch = watch_index.get(watch_id)
         watch_name = watch["name"] if watch else watch_id
         watch_kind = watch["kind"] if watch else snapshot.get("kind", "unknown")
@@ -678,14 +742,42 @@ def issue_body(
         if source_url:
             lines.append(f"  - Source: {source_url}")
 
-        current_value = snapshot.get("value", "unknown")
-        lines.append(f"  - Current value: `{current_value}`")
+        if include_details:
+            current_value = snapshot.get("value", "unknown")
+            lines.append(f"  - Current value: `{current_value}`")
 
-        if snapshot.get("published_at"):
-            lines.append(f"  - Published at: `{snapshot['published_at']}`")
-        if snapshot.get("human"):
-            lines.append(f"  - Detail: {snapshot['human']}")
+            if snapshot.get("published_at"):
+                lines.append(f"  - Published at: `{snapshot['published_at']}`")
+            if snapshot.get("human"):
+                lines.append(f"  - Detail: {snapshot['human']}")
 
+    omitted = len(sorted_pending) - len(visible_pending)
+    if omitted > 0:
+        lines.append(
+            f"- ... `{omitted}` more pending upstream sources omitted for brevity; "
+            "the watcher still tracks them in issue metadata."
+        )
+
+    return lines
+
+
+def issue_body(
+    *,
+    issue_key: str,
+    issue_name: str,
+    skills: list[str],
+    pending_watches: dict[str, dict[str, Any]],
+    watch_index: dict[str, dict[str, Any]],
+) -> str:
+    header_lines = [
+        f"Automation detected pending upstream changes for **{issue_name}**.",
+        "",
+        f"- Issue key: `{issue_key}`",
+        f"- Affected skills: {summarize_code_items(skills, max_visible=MAX_VISIBLE_ISSUE_SKILLS)}",
+        f"- Pending upstream watches: `{len(pending_watches)}`",
+        "",
+        "Pending upstream sources:",
+    ]
     notes: list[str] = []
     for watch_id in pending_watches:
         watch = watch_index.get(watch_id)
@@ -693,25 +785,48 @@ def issue_body(
         if note and note not in notes:
             notes.append(note)
 
-    if notes:
-        lines.extend(["", "Why this matters:"])
-        lines.extend(f"- {note}" for note in notes)
-
     payload = encode_issue_payload(issue_key, skills, pending_watches)
-    lines.extend(
-        [
-            "",
-            "Suggested follow-up:",
-            "- [ ] Review the upstream release notes or documentation diff",
-            "- [ ] Update the affected files under `skills/`",
-            "- [ ] Update `README.md` if framework coverage or guidance changed",
-            "- [ ] Close this issue after the catalog has been refreshed",
-            "",
-            f"<!-- upstream-watch:issue-key={issue_key} -->",
-            f"<!-- upstream-watch:payload-b64={payload} -->",
-        ]
+    footer_lines = [
+        "",
+        "Suggested follow-up:",
+        "- [ ] Review the upstream release notes or documentation diff",
+        "- [ ] Update the affected files under `skills/`",
+        "- [ ] Update `README.md` if framework coverage or guidance changed",
+        "- [ ] Close this issue after the catalog has been refreshed",
+        "",
+        f"<!-- upstream-watch:issue-key={issue_key} -->",
+        f"<!-- upstream-watch:payload-b64={payload} -->",
+    ]
+
+    for max_visible, include_details, include_notes in (
+        (MAX_VISIBLE_PENDING_WATCHES, True, True),
+        (MAX_VISIBLE_PENDING_WATCHES, False, True),
+        (10, False, True),
+        (10, False, False),
+        (0, False, False),
+    ):
+        lines = list(header_lines)
+        lines.extend(
+            render_pending_watch_lines(
+                pending_watches=pending_watches,
+                watch_index=watch_index,
+                max_visible=max_visible,
+                include_details=include_details,
+            )
+        )
+        if notes and include_notes:
+            lines.extend(["", "Why this matters:"])
+            lines.extend(f"- {note}" for note in notes)
+        lines.extend(footer_lines)
+
+        body = "\n".join(lines)
+        if len(body) <= MAX_ISSUE_BODY_LENGTH:
+            return body
+
+    raise ValueError(
+        f"Issue body for {issue_key} still exceeds the GitHub body limit after compaction "
+        f"({len(body)} characters)"
     )
-    return "\n".join(lines)
 
 
 def superseded_comment(
@@ -1161,6 +1276,7 @@ def main() -> int:
     created = 0
     rotated = 0
     amended = 0
+    warnings: list[str] = []
     errors: list[str] = []
 
     for watch in config.get("watches", []):
@@ -1216,6 +1332,13 @@ def main() -> int:
             if fallback_snapshot is not None:
                 next_state["watches"][watch["id"]] = fallback_snapshot
             message = f"{watch.get('id', 'unknown-watch')}: {exc}"
+            if fallback_snapshot is not None and is_transient_fetch_error(str(exc)):
+                warnings.append(message)
+                summary.append(
+                    f"- Warning for `{watch.get('id', 'unknown-watch')}`: {exc} "
+                    "(kept the previously tracked snapshot)"
+                )
+                continue
             errors.append(message)
             summary.append(f"- Error for `{watch.get('id', 'unknown-watch')}`: {exc}")
 
@@ -1235,6 +1358,7 @@ def main() -> int:
             f"- Issue groups scanned: `{reconciliation_stats['groups']}`",
             f"- Issue bodies normalized: `{reconciliation_stats['issues_rewritten']}`",
             f"- Duplicate issues closed: `{reconciliation_stats['duplicates_closed']}`",
+            f"- Warnings: `{len(warnings)}`",
             f"- Errors: `{len(errors)}`",
         ]
     )

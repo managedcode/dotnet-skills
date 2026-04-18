@@ -1,13 +1,6 @@
 using ManagedCode.DotnetSkills.Runtime;
-using SharpConsoleUI;
-using SharpConsoleUI.Builders;
-using SharpConsoleUI.Configuration;
-using SharpConsoleUI.Controls;
-using SharpConsoleUI.Drivers;
-using SharpConsoleUI.Helpers;
-using SharpConsoleUI.Layout;
-using SharpConsoleUI.Panel;
-using SharpConsoleUI.Rendering;
+using Spectre.Console;
+using SpectreConsole = Spectre.Console.AnsiConsole;
 
 namespace ManagedCode.DotnetSkills;
 
@@ -34,7 +27,7 @@ internal sealed class InteractiveConsoleApp
         InstallScope initialScope = InstallScope.Project,
         string? projectDirectory = null)
     {
-        this.prompts = prompts ?? new SharpConsoleInteractivePrompts();
+        this.prompts = prompts ?? new CommandCenterInteractivePrompts();
         this.loadSkillCatalogAsync = loadSkillCatalogAsync ?? Program.ResolveCatalogForInstallAsync;
         this.loadAgentCatalog = loadAgentCatalog ?? AgentCatalogPackage.LoadBundled;
         this.maybeShowToolUpdateAsync = maybeShowToolUpdateAsync ?? Program.MaybeShowToolUpdateAsync;
@@ -67,9 +60,10 @@ internal sealed class InteractiveConsoleApp
                     "What would you like to do?",
                     new[]
                     {
-                        new MenuOption<HomeAction>("Primary - sync from project", HomeAction.SyncProject),
-                        new MenuOption<HomeAction>("Skills - browse and install", HomeAction.InstallSkills),
-                        new MenuOption<HomeAction>("Bundles - grouped installs", HomeAction.InstallSkillStack),
+                        new MenuOption<HomeAction>("Project - sync from project", HomeAction.SyncProject),
+                        new MenuOption<HomeAction>("Stacks - browse by stack", HomeAction.InstallSkills),
+                        new MenuOption<HomeAction>("Analysis - tree, tokens, package signals", HomeAction.Analysis),
+                        new MenuOption<HomeAction>("Bundles - focused installs", HomeAction.InstallSkillStack),
                         new MenuOption<HomeAction>("Installed - control skills", HomeAction.ManageInstalled),
                         new MenuOption<HomeAction>("Agents - control agents", HomeAction.Agents),
                         new MenuOption<HomeAction>("Workspace - destination and catalog", HomeAction.Settings),
@@ -87,6 +81,9 @@ internal sealed class InteractiveConsoleApp
                         break;
                     case HomeAction.InstallSkills:
                         await ShowCatalogSkillsAsync();
+                        break;
+                    case HomeAction.Analysis:
+                        ShowCatalogAnalysis();
                         break;
                     case HomeAction.ManageInstalled:
                         ShowInstalledSkills();
@@ -126,7 +123,7 @@ internal sealed class InteractiveConsoleApp
         grid.AddRow(new Markup("[green]\u2714[/] [dim]catalog[/]"), new Markup(Escape(skillCatalog.CatalogVersion)));
         grid.AddRow(new Markup("[dim]source[/]"), new Markup(Escape(skillCatalog.SourceLabel)));
         grid.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
-        grid.AddRow(new Markup("[dim]bundles[/]"), new Markup(skillCatalog.Packages.Count.ToString()));
+        grid.AddRow(new Markup("[dim]focused bundles[/]"), new Markup(GetPrimaryBundles().Count.ToString()));
         AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]refreshed[/]").Border(BoxBorder.Rounded).Expand());
         prompts.Pause("Press any key to continue...");
     }
@@ -134,8 +131,6 @@ internal sealed class InteractiveConsoleApp
     private void RenderDashboard()
     {
         AnsiConsole.Clear();
-
-        // Minimal header — Claude Code-inspired understated identity
         AnsiConsole.MarkupLine("[bold deepskyblue1]dotnet skills[/] [dim]v{0}[/]", Escape(ToolVersionInfo.CurrentVersion));
         AnsiConsole.MarkupLine("[dim].NET skill catalog for AI-assisted development[/]");
         AnsiConsole.WriteLine();
@@ -145,6 +140,21 @@ internal sealed class InteractiveConsoleApp
         var installedSkills = skillInstaller.GetInstalledSkills(skillLayout);
         var outdatedSkills = installedSkills.Count(record => !record.IsCurrent);
         var agentStatus = ResolveAgentStatus();
+        var primaryBundleCount = GetPrimaryBundles().Count;
+        var stackViews = BuildStackViews(installedSkills);
+        var totalTokens = skillCatalog.Skills.Sum(skill => skill.TokenCount);
+        var largestSkills = skillCatalog.Skills
+            .OrderByDescending(skill => skill.TokenCount)
+            .ThenBy(skill => skill.Name, StringComparer.Ordinal)
+            .Take(5)
+            .ToArray();
+        var featuredBundles = GetPrimaryBundles()
+            .Take(6)
+            .ToArray();
+        var largestStack = stackViews
+            .OrderByDescending(stack => stack.TokenCount)
+            .ThenBy(stack => stack.Stack, StringComparer.Ordinal)
+            .FirstOrDefault();
 
         var ratio = skillCatalog.Skills.Count > 0 ? (double)installedSkills.Count / skillCatalog.Skills.Count : 0;
         var barWidth = 20;
@@ -159,12 +169,99 @@ internal sealed class InteractiveConsoleApp
         overview.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))}[/]"));
         overview.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(skillLayout.PrimaryRoot.FullName)}[/]"));
         overview.AddRow(new Markup("[dim]skills[/]"), new Markup($"[green]{bar}[/] {installedSkills.Count}/{skillCatalog.Skills.Count}" + (outdatedSkills > 0 ? $" [yellow]({outdatedSkills} outdated)[/]" : "")));
-        overview.AddRow(new Markup("[dim]bundles[/]"), new Markup($"{skillCatalog.Packages.Count} available"));
+        overview.AddRow(new Markup("[dim]bundles[/]"), new Markup($"{primaryBundleCount} focused installs"));
+        overview.AddRow(new Markup("[dim]tokenizer[/]"), new Markup($"{Escape(SkillTokenCounter.ModelName)} [dim]({FormatTokenCount(totalTokens)} tokens)[/]"));
         overview.AddRow(new Markup("[dim]agents[/]"), new Markup($"{agentCatalog.Agents.Count} [dim]({Escape(agentStatus.Summary)})[/]"));
-        AnsiConsole.Write(new Panel(overview).Header("[deepskyblue1]workspace[/]").Border(BoxBorder.Rounded).Expand());
+        var flowTable = new Table().Border(TableBorder.None).Expand();
+        flowTable.AddColumn("Flow");
+        flowTable.AddColumn("Intent");
+        flowTable.AddColumn("Command");
+        flowTable.AddRow("[deepskyblue1]Project[/]", "[dim]sync from .csproj signals[/]", "[grey]dotnet skills install --auto[/]");
+        flowTable.AddRow("[deepskyblue1]Stacks[/]", "[dim]Stack -> Lane -> Skill[/]", "[grey]dotnet skills list --available-only[/]");
+        flowTable.AddRow("[deepskyblue1]Analysis[/]", "[dim]tree, tokens, package signals[/]", "[grey]dotnet skills catalog tokens[/]");
+        flowTable.AddRow("[deepskyblue1]Bundles[/]", "[dim]focused multi-skill installs[/]", "[grey]dotnet skills bundle list[/]");
+        flowTable.AddRow("[deepskyblue1]Installed[/]", "[dim]repair, move, remove, update[/]", "[grey]dotnet skills list --installed-only[/]");
+        flowTable.AddRow("[deepskyblue1]Workspace[/]", "[dim]platform, scope, catalog source[/]", "[grey]dotnet skills where[/]");
 
-        // Compact quick-reference hints
-        AnsiConsole.MarkupLine("[dim]  Primary: sync project  |  Skills: install/remove/repair/move  |  Bundles: grouped installs  |  Agents: install/remove/repair/move[/]");
+        var telemetryTable = new Table().Border(TableBorder.None).Expand();
+        telemetryTable.AddColumn("Signal");
+        telemetryTable.AddColumn("Value");
+        telemetryTable.AddRow("Stacks", stackViews.Count.ToString());
+        telemetryTable.AddRow("Lanes", stackViews.Sum(stack => stack.Lanes.Count).ToString());
+        telemetryTable.AddRow("Package signals", BuildPackageSignals().Count.ToString());
+        telemetryTable.AddRow("Installed coverage", $"{installedSkills.Count}/{skillCatalog.Skills.Count}");
+        telemetryTable.AddRow("Largest stack", largestStack is null ? "-" : $"{Escape(largestStack.Stack)} [dim]({FormatTokenCount(largestStack.TokenCount)})[/]");
+        telemetryTable.AddRow("Outdated", outdatedSkills == 0 ? "[green]0[/]" : $"[yellow]{outdatedSkills}[/]");
+
+        var stackTable = new Table().Border(TableBorder.None).Expand();
+        stackTable.AddColumn("Stack");
+        stackTable.AddColumn("Lanes");
+        stackTable.AddColumn("Skills");
+        stackTable.AddColumn("Tokens");
+
+        foreach (var stack in stackViews.Take(6))
+        {
+            stackTable.AddRow(
+                Escape(stack.Stack),
+                stack.Lanes.Count.ToString(),
+                $"{stack.InstalledCount}/{stack.SkillCount}",
+                FormatTokenCount(stack.TokenCount));
+        }
+
+        var heavyTable = new Table().Border(TableBorder.None).Expand();
+        heavyTable.AddColumn("Skill");
+        heavyTable.AddColumn("Area");
+        heavyTable.AddColumn("Tokens");
+
+        foreach (var skill in largestSkills)
+        {
+            heavyTable.AddRow(
+                Escape(ToAlias(skill.Name)),
+                Escape($"{skill.Stack} / {skill.Lane}"),
+                FormatTokenCount(skill.TokenCount));
+        }
+
+        var bundleTable = new Table().Border(TableBorder.None).Expand();
+        bundleTable.AddColumn("Bundle");
+        bundleTable.AddColumn("Area");
+        bundleTable.AddColumn("Tokens");
+
+        foreach (var bundle in featuredBundles)
+        {
+            var bundleTokens = bundle.Skills
+                .Select(skillName => skillCatalog.Skills.FirstOrDefault(skill => string.Equals(skill.Name, skillName, StringComparison.OrdinalIgnoreCase)))
+                .Where(skill => skill is not null)
+                .Sum(skill => skill!.TokenCount);
+            bundleTable.AddRow(
+                Escape(bundle.Name),
+                Escape(CatalogOrganization.ResolveBundleAreaLabel(bundle)),
+                FormatTokenCount(bundleTokens));
+        }
+
+        var topGrid = new Grid();
+        topGrid.AddColumn();
+        topGrid.AddColumn();
+        topGrid.AddColumn();
+        topGrid.AddRow(
+            new Panel(flowTable).Header("[deepskyblue1]navigation rail[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(overview).Header("[deepskyblue1]workspace[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(telemetryTable).Header("[deepskyblue1]catalog telemetry[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(topGrid);
+        AnsiConsole.WriteLine();
+        var bottomGrid = new Grid();
+        bottomGrid.AddColumn();
+        bottomGrid.AddColumn();
+        bottomGrid.AddColumn();
+        bottomGrid.AddRow(
+            new Panel(stackTable).Header("[deepskyblue1]stack coverage[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(heavyTable).Header("[deepskyblue1]largest skills[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(bundleTable).Header("[deepskyblue1]focused bundles[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(bottomGrid);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(new Markup("[dim]Enter[/] [grey]select[/] [dim]\u2022[/] [dim]Space[/] [grey]multi-select[/] [dim]\u2022[/] [dim]Stacks now narrow before install[/] [dim]\u2022[/] [dim]Bundles stay focused[/] [dim]\u2022[/] [dim]Token counts use[/] [green]gpt-5 / o200k_base[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
         AnsiConsole.WriteLine();
     }
 
@@ -175,22 +272,14 @@ internal sealed class InteractiveConsoleApp
             var layout = ResolveSkillLayout();
             var installer = new SkillInstaller(skillCatalog);
             var installedSkills = installer.GetInstalledSkills(layout);
-            var scopeInventory = Program.BuildScopeInventory(layout, Session.ProjectDirectory, installer, installedSkills);
+            var stackViews = BuildStackViews(installedSkills);
 
             AnsiConsole.Clear();
-            ConsoleUi.RenderList(
-                skillCatalog,
-                layout,
-                installedSkills,
-                scopeInventory,
-                layout.Scope == InstallScope.Project ? Program.ResolveProjectRoot(Session.ProjectDirectory) : null,
-                showInstalledSection: false,
-                showAvailableSection: true);
+            RenderStackBrowserPanel(stackViews, layout);
 
             var actions = new List<MenuOption<SkillCatalogAction>>
             {
-                new("Inspect a skill", SkillCatalogAction.Inspect),
-                new("Install skills", SkillCatalogAction.Install),
+                new("Browse a stack", SkillCatalogAction.Inspect),
             };
 
             if (installedSkills.Any(record => !record.IsCurrent))
@@ -200,45 +289,16 @@ internal sealed class InteractiveConsoleApp
 
             actions.Add(new MenuOption<SkillCatalogAction>("Back", SkillCatalogAction.Back));
 
-            var action = prompts.Select("Catalog actions", actions, option => option.Label);
+            var action = prompts.Select("Stack catalog actions", actions, option => option.Label);
             switch (action.Value)
             {
                 case SkillCatalogAction.Inspect:
                 {
-                    var selectedSkill = prompts.Select(
-                        "Inspect a skill",
-                        skillCatalog.Skills.OrderBy(skill => skill.Name, StringComparer.Ordinal).ToArray(),
-                        skill => BuildSkillChoiceLabel(skill, installedSkills));
-                    ShowSkillDetail(selectedSkill);
-                    break;
-                }
-                case SkillCatalogAction.Install:
-                {
-                    var installableSkills = skillCatalog.Skills
-                        .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
-                        .OrderBy(skill => skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-
-                    if (installableSkills.Length == 0)
-                    {
-                        RenderInfo("Everything in this catalog is already installed in the current target.");
-                        break;
-                    }
-
-                    var selectedSkills = prompts.MultiSelect(
-                        "Install skills",
-                        installableSkills,
-                        skill => $"{ToAlias(skill.Name)} [{skill.Category}]");
-                    if (selectedSkills.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (prompts.Confirm($"Install {selectedSkills.Count} skill(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        InstallSkills(selectedSkills, force: false);
-                    }
-
+                    var selectedStack = prompts.Select(
+                        "Browse a stack",
+                        stackViews,
+                        BuildStackChoiceLabel);
+                    ShowStackDetail(selectedStack.Stack);
                     break;
                 }
                 case SkillCatalogAction.UpdateOutdated:
@@ -257,6 +317,229 @@ internal sealed class InteractiveConsoleApp
                         "Update outdated skills",
                         outdatedSkills,
                         record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
+                    if (selected.Count == 0)
+                    {
+                        break;
+                    }
+
+                    if (prompts.Confirm($"Update {selected.Count} skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                    {
+                        UpdateSkills(selected);
+                    }
+
+                    break;
+                }
+                case SkillCatalogAction.Back:
+                    return;
+            }
+        }
+    }
+
+    private void ShowCatalogAnalysis()
+    {
+        while (true)
+        {
+            var layout = ResolveSkillLayout();
+            var installer = new SkillInstaller(skillCatalog);
+            var installedSkills = installer.GetInstalledSkills(layout);
+            var stackViews = BuildStackViews(installedSkills);
+            var packageSignals = BuildPackageSignals();
+
+            AnsiConsole.Clear();
+            RenderCatalogAnalysisPanel(stackViews, layout, packageSignals);
+
+            var action = prompts.Select(
+                "Catalog analysis",
+                new[]
+                {
+                    new MenuOption<CatalogAnalysisAction>("View full skill tree", CatalogAnalysisAction.Tree),
+                    new MenuOption<CatalogAnalysisAction>("Inspect heaviest skill", CatalogAnalysisAction.HeavySkill),
+                    new MenuOption<CatalogAnalysisAction>("Browse package signals", CatalogAnalysisAction.PackageSignals),
+                    new MenuOption<CatalogAnalysisAction>("Back", CatalogAnalysisAction.Back),
+                },
+                option => option.Label);
+
+            switch (action.Value)
+            {
+                case CatalogAnalysisAction.Tree:
+                    ShowCatalogTree(stackViews);
+                    break;
+                case CatalogAnalysisAction.HeavySkill:
+                {
+                    var selectedSkill = prompts.Select(
+                        "Inspect heaviest skill",
+                        skillCatalog.Skills
+                            .OrderByDescending(skill => skill.TokenCount)
+                            .ThenBy(skill => skill.Name, StringComparer.Ordinal)
+                            .Take(24)
+                            .ToArray(),
+                        skill => $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)");
+                    ShowSkillDetail(selectedSkill);
+                    break;
+                }
+                case CatalogAnalysisAction.PackageSignals:
+                    ShowPackageSignals();
+                    break;
+                case CatalogAnalysisAction.Back:
+                    return;
+            }
+        }
+    }
+
+    private void ShowCatalogTree(IReadOnlyList<StackCatalogView> stackViews)
+    {
+        while (true)
+        {
+            AnsiConsole.Clear();
+            RenderCatalogTreePanel(stackViews);
+
+            var action = prompts.Select(
+                "Tree view",
+                new[]
+                {
+                    new MenuOption<CatalogTreeAction>("Back", CatalogTreeAction.Back),
+                },
+                option => option.Label);
+
+            if (action.Value == CatalogTreeAction.Back)
+            {
+                return;
+            }
+        }
+    }
+
+    private void ShowPackageSignals()
+    {
+        while (true)
+        {
+            var packageSignals = BuildPackageSignals();
+            AnsiConsole.Clear();
+            RenderPackageSignalPanel(packageSignals);
+
+            var action = prompts.Select(
+                "Package signals",
+                new[]
+                {
+                    new MenuOption<PackageSignalAction>("Inspect a linked skill", PackageSignalAction.InspectSkill),
+                    new MenuOption<PackageSignalAction>("Back", PackageSignalAction.Back),
+                },
+                option => option.Label);
+
+            switch (action.Value)
+            {
+                case PackageSignalAction.InspectSkill:
+                {
+                    var signal = prompts.Select(
+                        "Inspect a linked skill",
+                        packageSignals.ToArray(),
+                        entry => $"{entry.Signal} [{entry.Kind}] -> {ToAlias(entry.Skill.Name)} [{entry.Skill.Stack} / {entry.Skill.Lane}]");
+                    ShowSkillDetail(signal.Skill);
+                    break;
+                }
+                case PackageSignalAction.Back:
+                    return;
+            }
+        }
+    }
+
+    private void ShowStackDetail(string stackName)
+    {
+        while (true)
+        {
+            var layout = ResolveSkillLayout();
+            var installer = new SkillInstaller(skillCatalog);
+            var installedSkills = installer.GetInstalledSkills(layout);
+            var stackView = BuildStackViews(installedSkills)
+                .FirstOrDefault(view => string.Equals(view.Stack, stackName, StringComparison.OrdinalIgnoreCase));
+
+            if (stackView is null)
+            {
+                RenderInfo($"Stack {stackName} is not available in this catalog version.");
+                return;
+            }
+
+            AnsiConsole.Clear();
+            RenderStackDetailPanel(stackView, layout);
+
+            var actions = new List<MenuOption<SkillCatalogAction>>
+            {
+                new("Inspect a lane", SkillCatalogAction.Inspect),
+                new("Install from a lane", SkillCatalogAction.Install),
+            };
+
+            if (installedSkills.Any(record => !record.IsCurrent && string.Equals(record.Skill.Stack, stackView.Stack, StringComparison.OrdinalIgnoreCase)))
+            {
+                actions.Add(new MenuOption<SkillCatalogAction>("Update outdated skills in this stack", SkillCatalogAction.UpdateOutdated));
+            }
+
+            actions.Add(new MenuOption<SkillCatalogAction>("Back", SkillCatalogAction.Back));
+
+            var action = prompts.Select("Stack actions", actions, option => option.Label);
+            switch (action.Value)
+            {
+                case SkillCatalogAction.Inspect:
+                {
+                    var selectedLane = prompts.Select(
+                        "Inspect a lane",
+                        stackView.Lanes,
+                        BuildLaneChoiceLabel);
+                    var selectedSkill = prompts.Select(
+                        "Inspect a skill",
+                        selectedLane.Skills.OrderBy(skill => skill.Name, StringComparer.Ordinal).ToArray(),
+                        skill => BuildSkillChoiceLabel(skill, installedSkills));
+                    ShowSkillDetail(selectedSkill);
+                    break;
+                }
+                case SkillCatalogAction.Install:
+                {
+                    var selectedLane = prompts.Select(
+                        "Install from a lane",
+                        stackView.Lanes,
+                        BuildLaneChoiceLabel);
+                    var installableSkills = selectedLane.Skills
+                        .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
+                        .OrderBy(skill => skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+
+                    if (installableSkills.Length == 0)
+                    {
+                        RenderInfo($"Everything in {stackView.Stack} / {selectedLane.Lane} is already installed in this target.");
+                        break;
+                    }
+
+                    var selectedSkills = prompts.MultiSelect(
+                        "Install skills",
+                        installableSkills,
+                        skill => $"{ToAlias(skill.Name)} [{skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)");
+                    if (selectedSkills.Count == 0)
+                    {
+                        break;
+                    }
+
+                    if (ConfirmSkillInstallPreview($"Lane install: {stackView.Stack} / {selectedLane.Lane}", selectedSkills, layout, force: false))
+                    {
+                        InstallSkills(selectedSkills, layout, force: false);
+                    }
+
+                    break;
+                }
+                case SkillCatalogAction.UpdateOutdated:
+                {
+                    var outdatedSkills = installedSkills
+                        .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, stackView.Stack, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
+                        .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+                    if (outdatedSkills.Length == 0)
+                    {
+                        RenderInfo($"No outdated skills are installed in the {stackView.Stack} stack.");
+                        break;
+                    }
+
+                    var selected = prompts.MultiSelect(
+                        "Update outdated skills",
+                        outdatedSkills,
+                        record => $"{ToAlias(record.Skill.Name)} [{record.Skill.Lane}] ({record.InstalledVersion} -> {record.Skill.Version})");
                     if (selected.Count == 0)
                     {
                         break;
@@ -468,9 +751,9 @@ internal sealed class InteractiveConsoleApp
             switch (action.Value)
             {
                 case SkillDetailAction.Install:
-                    if (prompts.Confirm($"Install {ToAlias(skill.Name)} into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                    if (ConfirmSkillInstallPreview($"Install skill: {ToAlias(skill.Name)}", [skill], layout, force: false))
                     {
-                        InstallSkills([skill], force: false);
+                        InstallSkills([skill], layout, force: false);
                     }
 
                     break;
@@ -508,15 +791,16 @@ internal sealed class InteractiveConsoleApp
     {
         while (true)
         {
+            var visibleBundles = GetPrimaryBundles();
             AnsiConsole.Clear();
             ConsoleUi.RenderPackageList(skillCatalog);
 
             var action = prompts.Select(
-                "Bundle actions",
+                "Focused bundle actions",
                 new[]
                 {
-                    new MenuOption<PackageAction>("Inspect a bundle", PackageAction.Inspect),
-                    new MenuOption<PackageAction>("Install bundles", PackageAction.Install),
+                    new MenuOption<PackageAction>("Inspect a focused bundle", PackageAction.Inspect),
+                    new MenuOption<PackageAction>("Install focused bundles", PackageAction.Install),
                     new MenuOption<PackageAction>("Back", PackageAction.Back),
                 },
                 option => option.Label);
@@ -525,40 +809,42 @@ internal sealed class InteractiveConsoleApp
             {
                 case PackageAction.Inspect:
                 {
-                    if (skillCatalog.Packages.Count == 0)
+                    if (visibleBundles.Count == 0)
                     {
-                        RenderInfo("No bundles are available in this catalog version yet.");
+                        RenderInfo("No focused bundles are available in this catalog version yet.");
                         break;
                     }
 
                     var selectedPackage = prompts.Select(
-                        "Inspect a bundle",
-                        skillCatalog.Packages.OrderBy(package => package.Name, StringComparer.Ordinal).ToArray(),
-                        package => $"{package.Name} ({package.Skills.Count} skills)");
+                        "Inspect a focused bundle",
+                        visibleBundles.ToArray(),
+                        package => $"{package.Name} [{CatalogOrganization.ResolveBundleAreaLabel(package)}] ({package.Skills.Count} skills)");
                     ShowPackageDetail(selectedPackage);
                     break;
                 }
                 case PackageAction.Install:
                 {
-                    if (skillCatalog.Packages.Count == 0)
+                    if (visibleBundles.Count == 0)
                     {
-                        RenderInfo("No bundles are available in this catalog version yet.");
+                        RenderInfo("No focused bundles are available in this catalog version yet.");
                         break;
                     }
 
                     var selectedPackages = prompts.MultiSelect(
-                        "Install bundles",
-                        skillCatalog.Packages.OrderBy(package => package.Name, StringComparer.Ordinal).ToArray(),
-                        package => $"{package.Name} ({package.Skills.Count} skills)");
+                        "Install focused bundles",
+                        visibleBundles.ToArray(),
+                        package => $"{package.Name} [{CatalogOrganization.ResolveBundleAreaLabel(package)}] ({package.Skills.Count} skills)");
                     if (selectedPackages.Count == 0)
                     {
                         break;
                     }
 
                     var layout = ResolveSkillLayout();
-                    if (prompts.Confirm($"Install {selectedPackages.Count} bundle(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                    var installer = new SkillInstaller(skillCatalog);
+                    var selectedSkills = installer.SelectSkillsFromPackages(selectedPackages.Select(package => package.Name).ToArray());
+                    if (ConfirmSkillInstallPreview("Bundle install", selectedSkills, layout, force: false, bundles: selectedPackages))
                     {
-                        InstallPackages(selectedPackages);
+                        InstallSkills(selectedSkills, layout, force: false);
                     }
 
                     break;
@@ -577,7 +863,7 @@ internal sealed class InteractiveConsoleApp
             RenderPackageDetailPanel(package);
 
             var action = prompts.Select(
-                "Bundle actions",
+                "Focused bundle actions",
                 new[]
                 {
                     new MenuOption<PackageDetailAction>("Install this bundle", PackageDetailAction.Install),
@@ -590,9 +876,11 @@ internal sealed class InteractiveConsoleApp
                 case PackageDetailAction.Install:
                 {
                     var layout = ResolveSkillLayout();
-                    if (prompts.Confirm($"Install bundle {package.Name} into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                    var installer = new SkillInstaller(skillCatalog);
+                    var selectedSkills = installer.SelectSkillsFromPackages([package.Name]);
+                    if (ConfirmSkillInstallPreview($"Bundle install: {package.Name}", selectedSkills, layout, force: false, bundles: [package]))
                     {
-                        InstallPackages([package]);
+                        InstallSkills(selectedSkills, layout, force: false);
                     }
 
                     break;
@@ -673,9 +961,9 @@ internal sealed class InteractiveConsoleApp
             return;
         }
 
-        if (prompts.Confirm($"Install {newSkills.Length} new skill(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+        if (ConfirmSkillInstallPreview("Project sync install", newSkills, layout, force: false))
         {
-            InstallSkills(plan.DesiredSkills, force: false);
+            InstallSkills(newSkills, layout, force: false);
             autoSyncService.SaveState(layout, plan);
         }
     }
@@ -1176,50 +1464,615 @@ internal sealed class InteractiveConsoleApp
         }
     }
 
+    private IReadOnlyList<StackCatalogView> BuildStackViews(IReadOnlyList<InstalledSkillRecord> installedSkills)
+    {
+        var installedNames = installedSkills
+            .Select(record => record.Skill.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return skillCatalog.Skills
+            .GroupBy(skill => skill.Stack, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(group => CatalogOrganization.GetStackRank(group.Key))
+            .ThenBy(group => group.Key, StringComparer.Ordinal)
+            .Select(group =>
+            {
+                var lanes = group
+                    .GroupBy(skill => skill.Lane, StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(laneGroup => CatalogOrganization.GetLaneRank(laneGroup.Key))
+                    .ThenBy(laneGroup => laneGroup.Key, StringComparer.Ordinal)
+                    .Select(laneGroup =>
+                    {
+                        var laneSkills = laneGroup
+                            .OrderBy(skill => skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        return new LaneCatalogView(
+                            group.Key,
+                            laneGroup.Key,
+                            laneSkills,
+                            laneSkills.Count(skill => installedNames.Contains(skill.Name)),
+                            laneSkills.Sum(skill => skill.TokenCount));
+                    })
+                    .ToArray();
+
+                var stackSkills = group.ToArray();
+                return new StackCatalogView(
+                    group.Key,
+                    lanes,
+                    stackSkills.Length,
+                    stackSkills.Count(skill => installedNames.Contains(skill.Name)),
+                    stackSkills.Sum(skill => skill.TokenCount));
+            })
+            .ToArray();
+    }
+
+    private IReadOnlyList<PackageSignalView> BuildPackageSignals()
+    {
+        var signals = new List<PackageSignalView>();
+
+        foreach (var skill in skillCatalog.Skills.OrderBy(skill => skill.Name, StringComparer.Ordinal))
+        {
+            foreach (var package in skill.Packages
+                         .Where(package => !string.IsNullOrWhiteSpace(package))
+                         .Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                signals.Add(new PackageSignalView(package, "Exact", skill));
+            }
+
+            if (!string.IsNullOrWhiteSpace(skill.PackagePrefix))
+            {
+                signals.Add(new PackageSignalView($"{skill.PackagePrefix}.*", "Prefix", skill));
+            }
+        }
+
+        return signals
+            .OrderBy(entry => entry.Kind, StringComparer.Ordinal)
+            .ThenBy(entry => CatalogOrganization.GetStackRank(entry.Skill.Stack))
+            .ThenBy(entry => entry.Signal, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(entry => entry.Skill.Name, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private void RenderStackBrowserPanel(IReadOnlyList<StackCatalogView> stackViews, SkillInstallLayout layout)
+    {
+        var overview = new Grid();
+        overview.AddColumn(new GridColumn().NoWrap());
+        overview.AddColumn();
+        overview.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        overview.AddRow(new Markup("[dim]stacks[/]"), new Markup(stackViews.Count.ToString()));
+        overview.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
+        overview.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(skillCatalog.Skills.Sum(skill => skill.TokenCount))));
+        var flow = new Table().Border(TableBorder.None).Expand();
+        flow.AddColumn("Step");
+        flow.AddColumn("Action");
+        flow.AddRow("1", "[deepskyblue1]Choose a stack[/] [dim]to narrow the catalog surface[/]");
+        flow.AddRow("2", "[deepskyblue1]Inspect a lane[/] [dim]to see concrete skills and size[/]");
+        flow.AddRow("3", "[deepskyblue1]Install from a lane[/] [dim]without broad mixed bundles[/]");
+
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle("[bold]Stack -> Lane -> Skill[/]");
+        table.AddColumn("Stack");
+        table.AddColumn("Lanes");
+        table.AddColumn("Installed");
+        table.AddColumn("Tokens");
+        table.AddColumn("Sample lanes");
+
+        foreach (var stack in stackViews)
+        {
+            var sampleLanes = stack.Lanes
+                .Take(3)
+                .Select(lane => lane.Lane)
+                .ToArray();
+            table.AddRow(
+                Escape(stack.Stack),
+                stack.Lanes.Count.ToString(),
+                $"{stack.InstalledCount}/{stack.SkillCount}",
+                FormatTokenCount(stack.TokenCount),
+                Escape(string.Join(", ", sampleLanes)) + (stack.Lanes.Count > sampleLanes.Length ? $" [grey](+{stack.Lanes.Count - sampleLanes.Length})[/]" : string.Empty));
+        }
+
+        var spotlight = new Table().Expand().Border(TableBorder.None);
+        spotlight.AddColumn("Focus");
+        spotlight.AddColumn("Value");
+
+        foreach (var stack in stackViews
+                     .OrderByDescending(entry => entry.TokenCount)
+                     .ThenBy(entry => entry.Stack, StringComparer.Ordinal)
+                     .Take(5))
+        {
+            spotlight.AddRow(
+                Escape(stack.Stack),
+                $"{FormatTokenCount(stack.TokenCount)} [dim]({stack.InstalledCount}/{stack.SkillCount})[/]");
+        }
+
+        var headerGrid = new Grid();
+        headerGrid.AddColumn();
+        headerGrid.AddColumn();
+        headerGrid.AddRow(
+            new Panel(flow).Header("[deepskyblue1]navigation[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(overview).Header("[deepskyblue1]stack browser[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(headerGrid);
+        AnsiConsole.WriteLine();
+
+        var bodyGrid = new Grid();
+        bodyGrid.AddColumn();
+        bodyGrid.AddColumn();
+        bodyGrid.AddRow(
+            new Panel(table).Header("[deepskyblue1]stack matrix[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(spotlight).Header("[deepskyblue1]heaviest stacks[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(bodyGrid);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(new Markup("[dim]Choose a stack first. Install surfaces only appear after the lane boundary is explicit.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
+    }
+
+    private void RenderStackDetailPanel(StackCatalogView stackView, SkillInstallLayout layout)
+    {
+        var summary = new Grid();
+        summary.AddColumn(new GridColumn().NoWrap());
+        summary.AddColumn();
+        summary.AddRow(new Markup("[dim]stack[/]"), new Markup(Escape(stackView.Stack)));
+        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        summary.AddRow(new Markup("[dim]lanes[/]"), new Markup(stackView.Lanes.Count.ToString()));
+        summary.AddRow(new Markup("[dim]skills[/]"), new Markup($"{stackView.InstalledCount}/{stackView.SkillCount}"));
+        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(stackView.TokenCount)));
+        var flow = new Table().Border(TableBorder.None).Expand();
+        flow.AddColumn("Mode");
+        flow.AddColumn("Effect");
+        flow.AddRow("[deepskyblue1]Inspect a lane[/]", "[dim]see each skill and its detail card[/]");
+        flow.AddRow("[deepskyblue1]Install from a lane[/]", "[dim]install only the narrowed slice[/]");
+        flow.AddRow("[deepskyblue1]Update outdated[/]", "[dim]refresh this stack only[/]");
+
+        var laneTable = new Table().Expand().Border(TableBorder.Rounded);
+        laneTable.Title = new TableTitle("[bold]Lanes[/]");
+        laneTable.AddColumn("Lane");
+        laneTable.AddColumn("Skills");
+        laneTable.AddColumn("Installed");
+        laneTable.AddColumn("Tokens");
+        laneTable.AddColumn("Examples");
+
+        foreach (var lane in stackView.Lanes)
+        {
+            var examples = lane.Skills.Take(3).Select(skill => ToAlias(skill.Name)).ToArray();
+            laneTable.AddRow(
+                Escape(lane.Lane),
+                lane.Skills.Count.ToString(),
+                lane.InstalledCount.ToString(),
+                FormatTokenCount(lane.TokenCount),
+                Escape(string.Join(", ", examples)) + (lane.Skills.Count > examples.Length ? $" [grey](+{lane.Skills.Count - examples.Length})[/]" : string.Empty));
+        }
+
+        var skillTable = new Table().Expand().Border(TableBorder.Rounded);
+        skillTable.Title = new TableTitle("[bold]Heaviest skills in stack[/]");
+        skillTable.AddColumn("Alias");
+        skillTable.AddColumn("Lane");
+        skillTable.AddColumn("Tokens");
+        skillTable.AddColumn("Summary");
+
+        foreach (var skill in stackView.Lanes
+                     .SelectMany(lane => lane.Skills)
+                     .OrderByDescending(skill => skill.TokenCount)
+                     .ThenBy(skill => skill.Name, StringComparer.Ordinal)
+                     .Take(8))
+        {
+            skillTable.AddRow(
+                Escape(ToAlias(skill.Name)),
+                Escape(skill.Lane),
+                FormatTokenCount(skill.TokenCount),
+                Escape(CompactDescription(skill.Description)));
+        }
+
+        var relatedBundles = GetPrimaryBundles()
+            .Where(package => string.Equals(package.Stack, stackView.Stack, StringComparison.OrdinalIgnoreCase)
+                              || package.Skills.Any(skillName =>
+                                  stackView.Lanes.SelectMany(lane => lane.Skills)
+                                      .Any(skill => string.Equals(skill.Name, skillName, StringComparison.OrdinalIgnoreCase))))
+            .DistinctBy(package => package.Name, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(CatalogOrganization.FormatBundleSortKey, StringComparer.Ordinal)
+            .Take(6)
+            .ToArray();
+
+        var relatedBundleTable = new Table().Expand().Border(TableBorder.None);
+        relatedBundleTable.AddColumn("Bundle");
+        relatedBundleTable.AddColumn("Area");
+        relatedBundleTable.AddColumn("Tokens");
+
+        foreach (var bundle in relatedBundles)
+        {
+            var tokenCount = bundle.Skills
+                .Select(skillName => skillCatalog.Skills.FirstOrDefault(skill => string.Equals(skill.Name, skillName, StringComparison.OrdinalIgnoreCase)))
+                .Where(skill => skill is not null)
+                .Sum(skill => skill!.TokenCount);
+            relatedBundleTable.AddRow(
+                Escape(bundle.Name),
+                Escape(CatalogOrganization.ResolveBundleAreaLabel(bundle)),
+                FormatTokenCount(tokenCount));
+        }
+
+        var headerGrid = new Grid();
+        headerGrid.AddColumn();
+        headerGrid.AddColumn();
+        headerGrid.AddRow(
+            new Panel(flow).Header("[deepskyblue1]stack modes[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(summary).Header($"[deepskyblue1]{Escape(stackView.Stack)}[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(headerGrid);
+        AnsiConsole.WriteLine();
+
+        var detailGrid = new Grid();
+        detailGrid.AddColumn();
+        detailGrid.AddColumn();
+        detailGrid.AddRow(
+            new Panel(laneTable).Header("[deepskyblue1]lane map[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(skillTable).Header("[deepskyblue1]heavy skills[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(detailGrid);
+        AnsiConsole.WriteLine();
+
+        if (relatedBundles.Length > 0)
+        {
+            AnsiConsole.Write(new Panel(relatedBundleTable).Header("[deepskyblue1]related bundles[/]").Border(BoxBorder.Rounded).Expand());
+            AnsiConsole.WriteLine();
+        }
+
+        AnsiConsole.Write(new Panel(new Markup("[dim]This stack is already narrowed. Next selection happens at the lane level, not against the full catalog.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
+    }
+
+    private void RenderCatalogAnalysisPanel(IReadOnlyList<StackCatalogView> stackViews, SkillInstallLayout layout, IReadOnlyList<PackageSignalView> packageSignals)
+    {
+        var summary = new Grid();
+        summary.AddColumn(new GridColumn().NoWrap());
+        summary.AddColumn();
+        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        summary.AddRow(new Markup("[dim]stacks[/]"), new Markup(stackViews.Count.ToString()));
+        summary.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
+        summary.AddRow(new Markup("[dim]package signals[/]"), new Markup(packageSignals.Count.ToString()));
+        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(skillCatalog.Skills.Sum(skill => skill.TokenCount))));
+
+        var heavyTable = new Table().Expand().Border(TableBorder.Rounded);
+        heavyTable.Title = new TableTitle("[bold]Heaviest skills[/]");
+        heavyTable.AddColumn("Skill");
+        heavyTable.AddColumn("Area");
+        heavyTable.AddColumn("Tokens");
+
+        foreach (var skill in skillCatalog.Skills
+                     .OrderByDescending(skill => skill.TokenCount)
+                     .ThenBy(skill => skill.Name, StringComparer.Ordinal)
+                     .Take(10))
+        {
+            heavyTable.AddRow(
+                Escape(ToAlias(skill.Name)),
+                Escape($"{skill.Stack} / {skill.Lane}"),
+                FormatTokenCount(skill.TokenCount));
+        }
+
+        var packageTable = new Table().Expand().Border(TableBorder.Rounded);
+        packageTable.Title = new TableTitle("[bold]Package entry points[/]");
+        packageTable.AddColumn("Signal");
+        packageTable.AddColumn("Kind");
+        packageTable.AddColumn("Skill");
+        packageTable.AddColumn("Area");
+
+        foreach (var entry in packageSignals.Take(12))
+        {
+            packageTable.AddRow(
+                Escape(entry.Signal),
+                Escape(entry.Kind),
+                Escape(ToAlias(entry.Skill.Name)),
+                Escape($"{entry.Skill.Stack} / {entry.Skill.Lane}"));
+        }
+
+        var stackTable = new Table().Expand().Border(TableBorder.Rounded);
+        stackTable.Title = new TableTitle("[bold]Stack composition[/]");
+        stackTable.AddColumn("Stack");
+        stackTable.AddColumn("Lanes");
+        stackTable.AddColumn("Skills");
+        stackTable.AddColumn("Tokens");
+
+        foreach (var stack in stackViews)
+        {
+            stackTable.AddRow(
+                Escape(stack.Stack),
+                stack.Lanes.Count.ToString(),
+                stack.SkillCount.ToString(),
+                FormatTokenCount(stack.TokenCount));
+        }
+
+        var headerGrid = new Grid();
+        headerGrid.AddColumn();
+        headerGrid.AddColumn();
+        headerGrid.AddRow(
+            new Panel(summary).Header("[deepskyblue1]catalog analysis[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(packageTable).Header("[deepskyblue1]package signals[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(headerGrid);
+        AnsiConsole.WriteLine();
+
+        var bodyGrid = new Grid();
+        bodyGrid.AddColumn();
+        bodyGrid.AddColumn();
+        bodyGrid.AddRow(
+            new Panel(stackTable).Header("[deepskyblue1]stack matrix[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(heavyTable).Header("[deepskyblue1]token hotspots[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(bodyGrid);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(new Markup("[dim]Use the tree view for hierarchy-first browsing, then inspect heavy skills or package entry points before installing.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
+    }
+
+    private void RenderCatalogTreePanel(IReadOnlyList<StackCatalogView> stackViews)
+    {
+        var tree = new Tree("[bold]catalog[/]");
+
+        foreach (var stack in stackViews)
+        {
+            var stackNode = tree.AddNode($"{Escape(stack.Stack)} [dim]({stack.SkillCount} skills, {FormatTokenCount(stack.TokenCount)} tokens)[/]");
+            foreach (var lane in stack.Lanes)
+            {
+                var laneNode = stackNode.AddNode($"{Escape(lane.Lane)} [dim]({lane.Skills.Count} skills, {FormatTokenCount(lane.TokenCount)} tokens)[/]");
+                foreach (var skill in lane.Skills.OrderByDescending(skill => skill.TokenCount).ThenBy(skill => skill.Name, StringComparer.Ordinal))
+                {
+                    laneNode.AddNode($"{Escape(ToAlias(skill.Name))} [dim]({FormatTokenCount(skill.TokenCount)})[/]");
+                }
+            }
+        }
+
+        AnsiConsole.MarkupLine("[bold deepskyblue1]stack tree[/]");
+        AnsiConsole.Write(tree);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(new Markup("[dim]This is the full Stack -> Lane -> Skill hierarchy for the current catalog payload.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
+    }
+
+    private void RenderPackageSignalPanel(IReadOnlyList<PackageSignalView> packageSignals)
+    {
+        var summary = new Grid();
+        summary.AddColumn(new GridColumn().NoWrap());
+        summary.AddColumn();
+        summary.AddRow(new Markup("[dim]signals[/]"), new Markup(packageSignals.Count.ToString()));
+        summary.AddRow(new Markup("[dim]exact[/]"), new Markup(packageSignals.Count(entry => string.Equals(entry.Kind, "Exact", StringComparison.Ordinal)).ToString()));
+        summary.AddRow(new Markup("[dim]prefix[/]"), new Markup(packageSignals.Count(entry => string.Equals(entry.Kind, "Prefix", StringComparison.Ordinal)).ToString()));
+        summary.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
+        AnsiConsole.Write(new Panel(summary).Header("[deepskyblue1]package signals[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.WriteLine();
+
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        table.Title = new TableTitle("[bold]NuGet entry points[/]");
+        table.AddColumn("Signal");
+        table.AddColumn("Kind");
+        table.AddColumn("Skill");
+        table.AddColumn("Area");
+        table.AddColumn("Tokens");
+
+        foreach (var entry in packageSignals)
+        {
+            table.AddRow(
+                Escape(entry.Signal),
+                Escape(entry.Kind),
+                Escape(ToAlias(entry.Skill.Name)),
+                Escape($"{entry.Skill.Stack} / {entry.Skill.Lane}"),
+                FormatTokenCount(entry.Skill.TokenCount));
+        }
+
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(new Markup("[dim]Package signals connect exact NuGet ids and prefixes to the skill that should be installed when that package appears in a project.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
+    }
+
+    private void RenderInstallPreviewPanel(string title, IReadOnlyList<SkillEntry> skills, SkillInstallLayout layout, bool force, IReadOnlyList<SkillPackageEntry>? bundles = null)
+    {
+        var selectedSkills = skills
+            .OrderBy(skill => CatalogOrganization.GetStackRank(skill.Stack))
+            .ThenBy(skill => CatalogOrganization.GetLaneRank(skill.Lane))
+            .ThenBy(skill => skill.Name, StringComparer.Ordinal)
+            .ToArray();
+        var totalTokens = selectedSkills.Sum(skill => skill.TokenCount);
+        var stackCount = selectedSkills.Select(skill => skill.Stack).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+
+        var summary = new Grid();
+        summary.AddColumn(new GridColumn().NoWrap());
+        summary.AddColumn();
+        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        summary.AddRow(new Markup("[dim]mode[/]"), new Markup(force ? "Repair / overwrite" : "Install"));
+        summary.AddRow(new Markup("[dim]skills[/]"), new Markup(selectedSkills.Length.ToString()));
+        summary.AddRow(new Markup("[dim]stacks[/]"), new Markup(stackCount.ToString()));
+        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(totalTokens)));
+        if (bundles is not null)
+        {
+            summary.AddRow(new Markup("[dim]bundles[/]"), new Markup(bundles.Count.ToString()));
+        }
+
+        var stackTable = new Table().Expand().Border(TableBorder.Rounded);
+        stackTable.Title = new TableTitle("[bold]Write set by stack[/]");
+        stackTable.AddColumn("Stack");
+        stackTable.AddColumn("Lanes");
+        stackTable.AddColumn("Skills");
+        stackTable.AddColumn("Tokens");
+
+        foreach (var group in selectedSkills
+                     .GroupBy(skill => skill.Stack, StringComparer.OrdinalIgnoreCase)
+                     .OrderBy(group => CatalogOrganization.GetStackRank(group.Key))
+                     .ThenBy(group => group.Key, StringComparer.Ordinal))
+        {
+            var lanes = group
+                .Select(skill => skill.Lane)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(CatalogOrganization.GetLaneRank)
+                .ThenBy(lane => lane, StringComparer.Ordinal)
+                .ToArray();
+            stackTable.AddRow(
+                Escape(group.Key),
+                Escape(string.Join(", ", lanes.Take(3))) + (lanes.Length > 3 ? $" [grey](+{lanes.Length - 3})[/]" : string.Empty),
+                group.Count().ToString(),
+                FormatTokenCount(group.Sum(skill => skill.TokenCount)));
+        }
+
+        var skillTable = new Table().Expand().Border(TableBorder.Rounded);
+        skillTable.Title = new TableTitle("[bold]Selected skills[/]");
+        skillTable.AddColumn("Skill");
+        skillTable.AddColumn("Area");
+        skillTable.AddColumn("Tokens");
+
+        foreach (var skill in selectedSkills.Take(12))
+        {
+            skillTable.AddRow(
+                Escape(ToAlias(skill.Name)),
+                Escape($"{skill.Stack} / {skill.Lane}"),
+                FormatTokenCount(skill.TokenCount));
+        }
+
+        var headerGrid = new Grid();
+        headerGrid.AddColumn();
+        headerGrid.AddColumn();
+        headerGrid.AddRow(
+            new Panel(summary).Header($"[deepskyblue1]{Escape(title)}[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(skillTable).Header("[deepskyblue1]selected skills[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(headerGrid);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(stackTable).Header("[deepskyblue1]install overview[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.WriteLine();
+
+        if (bundles is not null && bundles.Count > 0)
+        {
+            var bundleTable = new Table().Expand().Border(TableBorder.Rounded);
+            bundleTable.Title = new TableTitle("[bold]Selected bundles[/]");
+            bundleTable.AddColumn("Bundle");
+            bundleTable.AddColumn("Area");
+            bundleTable.AddColumn("Skills");
+
+            foreach (var bundle in bundles.OrderBy(bundle => bundle.Name, StringComparer.Ordinal))
+            {
+                bundleTable.AddRow(
+                    Escape(bundle.Name),
+                    Escape(CatalogOrganization.ResolveBundleAreaLabel(bundle)),
+                    bundle.Skills.Count.ToString());
+            }
+
+            AnsiConsole.Write(bundleTable);
+            AnsiConsole.WriteLine();
+        }
+
+        AnsiConsole.Write(new Panel(new Markup("[dim]This preview is the exact write set that will be installed into the selected target if you confirm.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
+    }
+
     private void RenderSkillDetailPanel(SkillEntry skill, InstalledSkillRecord? installed, SkillInstallLayout layout)
     {
-        var grid = new Grid();
-        grid.AddColumn(new GridColumn().NoWrap());
-        grid.AddColumn();
-        grid.AddRow(new Markup("[dim]alias[/]"), new Markup(Escape(ToAlias(skill.Name))));
-        grid.AddRow(new Markup("[dim]skill[/]"), new Markup($"[dim]{Escape(skill.Name)}[/]"));
-        grid.AddRow(new Markup("[dim]category[/]"), new Markup(Escape(skill.Category)));
-        grid.AddRow(new Markup("[dim]version[/]"), new Markup(Escape(skill.Version)));
-        grid.AddRow(new Markup("[dim]status[/]"), new Markup(installed is null ? "[dim]not installed[/]" : $"{Escape(installed.InstalledVersion)} {(installed.IsCurrent ? "[green](current)[/]" : "[yellow](update available)[/]")}"));
-        grid.AddRow(new Markup("[dim]compat[/]"), new Markup(Escape(skill.Compatibility)));
-        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        grid.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills install {ToAlias(skill.Name)}")}[/]"));
-        AnsiConsole.Write(new Panel(grid).Header($"[deepskyblue1]{Escape(ToAlias(skill.Name))}[/]").Border(BoxBorder.Rounded).Expand());
+        var summary = new Grid();
+        summary.AddColumn(new GridColumn().NoWrap());
+        summary.AddColumn();
+        summary.AddRow(new Markup("[dim]alias[/]"), new Markup(Escape(ToAlias(skill.Name))));
+        summary.AddRow(new Markup("[dim]skill[/]"), new Markup($"[dim]{Escape(skill.Name)}[/]"));
+        summary.AddRow(new Markup("[dim]area[/]"), new Markup($"{Escape(skill.Stack)} [dim]/[/] {Escape(skill.Lane)}"));
+        summary.AddRow(new Markup("[dim]category[/]"), new Markup(Escape(skill.Category)));
+        summary.AddRow(new Markup("[dim]version[/]"), new Markup(Escape(skill.Version)));
+        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup($"{FormatTokenCount(skill.TokenCount)} [dim]({Escape(SkillTokenCounter.ModelName)})[/]"));
+        summary.AddRow(new Markup("[dim]status[/]"), new Markup(installed is null ? "[dim]not installed[/]" : $"{Escape(installed.InstalledVersion)} {(installed.IsCurrent ? "[green](current)[/]" : "[yellow](update available)[/]")}"));
+        summary.AddRow(new Markup("[dim]compat[/]"), new Markup(Escape(skill.Compatibility)));
+        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
+        summary.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills install {ToAlias(skill.Name)}")}[/]"));
+
+        var surface = new Table().Border(TableBorder.None).Expand();
+        surface.AddColumn("Surface");
+        surface.AddColumn("Value");
+        surface.AddRow("NuGet packages", skill.Packages.Count == 0 ? "[dim]-[/]" : Escape(string.Join(", ", skill.Packages.Take(4))));
+        surface.AddRow("Package prefix", string.IsNullOrWhiteSpace(skill.PackagePrefix) ? "[dim]-[/]" : Escape($"{skill.PackagePrefix}.*"));
+        surface.AddRow("Docs", string.IsNullOrWhiteSpace(skill.Links.Docs) ? "[dim]not declared[/]" : "[green]available[/]");
+        surface.AddRow("Repository", string.IsNullOrWhiteSpace(skill.Links.Repository) ? "[dim]not declared[/]" : "[green]available[/]");
+        surface.AddRow("NuGet link", string.IsNullOrWhiteSpace(skill.Links.NuGet) ? "[dim]not declared[/]" : "[green]available[/]");
+
+        var headerGrid = new Grid();
+        headerGrid.AddColumn();
+        headerGrid.AddColumn();
+        headerGrid.AddRow(
+            new Panel(summary).Header($"[deepskyblue1]{Escape(ToAlias(skill.Name))}[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(surface).Header("[deepskyblue1]skill surface[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(headerGrid);
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(skill.Description))).Border(BoxBorder.Rounded).Expand());
+
+        var bodyGrid = new Grid();
+        bodyGrid.AddColumn();
+        bodyGrid.AddColumn();
+        bodyGrid.AddRow(
+            new Panel(new Markup(Escape(skill.Description))).Border(BoxBorder.Rounded).Header("[deepskyblue1]summary[/]").Expand(),
+            new Panel(new Markup(Escape(LoadSkillPreview(skill)))).Border(BoxBorder.Rounded).Header("[deepskyblue1]preview[/]").Expand());
+        AnsiConsole.Write(bodyGrid);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(new Markup("[dim]Preview comes from the current[/] [green]SKILL.md[/] [dim]payload, so token size and visible content stay aligned.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
     }
 
     private void RenderPackageDetailPanel(SkillPackageEntry package)
     {
+        var skillIndex = skillCatalog.Skills.ToDictionary(skill => skill.Name, StringComparer.OrdinalIgnoreCase);
+        var tokenCount = package.Skills.Sum(skillName => skillIndex.TryGetValue(skillName, out var skill) ? skill.TokenCount : 0);
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
         grid.AddRow(new Markup("[dim]bundle[/]"), new Markup(Escape(package.Name)));
+        grid.AddRow(new Markup("[dim]area[/]"), new Markup(Escape(CatalogOrganization.ResolveBundleAreaLabel(package))));
         grid.AddRow(new Markup("[dim]type[/]"), new Markup(Escape(package.Kind)));
-        grid.AddRow(new Markup("[dim]category[/]"), new Markup(Escape(package.SourceCategory)));
         grid.AddRow(new Markup("[dim]skills[/]"), new Markup(package.Skills.Count.ToString()));
+        grid.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(tokenCount)));
         grid.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills install bundle {package.Name}")}[/]"));
-        AnsiConsole.Write(new Panel(grid).Header($"[deepskyblue1]{Escape(package.Name)}[/]").Border(BoxBorder.Rounded).Expand());
+
+        var coverage = new Table().Border(TableBorder.None).Expand();
+        coverage.AddColumn("Coverage");
+        coverage.AddColumn("Value");
+        coverage.AddRow("Stack", Escape(package.Stack));
+        coverage.AddRow("Lane", Escape(package.Lane));
+        coverage.AddRow("Included skills", package.Skills.Count.ToString());
+        coverage.AddRow("Tokenizer", Escape(SkillTokenCounter.ModelName));
+
+        var headerGrid = new Grid();
+        headerGrid.AddColumn();
+        headerGrid.AddColumn();
+        headerGrid.AddRow(
+            new Panel(grid).Header($"[deepskyblue1]{Escape(package.Name)}[/]").Border(BoxBorder.Rounded).Expand(),
+            new Panel(coverage).Header("[deepskyblue1]bundle coverage[/]").Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(headerGrid);
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(package.Description))).Border(BoxBorder.Rounded).Expand());
+        AnsiConsole.Write(new Panel(new Markup(Escape(package.Description))).Border(BoxBorder.Rounded).Header("[deepskyblue1]summary[/]").Expand());
         AnsiConsole.WriteLine();
 
         var table = new Table().Expand();
         table.Title = new TableTitle("Included skills");
         table.AddColumn("Alias");
-        table.AddColumn("Skill");
+        table.AddColumn("Area");
+        table.AddColumn("Tokens");
 
         foreach (var skillName in package.Skills.OrderBy(name => name, StringComparer.Ordinal))
         {
-            table.AddRow(Escape(ToAlias(skillName)), Escape(skillName));
+            if (!skillIndex.TryGetValue(skillName, out var skill))
+            {
+                table.AddRow(Escape(ToAlias(skillName)), "[dim]missing[/]", "0");
+                continue;
+            }
+
+            table.AddRow(
+                Escape(ToAlias(skillName)),
+                Escape($"{skill.Stack} / {skill.Lane}"),
+                FormatTokenCount(skill.TokenCount));
         }
 
         AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Panel(new Markup("[dim]Focused bundles stay narrow by stack or workflow. Broad category-wide installs are intentionally not exposed here.[/]"))
+            .Header("[deepskyblue1]status rail[/]")
+            .Border(BoxBorder.Rounded)
+            .Expand());
     }
 
     private void RenderAgentDetailPanel(AgentEntry agent, AgentInstallLayout? layout, string? layoutError, bool installed)
@@ -1302,6 +2155,23 @@ internal sealed class InteractiveConsoleApp
         prompts.Pause("Press any key to continue...");
     }
 
+    private bool ConfirmSkillInstallPreview(string title, IReadOnlyList<SkillEntry> skills, SkillInstallLayout layout, bool force, IReadOnlyList<SkillPackageEntry>? bundles = null)
+    {
+        if (skills.Count == 0)
+        {
+            RenderInfo("No skills were selected for this install plan.");
+            return false;
+        }
+
+        AnsiConsole.Clear();
+        RenderInstallPreviewPanel(title, skills, layout, force, bundles);
+        return prompts.Confirm(
+            force
+                ? $"Write {skills.Count} skill(s) into {layout.PrimaryRoot.FullName}?"
+                : $"Install {skills.Count} skill(s) into {layout.PrimaryRoot.FullName}?",
+            defaultValue: true);
+    }
+
     private SkillInstallLayout ResolveSkillLayout()
     {
         return SkillInstallTarget.Resolve(
@@ -1351,17 +2221,95 @@ internal sealed class InteractiveConsoleApp
         var installed = installedSkills.FirstOrDefault(record => string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase));
         if (installed is null)
         {
-            return $"{ToAlias(skill.Name)} [{skill.Category}]";
+            return $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)";
         }
 
         return installed.IsCurrent
-            ? $"{ToAlias(skill.Name)} [{skill.Category}] (installed {installed.InstalledVersion})"
-            : $"{ToAlias(skill.Name)} [{skill.Category}] (update {installed.InstalledVersion} -> {skill.Version})";
+            ? $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens, installed {installed.InstalledVersion})"
+            : $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens, update {installed.InstalledVersion} -> {skill.Version})";
+    }
+
+    private static string BuildStackChoiceLabel(StackCatalogView stack)
+    {
+        return $"{stack.Stack} ({stack.Lanes.Count} lanes, {stack.InstalledCount}/{stack.SkillCount} skills, {FormatTokenCount(stack.TokenCount)} tokens)";
+    }
+
+    private static string BuildLaneChoiceLabel(LaneCatalogView lane)
+    {
+        return $"{lane.Lane} ({lane.InstalledCount}/{lane.Skills.Count} skills, {FormatTokenCount(lane.TokenCount)} tokens)";
+    }
+
+    private IReadOnlyList<SkillPackageEntry> GetPrimaryBundles()
+    {
+        return skillCatalog.Packages
+            .Where(CatalogOrganization.IsPrimaryBundle)
+            .OrderBy(CatalogOrganization.FormatBundleSortKey, StringComparer.Ordinal)
+            .ToArray();
     }
 
     private static string ToAlias(string value) => value.StartsWith("dotnet-", StringComparison.OrdinalIgnoreCase)
         ? value["dotnet-".Length..]
         : value;
+
+    private string LoadSkillPreview(SkillEntry skill)
+    {
+        try
+        {
+            var sourceDirectory = skillCatalog.ResolveSkillSource(skill.Name);
+            var skillPath = new FileInfo(Path.Combine(sourceDirectory.FullName, "SKILL.md"));
+            if (!skillPath.Exists)
+            {
+                return "SKILL.md is not available in the current catalog payload.";
+            }
+
+            var text = File.ReadAllText(skillPath.FullName);
+            if (text.StartsWith("---\n", StringComparison.Ordinal))
+            {
+                var end = text.IndexOf("\n---\n", StringComparison.Ordinal);
+                if (end >= 0)
+                {
+                    text = text[(end + "\n---\n".Length)..];
+                }
+            }
+
+            var previewLines = text
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                .Select(line => line.Trim())
+                .Where(line => line.Length > 0)
+                .Take(10)
+                .ToArray();
+
+            return previewLines.Length == 0
+                ? "No previewable markdown lines were found in SKILL.md."
+                : string.Join(Environment.NewLine, previewLines);
+        }
+        catch (Exception exception)
+        {
+            return $"Could not load preview: {exception.Message}";
+        }
+    }
+
+    private static string CompactDescription(string description)
+    {
+        const string useWhenMarker = ". Use when";
+        var markerIndex = description.IndexOf(useWhenMarker, StringComparison.Ordinal);
+        if (markerIndex >= 0)
+        {
+            return description[..(markerIndex + 1)];
+        }
+
+        var firstSentenceIndex = description.IndexOf(". ", StringComparison.Ordinal);
+        if (firstSentenceIndex >= 0)
+        {
+            return description[..(firstSentenceIndex + 1)];
+        }
+
+        return description.Length <= 100
+            ? description
+            : $"{description[..97]}...";
+    }
+
+    private static string FormatTokenCount(int tokenCount) => tokenCount.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
 
     private static bool PathsEqual(DirectoryInfo left, DirectoryInfo right)
     {
@@ -1385,14 +2333,38 @@ internal interface IInteractivePrompts
     void Pause(string title);
 }
 
-internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
+internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
 {
     public T Select<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
     {
-        if (CanUseSharpConsoleUi()
-            && TrySelectWithSharpConsoleUi(title, choices, formatter, compact: false, out var selected))
+        if (choices.Count == 0)
         {
-            return selected;
+            throw new InvalidOperationException($"No choices are available for {title}.");
+        }
+
+        if (CanUseSpectrePrompts())
+        {
+            try
+            {
+                var labels = choices.Select(formatter).ToArray();
+                var prompt = new Spectre.Console.SelectionPrompt<string>
+                {
+                    Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
+                    PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
+                    HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
+                };
+                prompt.AddChoices(labels);
+                var selectedLabel = SpectreConsole.Prompt(prompt);
+                var index = Array.FindIndex(labels, label => string.Equals(label, selectedLabel, StringComparison.Ordinal));
+                if (index >= 0)
+                {
+                    return choices[index];
+                }
+            }
+            catch
+            {
+                // Fall back to plain-text prompts when the terminal does not support Spectre well.
+            }
         }
 
         return SelectPlainText(title, choices, formatter);
@@ -1400,10 +2372,38 @@ internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
 
     public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
     {
-        if (CanUseSharpConsoleUi()
-            && TryMultiSelectWithSharpConsoleUi(title, choices, formatter, out var selected))
+        if (choices.Count == 0)
         {
-            return selected;
+            return [];
+        }
+
+        if (CanUseSpectrePrompts())
+        {
+            try
+            {
+                var labels = choices.Select(formatter).ToArray();
+                var prompt = new Spectre.Console.MultiSelectionPrompt<string>
+                {
+                    Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
+                    InstructionsText = "[dim](Press <space> to toggle, <enter> to accept)[/]",
+                    PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
+                    HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
+                };
+                prompt.NotRequired();
+                prompt.AddChoices(labels);
+                var selectedLabels = SpectreConsole.Prompt(prompt);
+                var selectedSet = selectedLabels.ToHashSet(StringComparer.Ordinal);
+                var selected = labels
+                    .Select((label, index) => (label, index))
+                    .Where(item => selectedSet.Contains(item.label))
+                    .Select(item => choices[item.index])
+                    .ToArray();
+                return selected;
+            }
+            catch
+            {
+                // Fall back to plain-text prompts when the terminal does not support Spectre well.
+            }
         }
 
         return MultiSelectPlainText(title, choices, formatter);
@@ -1411,14 +2411,16 @@ internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
 
     public bool Confirm(string title, bool defaultValue)
     {
-        var choices = defaultValue
-            ? new[] { new MenuOption<bool>("Yes", true), new MenuOption<bool>("No", false) }
-            : new[] { new MenuOption<bool>("No", false), new MenuOption<bool>("Yes", true) };
-
-        if (CanUseSharpConsoleUi()
-            && TrySelectWithSharpConsoleUi(title, choices, option => option.Label, compact: true, out var selected))
+        if (CanUseSpectrePrompts())
         {
-            return selected.Value;
+            try
+            {
+                return SpectreConsole.Confirm($"[deepskyblue1]{EscapeMarkup(title)}[/]", defaultValue);
+            }
+            catch
+            {
+                // Fall back to plain-text prompts when the terminal does not support Spectre well.
+            }
         }
 
         return ConfirmPlainText(title, defaultValue);
@@ -1436,755 +2438,7 @@ internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
         Console.ReadKey(intercept: true);
     }
 
-    private static bool TrySelectWithSharpConsoleUi<T>(
-        string title,
-        IReadOnlyList<T> choices,
-        Func<T, string> formatter,
-        bool compact,
-        out T selected) where T : notnull
-    {
-        selected = default!;
-        if (choices.Count == 0)
-        {
-            return false;
-        }
-
-        if (!compact && TrySelectDashboardWithSharpConsoleUi(title, choices, formatter, out selected))
-        {
-            return true;
-        }
-
-        var completed = false;
-        var escapeChoice = FindEscapeChoice(choices, formatter);
-        var selectedValue = default(T)!;
-
-        try
-        {
-            var windowSystem = CreatePromptWindowSystem();
-            var items = choices
-                .Select((choice, index) => new ListItem(formatter(choice), icon: index == 0 ? ">" : " ") { Tag = index })
-                .ToArray();
-
-            var list = Controls.List(title)
-                .AddItems(items)
-                .MaxVisibleItems(Math.Min(Math.Max(choices.Count, 4), 18))
-                .WithColors(Color.White, new Color(8, 16, 28))
-                .WithHighlightColors(Color.White, new Color(0, 120, 180))
-                .OnItemActivated((sender, item, window) =>
-                {
-                    if (item.Tag is int index && index >= 0 && index < choices.Count)
-                    {
-                        selectedValue = choices[index];
-                        completed = true;
-                        windowSystem.Shutdown(0);
-                    }
-                })
-                .Build();
-            list.SelectedIndex = 0;
-
-            new WindowBuilder(windowSystem)
-                .WithTitle(title)
-                .WithSize(ResolvePromptWidth(choices.Select(formatter)), ResolvePromptHeight(choices.Count, extraRows: 8))
-                .Centered()
-                .WithBackgroundGradient(
-                    ColorGradient.FromColors(new Color(5, 15, 30), new Color(0, 36, 52)),
-                    GradientDirection.Vertical)
-                .WithColors(Color.White, new Color(5, 15, 30))
-                .WithBorderStyle(BorderStyle.Rounded)
-                .Resizable(false)
-                .Movable(false)
-                .AddControl(Controls.Markup()
-                    .AddLine("[bold cyan]dotnet skills command center[/]")
-                    .AddLine("[dim]Use Up/Down and Enter. Esc goes back when available.[/]")
-                    .AddEmptyLine()
-                    .Build())
-                .AddControl(list)
-                .OnKeyPressed((sender, args) =>
-                {
-                    if (args.KeyInfo.Key != ConsoleKey.Escape)
-                    {
-                        return;
-                    }
-
-                    if (escapeChoice >= 0)
-                    {
-                        selectedValue = choices[escapeChoice];
-                        completed = true;
-                    }
-
-                    args.Handled = true;
-                    windowSystem.Shutdown(completed ? 0 : 1);
-                })
-                .BuildAndShow();
-
-            windowSystem.Run();
-            selected = selectedValue;
-            AnsiConsole.Clear();
-            return completed;
-        }
-        catch
-        {
-            AnsiConsole.Clear();
-            return false;
-        }
-    }
-
-    private static bool TryMultiSelectWithSharpConsoleUi<T>(
-        string title,
-        IReadOnlyList<T> choices,
-        Func<T, string> formatter,
-        out IReadOnlyList<T> selected) where T : notnull
-    {
-        selected = [];
-        if (choices.Count == 0)
-        {
-            return true;
-        }
-
-        if (TryMultiSelectDashboardWithSharpConsoleUi(title, choices, formatter, out selected))
-        {
-            return true;
-        }
-
-        var completed = false;
-        IReadOnlyList<T> selectedValues = [];
-
-        try
-        {
-            var windowSystem = CreatePromptWindowSystem();
-            var items = choices
-                .Select((choice, index) => new ListItem(formatter(choice), icon: " ") { Tag = index })
-                .ToArray();
-
-            var list = Controls.List(title)
-                .AddItems(items)
-                .MaxVisibleItems(Math.Min(Math.Max(choices.Count, 4), 18))
-                .WithCheckboxMode()
-                .WithColors(Color.White, new Color(8, 16, 28))
-                .WithHighlightColors(Color.White, new Color(0, 120, 180))
-                .OnItemActivated((sender, item, window) =>
-                {
-                    item.IsChecked = !item.IsChecked;
-                })
-                .Build();
-            list.SelectedIndex = 0;
-
-            new WindowBuilder(windowSystem)
-                .WithTitle(title)
-                .WithSize(ResolvePromptWidth(choices.Select(formatter)), ResolvePromptHeight(choices.Count, extraRows: 10))
-                .Centered()
-                .WithBackgroundGradient(
-                    ColorGradient.FromColors(new Color(5, 15, 30), new Color(0, 36, 52)),
-                    GradientDirection.Vertical)
-                .WithColors(Color.White, new Color(5, 15, 30))
-                .WithBorderStyle(BorderStyle.Rounded)
-                .Resizable(false)
-                .Movable(false)
-                .AddControl(Controls.Markup()
-                    .AddLine("[bold cyan]dotnet skills command center[/]")
-                    .AddLine("[dim]Space or Enter toggles. F10 accepts. Esc cancels.[/]")
-                    .AddEmptyLine()
-                    .Build())
-                .AddControl(list)
-                .OnKeyPressed((sender, args) =>
-                {
-                    if (args.KeyInfo.Key == ConsoleKey.F10)
-                    {
-                        selectedValues = list.GetCheckedItems()
-                            .Select(item => item.Tag is int index && index >= 0 && index < choices.Count ? choices[index] : default)
-                            .Where(item => item is not null)
-                            .Cast<T>()
-                            .ToArray();
-                        completed = true;
-                        args.Handled = true;
-                        windowSystem.Shutdown(0);
-                    }
-                    else if (args.KeyInfo.Key == ConsoleKey.Escape)
-                    {
-                        selectedValues = [];
-                        completed = true;
-                        args.Handled = true;
-                        windowSystem.Shutdown(0);
-                    }
-                })
-                .BuildAndShow();
-
-            windowSystem.Run();
-            selected = selectedValues;
-            AnsiConsole.Clear();
-            return completed;
-        }
-        catch
-        {
-            AnsiConsole.Clear();
-            return false;
-        }
-    }
-
-    private static bool TrySelectDashboardWithSharpConsoleUi<T>(
-        string title,
-        IReadOnlyList<T> choices,
-        Func<T, string> formatter,
-        out T selected) where T : notnull
-    {
-        selected = default!;
-        if (!CanUseDashboardChrome())
-        {
-            return false;
-        }
-
-        var labels = choices.Select(formatter).ToArray();
-        var completed = false;
-        var selectedValue = default(T)!;
-        var escapeChoice = FindEscapeChoice(choices, formatter);
-
-        try
-        {
-            var windowSystem = CreatePromptWindowSystem();
-            var detailMarkup = Controls.Markup()
-                .AddLines(BuildSelectionDetailLines(title, labels[0]).ToArray())
-                .WithMargin(2, 1, 2, 0)
-                .FillVertical()
-                .Build();
-            var statusBar = Controls.Markup(BuildSelectStatusLine(title, choices.Count))
-                .StickyBottom()
-                .Build();
-
-            var items = choices
-                .Select((choice, index) => new ListItem(labels[index], icon: index == 0 ? ">" : " ") { Tag = index })
-                .ToArray();
-
-            var list = Controls.List("Actions")
-                .AddItems(items)
-                .MaxVisibleItems(Math.Min(Math.Max(choices.Count, 6), 24))
-                .WithAutoHighlightOnFocus(true)
-                .WithHoverHighlighting(true)
-                .WithScrollbarVisibility(ScrollbarVisibility.Auto)
-                .WithVerticalAlignment(VerticalAlignment.Fill)
-                .WithColors(Color.White, new Color(18, 21, 24))
-                .WithHighlightColors(Color.Cyan1, new Color(78, 82, 86))
-                .OnSelectionChanged((sender, index) =>
-                {
-                    if (index >= 0 && index < labels.Length)
-                    {
-                        detailMarkup.SetContent(BuildSelectionDetailLines(title, labels[index]));
-                    }
-                })
-                .OnItemActivated((sender, item, window) =>
-                {
-                    if (item.Tag is int index && index >= 0 && index < choices.Count)
-                    {
-                        selectedValue = choices[index];
-                        completed = true;
-                        windowSystem.Shutdown(0);
-                    }
-                })
-                .Build();
-            list.SelectedIndex = 0;
-
-            var detailPanel = Controls.ScrollablePanel()
-                .AddControl(detailMarkup)
-                .WithVerticalAlignment(VerticalAlignment.Fill)
-                .Build();
-
-            var grid = Controls.HorizontalGrid()
-                .Column(column => column.Width(ResolveSidebarWidth(labels)).Add(list))
-                .Column(column => column.Flex().Add(detailPanel))
-                .WithSplitterAfter(0)
-                .WithAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Fill)
-                .Build();
-
-            var header = Controls.Markup()
-                .AddLine(BuildDashboardHeader(title, choices.Count))
-                .StickyTop()
-                .Build();
-
-            new WindowBuilder(windowSystem)
-                .WithTitle("dotnet skills")
-                .WithSize(ResolveDashboardWidth(), ResolveDashboardHeight())
-                .Centered()
-                .WithBackgroundGradient(
-                    ColorGradient.FromColors(new Color(12, 14, 16), new Color(22, 25, 28)),
-                    GradientDirection.Vertical)
-                .WithColors(Color.White, new Color(12, 14, 16))
-                .WithBorderStyle(BorderStyle.Single)
-                .Resizable(false)
-                .Movable(false)
-                .AddControls(header, grid, statusBar)
-                .OnKeyPressed((sender, args) =>
-                {
-                    if (args.KeyInfo.Key != ConsoleKey.Escape)
-                    {
-                        return;
-                    }
-
-                    if (escapeChoice >= 0)
-                    {
-                        selectedValue = choices[escapeChoice];
-                        completed = true;
-                    }
-
-                    args.Handled = true;
-                    windowSystem.Shutdown(completed ? 0 : 1);
-                })
-                .BuildAndShow();
-
-            windowSystem.Run();
-            selected = selectedValue;
-            AnsiConsole.Clear();
-            return completed;
-        }
-        catch
-        {
-            AnsiConsole.Clear();
-            return false;
-        }
-    }
-
-    private static bool TryMultiSelectDashboardWithSharpConsoleUi<T>(
-        string title,
-        IReadOnlyList<T> choices,
-        Func<T, string> formatter,
-        out IReadOnlyList<T> selected) where T : notnull
-    {
-        selected = [];
-        if (!CanUseDashboardChrome())
-        {
-            return false;
-        }
-
-        var labels = choices.Select(formatter).ToArray();
-        var completed = false;
-        IReadOnlyList<T> selectedValues = [];
-
-        try
-        {
-            var windowSystem = CreatePromptWindowSystem();
-            var detailMarkup = Controls.Markup()
-                .AddLines(BuildMultiSelectDetailLines(title, labels[0], selectedCount: 0).ToArray())
-                .WithMargin(2, 1, 2, 0)
-                .FillVertical()
-                .Build();
-            var statusBar = Controls.Markup(BuildMultiSelectStatusLine(title, selectedCount: 0, choices.Count))
-                .StickyBottom()
-                .Build();
-
-            var items = choices
-                .Select((choice, index) => new ListItem(labels[index], icon: " ") { Tag = index })
-                .ToArray();
-
-            ListControl? listControl = null;
-            var list = Controls.List("Selections")
-                .AddItems(items)
-                .MaxVisibleItems(Math.Min(Math.Max(choices.Count, 6), 24))
-                .WithCheckboxMode()
-                .WithAutoHighlightOnFocus(true)
-                .WithHoverHighlighting(true)
-                .WithScrollbarVisibility(ScrollbarVisibility.Auto)
-                .WithVerticalAlignment(VerticalAlignment.Fill)
-                .WithColors(Color.White, new Color(18, 21, 24))
-                .WithHighlightColors(Color.Cyan1, new Color(78, 82, 86))
-                .OnSelectionChanged((sender, index) =>
-                {
-                    if (index >= 0 && index < labels.Length)
-                    {
-                        detailMarkup.SetContent(BuildMultiSelectDetailLines(title, labels[index], listControl?.GetCheckedItems().Count ?? 0));
-                    }
-                })
-                .OnCheckedItemsChanged((sender, _) =>
-                {
-                    var selectedCount = listControl?.GetCheckedItems().Count ?? 0;
-                    statusBar.SetContent([BuildMultiSelectStatusLine(title, selectedCount, choices.Count)]);
-                    var index = listControl?.SelectedIndex ?? -1;
-                    if (index >= 0 && index < labels.Length)
-                    {
-                        detailMarkup.SetContent(BuildMultiSelectDetailLines(title, labels[index], selectedCount));
-                    }
-                })
-                .OnItemActivated((sender, item, window) =>
-                {
-                    item.IsChecked = !item.IsChecked;
-                })
-                .Build();
-            listControl = list;
-            list.SelectedIndex = 0;
-
-            var detailPanel = Controls.ScrollablePanel()
-                .AddControl(detailMarkup)
-                .WithVerticalAlignment(VerticalAlignment.Fill)
-                .Build();
-
-            var grid = Controls.HorizontalGrid()
-                .Column(column => column.Width(ResolveSidebarWidth(labels)).Add(list))
-                .Column(column => column.Flex().Add(detailPanel))
-                .WithSplitterAfter(0)
-                .WithAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Fill)
-                .Build();
-
-            var header = Controls.Markup()
-                .AddLine(BuildDashboardHeader(title, choices.Count))
-                .StickyTop()
-                .Build();
-
-            new WindowBuilder(windowSystem)
-                .WithTitle("dotnet skills")
-                .WithSize(ResolveDashboardWidth(), ResolveDashboardHeight())
-                .Centered()
-                .WithBackgroundGradient(
-                    ColorGradient.FromColors(new Color(12, 14, 16), new Color(22, 25, 28)),
-                    GradientDirection.Vertical)
-                .WithColors(Color.White, new Color(12, 14, 16))
-                .WithBorderStyle(BorderStyle.Single)
-                .Resizable(false)
-                .Movable(false)
-                .AddControls(header, grid, statusBar)
-                .OnKeyPressed((sender, args) =>
-                {
-                    if (args.KeyInfo.Key == ConsoleKey.F10)
-                    {
-                        selectedValues = list.GetCheckedItems()
-                            .Select(item => item.Tag is int index && index >= 0 && index < choices.Count ? choices[index] : default)
-                            .Where(item => item is not null)
-                            .Cast<T>()
-                            .ToArray();
-                        completed = true;
-                        args.Handled = true;
-                        windowSystem.Shutdown(0);
-                    }
-                    else if (args.KeyInfo.Key == ConsoleKey.Escape)
-                    {
-                        selectedValues = [];
-                        completed = true;
-                        args.Handled = true;
-                        windowSystem.Shutdown(0);
-                    }
-                })
-                .BuildAndShow();
-
-            windowSystem.Run();
-            selected = selectedValues;
-            AnsiConsole.Clear();
-            return completed;
-        }
-        catch
-        {
-            AnsiConsole.Clear();
-            return false;
-        }
-    }
-
-    private static ConsoleWindowSystem CreatePromptWindowSystem()
-    {
-        var windowSystem = new ConsoleWindowSystem(
-            new NetConsoleDriver(RenderMode.Buffer),
-            options: new ConsoleWindowSystemOptions(
-                TopPanelConfig: panel => panel.Left(Elements.StatusText("")),
-                BottomPanelConfig: panel => panel.Center(Elements.TaskBar())));
-        windowSystem.PanelStateService.TopStatus = "dotnet skills";
-        windowSystem.PanelStateService.BottomStatus = "Skills | Bundles | Agents | Workspace";
-        return windowSystem;
-    }
-
-    private static int ResolvePromptWidth(IEnumerable<string> labels)
-    {
-        var contentWidth = labels.Select(label => label.Length).DefaultIfEmpty(32).Max() + 12;
-        var terminalWidth = Console.IsOutputRedirected ? 100 : Math.Max(60, Console.WindowWidth);
-        return Math.Clamp(contentWidth, 64, Math.Max(64, terminalWidth - 8));
-    }
-
-    private static int ResolvePromptHeight(int choiceCount, int extraRows)
-    {
-        var contentHeight = Math.Min(Math.Max(choiceCount, 4), 18) + extraRows;
-        var terminalHeight = Console.IsOutputRedirected ? 30 : Math.Max(20, Console.WindowHeight);
-        return Math.Clamp(contentHeight, 14, Math.Max(14, terminalHeight - 4));
-    }
-
-    private static bool CanUseDashboardChrome()
-    {
-        try
-        {
-            return Console.WindowWidth >= 88 && Console.WindowHeight >= 24;
-        }
-        catch (IOException)
-        {
-            return false;
-        }
-    }
-
-    private static int ResolveDashboardWidth()
-    {
-        var terminalWidth = Math.Max(88, Console.WindowWidth);
-        return Math.Clamp(terminalWidth - 4, 88, 168);
-    }
-
-    private static int ResolveDashboardHeight()
-    {
-        var terminalHeight = Math.Max(24, Console.WindowHeight);
-        return Math.Clamp(terminalHeight - 4, 24, 48);
-    }
-
-    private static int ResolveSidebarWidth(IReadOnlyList<string> labels)
-    {
-        var contentWidth = labels.Select(label => label.Length).DefaultIfEmpty(28).Max() + 6;
-        return Math.Clamp(contentWidth, 34, 54);
-    }
-
-    private static string BuildDashboardHeader(string title, int choiceCount)
-    {
-        return $"[bold cyan] dotnet skills[/] [dim]| {Markup.Escape(title)} |[/] [yellow]{choiceCount} actions[/] [dim]| {DateTime.Now:HH:mm}[/]";
-    }
-
-    private static string BuildSelectStatusLine(string title, int choiceCount)
-    {
-        return $"[cyan]↑↓[/]:navigate  [cyan]Enter[/]:select  [cyan]Esc[/]:back/exit  [dim]{Markup.Escape(title)} • {choiceCount} actions[/]";
-    }
-
-    private static string BuildMultiSelectStatusLine(string title, int selectedCount, int choiceCount)
-    {
-        return $"[cyan]↑↓[/]:navigate  [cyan]Space/Enter[/]:toggle  [cyan]F10[/]:apply  [cyan]Esc[/]:cancel  [yellow]{selectedCount}/{choiceCount} selected[/] [dim]{Markup.Escape(title)}[/]";
-    }
-
-    private static List<string> BuildSelectionDetailLines(string title, string label)
-    {
-        var lines = new List<string>
-        {
-            $"[bold cyan]{Markup.Escape(label)}[/]",
-            $"[dim]{Markup.Escape(title)}[/]",
-            "",
-        };
-
-        lines.AddRange(BuildWorkflowLines(label));
-        lines.AddRange(
-        [
-            "",
-            "[dim]Controls[/]",
-            "  [cyan]Enter[/]  run selected flow",
-            "  [cyan]Esc[/]    return to the previous level when available",
-            "",
-            "[dim]Command shape[/]",
-            $"  {BuildCommandHint(label)}",
-        ]);
-        return lines;
-    }
-
-    private static List<string> BuildMultiSelectDetailLines(string title, string label, int selectedCount)
-    {
-        var lines = new List<string>
-        {
-            $"[bold cyan]{Markup.Escape(label)}[/]",
-            $"[dim]{Markup.Escape(title)}[/]",
-            "",
-            $"[yellow]{selectedCount} selected[/]",
-            "",
-        };
-
-        lines.AddRange(BuildWorkflowLines(label));
-        lines.AddRange(
-        [
-            "",
-            "[dim]Controls[/]",
-            "  [cyan]Space[/]  toggle the highlighted row",
-            "  [cyan]Enter[/]  toggle the highlighted row",
-            "  [cyan]F10[/]    apply the selected rows",
-            "  [cyan]Esc[/]    cancel",
-        ]);
-        return lines;
-    }
-
-    private static IEnumerable<string> BuildWorkflowLines(string label)
-    {
-        var normalized = label.ToLowerInvariant();
-        if (normalized.StartsWith("primary", StringComparison.Ordinal)
-            || normalized.Contains("sync", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Scan the current project.",
-                "  Match detected .NET signals to catalog skills.",
-                "  Install missing recommendations into the active target.",
-            ];
-        }
-
-        if (normalized.StartsWith("skills", StringComparison.Ordinal)
-            || normalized.Contains("install skills", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Browse individual catalog skills.",
-                "  Pick focused capabilities by alias, category, or package signal.",
-                "  Install only the selected skill contracts.",
-            ];
-        }
-
-        if (normalized.StartsWith("bundles", StringComparison.Ordinal)
-            || normalized.Contains("bundle", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Use curated grouped installs.",
-                "  Keep public wording as bundles, not packages.",
-                "  Good for AI, testing, architecture, and MCAF skill sets.",
-            ];
-        }
-
-        if (normalized.Contains("repair", StringComparison.Ordinal)
-            || normalized.Contains("optimize", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Force reinstall selected content from the active catalog.",
-                "  Refresh generated vendor adapters and overwritten payload files.",
-                "  Use this when installed content looks stale or broken.",
-            ];
-        }
-
-        if (normalized.Contains("copy", StringComparison.Ordinal)
-            || normalized.Contains("move", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Pick a destination platform and scope.",
-                "  Copy and refresh selected content into that target.",
-                "  Optionally remove the copied content from the current target.",
-            ];
-        }
-
-        if (normalized.StartsWith("installed", StringComparison.Ordinal)
-            || normalized.Contains("manage", StringComparison.Ordinal)
-            || normalized.Contains("remove", StringComparison.Ordinal)
-            || normalized.Contains("update", StringComparison.Ordinal)
-            || normalized.Contains("installed", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Inspect installed skills.",
-                "  Update outdated entries.",
-                "  Repair by force reinstalling from the catalog.",
-                "  Copy or move content between supported targets.",
-                "  Remove stale or unwanted local skill contracts.",
-            ];
-        }
-
-        if (normalized.StartsWith("agents", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Manage orchestration agents separately from skills.",
-                "  Install into vendor-native agent targets.",
-                "  Repair or copy agents across supported targets.",
-                "  Keep skill-first and agent-first surfaces distinct.",
-            ];
-        }
-
-        if (normalized.StartsWith("workspace", StringComparison.Ordinal)
-            || normalized.Contains("destination", StringComparison.Ordinal)
-            || normalized.Contains("catalog", StringComparison.Ordinal)
-            || normalized.Contains("settings", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Change target platform and install scope.",
-                "  Inspect catalog source and refresh state.",
-                "  Keep project/user destinations explicit.",
-            ];
-        }
-
-        if (normalized.Contains("back", StringComparison.Ordinal)
-            || normalized.Contains("exit", StringComparison.Ordinal))
-        {
-            return
-            [
-                "[dim]Workflow[/]",
-                "  Leave this screen without changing installed content.",
-            ];
-        }
-
-        return
-        [
-            "[dim]Workflow[/]",
-            "  Review the selected item.",
-            "  Press Enter to continue.",
-        ];
-    }
-
-    private static string BuildCommandHint(string label)
-    {
-        var normalized = label.ToLowerInvariant();
-        if (normalized.StartsWith("primary", StringComparison.Ordinal)
-            || normalized.Contains("sync", StringComparison.Ordinal))
-        {
-            return "[green]dotnet skills sync --force[/]";
-        }
-
-        if (normalized.StartsWith("skills", StringComparison.Ordinal))
-        {
-            return "[green]dotnet skills install aspire orleans[/]";
-        }
-
-        if (normalized.StartsWith("bundles", StringComparison.Ordinal)
-            || normalized.Contains("bundle", StringComparison.Ordinal))
-        {
-            return "[green]dotnet skills install bundle ai[/]";
-        }
-
-        if (normalized.StartsWith("installed", StringComparison.Ordinal)
-            || normalized.Contains("remove", StringComparison.Ordinal))
-        {
-            return "[green]dotnet skills remove --all[/]";
-        }
-
-        if (normalized.StartsWith("agents", StringComparison.Ordinal))
-        {
-            return "[green]dotnet agents install --agent codex[/]";
-        }
-
-        if (normalized.Contains("repair", StringComparison.Ordinal))
-        {
-            return "[green]force reinstall from the selected catalog[/]";
-        }
-
-        if (normalized.Contains("copy", StringComparison.Ordinal)
-            || normalized.Contains("move", StringComparison.Ordinal))
-        {
-            return "[green]copy to another vendor-native target, then optionally remove source[/]";
-        }
-
-        if (normalized.StartsWith("workspace", StringComparison.Ordinal))
-        {
-            return "[green]dotnet skills --agent codex --scope project[/]";
-        }
-
-        return "[dim]interactive flow[/]";
-    }
-
-    private static int FindEscapeChoice<T>(IReadOnlyList<T> choices, Func<T, string> formatter)
-    {
-        for (var index = choices.Count - 1; index >= 0; index--)
-        {
-            var label = formatter(choices[index]);
-            if (string.Equals(label, "Back", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(label, "Exit", StringComparison.OrdinalIgnoreCase)
-                || label.EndsWith(" - back", StringComparison.OrdinalIgnoreCase)
-                || label.EndsWith(" - exit", StringComparison.OrdinalIgnoreCase))
-            {
-                return index;
-            }
-        }
-
-        return -1;
-    }
-
-    private static bool CanUseSharpConsoleUi()
+    private static bool CanUseSpectrePrompts()
     {
         if (Console.IsInputRedirected
             || Console.IsOutputRedirected
@@ -2196,20 +2450,6 @@ internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
             return false;
         }
 
-        // SharpConsoleUI uses native terminal raw-mode calls on macOS. Keep that path opt-in
-        // until the driver is stable there, because AccessViolationException can terminate
-        // the process before the managed fallback path can run.
-        if (OperatingSystem.IsMacOS()
-            && !string.Equals(Environment.GetEnvironmentVariable("DOTNET_SKILLS_SHARP_CONSOLE"), "1", StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        if (OperatingSystem.IsWindows())
-        {
-            return true;
-        }
-
         var terminal = Environment.GetEnvironmentVariable("TERM");
         return !string.IsNullOrWhiteSpace(terminal)
             && !string.Equals(terminal, "dumb", StringComparison.OrdinalIgnoreCase);
@@ -2217,11 +2457,6 @@ internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
 
     private static T SelectPlainText<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
     {
-        if (choices.Count == 0)
-        {
-            throw new InvalidOperationException($"No choices are available for {title}.");
-        }
-
         while (true)
         {
             Console.WriteLine();
@@ -2245,11 +2480,6 @@ internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
 
     private static IReadOnlyList<T> MultiSelectPlainText<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
     {
-        if (choices.Count == 0)
-        {
-            return [];
-        }
-
         while (true)
         {
             Console.WriteLine();
@@ -2312,6 +2542,12 @@ internal sealed class SharpConsoleInteractivePrompts : IInteractivePrompts
         }
     }
 
+    private static string EscapeMarkup(string value)
+    {
+        return value
+            .Replace("[", "[[", StringComparison.Ordinal)
+            .Replace("]", "]]", StringComparison.Ordinal);
+    }
 }
 
 internal sealed class InteractiveSessionState
@@ -2329,11 +2565,14 @@ internal sealed record MenuOption<T>(string Label, T Value);
 
 internal sealed record AgentLayoutStatus(AgentInstallLayout? Layout, string Summary);
 
+internal sealed record PackageSignalView(string Signal, string Kind, SkillEntry Skill);
+
 internal enum HomeAction
 {
     SyncProject,
     InstallSkillStack,
     InstallSkills,
+    Analysis,
     ManageInstalled,
     Agents,
     Settings,
@@ -2353,6 +2592,19 @@ internal enum SkillCatalogAction
     Inspect,
     Install,
     UpdateOutdated,
+    Back,
+}
+
+internal enum CatalogAnalysisAction
+{
+    Tree,
+    HeavySkill,
+    PackageSignals,
+    Back,
+}
+
+internal enum CatalogTreeAction
+{
     Back,
 }
 
@@ -2386,6 +2638,12 @@ internal enum PackageAction
 internal enum PackageDetailAction
 {
     Install,
+    Back,
+}
+
+internal enum PackageSignalAction
+{
+    InspectSkill,
     Back,
 }
 

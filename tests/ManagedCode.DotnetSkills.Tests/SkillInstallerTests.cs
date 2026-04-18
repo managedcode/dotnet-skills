@@ -60,18 +60,29 @@ public sealed class SkillInstallerTests
     }
 
     [Fact]
-    public void SelectSkillsFromPackages_ResolvesCuratedAndCategoryPackages()
+    public void SelectSkillsFromPackages_ResolvesFocusedBundlesOnly()
     {
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
 
-        var selected = installer.SelectSkillsFromPackages(["orleans", "codequality"]);
+        var selected = installer.SelectSkillsFromPackages(["orleans", "dotnet-quality"]);
 
         Assert.Contains(selected, skill => skill.Name == "dotnet-orleans");
         Assert.Contains(selected, skill => skill.Name == "dotnet-managedcode-orleans-graph");
         Assert.Contains(selected, skill => skill.Name == "dotnet-code-analysis");
         Assert.Contains(selected, skill => skill.Name == "dotnet-format");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
+    }
+
+    [Fact]
+    public void SelectSkillsFromPackages_RejectsRemovedCategoryBundleAliases()
+    {
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => installer.SelectSkillsFromPackages(["codequality"]));
+
+        Assert.Contains("Unknown bundle", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

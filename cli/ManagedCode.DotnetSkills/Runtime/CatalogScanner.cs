@@ -14,10 +14,179 @@ internal static class CatalogScanner
     private static readonly CuratedBundleDefinition[] CuratedBundles =
     [
         new(
+            "dotnet-base",
+            ".NET base bundle",
+            "Install the focused .NET baseline: core platform guidance, project setup, modern C#, and Microsoft.Extensions composition patterns without pulling in diagnostics, migrations, or frontend tooling.",
+            "stack",
+            ".NET Foundations",
+            "Foundations",
+            [
+                "dotnet",
+                "dotnet-project-setup",
+                "dotnet-modern-csharp",
+                "dotnet-microsoft-extensions",
+            ]),
+        new(
+            "dotnet-quality",
+            ".NET quality bundle",
+            "Install the core .NET quality toolchain: formatter, analyzers, editorconfig guidance, and CI quality checks. Frontend linters stay out of this bundle on purpose.",
+            "stack",
+            ".NET Quality",
+            "Code Quality",
+            [
+                "dotnet-quality-ci",
+                "dotnet-format",
+                "dotnet-csharpier",
+                "dotnet-roslynator",
+                "dotnet-meziantou-analyzer",
+                "dotnet-stylecop-analyzers",
+                "dotnet-analyzer-config",
+                "dotnet-code-analysis",
+            ]),
+        new(
+            "frontend-quality",
+            "Frontend quality bundle",
+            "Install the frontend quality toolchain only: Biome, ESLint, Stylelint, HTMLHint, webhint, and SonarJS. No .NET analyzers or build diagnostics are mixed in.",
+            "stack",
+            "Frontend Quality",
+            "Code Quality",
+            [
+                "dotnet-biome",
+                "dotnet-eslint",
+                "dotnet-stylelint",
+                "dotnet-htmlhint",
+                "dotnet-webhint",
+                "dotnet-sonarjs",
+            ]),
+        new(
+            "architecture-core",
+            "Architecture bundle",
+            "Install the focused architecture set: architecture guidance plus architecture-testing and visualization skills without mixing in general testing or migration flows.",
+            "workflow",
+            "Architecture",
+            "Architecture",
+            [
+                "dotnet-architecture",
+                "dotnet-netarchtest",
+                "dotnet-archunitnet",
+                "dotnet-graphify-dotnet",
+            ]),
+        new(
+            "testing-base",
+            "Testing base bundle",
+            "Install the clean testing baseline: test command fundamentals, framework selection guidance, coverage, and report output. Framework migrations stay out of this bundle.",
+            "workflow",
+            "Testing",
+            "Foundations",
+            [
+                "dotnet-test-frameworks",
+                "run-tests",
+                "coverage-analysis",
+                "dotnet-coverlet",
+                "dotnet-reportgenerator",
+                "test-anti-patterns",
+            ]),
+        new(
+            "testing-xunit",
+            "xUnit testing bundle",
+            "Install the testing baseline plus xUnit guidance. This stays focused on active xUnit usage and does not pull migration content.",
+            "workflow",
+            "Testing",
+            "Frameworks",
+            [
+                "dotnet-test-frameworks",
+                "run-tests",
+                "coverage-analysis",
+                "dotnet-coverlet",
+                "dotnet-reportgenerator",
+                "test-anti-patterns",
+                "dotnet-xunit",
+            ]),
+        new(
+            "testing-nunit",
+            "NUnit testing bundle",
+            "Install the testing baseline plus NUnit guidance. This stays focused on active NUnit usage and does not pull migration content.",
+            "workflow",
+            "Testing",
+            "Frameworks",
+            [
+                "dotnet-test-frameworks",
+                "run-tests",
+                "coverage-analysis",
+                "dotnet-coverlet",
+                "dotnet-reportgenerator",
+                "test-anti-patterns",
+                "dotnet-nunit",
+            ]),
+        new(
+            "testing-mstest",
+            "MSTest testing bundle",
+            "Install the testing baseline plus MSTest guidance and authoring patterns. Migration skills remain separate so the default MSTest path stays clean.",
+            "workflow",
+            "Testing",
+            "Frameworks",
+            [
+                "dotnet-test-frameworks",
+                "run-tests",
+                "coverage-analysis",
+                "dotnet-coverlet",
+                "dotnet-reportgenerator",
+                "test-anti-patterns",
+                "dotnet-mstest",
+                "writing-mstest-tests",
+            ]),
+        new(
+            "testing-tunit",
+            "TUnit testing bundle",
+            "Install the testing baseline plus TUnit guidance for teams that want the newer .NET-native test framework option without unrelated migration content.",
+            "workflow",
+            "Testing",
+            "Frameworks",
+            [
+                "dotnet-test-frameworks",
+                "run-tests",
+                "coverage-analysis",
+                "dotnet-coverlet",
+                "dotnet-reportgenerator",
+                "test-anti-patterns",
+                "dotnet-tunit",
+            ]),
+        new(
+            "testing-migrations",
+            "Testing migrations bundle",
+            "Install only the testing migration path: MSTest, xUnit, and VSTest-to-MTP migration guidance. This is intentionally separate from the default testing bundles.",
+            "workflow",
+            "Upgrades & Migration",
+            "Testing migrations",
+            [
+                "migrate-vstest-to-mtp",
+                "migrate-xunit-to-xunit-v3",
+                "migrate-mstest-v1v2-to-v3",
+                "migrate-mstest-v3-to-v4",
+                "mtp-hot-reload",
+            ]),
+        new(
+            "runtime-upgrades",
+            "Runtime upgrades bundle",
+            "Install the runtime-upgrade path for platform migrations such as nullable references, AOT compatibility, and targeted .NET version transitions. This stays separate from default `.NET` bundles.",
+            "workflow",
+            "Upgrades & Migration",
+            "Runtime upgrades",
+            [
+                "dotnet-aot-compat",
+                "migrate-dotnet8-to-dotnet9",
+                "migrate-dotnet9-to-dotnet10",
+                "migrate-dotnet10-to-dotnet11",
+                "migrate-nullable-references",
+                "thread-abort-migration",
+            ]),
+        new(
             "mcaf",
             "MCAF bundle",
             "Install the locally mirrored MCAF governance skills in one command, including adoption, delivery workflow, developer experience, documentation, feature specs, review planning, NFRs, source-control policy, UI/UX, and ML/AI delivery guidance.",
             "curated",
+            "Governance & Delivery",
+            "Governance",
             [
                 "dotnet-mcaf",
                 "dotnet-mcaf-agile-delivery",
@@ -35,6 +204,8 @@ internal static class CatalogScanner
             "Orleans bundle",
             "Install the main Orleans stack in one command, including Orleans core guidance, adjacent ManagedCode integrations, worker-hosting patterns, Aspire orchestration, and SignalR delivery support.",
             "curated",
+            "Distributed",
+            "Frameworks",
             [
                 "dotnet-orleans",
                 "dotnet-managedcode-orleans-graph",
@@ -105,6 +276,8 @@ internal static class CatalogScanner
                             $"{skillPath.FullName} must define compatibility in frontmatter or in {expectedManifestPath.FullName}.");
                     }
 
+                    var grouping = CatalogOrganization.Classify(skillType, packageDirectory.Name, manifestSkillMetadata.Category, skillName);
+
                     skills.Add(
                         new SkillEntry
                         {
@@ -114,9 +287,12 @@ internal static class CatalogScanner
                             Category = manifestSkillMetadata.Category,
                             Type = skillType,
                             Package = packageDirectory.Name,
+                            Stack = grouping.Stack,
+                            Lane = grouping.Lane,
                             Description = metadata["description"],
                             Compatibility = compatibility,
                             Path = BuildRelativePath(rootDirectory, skillDirectory),
+                            TokenCount = SkillTokenCounter.CountTokens(skillPath),
                             Packages = manifestSkillMetadata.Packages,
                             PackagePrefix = manifestSkillMetadata.PackagePrefix,
                             Links = packageLinks,
@@ -353,7 +529,7 @@ internal static class CatalogScanner
             var missing = bundle.Skills.Where(skillName => !skillsByName.ContainsKey(skillName)).OrderBy(name => name, StringComparer.Ordinal).ToArray();
             if (missing.Length > 0)
             {
-                throw new InvalidOperationException($"Curated bundle {bundle.Name} references unknown skills: {string.Join(", ", missing)}");
+                continue;
             }
 
             bundles.Add(
@@ -363,32 +539,10 @@ internal static class CatalogScanner
                     Title = bundle.Title,
                     Description = bundle.Description,
                     Kind = bundle.Kind,
+                    Stack = bundle.Stack,
+                    Lane = bundle.Lane,
                     SourceCategory = string.Empty,
                     Skills = [.. bundle.Skills],
-                });
-        }
-
-        foreach (var category in ResolveCategoryOrder(skills))
-        {
-            var categorySkills = skills
-                .Where(skill => string.Equals(skill.Category, category, StringComparison.Ordinal))
-                .OrderBy(skill => skill.Name, StringComparer.Ordinal)
-                .ToArray();
-
-            if (categorySkills.Length == 0)
-            {
-                continue;
-            }
-
-            bundles.Add(
-                new SkillPackageEntry
-                {
-                    Name = Slugify(category),
-                    Title = $"{category} bundle",
-                    Description = $"Install all {categorySkills.Length} skills from the {category} category in one command.",
-                    Kind = "category",
-                    SourceCategory = category,
-                    Skills = [.. categorySkills.Select(skill => skill.Name)],
                 });
         }
 
@@ -405,27 +559,6 @@ internal static class CatalogScanner
         var ordered = new List<string>();
 
         foreach (var preferred in CatalogGeneratedDefinitions.TypeDirectories)
-        {
-            if (discovered.Remove(preferred))
-            {
-                ordered.Add(preferred);
-            }
-        }
-
-        ordered.AddRange(discovered.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ThenBy(name => name, StringComparer.Ordinal));
-        return ordered;
-    }
-
-    private static IReadOnlyList<string> ResolveCategoryOrder(IReadOnlyList<SkillEntry> skills)
-    {
-        var discovered = new HashSet<string>(
-            skills
-                .Select(skill => skill.Category.Trim())
-                .Where(category => category.Length > 0),
-            StringComparer.Ordinal);
-        var ordered = new List<string>();
-
-        foreach (var preferred in CatalogGeneratedDefinitions.CategoryOrder)
         {
             if (discovered.Remove(preferred))
             {
@@ -761,6 +894,8 @@ internal sealed record CuratedBundleDefinition(
     string Title,
     string Description,
     string Kind,
+    string Stack,
+    string Lane,
     IReadOnlyList<string> Skills);
 
 internal sealed class PackageManifest

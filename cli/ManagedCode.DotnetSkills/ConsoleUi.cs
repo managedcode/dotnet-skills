@@ -55,7 +55,7 @@ internal static class ConsoleUi
             }
             else
             {
-                AnsiConsole.Write(BuildAvailableCategorySummaryTable(availableSkills));
+                AnsiConsole.Write(BuildAvailableStackSummaryTable(availableSkills));
 
                 if (renderDetailedAvailableGroups)
                 {
@@ -65,7 +65,7 @@ internal static class ConsoleUi
                 else
                 {
                     AnsiConsole.WriteLine();
-                    AnsiConsole.Write(new Panel(new Markup("Use [green]dotnet skills list --available-only[/] to expand categories into per-skill tables with short summaries."))
+                    AnsiConsole.Write(new Panel(new Markup("Use [green]dotnet skills list --available-only[/] to expand stacks into stack/lane skill tables with short summaries."))
                         .Header("[dim]explore[/]")
                         .Expand());
                 }
@@ -79,7 +79,7 @@ internal static class ConsoleUi
             scopeInventory,
             installedSkills.Select(record => record.Skill).ToArray(),
             availableSkills,
-            catalog.Packages));
+            catalog.Packages.Where(CatalogOrganization.IsPrimaryBundle).ToArray()));
     }
 
     public static void RenderInstallSummary(
@@ -479,43 +479,52 @@ internal static class ConsoleUi
     public static void RenderPackageList(SkillCatalogPackage catalog)
     {
         WriteTitle("dotnet skills bundle list");
+        var visibleBundles = catalog.Packages
+            .Where(CatalogOrganization.IsPrimaryBundle)
+            .OrderBy(CatalogOrganization.FormatBundleSortKey, StringComparer.Ordinal)
+            .ToArray();
+        var skillTokens = catalog.Skills.ToDictionary(skill => skill.Name, skill => skill.TokenCount, StringComparer.OrdinalIgnoreCase);
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
         grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
-        grid.AddRow(new Markup("[dim]bundles[/]"), new Markup($"{catalog.Packages.Count}"));
+        grid.AddRow(new Markup("[dim]bundles[/]"), new Markup($"{visibleBundles.Length}"));
         grid.AddRow(new Markup("[dim]skills covered[/]"), new Markup($"{catalog.Skills.Count}"));
+        grid.AddRow(new Markup("[dim]skill tokens[/]"), new Markup(FormatTokenCount(catalog.Skills.Sum(skill => skill.TokenCount))));
         AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]bundles[/]").Border(BoxBorder.Rounded).Expand());
         AnsiConsole.WriteLine();
 
-        if (catalog.Packages.Count == 0)
+        if (visibleBundles.Length == 0)
         {
-            AnsiConsole.Write(new Panel(new Markup("No bundles are available in this catalog version yet."))
+            AnsiConsole.Write(new Panel(new Markup("No focused bundles are available in this catalog version yet."))
                 .Header("[dim]bundles[/]")
                 .Expand());
             return;
         }
 
         var table = new Table().Expand().Border(TableBorder.Rounded);
-        table.Title = new TableTitle("[bold]Available bundles[/]");
+        table.Title = new TableTitle("[bold]Focused bundles[/]");
         table.AddColumn("Bundle");
-        table.AddColumn("Type");
+        table.AddColumn("Area");
         table.AddColumn("Skills");
+        table.AddColumn("Tokens");
         table.AddColumn("Command");
         table.AddColumn("Includes");
 
-        foreach (var package in catalog.Packages.OrderBy(FormatPackageSortKey, StringComparer.Ordinal))
+        foreach (var package in visibleBundles)
         {
             var skillAliases = package.Skills
                 .Select(ToAlias)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray();
+            var tokenCount = package.Skills.Sum(skillName => skillTokens.TryGetValue(skillName, out var value) ? value : 0);
 
             table.AddRow(
                 $"[bold]{Escape(package.Name)}[/]",
-                Escape(FormatPackageKind(package)),
+                Escape(CatalogOrganization.ResolveBundleAreaLabel(package)),
                 skillAliases.Length.ToString(),
+                FormatTokenCount(tokenCount),
                 Escape($"install bundle {package.Name}"),
                 Escape(string.Join(", ", skillAliases.Take(4)))
                     + (skillAliases.Length > 4 ? $" [grey](+{skillAliases.Length - 4} more)[/]" : string.Empty));
@@ -524,8 +533,7 @@ internal static class ConsoleUi
         AnsiConsole.Write(table);
         AnsiConsole.WriteLine();
 
-        var suggested = catalog.Packages
-            .OrderBy(FormatPackageSortKey, StringComparer.Ordinal)
+        var suggested = visibleBundles
             .Take(3)
             .Select(package => $"dotnet skills install bundle {package.Name}")
             .ToArray();
@@ -572,14 +580,15 @@ internal static class ConsoleUi
 
         Section("Catalog");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} list", "Inventory with scope comparison");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} bundle list", "Curated bundles");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} bundle list", "Focused bundles by stack and workflow");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} recommend", "Scan .csproj and propose skills");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts as JSON");
 
         Section("Install");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install aspire orleans", "Install by alias");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto", "Auto-install from project signals");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto --prune", "Reconcile stale auto-managed skills");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} install bundle ai", "Install a multi-skill bundle");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} install bundle dotnet-quality", "Install a focused multi-skill bundle");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} remove --all", "Remove all installed skills");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} update", "Update to latest catalog version");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} sync --force", "Refresh cached catalog");
@@ -598,6 +607,7 @@ internal static class ConsoleUi
         var noteLines = new[]
         {
             $"[dim]Bare[/] [green]{Escape(ToolIdentity.DisplayCommand)}[/] [dim]opens the interactive shell.[/]",
+            "[dim]The shell exposes[/] [green]Stack -> Lane -> Skill[/] [dim]browse, analysis views, and install preview.[/]",
             "[dim]Short aliases work everywhere:[/] [green]aspire[/] [dim]resolves to[/] [green]dotnet-aspire[/][dim].[/]",
             "[dim]--bundled skips the network. --catalog-version pins a release. --refresh redownloads.[/]",
             "[dim]Auto-detect probes .codex, .claude, .github, .gemini, .junie; falls back to .agents/skills.[/]",
@@ -801,45 +811,59 @@ internal static class ConsoleUi
         var table = new Table().Expand().Border(TableBorder.Rounded);
         table.Title = new TableTitle("[bold]Installed skills[/]");
         table.AddColumn("Alias");
+        table.AddColumn("Area");
         table.AddColumn("Installed");
         table.AddColumn("Latest");
+        table.AddColumn("Tokens");
         table.AddColumn("Status");
-        table.AddColumn("Category");
 
         foreach (var record in installedSkills.OrderBy(item => item.Skill.Name, StringComparer.Ordinal))
         {
             table.AddRow(
                 $"[bold]{Escape(ToAlias(record.Skill.Name))}[/]",
+                Escape($"{record.Skill.Stack} / {record.Skill.Lane}"),
                 Escape(record.InstalledVersion),
                 Escape(record.Skill.Version),
-                record.IsCurrent ? "[green]\u2714 Current[/]" : "[yellow]\u21bb Update available[/]",
-                $"[grey]{Escape(record.Skill.Category)}[/]");
+                FormatTokenCount(record.Skill.TokenCount),
+                record.IsCurrent ? "[green]\u2714 Current[/]" : "[yellow]\u21bb Update available[/]");
         }
 
         return table;
     }
 
-    private static Table BuildAvailableCategorySummaryTable(IReadOnlyList<SkillEntry> availableSkills)
+    private static Table BuildAvailableStackSummaryTable(IReadOnlyList<SkillEntry> availableSkills)
     {
         var table = new Table().Expand().Border(TableBorder.Rounded);
-        table.Title = new TableTitle("[bold]Available catalog skills[/]");
-        table.AddColumn("Category");
-        table.AddColumn("Available");
+        table.Title = new TableTitle("[bold]Available stacks[/]");
+        table.AddColumn("Stack");
+        table.AddColumn("Lanes");
+        table.AddColumn("Skills");
+        table.AddColumn("Tokens");
         table.AddColumn("Examples");
 
         foreach (var group in availableSkills
-                     .GroupBy(skill => skill.Category, StringComparer.OrdinalIgnoreCase)
-                     .OrderBy(group => group.Key, StringComparer.Ordinal))
+                     .GroupBy(skill => skill.Stack, StringComparer.OrdinalIgnoreCase)
+                     .OrderBy(group => CatalogOrganization.GetStackRank(group.Key))
+                     .ThenBy(group => group.Key, StringComparer.Ordinal))
         {
             var aliases = group
                 .OrderBy(skill => skill.Name, StringComparer.Ordinal)
                 .Take(4)
                 .Select(skill => ToAlias(skill.Name))
                 .ToArray();
+            var lanes = group
+                .Select(skill => skill.Lane)
+                .Where(lane => !string.IsNullOrWhiteSpace(lane))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(CatalogOrganization.GetLaneRank)
+                .ThenBy(lane => lane, StringComparer.Ordinal)
+                .ToArray();
 
             table.AddRow(
                 Escape(group.Key),
+                Escape(string.Join(", ", lanes.Take(3))) + (lanes.Length > 3 ? $" [grey](+{lanes.Length - 3})[/]" : string.Empty),
                 group.Count().ToString(),
+                FormatTokenCount(group.Sum(skill => skill.TokenCount)),
                 Escape(string.Join(", ", aliases)) + (group.Count() > aliases.Length ? $" [grey](+{group.Count() - aliases.Length} more)[/]" : string.Empty));
         }
 
@@ -849,20 +873,28 @@ internal static class ConsoleUi
     private static void RenderAvailableSkillGroups(IReadOnlyList<SkillEntry> availableSkills)
     {
         foreach (var group in availableSkills
-                     .GroupBy(skill => skill.Category, StringComparer.OrdinalIgnoreCase)
-                     .OrderBy(group => group.Key, StringComparer.Ordinal))
+                     .GroupBy(skill => skill.Stack, StringComparer.OrdinalIgnoreCase)
+                     .OrderBy(group => CatalogOrganization.GetStackRank(group.Key))
+                     .ThenBy(group => group.Key, StringComparer.Ordinal))
         {
             var table = new Table().Expand();
             table.Title = new TableTitle($"{group.Key} skills");
+            table.AddColumn("Lane");
             table.AddColumn("Alias");
             table.AddColumn("Skill");
+            table.AddColumn("Tokens");
             table.AddColumn("Summary");
 
-            foreach (var skill in group.OrderBy(item => item.Name, StringComparer.Ordinal))
+            foreach (var skill in group
+                         .OrderBy(item => CatalogOrganization.GetLaneRank(item.Lane))
+                         .ThenBy(item => item.Lane, StringComparer.Ordinal)
+                         .ThenBy(item => item.Name, StringComparer.Ordinal))
             {
                 table.AddRow(
+                    Escape(skill.Lane),
                     $"[bold]{Escape(ToAlias(skill.Name))}[/]",
                     Escape(skill.Name),
+                    FormatTokenCount(skill.TokenCount),
                     Escape(CompactDescription(skill.Description)));
             }
 
@@ -915,7 +947,7 @@ internal static class ConsoleUi
 
         if (packages.Count > 0)
         {
-            var featuredPackage = packages.OrderBy(FormatPackageSortKey, StringComparer.Ordinal).First();
+            var featuredPackage = packages.OrderBy(CatalogOrganization.FormatBundleSortKey, StringComparer.Ordinal).First();
             lines.Add($"[green]{Escape($"dotnet skills install bundle {featuredPackage.Name}")}[/]");
         }
 
@@ -1014,30 +1046,13 @@ private static string BuildSkillCell(SkillEntry skill)
             : $"{description[..97]}...";
     }
 
+    private static string FormatTokenCount(int tokenCount) => tokenCount.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
+
     private static string Escape(string value) => Markup.Escape(value);
 
     private static string ToAlias(string skillName) => skillName.StartsWith("dotnet-", StringComparison.OrdinalIgnoreCase)
         ? skillName["dotnet-".Length..]
         : skillName;
-
-    private static string FormatPackageKind(SkillPackageEntry package)
-    {
-        if (string.Equals(package.Kind, "category", StringComparison.OrdinalIgnoreCase)
-            && !string.IsNullOrWhiteSpace(package.SourceCategory))
-        {
-            return $"Category: {package.SourceCategory}";
-        }
-
-        return string.Equals(package.Kind, "curated", StringComparison.OrdinalIgnoreCase)
-            ? "Curated"
-            : package.Kind;
-    }
-
-    private static string FormatPackageSortKey(SkillPackageEntry package)
-    {
-        var rank = string.Equals(package.Kind, "curated", StringComparison.OrdinalIgnoreCase) ? "0" : "1";
-        return $"{rank}:{package.Name}";
-    }
 
     private static string GlobalToolUpdateCommand => $"dotnet tool update --global {ToolIdentity.PackageId}";
 

@@ -28,18 +28,20 @@ dotnet tool install --global dotnet-skills
 dotnet tool install --global dotnet-agents
 dotnet tool install --global agents
 
+dotnet skills                               # open the interactive control center
 dotnet skills version                       # show current tool version and latest NuGet version
 dotnet skills --version                     # alias for the same version view
 dotnet skills list                          # show installed and available skills
-dotnet skills package list                  # show curated skill stacks and category-wide bundles
+dotnet skills bundle list                   # show focused bundles by stack and workflow
 dotnet skills list --local                  # only installed skills in the current target
 dotnet skills recommend                     # suggest skills from local .csproj files
 dotnet skills install --auto                # install skills for NuGet packages detected in local .csproj files
 dotnet skills install --auto --prune        # remove stale auto-managed skills that no longer match the project
-dotnet skills install package ai            # install a multi-skill skill stack
-dotnet skills install package mcaf          # install the local MCAF governance skill stack
-dotnet skills package install orleans       # alias for package-first install flow
+dotnet skills install bundle dotnet-quality # install a focused .NET quality bundle
+dotnet skills install bundle mcaf           # install the MCAF governance bundle
+dotnet skills install bundle orleans        # install the Orleans workflow bundle
 dotnet skills install aspire orleans        # install skills
+dotnet skills catalog tokens --catalog-root . # export per-skill token counts as JSON
 dotnet skills remove --all                  # remove installed catalog skills from the target
 dotnet skills update                        # refresh installed catalog skills
 dotnet skills install blazor --agent claude # install for a specific agent
@@ -53,15 +55,16 @@ agents install router --auto                # same agent install flow without th
 
 | Command | Description |
 |---------|-------------|
+| `dotnet skills` | Open the interactive control center with stack browsing, analysis, and install preview |
 | `dotnet skills version` | Show the current installed tool version and check whether NuGet has a newer release |
 | `dotnet skills list` | Show the current inventory, compare project/global scope when relevant, and keep the remaining catalog as a compact category summary |
-| `dotnet skills package list` | Show the curated and category-based skill stacks that expand into multiple related skills |
+| `dotnet skills bundle list` | Show the focused bundles that expand into related skills by stack or workflow |
 | `dotnet skills recommend` | Scan local `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install |
 | `dotnet skills install --auto` | Inspect local `*.csproj` files, detect NuGet packages and strong project signals, and install matching skills automatically |
 | `dotnet skills install --auto --prune` | Remove stale auto-managed skills that no longer match the current project's NuGet packages or app-model signals |
 | `dotnet skills install <skill...>` | Install one or more skills |
-| `dotnet skills install package <package...>` | Install one or more skill stacks such as `ai`, `code-quality`, `mcaf`, or `orleans`, with each stack expanding into multiple related skills |
-| `dotnet skills package install <package...>` | Alias for the same package installation flow |
+| `dotnet skills install bundle <bundle...>` | Install one or more focused bundles such as `dotnet-quality`, `frontend-quality`, `mcaf`, or `orleans` |
+| `dotnet skills catalog tokens --catalog-root .` | Export the tokenizer model name plus per-skill token counts as JSON |
 | `dotnet skills remove [skill...]` | Remove one or more installed catalog skills, or use `--all` to clear the target |
 | `dotnet skills update [skill...]` | Update installed catalog skills to the selected catalog version |
 | `dotnet skills sync` | Download latest catalog |
@@ -79,7 +82,9 @@ Use `--agent` to target a specific agent platform, `--scope` to choose global or
 
 `dotnet-skills` remains the skill-first CLI and still supports `dotnet skills agent ...` for compatibility. The dedicated agent-only surface is published in both forms: `dotnet-agents` for `dotnet agents ...` and `agents` for `agents ...`. Both top-level `list`, `install`, `remove`, and `where` commands target orchestration agents directly.
 
-`dotnet skills package list` shows the ready-made skill stacks. Skill-stack installs are bulk shortcuts for related skill sets, so `dotnet skills install package ai`, `dotnet skills install package code-quality`, `dotnet skills install package mcaf`, or `dotnet skills install package orleans` will install every skill mapped to that stack in one pass.
+The interactive shell behind bare `dotnet skills` is the main control center: it exposes `Stack -> Lane -> Skill` browsing, package-signal analysis, token hotspots, a full tree view, and install preview before files are written.
+
+`dotnet skills bundle list` shows the ready-made focused bundles. Bundle installs are bulk shortcuts for related skill sets, so `dotnet skills install bundle dotnet-quality`, `dotnet skills install bundle frontend-quality`, `dotnet skills install bundle mcaf`, or `dotnet skills install bundle orleans` install every skill mapped to that focused bundle in one pass.
 
 `dotnet skills install --auto` inspects local `*.csproj` files, detects NuGet packages plus strong SDK and project-property signals, and installs the matching skills for that project automatically. Add `dotnet skills install --auto --prune` when you also want to remove stale auto-managed skills that no longer match the current project. Protected diagnostic skills and `dotnet-graphify-dotnet` are not pruned.
 
@@ -88,6 +93,42 @@ Use `--agent` to target a specific agent platform, `--scope` to choose global or
 The bare `dotnet skills` usage view and `help` path also perform the automatic self-update check, so an outdated tool still tells you to upgrade before it renders the command table.
 
 Use `dotnet skills version --no-check`, `dotnet agents version --no-check`, or `agents version --no-check` when you only want the local installed tool version without calling NuGet. Set `DOTNET_SKILLS_SKIP_UPDATE_CHECK=1`, `DOTNET_AGENTS_SKIP_UPDATE_CHECK=1`, or `AGENTS_SKIP_UPDATE_CHECK=1` if you want to suppress automatic update notices during normal command startup.
+
+## Install Surface
+
+Public bundle installs use `bundle`, not `package`. The focused bundle surface is intentionally small:
+
+- `dotnet-base`
+- `dotnet-quality`
+- `frontend-quality`
+- `architecture-core`
+- `testing-base`
+- `testing-xunit`
+- `testing-nunit`
+- `testing-mstest`
+- `testing-tunit`
+- `testing-migrations`
+- `runtime-upgrades`
+- `mcaf`
+- `orleans`
+
+Stacks are intentionally split so installs stay explicit instead of collapsing into one overloaded `.NET` bucket:
+
+- `.NET Foundations`
+- `.NET Quality`
+- `Build & Tooling`
+- `Diagnostics & Metrics`
+- `Web`
+- `Desktop & UI`
+- `Frontend Quality`
+- `Testing`
+- `Architecture`
+- `Governance & Delivery`
+- `Data`
+- `AI & Agents`
+- `Distributed`
+- `Legacy`
+- `Upgrades & Migration`
 
 Catalog releases are published automatically in `.github/workflows/publish-catalog.yml` at `04:00` UTC and include the `catalog-v*` release, GitHub Pages deployment, and NuGet publish for `dotnet-skills`, `dotnet-agents`, and `agents` in the same run. Automatic catalog versions use a numeric calendar-plus-daily-index format such as `2026.3.15.0`, where the first UTC-day release is `.0`, the second is `.1`, and so on. `dotnet-skills` reads the newest non-draft `catalog-v*` release by default, and `--catalog-version` is only for intentional pinning.
 

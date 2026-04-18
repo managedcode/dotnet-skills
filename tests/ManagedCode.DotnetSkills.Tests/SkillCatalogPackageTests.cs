@@ -105,7 +105,9 @@ public sealed class SkillCatalogPackageTests
         Assert.Equal("https://github.com/dotnet/aspire", aspire.Links.Repository);
         Assert.Equal("https://learn.microsoft.com/en-us/dotnet/aspire/", aspire.Links.Docs);
         Assert.Equal("https://www.nuget.org/packages/Aspire.Hosting", aspire.Links.NuGet);
-        Assert.Contains(package.Packages, bundle => bundle.Name == "cloud");
+        Assert.True(aspire.TokenCount > 0);
+        Assert.Contains(package.Packages, bundle => bundle.Name == "orleans");
+        Assert.DoesNotContain(package.Packages, bundle => string.Equals(bundle.Kind, "category", StringComparison.OrdinalIgnoreCase));
         Assert.Equal("dotnet-aspire", package.ResolveSkillSource("dotnet-aspire").Name);
     }
 
@@ -244,7 +246,7 @@ public sealed class SkillCatalogPackageTests
 
         var skill = Assert.Single(package.Skills, candidate => candidate.Name == "dotnet-observability-analyzer");
         Assert.Equal("Analyzer", skill.Type);
-        Assert.Contains(package.Packages, bundle => bundle.Name == "observability" && bundle.SourceCategory == "Observability");
+        Assert.DoesNotContain(package.Packages, bundle => string.Equals(bundle.Kind, "category", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

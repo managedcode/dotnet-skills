@@ -29,7 +29,7 @@ DEFAULT_RELEASES_URL = "https://github.com/managedcode/dotnet-skills/releases/ta
 COPYRIGHT_START_YEAR = 2024
 SOCIAL_IMAGE_PATH = "assets/social-card.svg"
 GITHUB_REPOSITORY_URL = "https://github.com/managedcode/dotnet-skills"
-NUGET_PACKAGE_URL = "https://www.nuget.org/bundles/dotnet-skills"
+NUGET_PACKAGE_URL = "https://www.nuget.org/packages/dotnet-skills"
 MANAGEDCODE_WEBSITE_URL = "https://www.managed-code.com/"
 
 PLACEHOLDERS = {
@@ -501,8 +501,10 @@ def load_bundle_documents(bundles: list[dict], skills_by_name: dict[str, dict], 
 
         linked_skills = [skills_by_name[skill_name] for skill_name in raw_skill_names]
         detail_path = f"bundles/{bundle_name}/"
-        source_category = bundle.get("sourceCategory", "")
         kind = bundle.get("kind", "curated")
+        token_count = sum(int(skill.get("tokenCount", 0)) for skill in linked_skills)
+        stack_labels = dedupe_strings(skill.get("stack", "") for skill in linked_skills)
+        lane_labels = dedupe_strings(skill.get("lane", "") for skill in linked_skills)
 
         enriched.append(
             {
@@ -510,12 +512,15 @@ def load_bundle_documents(bundles: list[dict], skills_by_name: dict[str, dict], 
                 "slug": bundle_name,
                 "short_name": bundle_name,
                 "kind": kind,
-                "kind_label": "Category" if kind == "category" else "Curated",
-                "source_category_slug": slugify(source_category) if source_category else "",
+                "kind_label": kind.replace("-", " ").title(),
+                "source_category_slug": "",
                 "detail_path": detail_path,
                 "detail_url": build_absolute_url(site_url, detail_path),
                 "skill_names": raw_skill_names,
                 "skills": linked_skills,
+                "tokenCount": token_count,
+                "stackLabels": stack_labels,
+                "laneLabels": lane_labels,
                 "install_command": f"dotnet skills install bundle {bundle_name}",
                 "lastmod": get_git_last_modified(
                     [skill["source_file"] for skill in linked_skills]
@@ -690,6 +695,7 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
         )
     )
     nuget_pills = render_nuget_pills(skill)
+    token_count = int(skill.get("tokenCount", 0))
     return f"""
       <article class="directory-card skill-card {type_class} is-clickable js-filter-card" data-category="{escape_html(skill['category'])}" data-type="{escape_html(skill_type)}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
         <div class="card-head">
@@ -700,6 +706,7 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
           <div class="card-tags">
             <span class="card-tag card-tag-type">{escape_html(skill_type)}</span>
             <a class="card-tag card-tag-category" href="{escape_html(category_href)}">{escape_html(skill['category'])}</a>
+            <span class="card-tag card-tag-type">{token_count:,} tokens</span>
           </div>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
@@ -813,6 +820,8 @@ def render_bundle_card(bundle: dict, root_prefix: str) -> str:
     detail_href = f"{root_prefix}{bundle['detail_path']}"
     summary = preview_text(bundle["description"], limit=150)
     install_command = bundle["install_command"]
+    token_count = int(bundle.get("tokenCount", 0))
+    area_label = " / ".join(part for part in [bundle.get("stack", ""), bundle.get("lane", "")] if part)
     filter_text = " ".join(
         dedupe_strings(
             [
@@ -820,7 +829,10 @@ def render_bundle_card(bundle: dict, root_prefix: str) -> str:
                 bundle["name"],
                 bundle["description"],
                 bundle["kind_label"],
-                bundle.get("sourceCategory", ""),
+                bundle.get("stack", ""),
+                bundle.get("lane", ""),
+                " ".join(bundle.get("stackLabels", [])),
+                " ".join(bundle.get("laneLabels", [])),
                 " ".join(skill["name"] for skill in bundle["skills"]),
             ]
         )
@@ -835,6 +847,8 @@ def render_bundle_card(bundle: dict, root_prefix: str) -> str:
             <div class="bundle-meta">
               <span class="bundle-kind">{escape_html(bundle['kind_label'])}</span>
               <span class="bundle-count">{skill_count} skills</span>
+              <span class="bundle-count">{token_count:,} tokens</span>
+              {"<span class=\"bundle-count\">" + escape_html(area_label) + "</span>" if area_label else ""}
             </div>
           </div>
         </div>
@@ -873,8 +887,9 @@ def render_bundle_filter_tabs(current_kind: str = "all") -> str:
     """Render bundle-kind filter tabs."""
     options = [
         ("all", "All bundles"),
-        ("curated", "Curated"),
-        ("category", "Category bundles"),
+        ("stack", "Stack bundles"),
+        ("workflow", "Workflow bundles"),
+        ("curated", "Focused bundles"),
     ]
     return "".join(
         f'<button class="filter-tab {"is-active" if current_kind == value else ""}" type="button" data-filter="{value}">{label}</button>'
@@ -1006,15 +1021,13 @@ def render_bundle_listing_section(
     cards_html = "\n".join(render_bundle_card(bundle, root_prefix) for bundle in bundles)
     tabs_html = render_bundle_filter_tabs() if include_tabs else ""
     links = [("Bundles", f"{root_prefix}bundles/")] if show_index_link else []
-    if any(bundle.get("sourceCategory") for bundle in bundles):
-        links.append(("Categories", f"{root_prefix}categories/"))
 
     toolbar_html = ""
     empty_state_html = ""
     if include_tabs:
         toolbar_html = f"""
         <div class="listing-toolbar">
-          <input class="search-input" id="search-input" type="search" placeholder="Search bundles by name, category, or included skill" autocomplete="off">
+          <input class="search-input" id="search-input" type="search" placeholder="Search bundles by name, stack, workflow, or included skill" autocomplete="off">
           <div class="filter-tabs">
             {tabs_html}
           </div>
@@ -1044,10 +1057,10 @@ def render_quickstart_panel() -> str:
     """Render the home-page quickstart as a dark terminal-style panel."""
     steps = [
         ("Install", "dotnet tool install --global dotnet-skills", "Get the CLI onto your machine"),
+        ("Open", "dotnet skills", "Launch the interactive stack/lane control center"),
         ("Detect", "dotnet skills install --auto", "Scan .csproj and match NuGet packages"),
-        ("Browse", "dotnet skills bundle list", "See curated bundles and categories"),
-        ("Bundle", "dotnet skills install bundle ai", "Install a ready-made bundle"),
-        ("Pick", "dotnet skills install aspire blazor", "Add individual skills you need"),
+        ("Bundle", "dotnet skills install bundle dotnet-quality", "Install a focused multi-skill bundle"),
+        ("Measure", "dotnet skills catalog tokens --catalog-root .", "Export per-skill token counts"),
     ]
     items = []
     for index, (label, command, hint) in enumerate(steps):
@@ -1174,6 +1187,7 @@ def render_home_page(
     root_prefix: str,
 ) -> tuple[str, dict]:
     """Render the root landing page."""
+    total_tokens = sum(int(skill.get("tokenCount", 0)) for skill in skills)
     hero = f"""
       <section class="page-hero">
         <div class="eyebrow-row">
@@ -1182,7 +1196,7 @@ def render_home_page(
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
         <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>
-        <p class="page-lead">Start by installing skills for the NuGet packages already in your project, or use a bundle when you want broader ready-made coverage. Drop into categories, skills, and orchestration agents when you want more exact .NET guidance for the coding platform you already use.</p>
+        <p class="page-lead">Start from the NuGet packages already in your project, a focused bundle, or the interactive control center. Browse stack and lane drilldowns, inspect per-skill token counts, and install grouped skills without broad category-wide noise.</p>
         <div class="hero-actions">
           {render_button("Browse bundles", f"{root_prefix}bundles/", "primary")}
           {render_button("Browse categories", f"{root_prefix}categories/", "ghost")}
@@ -1191,6 +1205,7 @@ def render_home_page(
         <div class="metric-grid">
           {render_metric_card(str(len(skills)), "Skills")}
           {render_metric_card(str(len(bundles)), "Bundles")}
+          {render_metric_card(f"{total_tokens:,}", "Skill tokens")}
           {render_metric_card(str(len(agents)), "Agents")}
           {render_metric_card(str(len(category_infos)), "Categories")}
           {render_metric_card("5", "Platforms")}
@@ -1240,6 +1255,7 @@ def build_skill_payload(skills: list[dict], root_prefix: str) -> list[dict]:
             "repositoryUrl": skill.get("repository_url", ""),
             "docsUrl": skill.get("docs_url", ""),
             "nugetUrl": skill.get("nuget_url", ""),
+            "tokenCount": skill.get("tokenCount", 0),
             "installCommand": f"dotnet skills install {skill['short_name']}",
         }
         for skill in skills
@@ -1536,7 +1552,7 @@ def render_bundles_index_page(bundles: list[dict], root_prefix: str) -> tuple[st
           <span class="tag tag-accent">{len(bundles)} bundles</span>
         </div>
         <h1 class="page-title">Install grouped <span class="accent">bundles</span></h1>
-        <p class="page-lead">Bundles expand one command into multiple related skills. Use curated bundles for common patterns such as Orleans, or category bundles when you want every skill under one topic.</p>
+        <p class="page-lead">Bundles expand one command into multiple related skills. Every bundle here is intentionally focused by stack or workflow instead of mixing broad category-wide installs.</p>
       </section>
       {render_bundle_listing_section(
           bundles,
@@ -1558,13 +1574,9 @@ def render_bundles_index_page(bundles: list[dict], root_prefix: str) -> tuple[st
 def render_bundle_detail_page(bundle: dict, root_prefix: str) -> str:
     """Render a bundle detail page."""
     install_command = bundle["install_command"]
-    category_link = ""
-    if bundle.get("sourceCategory") and bundle.get("source_category_slug"):
-        category_link = (
-            f'<a class="pill-link" href="{escape_html(root_prefix + "categories/" + bundle["source_category_slug"] + "/")}">'
-            f'{escape_html(bundle["sourceCategory"])} category</a>'
-        )
-
+    token_count = int(bundle.get("tokenCount", 0))
+    area_label = " / ".join(part for part in [bundle.get("stack", ""), bundle.get("lane", "")] if part)
+    lane_preview = ", ".join(bundle.get("laneLabels", [])[:4])
     related_skill_cards = render_skill_listing_section(
         bundle["skills"],
         build_category_infos(bundle["skills"], []),
@@ -1581,6 +1593,7 @@ def render_bundle_detail_page(bundle: dict, root_prefix: str) -> str:
         <div class="eyebrow-row">
           <span class="eyebrow">{escape_html(bundle["kind_label"])}</span>
           <span class="tag tag-accent">{len(bundle["skills"])} skills</span>
+          <span class="tag">{token_count:,} tokens</span>
         </div>
         <h1 class="page-title">{escape_html(bundle["title"])}</h1>
         <p class="page-lead">{escape_html(bundle["description"])}</p>
@@ -1611,7 +1624,14 @@ def render_bundle_detail_page(bundle: dict, root_prefix: str) -> str:
             <div class="sidebar-links">
               <span class="pill-link">{escape_html(bundle["kind_label"])}</span>
               <span class="pill-link">{len(bundle["skills"])} skills</span>
-              {category_link}
+              <span class="pill-link">{token_count:,} tokens</span>
+              {"<span class=\"pill-link\">" + escape_html(area_label) + "</span>" if area_label else ""}
+            </div>
+          </div>
+          <div class="sidebar-card">
+            <div class="detail-card-label">Coverage</div>
+            <div class="sidebar-links">
+              {"<span class=\"pill-link\">" + escape_html(lane_preview) + "</span>" if lane_preview else "<span class=\"pill-link\">Focused lane set</span>"}
             </div>
           </div>
         </aside>
@@ -1799,7 +1819,7 @@ def render_about_page(
           </section>
           <section>
             <h2>How updates land</h2>
-            <p>The catalog is published through a unified release workflow that produces GitHub releases, NuGet bundles, and GitHub Pages output together. Upstream-watch automation monitors official releases, docs, and vendir-managed upstream repositories so the catalog can be refreshed when major guidance changes land elsewhere.</p>
+            <p>The catalog is published through a unified release workflow that produces GitHub releases, NuGet packages, and GitHub Pages output together. Upstream-watch automation monitors official releases, docs, and vendir-managed upstream repositories so the catalog can be refreshed when major guidance changes land elsewhere.</p>
           </section>
           <section>
             <h2>How catalog packages are structured</h2>
@@ -1811,14 +1831,14 @@ def render_about_page(
           </section>
           <section>
             <h2>Why there are multiple page types now</h2>
-            <p>Home still carries the full catalog and quick-view modal. Package pages provide one-command bundle installs, category pages group related work, skill pages expose real content from <code>SKILL.md</code>, agent pages explain routing behavior, and this about page captures the project context and credits.</p>
+            <p>Home still carries the full catalog and quick-view modal. Bundle pages provide one-command multi-skill installs, category pages group related work, skill pages expose real content from <code>SKILL.md</code>, agent pages explain routing behavior, and this about page captures the project context and credits.</p>
           </section>
         </div>
         <aside class="sidebar-stack">
           <div class="sidebar-card">
             <div class="detail-card-label">Explore</div>
             <div class="sidebar-links">
-              <a class="pill-link" href="{escape_html(root_prefix + 'bundles/')}">Packages</a>
+              <a class="pill-link" href="{escape_html(root_prefix + 'bundles/')}">Bundles</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'categories/')}">Categories</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'skills/')}">Skills</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'agents/')}">Agents</a>
@@ -2083,7 +2103,7 @@ def main() -> int:
         shutil.rmtree(OUTPUT_DIR)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    raw_skills = collect_skills()
+    raw_skills = collect_skills(include_token_counts=True)
     raw_bundles = build_bundles(raw_skills)
     raw_agents = collect_agents()
 
@@ -2194,8 +2214,8 @@ def main() -> int:
     add_page(
         path="bundles/",
         title=".NET Bundles | dotnet-skills",
-        description="Browse one-command .NET bundles, including curated bundles and category-wide installs such as AI, Code Quality, and Orleans.",
-        keywords=["dotnet bundles", "install bundle ai", "install bundle orleans", "code quality bundle", "dotnet-skills bundles"],
+        description="Browse one-command .NET bundles with focused stack and workflow installs for quality, testing, architecture, Orleans, and more.",
+        keywords=["dotnet bundles", "install bundle dotnet-quality", "install bundle orleans", "mcaf bundle", "dotnet-skills bundles"],
         body_class="page-bundles",
         main_content=bundles_body,
         json_ld=build_collection_json_ld(

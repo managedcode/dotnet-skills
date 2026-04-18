@@ -45,10 +45,14 @@ public sealed class InteractiveConsoleAppTests
         var catalog = TestCatalog.Load();
         var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
-            "Skills - browse and install",  // home menu
-            "Install skills",  // catalog action
+            "Stacks - browse by stack",
+            "Browse a stack",
+            "Distributed",
+            "Install from a lane",
+            "Frameworks",
             new[] { aspireSkill },
             true,
+            "Back",
             "Back",
             "Exit");
 
@@ -63,6 +67,23 @@ public sealed class InteractiveConsoleAppTests
 
         Assert.Equal(0, exitCode);
         Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", aspireSkill.Name)));
+    }
+
+    [Fact]
+    public async Task RunAsync_CanOpenCatalogAnalysisTree()
+    {
+        var prompts = new FakeInteractivePrompts(
+            "Analysis - tree, tokens, package signals",
+            "View full skill tree",
+            "Back",
+            "Back",
+            "Exit");
+
+        var app = CreateApp(prompts);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
     }
 
     [Fact]
@@ -174,7 +195,17 @@ internal sealed class FakeInteractivePrompts(params object[] responses) : IInter
 
         if (response is string label)
         {
-            return choices.Single(choice => string.Equals(formatter(choice), label, StringComparison.Ordinal));
+            var exact = choices.Where(choice => string.Equals(formatter(choice), label, StringComparison.Ordinal)).ToArray();
+            if (exact.Length == 1)
+            {
+                return exact[0];
+            }
+
+            var prefix = choices.Where(choice => formatter(choice).StartsWith(label, StringComparison.Ordinal)).ToArray();
+            if (prefix.Length == 1)
+            {
+                return prefix[0];
+            }
         }
 
         throw new InvalidOperationException($"Unsupported select response for {title}: {response.GetType().FullName}");
@@ -191,8 +222,24 @@ internal sealed class FakeInteractivePrompts(params object[] responses) : IInter
 
         if (response is IEnumerable<string> labels)
         {
-            var selected = labels.ToHashSet(StringComparer.Ordinal);
-            return choices.Where(choice => selected.Contains(formatter(choice))).ToArray();
+            return labels
+                .Select(label =>
+                {
+                    var exact = choices.Where(choice => string.Equals(formatter(choice), label, StringComparison.Ordinal)).ToArray();
+                    if (exact.Length == 1)
+                    {
+                        return exact[0];
+                    }
+
+                    var prefix = choices.Where(choice => formatter(choice).StartsWith(label, StringComparison.Ordinal)).ToArray();
+                    if (prefix.Length == 1)
+                    {
+                        return prefix[0];
+                    }
+
+                    throw new InvalidOperationException($"Could not match multi-select response '{label}' for {title}.");
+                })
+                .ToArray();
         }
 
         throw new InvalidOperationException($"Unsupported multi-select response for {title}: {response.GetType().FullName}");

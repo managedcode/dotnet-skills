@@ -35,9 +35,11 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
         }
 
         var availableSkills = catalog.Skills.ToDictionary(skill => skill.Name, StringComparer.OrdinalIgnoreCase);
-        var availablePackages = catalog.Packages.ToDictionary(
-            package => NormalizePackageKey(package.Name),
-            StringComparer.OrdinalIgnoreCase);
+        var availablePackages = catalog.Packages
+            .Where(CatalogOrganization.IsPrimaryBundle)
+            .ToDictionary(
+                package => NormalizePackageKey(package.Name),
+                StringComparer.OrdinalIgnoreCase);
 
         var selected = new List<SkillEntry>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

@@ -153,7 +153,7 @@ def main() -> int:
         print("--check, --validate-only, and --manifest-output are mutually exclusive.", file=sys.stderr)
         return 2
 
-    skills = collect_skills()
+    skills = collect_skills(include_token_counts=True)
     bundles = build_bundles(skills)
     rendered_catalog = render_catalog(skills)
 
