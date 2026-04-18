@@ -1,0 +1,5 @@
+{
+  "version": "0.1.0",
+  "category": "Metrics",
+  "compatibility": "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
+}

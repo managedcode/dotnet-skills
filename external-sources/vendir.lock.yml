@@ -5,5 +5,5 @@ directories:
     contents:
       - path: dotnet-skills
         git:
-          sha: 93dc33da8623b22d3d00c143c1d0cb27954fe3d8
-          commitTitle: Stabilize and unify some test skills (#501)
+          sha: f46275e64e0f8a82ab0187d0c1f3be273e89de7a
+          commitTitle: Add evaluation tests for test-migration and test-quality-auditor agents (#543)
