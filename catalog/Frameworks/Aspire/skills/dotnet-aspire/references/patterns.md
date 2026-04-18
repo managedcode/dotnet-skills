@@ -63,14 +63,15 @@ Use `aspire add` when it improves repeatability, especially for:
 
 ## Servicing patch posture
 
-Aspire `13.1.3` is a servicing release, not a new application model. The current release notes only call out installer publishing work, so the right operational response is to keep the existing 13.1 CLI-first guidance and make patch upgrades boring and consistent.
+Aspire `13.2.0` is the current baseline release in the 13.2 line, not a new application model. Treat 13.2.x updates as CLI and AppHost servicing work that should preserve the existing topology and only refine the toolchain surface.
 
-When you roll a 13.1.x patch:
+When you roll a 13.2.x patch:
 
 1. Keep the Aspire CLI and `Aspire.AppHost.Sdk` on the same patch line.
 2. Update adjacent Aspire packages that move with the AppHost, especially hosting and testing packages.
 3. Run `aspire update` before hand-editing package versions unless the repo intentionally pins them.
 4. Revalidate the AppHost start path, resource graph, dashboard, and any deployment scripts after the patch lands.
+5. Re-check the current CLI commands that changed in 13.2, especially `aspire start`/`aspire stop`/`aspire ps`, `aspire describe`, `aspire docs`, `aspire agent`, and `aspire restore`.
 
 Do not re-architect the AppHost just because a servicing release shipped.
 

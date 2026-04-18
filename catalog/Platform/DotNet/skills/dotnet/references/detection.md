@@ -26,15 +26,16 @@ Check `global.json` for SDK version constraints:
 ```json
 {
   "sdk": {
-    "version": "9.0.100",
+    "version": "10.0.100",
     "rollForward": "latestMinor"
   }
 }
 ```
 
 Key SDK version ranges:
-- `9.0.x` - .NET 9 (current LTS candidate)
-- `8.0.x` - .NET 8 (LTS)
+- `10.0.x` - .NET 10 (LTS, supported until November 2028)
+- `9.0.x` - .NET 9 (STS, supported until November 2026)
+- `8.0.x` - .NET 8 (LTS, supported until November 2026)
 - `7.0.x` - .NET 7 (end of support)
 - `6.0.x` - .NET 6 (LTS)
 - `5.0.x` - .NET 5 (end of support)
@@ -48,10 +49,9 @@ Detect from `<TargetFramework>` or `<TargetFrameworks>` in project files:
 
 | TFM Pattern | Platform |
 |-------------|----------|
-| `net9.0`, `net8.0`, `net7.0`, `net6.0` | Modern .NET |
-| `net9.0-windows`, `net8.0-windows` | Windows-specific workload |
-| `net9.0-ios`, `net9.0-android`, `net9.0-maccatalyst` | MAUI/mobile |
-| `net9.0-browser` | Blazor WebAssembly |
+| `net10.0`, `net9.0`, `net8.0`, `net7.0`, `net6.0` | Modern .NET |
+| `net10.0-windows`, `net9.0-windows`, `net8.0-windows` | Windows-specific workload |
+| `net10.0-ios`, `net10.0-android`, `net10.0-maccatalyst`, `net10.0-browser` | MAUI/mobile or browser workloads |
 | `netstandard2.0`, `netstandard2.1` | .NET Standard library |
 | `netcoreapp3.1`, `netcoreapp2.1` | Legacy .NET Core |
 | `net48`, `net472`, `net461` | .NET Framework |
@@ -61,7 +61,7 @@ Detect from `<TargetFramework>` or `<TargetFrameworks>` in project files:
 Projects with `<TargetFrameworks>` (plural) target multiple platforms:
 
 ```xml
-<TargetFrameworks>net8.0;net8.0-windows;net8.0-ios;net8.0-android</TargetFrameworks>
+<TargetFrameworks>net10.0;net10.0-windows;net10.0-ios;net10.0-android</TargetFrameworks>
 ```
 
 ## Workload Detection
@@ -99,12 +99,13 @@ Detect from `<LangVersion>` in project files or `Directory.Build.props`:
 |-------|------------------|
 | `latest` | Highest version for TFM |
 | `preview` | Preview features enabled |
-| `13.0`, `12.0`, `11.0` | Explicit version |
+| `14.0`, `13.0`, `12.0`, `11.0` | Explicit version |
 | `default` | SDK default |
 
 ### Implicit Language Version
 
 When `<LangVersion>` is not specified, the SDK sets it based on TFM:
+- `net10.0` implies C# 14
 - `net9.0` implies C# 13
 - `net8.0` implies C# 12
 - `net7.0` implies C# 11

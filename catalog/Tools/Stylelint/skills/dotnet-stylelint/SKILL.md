@@ -65,16 +65,16 @@ compatibility: "Requires a .NET repository with stylesheet assets such as `wwwro
 - Massive autofix churn usually means generated assets or third-party CSS slipped into the lint target.
 - Design-system rule noise should be handled by tuning the checked-in config, not by skipping the linter entirely.
 
-## Current 17.5 Guidance
+## Current 17.8 Guidance
 
-- Stylelint `17.5.0` deprecates the `*syntax` rule options under `declaration-property-value-no-unknown`. If the repo still relies on those options, move the compatibility into `customSyntax` or parser selection instead of extending deprecated rule config.
-- `media-feature-name-value-no-unknown` now supports `ignoreMediaFeatureNameValues`. Use it when the design system or platform layer intentionally allows non-standard media feature values and you want that exception recorded explicitly.
-- Stylelint `17.5.0` fixed `node_modules` ignore behavior in Node.js API flows that pass `codeFilename`. Keep repo ignores focused on generated or vendored assets instead of compensating for the old bug with over-broad globs.
-- Selector and deprecated-keyword false-positive fixes landed in `no-descending-specificity`, `no-duplicate-selectors`, and `declaration-property-value-keyword-no-deprecated`. Re-run the repo baseline before preserving stale disables or waivers.
+- Stylelint `17.8.0` adds `languageOptions.directionality`, `property-layout-mappings`, `relative-selector-nesting-notation`, and `selector-no-deprecated`. Re-run the repo baseline after upgrading so any new selector or layout findings are reviewed instead of preserved by default.
+- Use `languageOptions.directionality` explicitly when the repo styles bidirectional UI or logical properties. That keeps direction-sensitive rules aligned with the intended writing direction rather than inferred behavior.
+- The earlier `*syntax` deprecation under `declaration-property-value-no-unknown` still matters on the 17.x line. If the repo still relies on those options, move the compatibility into `customSyntax` or parser selection instead of extending deprecated rule config.
+- Keep repo ignores focused on generated or vendored assets. Re-check any broad ignore globs after upgrading so they are not masking selector or layout regressions that the new rules now catch.
 
 ## Official Sources
 
-- [Stylelint 17.5.0 release notes](https://github.com/stylelint/stylelint/releases/tag/17.5.0)
+- [Stylelint 17.8.0 release notes](https://github.com/stylelint/stylelint/releases/tag/17.8.0)
 - `references/release-notes.md`
 
 ## Deliver
@@ -116,4 +116,4 @@ compatibility: "Requires a .NET repository with stylesheet assets such as `wwwro
 
 ## References
 
-- [release-notes.md](references/release-notes.md) - Current 17.5.0 release changes that matter for repo config, rule tuning, and Node API integrations
+- [release-notes.md](references/release-notes.md) - Current 17.8.0 release changes that matter for repo config, rule tuning, and selector/layout validation
