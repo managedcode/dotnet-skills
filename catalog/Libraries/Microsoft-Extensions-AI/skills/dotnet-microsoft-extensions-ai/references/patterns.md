@@ -52,9 +52,16 @@
 
 - Use `IEmbeddingGenerator<TInput, TEmbedding>` for semantic indexing, similarity, search, and embedding-backed caches.
 - Keep the embedding model fixed per collection or explicitly versioned. Mixing models in one vector space causes silent quality degradation.
+- Keep vector dimensions, collection schema, and chunking rules versioned with the embedding model. If any of them change, reindex the collection instead of reusing stale vector data.
 - Ensure vector-store dimensions match the embedding model output.
 - Keep chunking deterministic so reindexing and evaluation remain reproducible.
 - Use delegating generators or wrappers for telemetry, rate limits, and caching rather than duplicating those concerns at each call site.
+
+## VectorData Source Compatibility
+
+- In `dotnet/extensions` v10.5.0, `VectorStoreVectorAttribute` renamed the constructor parameter from `Dimensions` to `dimensions`. This is source-breaking only; the property name and binary compatibility are unchanged.
+- Update any named-argument usage to `new VectorStoreVectorAttribute(dimensions: 1536)` and check generated samples or templates for the old casing.
+- If a collection was created against an older embedding model or dimension count, treat the schema change as a reindexing event rather than a transparent package upgrade.
 
 ## Evaluation
 
