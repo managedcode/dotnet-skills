@@ -48,7 +48,6 @@ internal static class Program
             "catalog" => await RunCatalogAsync(args[1..]),
             "list" => await RunListAsync(args[1..]),
             "bundle" => await RunPackageAsync(args[1..], "bundle"),
-            "package" => await RunPackageAsync(args[1..], "package"),
             "recommend" => await RunRecommendAsync(args[1..]),
             "install" => await RunInstallAsync(args[1..]),
             "remove" => await RunRemoveAsync(args[1..]),
@@ -507,6 +506,14 @@ internal static class Program
 
         await MaybeShowToolUpdateAsync(cachePath);
 
+        if (TryResolveWorkspaceCatalogRoot(out var workspaceCatalogRoot)
+            && string.IsNullOrWhiteSpace(catalogVersion))
+        {
+            var workspaceCatalog = SkillCatalogPackage.LoadFromDirectory(workspaceCatalogRoot, "local workspace catalog", "workspace");
+            ConsoleUi.RenderSyncSummary(workspaceCatalog);
+            return 0;
+        }
+
         var client = CreateReleaseClient(cachePath);
         var catalog = await client.SyncAsync(catalogVersion, force, CancellationToken.None);
         ConsoleUi.RenderSyncSummary(catalog);
@@ -518,6 +525,12 @@ internal static class Program
         if (bundledOnly)
         {
             return SkillCatalogPackage.LoadBundled();
+        }
+
+        if (TryResolveWorkspaceCatalogRoot(out var workspaceCatalogRoot)
+            && string.IsNullOrWhiteSpace(catalogVersion))
+        {
+            return SkillCatalogPackage.LoadFromDirectory(workspaceCatalogRoot, "local workspace catalog", "workspace");
         }
 
         var client = CreateReleaseClient(cachePath);
@@ -545,6 +558,12 @@ internal static class Program
             return SkillCatalogPackage.LoadBundled();
         }
 
+        if (TryResolveWorkspaceCatalogRoot(out var workspaceCatalogRoot)
+            && string.IsNullOrWhiteSpace(catalogVersion))
+        {
+            return SkillCatalogPackage.LoadFromDirectory(workspaceCatalogRoot, "local workspace catalog", "workspace");
+        }
+
         var client = CreateReleaseClient(cachePath);
         try
         {
@@ -561,6 +580,33 @@ internal static class Program
     private static GitHubCatalogReleaseClient CreateReleaseClient(string? cachePath)
     {
         return new GitHubCatalogReleaseClient(ResolveCacheRoot(cachePath));
+    }
+
+    internal static bool TryResolveWorkspaceCatalogRoot(out DirectoryInfo rootDirectory)
+    {
+        for (var current = new DirectoryInfo(AppContext.BaseDirectory); current is not null; current = current.Parent)
+        {
+            if (!File.Exists(Path.Combine(current.FullName, "dotnet-skills.slnx")))
+            {
+                continue;
+            }
+
+            if (!Directory.Exists(Path.Combine(current.FullName, "catalog")))
+            {
+                continue;
+            }
+
+            if (!File.Exists(Path.Combine(current.FullName, "cli", "ManagedCode.DotnetSkills", "ManagedCode.DotnetSkills.csproj")))
+            {
+                continue;
+            }
+
+            rootDirectory = current;
+            return true;
+        }
+
+        rootDirectory = null!;
+        return false;
     }
 
     internal static IReadOnlyList<InstalledSkillRecord> ResolveInstalledSkillsToUpdate(
@@ -761,8 +807,7 @@ internal static class Program
         }
 
         var packageMode = requestedSkills.Count > 0
-            && (string.Equals(requestedSkills[0], "bundle", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(requestedSkills[0], "package", StringComparison.OrdinalIgnoreCase));
+            && string.Equals(requestedSkills[0], "bundle", StringComparison.OrdinalIgnoreCase);
 
         if (packageMode)
         {
@@ -863,9 +908,7 @@ internal static class Program
         if (requestedTargets.Count > 0)
         {
             if (string.Equals(requestedTargets[0], "bundle", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(requestedTargets[0], "bundles", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(requestedTargets[0], "package", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(requestedTargets[0], "packages", StringComparison.OrdinalIgnoreCase))
+                || string.Equals(requestedTargets[0], "bundles", StringComparison.OrdinalIgnoreCase))
             {
                 selectionMode = RemoveSelectionMode.Bundle;
                 requestedTargets.RemoveAt(0);

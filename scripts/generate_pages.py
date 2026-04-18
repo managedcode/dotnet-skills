@@ -14,7 +14,7 @@ import subprocess
 import sys
 from urllib.parse import urljoin, urlparse
 
-from catalog_index import build_bundles, collect_agents, collect_skills
+from catalog_index import build_bundles, collect_agents, collect_skills, resolve_stack_order
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 README_PATH = REPO_ROOT / "README.md"
@@ -52,20 +52,30 @@ PLACEHOLDERS = {
     "copyright": "COPYRIGHT_YEAR_RANGE_PLACEHOLDER",
 }
 
-CATEGORY_DESCRIPTIONS = {
-    "AI": "Agent frameworks, provider abstractions, MCP, Semantic Kernel, ML.NET, and other modern .NET AI building blocks.",
-    "Architecture": "Solution-level direction for boundaries, layering, modernization, and long-lived .NET design decisions.",
-    "Cloud": "Cloud-native .NET app hosts, Aspire topologies, deployment workflows, and service-to-service integration patterns.",
-    "Code Quality": "Analyzers, formatters, review guidance, mutation testing, and maintainability tooling for healthy .NET repos.",
-    "Core": "Foundational .NET topics such as modern C#, SDK setup, project structure, and broad platform guidance.",
-    "Cross-Platform UI": "Uno Platform, MAUI-adjacent patterns, and cross-device UI guidance for teams shipping beyond one OS.",
-    "Data": "Entity Framework, storage libraries, ingestion pipelines, and persistence patterns for production .NET applications.",
-    "Desktop": "Desktop-focused application development, Windows-oriented UX, media, and client app support libraries.",
-    "Distributed": "Orleans, distributed coordination, messaging, clusters, and runtime patterns for stateful .NET systems.",
-    "Legacy": "Migration and maintenance help for older ASP.NET, WCF, Workflow Foundation, and other legacy .NET surfaces.",
-    "Metrics": "Profilers, code metrics, duplication detection, and observability tooling that improve engineering feedback loops.",
-    "Testing": "Unit, integration, browser, and distributed-system testing patterns for current .NET projects.",
-    "Web": "ASP.NET Core, Blazor, frontends, APIs, auth, and service hosting for modern web-facing .NET applications.",
+COLLECTION_DESCRIPTIONS = {
+    ".NET Foundations": "Core .NET language, SDK, project setup, and platform guidance for modern applications.",
+    ".NET Quality": "Primary .NET analyzers, formatting, and code-quality guidance without frontend tooling noise.",
+    "MSBuild": "Build graphs, binlogs, modernization, and MSBuild-specific diagnostics for .NET solutions.",
+    "NuGet & Publishing": "Package management, publishing, CPM, and trusted release flows for .NET packages.",
+    "Templates & Scaffolding": "Template discovery, authoring, and scaffolding flows for new .NET projects.",
+    "Diagnostics & Metrics": "Performance, crash analysis, static analysis, and observability signals for production .NET code.",
+    "Web": "ASP.NET Core, Blazor, APIs, gRPC, SignalR, and other browser-facing or service-hosted .NET surfaces.",
+    "Aspire": "Aspire-specific orchestration, AppHost, and distributed app composition guidance.",
+    "Azure Functions": "Azure Functions hosting, worker-model choice, and serverless execution guidance for .NET.",
+    "Background Workers": "Long-running background services, daemons, and Generic Host worker patterns.",
+    "Mobile & Device": "MAUI, device-specific tooling, and mobile runtime guidance separated from desktop and web.",
+    "XR & Spatial": "Mixed reality and spatial-computing guidance that does not belong inside AI or generic UI buckets.",
+    "Desktop & UI": "Desktop frameworks, rich-client UI patterns, MVVM, and media-oriented application surfaces.",
+    "Frontend Quality": "Linting and browser-side quality tooling that stays separate from .NET analyzers.",
+    "Testing": "Mainstream .NET test frameworks, execution, and test-quality guidance for everyday delivery work.",
+    "Testing Research": "Experimental, mutation, and research-oriented test analysis outside the default testing baseline.",
+    "Architecture": "Architecture, visualization, and boundary design guidance for larger .NET systems.",
+    "Governance & Delivery": "Code review, delivery workflow, governance, and repo-wide engineering process guidance.",
+    "Data": "Persistence, data access, ingestion, and storage-oriented .NET guidance.",
+    "AI & Agents": "Agent frameworks, AI composition, MCP, and provider abstractions for .NET applications.",
+    "Distributed": "Distributed runtime patterns and Orleans-centered stateful .NET systems.",
+    "Legacy": "Explicit legacy-only maintenance surfaces that should not leak into the default modern install path.",
+    "Upgrades & Migration": "Runtime and test migration flows kept separate from active development bundles.",
 }
 
 
@@ -428,7 +438,7 @@ def load_skill_documents(skills: list[dict], site_url: str) -> list[dict]:
         raw_markdown = read_text(skill_path)
         _, body = split_frontmatter(raw_markdown)
         sections = parse_markdown_sections(body)
-        category_slug = slugify(skill["category"])
+        collection_slug = slugify(skill["stack"])
         detail_path = f"skills/{skill_slug}/"
         source_url = f"{GITHUB_REPOSITORY_URL}/tree/main/{skill['path']}"
 
@@ -437,7 +447,7 @@ def load_skill_documents(skills: list[dict], site_url: str) -> list[dict]:
                 **skill,
                 "slug": skill_slug,
                 "short_name": skill_short_name,
-                "category_slug": category_slug,
+                "collection_slug": collection_slug,
                 "detail_path": detail_path,
                 "detail_url": build_absolute_url(site_url, detail_path),
                 "source_url": source_url,
@@ -675,7 +685,7 @@ def render_nuget_pills(skill: dict) -> str:
 def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) -> str:
     """Render a skill card with type indicator and gradient glow border."""
     detail_href = f"{root_prefix}{skill['detail_path']}"
-    category_href = f"{root_prefix}categories/{skill['category_slug']}/"
+    collection_href = f"{root_prefix}collections/{skill['collection_slug']}/"
     install_command = f"dotnet skills install {skill['short_name']}"
     summary = preview_text(skill["description"])
     skill_type = skill.get("type", "Platform")
@@ -686,7 +696,8 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
                 skill["title"],
                 skill["name"],
                 skill["description"],
-                skill["category"],
+                skill["stack"],
+                skill.get("lane", ""),
                 skill_type,
                 skill.get("compatibility", ""),
                 *skill.get("packages", []),
@@ -697,7 +708,7 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
     nuget_pills = render_nuget_pills(skill)
     token_count = int(skill.get("tokenCount", 0))
     return f"""
-      <article class="directory-card skill-card {type_class} is-clickable js-filter-card" data-category="{escape_html(skill['category'])}" data-type="{escape_html(skill_type)}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
+      <article class="directory-card skill-card {type_class} is-clickable js-filter-card" data-collection="{escape_html(skill['stack'])}" data-type="{escape_html(skill_type)}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
         <div class="card-head">
           <div class="card-head-top">
             <h3><a href="{escape_html(detail_href)}">{escape_html(skill['title'])}</a></h3>
@@ -705,7 +716,7 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
           </div>
           <div class="card-tags">
             <span class="card-tag card-tag-type">{escape_html(skill_type)}</span>
-            <a class="card-tag card-tag-category" href="{escape_html(category_href)}">{escape_html(skill['category'])}</a>
+            <a class="card-tag card-tag-category" href="{escape_html(collection_href)}">{escape_html(skill['stack'])}</a>
             <span class="card-tag card-tag-type">{token_count:,} tokens</span>
           </div>
         </div>
@@ -782,8 +793,8 @@ def render_agent_card(agent: dict, root_prefix: str, linked_skills: dict[str, di
 
 
 def render_category_card(category_name: str, category_info: dict, root_prefix: str) -> str:
-    """Render a category directory card."""
-    detail_href = f"{root_prefix}categories/{category_info['slug']}/"
+    """Render a collection directory card."""
+    detail_href = f"{root_prefix}collections/{category_info['slug']}/"
     sample_skills = ", ".join(skill["short_name"] for skill in category_info["skills"][:3])
     summary = preview_text(category_info["description"], limit=150)
     filter_text = " ".join(
@@ -799,7 +810,7 @@ def render_category_card(category_name: str, category_info: dict, root_prefix: s
 
     skill_count = len(category_info['skills'])
     return f"""
-      <article class="directory-card category-card is-clickable js-filter-card" data-category="category" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(category_name)} category">
+      <article class="directory-card category-card is-clickable js-filter-card" data-collection="collection" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(category_name)} collection">
         <div class="card-top">
           <div>
             <h3><a href="{escape_html(detail_href)}">{escape_html(category_name)}</a></h3>
@@ -865,13 +876,21 @@ def render_bundle_card(bundle: dict, root_prefix: str) -> str:
     """.strip()
 
 
+def ordered_collection_names(category_infos: dict[str, dict]) -> list[str]:
+    """Render collection names in stable taxonomy order."""
+    return sorted(
+        category_infos,
+        key=lambda name: (category_infos[name].get("order", len(category_infos)), name.casefold(), name),
+    )
+
+
 def render_filter_tabs(category_infos: dict[str, dict], current_category: str = "all") -> str:
-    """Render category filter tabs."""
+    """Render collection filter tabs."""
     buttons = [
         f'<button class="filter-tab {"is-active" if current_category == "all" else ""}" type="button" data-filter="all">All skills</button>'
     ]
 
-    for category_name in sorted(category_infos):
+    for category_name in ordered_collection_names(category_infos):
         category_info = category_infos[category_name]
         is_active = current_category == category_name
         buttons.append(
@@ -935,7 +954,7 @@ def render_skill_listing_section(
     if show_controls:
         toolbar_html = f"""
           <div class="listing-toolbar">
-            <input class="search-input" id="search-input" type="search" placeholder="Search by name, category, or topic" autocomplete="off">
+            <input class="search-input" id="search-input" type="search" placeholder="Search by name, collection, or topic" autocomplete="off">
             {'<div class="filter-tabs">' + tabs_html + '</div>' if tabs_html else ''}
           </div>
         """.strip()
@@ -984,19 +1003,19 @@ def render_agent_listing_section(
 
 
 def render_category_listing_section(category_infos: dict[str, dict], root_prefix: str) -> str:
-    """Render the category directory section."""
+    """Render the collection directory section."""
     cards_html = "\n".join(
         render_category_card(category_name, category_infos[category_name], root_prefix)
-        for category_name in sorted(category_infos)
+        for category_name in ordered_collection_names(category_infos)
     )
     return f"""
       <section class="section-stack">
         <div class="section-header">
           <div>
-            <h2>Browse the catalog by category</h2>
-            <p>Each category has its own page with related skills, linked agents, and direct paths into the catalog.</p>
+            <h2>Browse the catalog by collection</h2>
+            <p>Each collection has its own page with related skills, linked agents, and direct paths into the catalog.</p>
           </div>
-          {render_panel_links([("Category hub", f"{root_prefix}categories/"), ("Skill directory", f"{root_prefix}skills/")])}
+          {render_panel_links([("Collection hub", f"{root_prefix}collections/"), ("Skill directory", f"{root_prefix}skills/")])}
         </div>
         <div class="directory-grid">
           {cards_html}
@@ -1196,10 +1215,10 @@ def render_home_page(
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
         <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>
-        <p class="page-lead">Start from the NuGet packages already in your project, a focused bundle, or the interactive control center. Browse collection and lane drilldowns, inspect per-skill token counts, and install grouped skills without broad category-wide noise.</p>
+        <p class="page-lead">Start from the NuGet packages already in your project, a focused bundle, or the interactive control center. Browse collection and lane drilldowns, inspect per-skill token counts, and install grouped skills without broad mixed-catalog noise.</p>
         <div class="hero-actions">
           {render_button("Browse bundles", f"{root_prefix}bundles/", "primary")}
-          {render_button("Browse categories", f"{root_prefix}categories/", "ghost")}
+          {render_button("Browse collections", f"{root_prefix}collections/", "ghost")}
           {render_button("Read about the catalog", f"{root_prefix}about/", "ghost")}
         </div>
         <div class="metric-grid">
@@ -1207,7 +1226,7 @@ def render_home_page(
           {render_metric_card(str(len(bundles)), "Bundles")}
           {render_metric_card(f"{total_tokens:,}", "Skill tokens")}
           {render_metric_card(str(len(agents)), "Agents")}
-          {render_metric_card(str(len(category_infos)), "Categories")}
+          {render_metric_card(str(len(category_infos)), "Collections")}
           {render_metric_card("5", "Platforms")}
         </div>
       </section>
@@ -1247,7 +1266,7 @@ def build_skill_payload(skills: list[dict], root_prefix: str) -> list[dict]:
             "title": skill["title"],
             "description": skill["description"],
             "version": skill["version"],
-            "category": skill["category"],
+            "collection": skill["stack"],
             "type": skill.get("type", "Platform"),
             "compatibility": skill.get("compatibility", ""),
             "detailUrl": f"{root_prefix}{skill['detail_path']}",
@@ -1263,18 +1282,20 @@ def build_skill_payload(skills: list[dict], root_prefix: str) -> list[dict]:
 
 
 def build_category_infos(skills: list[dict], agents: list[dict]) -> dict[str, dict]:
-    """Build per-category metadata used across multiple pages."""
+    """Build per-collection metadata used across multiple pages."""
     infos: dict[str, dict] = {}
+    stack_order = {name: index for index, name in enumerate(resolve_stack_order(skills))}
     for skill in skills:
-        category_name = skill["category"]
+        category_name = skill["stack"]
         category_info = infos.setdefault(
             category_name,
             {
-                "slug": skill["category_slug"],
-                "description": CATEGORY_DESCRIPTIONS.get(category_name, f"{category_name} guidance for current .NET projects."),
+                "slug": skill["collection_slug"],
+                "description": COLLECTION_DESCRIPTIONS.get(category_name, f"{category_name} guidance for current .NET projects."),
                 "skills": [],
                 "related_agents": [],
                 "lastmod_paths": [],
+                "order": stack_order.get(category_name, len(stack_order)),
             },
         )
         category_info["skills"].append(skill)
@@ -1353,7 +1374,7 @@ def render_skill_detail_page(skill: dict, related_skills: list[dict], related_ag
       <section class="page-hero">
         <div class="eyebrow-row">
           <span class="eyebrow">{escape_html(skill_type)}</span>
-          <a class="tag" href="{escape_html(root_prefix + 'categories/' + skill['category_slug'] + '/')}">{escape_html(skill['category'])}</a>
+          <a class="tag" href="{escape_html(root_prefix + 'collections/' + skill['collection_slug'] + '/')}">{escape_html(skill['stack'])}</a>
           <span class="tag tag-accent">v{escape_html(skill['version'])}</span>
         </div>
         <h1 class="page-title">{escape_html(skill['title'])}</h1>
@@ -1388,7 +1409,7 @@ def render_skill_detail_page(skill: dict, related_skills: list[dict], related_ag
             <div class="detail-card-label">Explore next</div>
             <div class="sidebar-links">
               <a class="pill-link" href="{escape_html(root_prefix + 'skills/')}">All skills</a>
-              <a class="pill-link" href="{escape_html(root_prefix + 'categories/' + skill['category_slug'] + '/')}">{escape_html(skill['category'])} category</a>
+              <a class="pill-link" href="{escape_html(root_prefix + 'collections/' + skill['collection_slug'] + '/')}">{escape_html(skill['stack'])} collection</a>
               <a class="pill-link" href="{escape_html(skill['source_url'])}" target="_blank" rel="noopener noreferrer">Catalog source</a>
             </div>
           </div>
@@ -1451,12 +1472,12 @@ def render_agent_detail_page(agent: dict, linked_skills: list[dict], root_prefix
 
 
 def render_category_detail_page(category_name: str, category_info: dict, root_prefix: str) -> tuple[str, dict]:
-    """Render a category landing page."""
+    """Render a collection landing page."""
     hero = f"""
-      {render_breadcrumb([("Home", root_prefix or "./"), ("Categories", f"{root_prefix}categories/"), (category_name, None)])}
+      {render_breadcrumb([("Home", root_prefix or "./"), ("Collections", f"{root_prefix}collections/"), (category_name, None)])}
       <section class="page-hero">
         <div class="eyebrow-row">
-          <span class="eyebrow">Category page</span>
+          <span class="eyebrow">Collection page</span>
           <span class="tag tag-accent">{len(category_info['skills'])} skills</span>
           <span class="tag">{len(category_info['related_agents'])} related agents</span>
         </div>
@@ -1482,7 +1503,7 @@ def render_category_detail_page(category_name: str, category_info: dict, root_pr
                 {category_name: category_info},
                 root_prefix,
                 f"{category_name} skills",
-                f"Browse every catalog entry tagged under {category_name}. These cards link to dedicated skill pages and still support quick-view popups.",
+                f"Browse every catalog entry grouped under {category_name}. These cards link to dedicated skill pages and still support quick-view popups.",
                 include_tabs=False,
                 empty_message=f"No {category_name} skills match this search.",
             ),
@@ -1497,16 +1518,16 @@ def render_category_detail_page(category_name: str, category_info: dict, root_pr
 
 
 def render_categories_index_page(category_infos: dict[str, dict], root_prefix: str) -> str:
-    """Render the category hub page."""
+    """Render the collection hub page."""
     return f"""
-      {render_breadcrumb([("Home", root_prefix or "./"), ("Categories", None)])}
+      {render_breadcrumb([("Home", root_prefix or "./"), ("Collections", None)])}
       <section class="page-hero">
         <div class="eyebrow-row">
-          <span class="eyebrow">Category hub</span>
-          <span class="tag tag-accent">{len(category_infos)} categories</span>
+          <span class="eyebrow">Collection hub</span>
+          <span class="tag tag-accent">{len(category_infos)} collections</span>
         </div>
-        <h1 class="page-title">Browse the catalog by <span class="accent">category</span></h1>
-        <p class="page-lead">Each category groups related skills and agents so it is easier to browse the catalog by topic.</p>
+        <h1 class="page-title">Browse the catalog by <span class="accent">collection</span></h1>
+        <p class="page-lead">Each collection groups related skills and agents so it is easier to browse the catalog by the same taxonomy the CLI uses.</p>
       </section>
       {render_category_listing_section(category_infos, root_prefix)}
     """.strip()
@@ -1522,14 +1543,14 @@ def render_skills_index_page(skills: list[dict], category_infos: dict[str, dict]
           <span class="tag tag-accent">{len(skills)} skills</span>
         </div>
         <h1 class="page-title">Search every <span class="accent">.NET skill</span></h1>
-        <p class="page-lead">This is the full skill directory, with search, category filters, and a dedicated page for every skill.</p>
+        <p class="page-lead">This is the full skill directory, with search, collection filters, and a dedicated page for every skill.</p>
       </section>
       {render_skill_listing_section(
           skills,
           category_infos,
           root_prefix,
           "All skills",
-          "Use category filters or a direct search query to narrow the catalog. Every card links to a dedicated skill page.",
+          "Use collection filters or a direct search query to narrow the catalog. Every card links to a dedicated skill page.",
           include_tabs=True,
           empty_message="No skills match this search yet."
       )}
@@ -1552,7 +1573,7 @@ def render_bundles_index_page(bundles: list[dict], root_prefix: str) -> tuple[st
           <span class="tag tag-accent">{len(bundles)} bundles</span>
         </div>
         <h1 class="page-title">Install grouped <span class="accent">bundles</span></h1>
-        <p class="page-lead">Bundles expand one command into multiple related skills. Every bundle here is intentionally focused by collection or workflow instead of mixing broad category-wide installs.</p>
+        <p class="page-lead">Bundles expand one command into multiple related skills. Every bundle here is intentionally focused by collection or workflow instead of mixing broad all-purpose installs.</p>
       </section>
       {render_bundle_listing_section(
           bundles,
@@ -1799,12 +1820,12 @@ def render_about_page(
           <span class="tag tag-accent">{escape_html(release_tag)}</span>
         </div>
         <h1 class="page-title">About the <span class="accent">dotnet-skills</span> catalog</h1>
-        <p class="page-lead">A structured .NET catalog, not a marketplace. The site is organized around categories, skill pages, agent pages, and project credits.</p>
+        <p class="page-lead">A structured .NET catalog, not a marketplace. The site is organized around collections, bundles, skill pages, agent pages, and project credits.</p>
         <div class="metric-grid">
           {render_metric_card(str(len(skills)), "Skills")}
           {render_metric_card(str(len(bundles)), "Bundles")}
           {render_metric_card(str(len(agents)), "Agents")}
-          {render_metric_card(str(len(category_infos)), "Categories")}
+          {render_metric_card(str(len(category_infos)), "Collections")}
           {render_metric_card("MIT", "License")}
         </div>
       </section>
@@ -1831,7 +1852,7 @@ def render_about_page(
           </section>
           <section>
             <h2>Why there are multiple page types now</h2>
-            <p>Home still carries the full catalog and quick-view modal. Bundle pages provide one-command multi-skill installs, category pages group related work, skill pages expose real content from <code>SKILL.md</code>, agent pages explain routing behavior, and this about page captures the project context and credits.</p>
+            <p>Home still carries the full catalog and quick-view modal. Bundle pages provide one-command multi-skill installs, collection pages mirror the CLI taxonomy, skill pages expose real content from <code>SKILL.md</code>, agent pages explain routing behavior, and this about page captures the project context and credits.</p>
           </section>
         </div>
         <aside class="sidebar-stack">
@@ -1839,7 +1860,7 @@ def render_about_page(
             <div class="detail-card-label">Explore</div>
             <div class="sidebar-links">
               <a class="pill-link" href="{escape_html(root_prefix + 'bundles/')}">Bundles</a>
-              <a class="pill-link" href="{escape_html(root_prefix + 'categories/')}">Categories</a>
+              <a class="pill-link" href="{escape_html(root_prefix + 'collections/')}">Collections</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'skills/')}">Skills</a>
               <a class="pill-link" href="{escape_html(root_prefix + 'agents/')}">Agents</a>
               <a class="pill-link" href="{escape_html(MANAGEDCODE_WEBSITE_URL)}" target="_blank" rel="noopener noreferrer">ManagedCode</a>
@@ -1910,7 +1931,7 @@ def build_root_json_ld(site_url: str, canonical_url: str, release_version: str) 
             "@id": f"{canonical_url}#page",
             "url": canonical_url,
             "name": "dotnet-skills home",
-            "description": "The home page for the dotnet-skills catalog, with bundle installs, the full .NET skill directory, and links to category, skill, agent, and about pages.",
+            "description": "The home page for the dotnet-skills catalog, with bundle installs, the full .NET skill directory, and links to collection, skill, agent, and about pages.",
             "isPartOf": {"@id": f"{site_url}#website"},
         },
         {
@@ -2177,7 +2198,7 @@ def main() -> int:
     add_page(
         path="",
         title=".NET Skills for Modern Coding Platforms | dotnet-skills",
-        description="A shared .NET skill catalog for Claude Code, GitHub Copilot, Gemini, Codex, and Junie with NuGet package matching, bundles, category pages, skill pages, and agents.",
+        description="A shared .NET skill catalog for Claude Code, GitHub Copilot, Gemini, Codex, and Junie with NuGet package matching, bundles, collection pages, skill pages, and agents.",
         keywords=["dotnet", ".NET skills", ".NET packages", "NuGet package matching", "Claude Code", "GitHub Copilot", "Gemini", "Codex", "Junie", "AI coding assistants", "skill catalog"],
         body_class="page-home",
         main_content=root_body,
@@ -2236,8 +2257,8 @@ def main() -> int:
     add_page(
         path="skills/",
         title=".NET Skills Directory | dotnet-skills",
-        description="Search the full .NET skill directory, filter by category, and open dedicated pages for each catalog skill.",
-        keywords=["dotnet skill directory", "ASP.NET Core skill", "Orleans skill", "Aspire skill", "testing skill", "category pages"],
+        description="Search the full .NET skill directory, filter by collection, and open dedicated pages for each catalog skill.",
+        keywords=["dotnet skill directory", "ASP.NET Core skill", "Orleans skill", "Aspire skill", "testing skill", "collection pages"],
         body_class="page-skills",
         main_content=skills_body,
         json_ld=build_collection_json_ld(
@@ -2256,25 +2277,25 @@ def main() -> int:
 
     categories_body = render_categories_index_page(category_infos, "../")
     add_page(
-        path="categories/",
-        title=".NET Skill Categories | dotnet-skills",
-        description="Browse the catalog by category, from AI and cloud to testing, distributed systems, legacy maintenance, and code quality.",
-        keywords=[".NET categories", "AI skills", "testing skills", "distributed .NET", "catalog categories"],
-        body_class="page-categories",
+        path="collections/",
+        title=".NET Skill Collections | dotnet-skills",
+        description="Browse the catalog by collection, from .NET foundations and testing to diagnostics, distributed systems, upgrades, and AI.",
+        keywords=[".NET collections", "testing skills", "distributed .NET", "catalog collections"],
+        body_class="page-collections",
         main_content=categories_body,
         json_ld=build_collection_json_ld(
             site_url,
-            build_absolute_url(site_url, "categories/"),
-            ".NET Skill Categories",
-            "Category landing pages for the dotnet-skills catalog",
+            build_absolute_url(site_url, "collections/"),
+            ".NET Skill Collections",
+            "Collection landing pages for the dotnet-skills catalog",
             [
-                (category_name, build_absolute_url(site_url, f"categories/{category_info['slug']}/"))
-                for category_name, category_info in sorted(category_infos.items())
+                (category_name, build_absolute_url(site_url, f"collections/{category_info['slug']}/"))
+                for category_name, category_info in ((name, category_infos[name]) for name in ordered_collection_names(category_infos))
             ],
-            [("Home", site_url), ("Categories", build_absolute_url(site_url, "categories/"))],
+            [("Home", site_url), ("Collections", build_absolute_url(site_url, "collections/"))],
         ),
         lastmod=get_git_last_modified(["scripts/generate_pages.py", "github-pages", "catalog"]),
-        page_data={"querySyncPath": "categories/"},
+        page_data={"querySyncPath": "collections/"},
         og_type="website",
         priority="0.9",
     )
@@ -2348,26 +2369,27 @@ def main() -> int:
             priority="0.8",
         )
 
-    for category_name, category_info in sorted(category_infos.items()):
+    for category_name in ordered_collection_names(category_infos):
+        category_info = category_infos[category_name]
         root_prefix = "../../"
         category_body, category_page_data = render_category_detail_page(category_name, category_info, root_prefix)
-        category_url = build_absolute_url(site_url, f"categories/{category_info['slug']}/")
+        category_url = build_absolute_url(site_url, f"collections/{category_info['slug']}/")
         add_page(
-            path=f"categories/{category_info['slug']}/",
-            title=f"{category_name} .NET Skills | dotnet-skills",
-            description=f"Browse {len(category_info['skills'])} {category_name} skills in the dotnet-skills catalog, plus related orchestration agents and dedicated skill pages.",
+            path=f"collections/{category_info['slug']}/",
+            title=f"{category_name} collection | dotnet-skills",
+            description=f"Browse {len(category_info['skills'])} skills in the {category_name} collection, plus related orchestration agents and dedicated skill pages.",
             keywords=[".NET " + category_name, category_name + " skills", "dotnet-skills", *[skill["short_name"] for skill in category_info["skills"][:4]]],
-            body_class="page-categories",
+            body_class="page-collections",
             main_content=category_body,
             json_ld=build_collection_json_ld(
                 site_url,
                 category_url,
-                f"{category_name} .NET Skills",
+                f"{category_name} collection",
                 category_info["description"],
                 [(skill["title"], skill["detail_url"]) for skill in category_info["skills"]],
                 [
                     ("Home", site_url),
-                    ("Categories", build_absolute_url(site_url, "categories/")),
+                    ("Collections", build_absolute_url(site_url, "collections/")),
                     (category_name, category_url),
                 ],
             ),
@@ -2379,7 +2401,7 @@ def main() -> int:
 
     for skill in skills:
         related_skills = [
-            candidate for candidate in category_infos[skill["category"]]["skills"] if candidate["name"] != skill["name"]
+            candidate for candidate in category_infos[skill["stack"]]["skills"] if candidate["name"] != skill["name"]
         ]
         related_agents = [
             agent for agent in agents if skill["name"] in set(agent.get("skills", []))
@@ -2390,7 +2412,7 @@ def main() -> int:
             path=skill["detail_path"],
             title=f"{skill['title']} skill | dotnet-skills",
             description=trim_text(skill["description"], 156),
-            keywords=["dotnet skill", skill["title"], skill["category"], skill["short_name"], ".NET"],
+            keywords=["dotnet skill", skill["title"], skill["stack"], skill["short_name"], ".NET"],
             body_class="page-skills",
             main_content=skill_body,
             json_ld=build_article_json_ld(

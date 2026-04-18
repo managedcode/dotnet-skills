@@ -2,6 +2,27 @@ namespace ManagedCode.DotnetSkills.Tests;
 
 public sealed class ProgramCommandSemanticsTests
 {
+    [Fact]
+    public void TryResolveWorkspaceCatalogRoot_FindsRepositoryRoot_FromTestOutput()
+    {
+        var found = Program.TryResolveWorkspaceCatalogRoot(out var rootDirectory);
+
+        Assert.True(found);
+        Assert.True(File.Exists(Path.Combine(rootDirectory.FullName, "dotnet-skills.slnx")));
+        Assert.True(Directory.Exists(Path.Combine(rootDirectory.FullName, "catalog")));
+    }
+
+    [Fact]
+    public async Task ResolveCatalogForDisplayAsync_PrefersWorkspaceCatalog_WhenRunningFromRepository()
+    {
+        var catalog = await Program.ResolveCatalogForDisplayAsync(bundledOnly: false, cachePath: null, catalogVersion: null);
+
+        Assert.Equal("local workspace catalog", catalog.SourceLabel);
+        Assert.Equal("workspace", catalog.CatalogVersion);
+        Assert.Contains(catalog.Packages, package => string.Equals(package.Name, "dotnet-base", StringComparison.Ordinal));
+        Assert.DoesNotContain(catalog.Packages, package => string.Equals(package.Name, "core", StringComparison.OrdinalIgnoreCase));
+    }
+
     [Theory]
     [InlineData("help")]
     [InlineData("--help")]
@@ -22,7 +43,6 @@ public sealed class ProgramCommandSemanticsTests
     [InlineData("version")]
     [InlineData("--version")]
     [InlineData("list")]
-    [InlineData("package")]
     [InlineData("recommend")]
     [InlineData("install")]
     [InlineData("update")]
@@ -49,16 +69,6 @@ public sealed class ProgramCommandSemanticsTests
         Assert.True(options.AutoInstall);
         Assert.False(options.PackageMode);
         Assert.Empty(options.RequestedSkills);
-    }
-
-    [Fact]
-    public void ParseInstallOptions_RecognizesPackageMode()
-    {
-        var options = Program.ParseInstallOptions(["package", "data"]);
-
-        Assert.True(options.PackageMode);
-        Assert.False(options.AutoInstall);
-        Assert.Equal(["data"], options.RequestedSkills);
     }
 
     [Fact]

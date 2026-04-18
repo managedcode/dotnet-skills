@@ -4,6 +4,7 @@ set -euo pipefail
 package_source="${1:-artifacts/nuget}"
 tool_path="${RUNNER_TEMP:-/tmp}/dotnet-skills-tool"
 skills_path="${RUNNER_TEMP:-/tmp}/dotnet-skills-installed-skills"
+bundle_path="${RUNNER_TEMP:-/tmp}/dotnet-skills-bundle-target"
 workspace_path="${RUNNER_TEMP:-/tmp}/dotnet-skills-workspace"
 codex_workspace="$workspace_path/codex"
 claude_workspace="$workspace_path/claude"
@@ -12,10 +13,11 @@ shared_workspace="$workspace_path/shared"
 plain_workspace="$workspace_path/plain"
 gemini_workspace="$workspace_path/gemini"
 
-rm -rf "$tool_path" "$skills_path" "$workspace_path"
+rm -rf "$tool_path" "$skills_path" "$bundle_path" "$workspace_path"
 mkdir -p \
   "$tool_path" \
   "$skills_path" \
+  "$bundle_path" \
   "$codex_workspace/.codex" \
   "$claude_workspace/.claude" \
   "$workspace_path/.claude" \
@@ -98,18 +100,30 @@ grep -q "dotnet-agents" "$skills_path/agents-version.txt"
 agents version --no-check > "$skills_path/plain-agents-version.txt"
 grep -q "agents" "$skills_path/plain-agents-version.txt"
 
-dotnet skills list --available-only --target "$skills_path" > "$skills_path/available-list.txt"
+dotnet skills list --available-only --bundled --target "$skills_path" > "$skills_path/available-list.txt"
 grep -q "dotnet-aspire" "$skills_path/available-list.txt"
+
+dotnet skills bundle list --bundled > "$skills_path/bundle-list.txt"
+grep -q "dotnet-quality" "$skills_path/bundle-list.txt"
 
 dotnet agents list --agent claude --scope project --project-dir "$workspace_path" > "$skills_path/agents-list.txt"
 grep -q "router" "$skills_path/agents-list.txt"
 
-dotnet skills install aspire --target "$skills_path"
+dotnet skills install aspire --bundled --target "$skills_path"
 test -f "$skills_path/dotnet-aspire/SKILL.md"
 dotnet skills list --local --target "$skills_path" > "$skills_path/local-list.txt"
 grep -q "aspire" "$skills_path/local-list.txt"
-dotnet skills remove --all --target "$skills_path"
+dotnet skills remove --all --bundled --target "$skills_path"
 test ! -e "$skills_path/dotnet-aspire"
+
+dotnet skills install bundle orleans --bundled --target "$bundle_path"
+test -f "$bundle_path/dotnet-orleans/SKILL.md"
+test -f "$bundle_path/dotnet-managedcode-orleans-graph/SKILL.md"
+test -f "$bundle_path/dotnet-managedcode-orleans-signalr/SKILL.md"
+dotnet skills remove collection distributed --bundled --target "$bundle_path"
+test ! -e "$bundle_path/dotnet-orleans"
+test ! -e "$bundle_path/dotnet-managedcode-orleans-graph"
+test ! -e "$bundle_path/dotnet-managedcode-orleans-signalr"
 
 dotnet skills install aspire --agent anthropic --scope project --project-dir "$workspace_path"
 test -f "$workspace_path/.claude/skills/dotnet-aspire/SKILL.md"

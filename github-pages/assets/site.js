@@ -85,7 +85,7 @@
     const emptyState = document.getElementById("listing-empty");
     const configuredListPath = pageData.querySyncPath || "";
     const listPath = configuredListPath ? new URL(configuredListPath, window.location.origin).pathname : window.location.pathname;
-    let activeCategory = tabs.find((tab) => tab.classList.contains("is-active"))?.dataset.filter || "all";
+    let activeFilter = tabs.find((tab) => tab.classList.contains("is-active"))?.dataset.filter || "all";
 
     if (!input && tabs.length === 0) {
       return;
@@ -93,16 +93,16 @@
 
     const params = new URLSearchParams(window.location.search);
     const initialQuery = params.get("q");
-    const initialCategory = params.get("category");
+    const initialFilter = params.get("filter");
 
     if (input && initialQuery) {
       input.value = initialQuery;
     }
 
-    if (initialCategory && tabs.some((tab) => tab.dataset.filter === initialCategory)) {
-      activeCategory = initialCategory;
+    if (initialFilter && tabs.some((tab) => tab.dataset.filter === initialFilter)) {
+      activeFilter = initialFilter;
       tabs.forEach((tab) => {
-        tab.classList.toggle("is-active", tab.dataset.filter === initialCategory);
+        tab.classList.toggle("is-active", tab.dataset.filter === initialFilter);
       });
     }
 
@@ -112,10 +112,10 @@
 
       cards.forEach((card) => {
         const filterText = (card.dataset.filtertext || "").toLowerCase();
-        const category = card.dataset.category || "";
+        const filterValue = card.dataset.collection || card.dataset.category || "";
         const matchesQuery = !query || filterText.includes(query);
-        const matchesCategory = activeCategory === "all" || category === activeCategory;
-        const visible = matchesQuery && matchesCategory;
+        const matchesFilter = activeFilter === "all" || filterValue === activeFilter;
+        const visible = matchesQuery && matchesFilter;
 
         card.classList.toggle("is-hidden", !visible);
         if (visible) {
@@ -134,10 +134,10 @@
         nextParams.delete("q");
       }
 
-      if (activeCategory !== "all" && tabs.length > 0) {
-        nextParams.set("category", activeCategory);
+      if (activeFilter !== "all" && tabs.length > 0) {
+        nextParams.set("filter", activeFilter);
       } else {
-        nextParams.delete("category");
+        nextParams.delete("filter");
       }
 
       const nextQuery = nextParams.toString();
@@ -147,7 +147,7 @@
 
     tabs.forEach((tab) => {
       tab.addEventListener("click", () => {
-        activeCategory = tab.dataset.filter || "all";
+        activeFilter = tab.dataset.filter || "all";
         tabs.forEach((candidate) => candidate.classList.toggle("is-active", candidate === tab));
         applyFilters();
       });
@@ -195,7 +195,7 @@
       currentSkill = skill;
       document.getElementById("skill-modal-title").textContent = skill.title || skill.name;
       document.getElementById("skill-modal-version").textContent = `v${skill.version}`;
-      document.getElementById("skill-modal-category").textContent = skill.category;
+      document.getElementById("skill-modal-collection").textContent = skill.collection;
       document.getElementById("skill-modal-description").textContent = skill.description;
       document.getElementById("skill-modal-compatibility").textContent = skill.compatibility || "Works with current .NET projects.";
       document.getElementById("skill-modal-command").textContent = skill.installCommand;

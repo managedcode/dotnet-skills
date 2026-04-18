@@ -351,6 +351,15 @@ def resolve_category_order(skills: list[dict[str, object]]) -> list[str]:
     return sorted(categories, key=lambda item: (item.casefold(), item))
 
 
+def resolve_stack_order(skills: list[dict[str, object]]) -> list[str]:
+    stacks = {
+        str(skill["stack"]).strip()
+        for skill in skills
+        if str(skill.get("stack", "")).strip()
+    }
+    return sorted(stacks, key=lambda item: (get_stack_rank(item), item.casefold(), item))
+
+
 def classify_skill(skill_type: str, package: str, category: str, name: str) -> tuple[str, str]:
     if is_governance_skill(package, name):
         return "Governance & Delivery", resolve_governance_lane(package, name)

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "category": "Distributed",
+  "category": "Core",
   "packages": [
     "Microsoft.Extensions.Hosting"
   ]

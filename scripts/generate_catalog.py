@@ -7,7 +7,7 @@ import re
 import sys
 from pathlib import Path
 
-from catalog_index import build_bundles, build_skill_manifest, collect_skills, resolve_category_order
+from catalog_index import build_bundles, build_skill_manifest, collect_skills, resolve_stack_order
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,24 +29,24 @@ README_SKILLS_INTRO_LINE_TEMPLATE = (
 )
 
 def render_catalog(skills: list[dict[str, str]]) -> str:
-    category_order = resolve_category_order(skills)
-    grouped: dict[str, list[dict[str, str]]] = {category: [] for category in category_order}
+    stack_order = resolve_stack_order(skills)
+    grouped: dict[str, list[dict[str, str]]] = {stack: [] for stack in stack_order}
     for skill in skills:
-        grouped[skill["category"]].append(skill)
+        grouped[skill["stack"]].append(skill)
 
-    for category in grouped:
-        grouped[category].sort(key=lambda item: item["name"])
+    for stack in grouped:
+        grouped[stack].sort(key=lambda item: item["name"])
 
     lines: list[str] = [BEGIN_MARKER, "", f"This catalog currently contains **{len(skills)}** skills.", ""]
 
-    for category in category_order:
-        items = grouped[category]
+    for stack in stack_order:
+        items = grouped[stack]
         if not items:
             continue
 
         lines.extend(
             [
-                f"### {category}",
+                f"### {stack}",
                 "",
                 "| Skill | Version | Description |",
                 "|-------|---------|-------------|",
