@@ -1,0 +1,9 @@
+{
+  "name": "Chrome-DevTools-MCP",
+  "title": "Chrome DevTools MCP",
+  "description": "Chrome DevTools MCP server for browser debugging and automation from coding agents.",
+  "links": {
+    "repository": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+    "docs": "https://github.com/ChromeDevTools/chrome-devtools-mcp#readme"
+  }
+}
