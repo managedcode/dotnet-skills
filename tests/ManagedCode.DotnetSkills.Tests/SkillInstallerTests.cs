@@ -86,6 +86,20 @@ public sealed class SkillInstallerTests
     }
 
     [Fact]
+    public void SelectSkillsFromCollections_ResolvesCollectionAliases()
+    {
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+
+        var selected = installer.SelectSkillsFromCollections(["distributed", "dotnet-quality"]);
+
+        Assert.Contains(selected, skill => skill.Name == "dotnet-orleans");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-code-analysis");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-format");
+        Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
+    }
+
+    [Fact]
     public void Install_RejectsSkillNameThatEscapesLayoutRoot()
     {
         using var tempDirectory = new TemporaryDirectory();

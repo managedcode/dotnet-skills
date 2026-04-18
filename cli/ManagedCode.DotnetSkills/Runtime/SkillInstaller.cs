@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 
 namespace ManagedCode.DotnetSkills.Runtime;
@@ -58,6 +59,45 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
                     throw new InvalidOperationException($"Bundle {package.Name} references unknown skill {skillName}.");
                 }
 
+                if (seen.Add(skill.Name))
+                {
+                    selected.Add(skill);
+                }
+            }
+        }
+
+        return selected;
+    }
+
+    public IReadOnlyList<SkillEntry> SelectSkillsFromCollections(IReadOnlyList<string> requestedCollections)
+    {
+        if (requestedCollections.Count == 0)
+        {
+            throw new InvalidOperationException("Specify one or more collection names.");
+        }
+
+        var normalizedCollections = catalog.Skills
+            .GroupBy(skill => skill.Stack, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                group => group.Key,
+                group => group.OrderBy(skill => skill.Name, StringComparer.Ordinal).ToArray(),
+                StringComparer.OrdinalIgnoreCase)
+            .SelectMany(entry => GetCollectionKeys(entry.Key).Select(key => (key, skills: (IReadOnlyList<SkillEntry>)entry.Value)))
+            .GroupBy(entry => entry.key, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First().skills, StringComparer.OrdinalIgnoreCase);
+
+        var selected = new List<SkillEntry>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var collectionName in requestedCollections)
+        {
+            if (!TryResolveCollection(normalizedCollections, collectionName, out var collectionSkills))
+            {
+                throw new InvalidOperationException($"Unknown collection: {collectionName}");
+            }
+
+            foreach (var skill in collectionSkills)
+            {
                 if (seen.Add(skill.Name))
                 {
                     selected.Add(skill);
@@ -176,9 +216,41 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
         return available.TryGetValue(NormalizePackageKey(requestedPackage), out package!);
     }
 
+    private static bool TryResolveCollection(
+        IReadOnlyDictionary<string, IReadOnlyList<SkillEntry>> available,
+        string requestedCollection,
+        out IReadOnlyList<SkillEntry> skills)
+    {
+        return available.TryGetValue(NormalizeCollectionKey(requestedCollection), out skills!);
+    }
+
     private static string NormalizePackageKey(string value)
     {
         return new string(value.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+    }
+
+    private static IEnumerable<string> GetCollectionKeys(string collectionName)
+    {
+        yield return NormalizeCollectionKey(collectionName);
+
+        if (collectionName.StartsWith(".NET ", StringComparison.OrdinalIgnoreCase))
+        {
+            yield return NormalizeCollectionKey($"dotnet {collectionName[".NET ".Length..]}");
+        }
+    }
+
+    private static string NormalizeCollectionKey(string value)
+    {
+        var builder = new StringBuilder(value.Length);
+        foreach (var ch in value.Trim().ToLowerInvariant())
+        {
+            if (char.IsLetterOrDigit(ch))
+            {
+                builder.Append(ch);
+            }
+        }
+
+        return builder.ToString();
     }
 
     private static DirectoryInfo ResolveInstalledSkillDirectory(SkillInstallLayout layout, SkillEntry skill)

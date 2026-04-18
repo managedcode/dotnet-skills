@@ -19,7 +19,7 @@ public sealed class InteractiveConsoleAppTests
     public async Task RunAsync_CanChangePlatformAndScope()
     {
         var prompts = new FakeInteractivePrompts(
-            "Workspace - destination and catalog",
+            "Workspace",
             "Install destination",
             "Platform",
             "Codex",
@@ -45,8 +45,8 @@ public sealed class InteractiveConsoleAppTests
         var catalog = TestCatalog.Load();
         var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
-            "Stacks - browse by stack",
-            "Browse a stack",
+            "Collections",
+            "Browse a collection",
             "Distributed",
             "Install from a lane",
             "Frameworks",
@@ -73,7 +73,7 @@ public sealed class InteractiveConsoleAppTests
     public async Task RunAsync_CanOpenCatalogAnalysisTree()
     {
         var prompts = new FakeInteractivePrompts(
-            "Analysis - tree, tokens, package signals",
+            "Analysis",
             "View full skill tree",
             "Back",
             "Back",
@@ -96,7 +96,7 @@ public sealed class InteractiveConsoleAppTests
         new SkillInstaller(catalog).Install([aspireSkill], sourceLayout, force: true);
 
         var prompts = new FakeInteractivePrompts(
-            "Installed - control skills",
+            "Installed",
             "Copy or move skills to another target",
             new[] { $"aspire ({aspireSkill.Version})" },
             "Claude",
@@ -134,7 +134,7 @@ public sealed class InteractiveConsoleAppTests
         new AgentInstaller(agentCatalog).Install([agent], sourceLayout, force: true);
 
         var prompts = new FakeInteractivePrompts(
-            "Agents - control agents",
+            "Agents",
             "Copy or move agents to another target",
             new[] { agentLabel },
             "Claude",

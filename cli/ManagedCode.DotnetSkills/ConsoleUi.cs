@@ -65,7 +65,7 @@ internal static class ConsoleUi
                 else
                 {
                     AnsiConsole.WriteLine();
-                    AnsiConsole.Write(new Panel(new Markup("Use [green]dotnet skills list --available-only[/] to expand stacks into stack/lane skill tables with short summaries."))
+                    AnsiConsole.Write(new Panel(new Markup("Use [green]dotnet skills list --available-only[/] to expand collections into collection/lane skill tables with short summaries."))
                         .Header("[dim]explore[/]")
                         .Expand());
                 }
@@ -580,7 +580,7 @@ internal static class ConsoleUi
 
         Section("Catalog");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} list", "Inventory with scope comparison");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} bundle list", "Focused bundles by stack and workflow");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} bundle list", "Focused bundles by collection and workflow");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} recommend", "Scan .csproj and propose skills");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts as JSON");
 
@@ -589,6 +589,9 @@ internal static class ConsoleUi
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto", "Auto-install from project signals");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install --auto --prune", "Reconcile stale auto-managed skills");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} install bundle dotnet-quality", "Install a focused multi-skill bundle");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} remove aspire", "Remove one installed skill");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} remove bundle dotnet-quality", "Remove a focused bundle surface");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} remove collection distributed", "Remove one collection surface");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} remove --all", "Remove all installed skills");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} update", "Update to latest catalog version");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} sync --force", "Refresh cached catalog");
@@ -607,10 +610,10 @@ internal static class ConsoleUi
         var noteLines = new[]
         {
             $"[dim]Bare[/] [green]{Escape(ToolIdentity.DisplayCommand)}[/] [dim]opens the interactive shell.[/]",
-            "[dim]The shell exposes[/] [green]Stack -> Lane -> Skill[/] [dim]browse, analysis views, and install preview.[/]",
+            "[dim]The shell exposes[/] [green]Collection -> Lane -> Skill[/] [dim]browse, analysis views, and install preview.[/]",
             "[dim]Short aliases work everywhere:[/] [green]aspire[/] [dim]resolves to[/] [green]dotnet-aspire[/][dim].[/]",
             "[dim]--bundled skips the network. --catalog-version pins a release. --refresh redownloads.[/]",
-            "[dim]Auto-detect probes .codex, .claude, .github, .gemini, .junie; falls back to .agents/skills.[/]",
+            "[dim]Auto-detect probes .codex, .claude, .github, .gemini, .junie; if none exist yet, installs land in .agents/skills.[/]",
             $"[dim]Set[/] [green]{Escape(ToolIdentity.SkipUpdateEnvironmentVariable)}=1[/] [dim]to suppress update notices.[/]",
         };
 
@@ -834,8 +837,8 @@ internal static class ConsoleUi
     private static Table BuildAvailableStackSummaryTable(IReadOnlyList<SkillEntry> availableSkills)
     {
         var table = new Table().Expand().Border(TableBorder.Rounded);
-        table.Title = new TableTitle("[bold]Available stacks[/]");
-        table.AddColumn("Stack");
+        table.Title = new TableTitle("[bold]Available collections[/]");
+        table.AddColumn("Collection");
         table.AddColumn("Lanes");
         table.AddColumn("Skills");
         table.AddColumn("Tokens");

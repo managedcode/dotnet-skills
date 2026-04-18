@@ -75,9 +75,14 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - For interactive CLI UX changes in the publishable tools, run a dedicated Claude-led design pass before finalizing the console presentation.
 - If Claude or Opus is unavailable in the current environment, still do a separate CLI UX design pass locally before finalizing the console presentation.
 - For interactive CLI UX changes, do not stop at rearranging prompts. The result must feel like a real terminal UI with structured panels, visible hierarchy, and information-dense navigation instead of a flat questionnaire.
+- For major CLI rewrites or UX overhauls, create a dedicated Markdown implementation plan in `docs/` before rewriting code. The plan must describe the target UI structure, screen logic, deletion scope, validation matrix, and a phased checklist that gets updated as work completes.
 - Interactive CLI UX must include a dense catalog-analysis surface, not just install flows. Users should be able to inspect skill size/token weight, stack/lane composition, and related package signals before installing.
 - When the user points to concrete TUI references or screenshots, inspect those sources before finalizing the console UX and carry the useful layout patterns into the tool.
 - Do not ship flat menus where every entry has the same visual weight. Interactive menus must expose clear hierarchy, differentiated sections, and obvious primary flows.
+- Do not ship the interactive shell as a stack of loose tables plus a prompt. The home screen must read like a real windowed console UI with dense panes, clear navigation hierarchy, and low empty-space waste; if it still looks like diagnostic output instead of a control center, keep iterating.
+- Do not render the public interactive home/control-center through the repo-local ASCII fallback widgets when a rich console path is available. The main shell must be composed with the real rich-console layout system, not a fake box-drawing approximation.
+- Do not downgrade the interactive shell to plain-text prompts. If the rich console path cannot run, fail clearly instead of introducing a fallback mode.
+- In public UX, site copy, help text, and interactive shell labels, use `Collections` for the top-level grouped catalog surface instead of `Stacks`. Internal implementation names may differ only when changing them would create noisy churn, but user-facing terminology must be `Collection -> Lane -> Skill`.
 - For catalog browsing in the interactive shell, provide at least one explicit tree-style or hierarchy-first view that makes the Stack -> Lane -> Skill structure visible at a glance, plus an install overview that summarizes what will be written before confirmation.
 - When the CLI has package-aware workflows, surface NuGet/package entry points clearly in the interactive shell instead of burying them behind generic labels.
 - When stack, bundle, or install-surface behavior changes materially, finish the matching documentation pass in the same work stream. Do not report the work as done while `README.md`, contributor docs, or built-in CLI help still describe the old model.
@@ -422,7 +427,7 @@ Rules:
 - Automatic catalog versions should use the numeric calendar-plus-daily-index format `<year>.<month>.<day>.<daily-build-index>`, where the first release for a UTC day is `.0`, the second is `.1`, and so on. Do not add letter prefixes such as `r` or `ci` in release tags or titles.
 - The NuGet tool publish workflow must ignore `catalog-v*` releases so catalog content publishes never trigger package pushes by accident.
 - `catalog-v*` releases must publish intentional release notes, not a one-line automation placeholder. Release notes should summarize the change window, list merged PRs or commits, call out contributors, and explicitly identify first-time contributors when any appear in that release window.
-- The tool should use the newest non-draft `catalog-v*` GitHub release by default and fall back to bundled content only when the remote catalog is unavailable.
+- The tool should use the newest non-draft `catalog-v*` GitHub release by default. Bundled catalog content is for explicit `--bundled` use, not an automatic fallback when the remote catalog is unavailable.
 - The bare `dotnet skills` usage view is still a normal startup path and must surface the same automatic self-update notice as other startup commands, unless update checks are explicitly suppressed.
 - Local `dotnet build` and `dotnet pack` for the tool may generate a temporary manifest in `obj/` from the scanned `catalog/<type>/<package>/` tree; release CI remains the canonical place that generates checked catalog outputs and release assets.
 

@@ -70,4 +70,44 @@ public sealed class ProgramCommandSemanticsTests
         Assert.False(options.AutoInstall);
         Assert.Equal(["data"], options.RequestedSkills);
     }
+
+    [Fact]
+    public void ParseRemoveOptions_RecognizesSkillMode()
+    {
+        var options = Program.ParseRemoveOptions(["aspire"]);
+
+        Assert.Equal(RemoveSelectionMode.Skill, options.SelectionMode);
+        Assert.False(options.RemoveAll);
+        Assert.Equal(["aspire"], options.RequestedTargets);
+    }
+
+    [Fact]
+    public void ParseRemoveOptions_RecognizesBundleMode()
+    {
+        var options = Program.ParseRemoveOptions(["bundle", "dotnet-quality"]);
+
+        Assert.Equal(RemoveSelectionMode.Bundle, options.SelectionMode);
+        Assert.False(options.RemoveAll);
+        Assert.Equal(["dotnet-quality"], options.RequestedTargets);
+    }
+
+    [Fact]
+    public void ParseRemoveOptions_RecognizesCollectionMode()
+    {
+        var options = Program.ParseRemoveOptions(["collection", "distributed"]);
+
+        Assert.Equal(RemoveSelectionMode.Collection, options.SelectionMode);
+        Assert.False(options.RemoveAll);
+        Assert.Equal(["distributed"], options.RequestedTargets);
+    }
+
+    [Fact]
+    public void ParseRemoveOptions_RecognizesRemoveAll()
+    {
+        var options = Program.ParseRemoveOptions(["--all"]);
+
+        Assert.Equal(RemoveSelectionMode.Skill, options.SelectionMode);
+        Assert.True(options.RemoveAll);
+        Assert.Empty(options.RequestedTargets);
+    }
 }

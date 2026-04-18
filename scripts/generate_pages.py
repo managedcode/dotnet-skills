@@ -65,7 +65,7 @@ CATEGORY_DESCRIPTIONS = {
     "Legacy": "Migration and maintenance help for older ASP.NET, WCF, Workflow Foundation, and other legacy .NET surfaces.",
     "Metrics": "Profilers, code metrics, duplication detection, and observability tooling that improve engineering feedback loops.",
     "Testing": "Unit, integration, browser, and distributed-system testing patterns for current .NET projects.",
-    "Web": "ASP.NET Core, Blazor, frontends, APIs, auth, and service hosting for modern web-facing .NET stacks.",
+    "Web": "ASP.NET Core, Blazor, frontends, APIs, auth, and service hosting for modern web-facing .NET applications.",
 }
 
 
@@ -887,7 +887,7 @@ def render_bundle_filter_tabs(current_kind: str = "all") -> str:
     """Render bundle-kind filter tabs."""
     options = [
         ("all", "All bundles"),
-        ("stack", "Stack bundles"),
+        ("stack", "Collection bundles"),
         ("workflow", "Workflow bundles"),
         ("curated", "Focused bundles"),
     ]
@@ -1027,7 +1027,7 @@ def render_bundle_listing_section(
     if include_tabs:
         toolbar_html = f"""
         <div class="listing-toolbar">
-          <input class="search-input" id="search-input" type="search" placeholder="Search bundles by name, stack, workflow, or included skill" autocomplete="off">
+          <input class="search-input" id="search-input" type="search" placeholder="Search bundles by name, collection, workflow, or included skill" autocomplete="off">
           <div class="filter-tabs">
             {tabs_html}
           </div>
@@ -1057,7 +1057,7 @@ def render_quickstart_panel() -> str:
     """Render the home-page quickstart as a dark terminal-style panel."""
     steps = [
         ("Install", "dotnet tool install --global dotnet-skills", "Get the CLI onto your machine"),
-        ("Open", "dotnet skills", "Launch the interactive stack/lane control center"),
+        ("Open", "dotnet skills", "Launch the interactive collection/lane control center"),
         ("Detect", "dotnet skills install --auto", "Scan .csproj and match NuGet packages"),
         ("Bundle", "dotnet skills install bundle dotnet-quality", "Install a focused multi-skill bundle"),
         ("Measure", "dotnet skills catalog tokens --catalog-root .", "Export per-skill token counts"),
@@ -1196,7 +1196,7 @@ def render_home_page(
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
         <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>
-        <p class="page-lead">Start from the NuGet packages already in your project, a focused bundle, or the interactive control center. Browse stack and lane drilldowns, inspect per-skill token counts, and install grouped skills without broad category-wide noise.</p>
+        <p class="page-lead">Start from the NuGet packages already in your project, a focused bundle, or the interactive control center. Browse collection and lane drilldowns, inspect per-skill token counts, and install grouped skills without broad category-wide noise.</p>
         <div class="hero-actions">
           {render_button("Browse bundles", f"{root_prefix}bundles/", "primary")}
           {render_button("Browse categories", f"{root_prefix}categories/", "ghost")}
@@ -1552,7 +1552,7 @@ def render_bundles_index_page(bundles: list[dict], root_prefix: str) -> tuple[st
           <span class="tag tag-accent">{len(bundles)} bundles</span>
         </div>
         <h1 class="page-title">Install grouped <span class="accent">bundles</span></h1>
-        <p class="page-lead">Bundles expand one command into multiple related skills. Every bundle here is intentionally focused by stack or workflow instead of mixing broad category-wide installs.</p>
+        <p class="page-lead">Bundles expand one command into multiple related skills. Every bundle here is intentionally focused by collection or workflow instead of mixing broad category-wide installs.</p>
       </section>
       {render_bundle_listing_section(
           bundles,
@@ -2214,7 +2214,7 @@ def main() -> int:
     add_page(
         path="bundles/",
         title=".NET Bundles | dotnet-skills",
-        description="Browse one-command .NET bundles with focused stack and workflow installs for quality, testing, architecture, Orleans, and more.",
+        description="Browse one-command .NET bundles with focused collection and workflow installs for quality, testing, architecture, Orleans, and more.",
         keywords=["dotnet bundles", "install bundle dotnet-quality", "install bundle orleans", "mcaf bundle", "dotnet-skills bundles"],
         body_class="page-bundles",
         main_content=bundles_body,

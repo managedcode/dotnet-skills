@@ -56,27 +56,18 @@ internal sealed class InteractiveConsoleApp
             {
                 RenderDashboard();
 
+                var homeActions = GetHomeActions();
                 var action = prompts.Select(
-                    "What would you like to do?",
-                    new[]
-                    {
-                        new MenuOption<HomeAction>("Project - sync from project", HomeAction.SyncProject),
-                        new MenuOption<HomeAction>("Stacks - browse by stack", HomeAction.InstallSkills),
-                        new MenuOption<HomeAction>("Analysis - tree, tokens, package signals", HomeAction.Analysis),
-                        new MenuOption<HomeAction>("Bundles - focused installs", HomeAction.InstallSkillStack),
-                        new MenuOption<HomeAction>("Installed - control skills", HomeAction.ManageInstalled),
-                        new MenuOption<HomeAction>("Agents - control agents", HomeAction.Agents),
-                        new MenuOption<HomeAction>("Workspace - destination and catalog", HomeAction.Settings),
-                        new MenuOption<HomeAction>("Exit", HomeAction.Exit),
-                    },
+                    "Section",
+                    homeActions,
                     option => option.Label);
 
-                switch (action.Value)
+                switch (action.Action)
                 {
                     case HomeAction.SyncProject:
                         ShowProjectSync();
                         break;
-                    case HomeAction.InstallSkillStack:
+                    case HomeAction.ManageBundles:
                         ShowPackages();
                         break;
                     case HomeAction.InstallSkills:
@@ -114,26 +105,22 @@ internal sealed class InteractiveConsoleApp
     private async Task RefreshCatalogAsync()
     {
         AnsiConsole.Clear();
-        AnsiConsole.MarkupLine("[dim]Refreshing catalog...[/]");
+        SpectreConsole.Write(BuildRichShellPanel("refreshing", new Spectre.Console.Markup("[dim]Refreshing catalog...[/]")));
+        AnsiConsole.WriteLine();
         await LoadCatalogsAsync(refreshCatalog: true);
 
-        var grid = new Grid();
-        grid.AddColumn(new GridColumn().NoWrap());
-        grid.AddColumn();
-        grid.AddRow(new Markup("[green]\u2714[/] [dim]catalog[/]"), new Markup(Escape(skillCatalog.CatalogVersion)));
-        grid.AddRow(new Markup("[dim]source[/]"), new Markup(Escape(skillCatalog.SourceLabel)));
-        grid.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
-        grid.AddRow(new Markup("[dim]focused bundles[/]"), new Markup(GetPrimaryBundles().Count.ToString()));
-        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]refreshed[/]").Border(BoxBorder.Rounded).Expand());
+        var summary = BuildRichPropertyGrid(
+            ("catalog", $"[green]{Escape(skillCatalog.CatalogVersion)}[/]"),
+            ("source", Escape(skillCatalog.SourceLabel)),
+            ("skills", skillCatalog.Skills.Count.ToString()),
+            ("focused bundles", GetPrimaryBundles().Count.ToString()));
+        SpectreConsole.Write(BuildRichShellPanel("refreshed", summary));
         prompts.Pause("Press any key to continue...");
     }
 
     private void RenderDashboard()
     {
         AnsiConsole.Clear();
-        AnsiConsole.MarkupLine("[bold deepskyblue1]dotnet skills[/] [dim]v{0}[/]", Escape(ToolVersionInfo.CurrentVersion));
-        AnsiConsole.MarkupLine("[dim].NET skill catalog for AI-assisted development[/]");
-        AnsiConsole.WriteLine();
 
         var skillLayout = ResolveSkillLayout();
         var skillInstaller = new SkillInstaller(skillCatalog);
@@ -141,7 +128,8 @@ internal sealed class InteractiveConsoleApp
         var outdatedSkills = installedSkills.Count(record => !record.IsCurrent);
         var agentStatus = ResolveAgentStatus();
         var primaryBundleCount = GetPrimaryBundles().Count;
-        var stackViews = BuildStackViews(installedSkills);
+        var collectionViews = BuildCollectionViews(installedSkills);
+        var packageSignals = BuildPackageSignals();
         var totalTokens = skillCatalog.Skills.Sum(skill => skill.TokenCount);
         var largestSkills = skillCatalog.Skills
             .OrderByDescending(skill => skill.TokenCount)
@@ -149,83 +137,81 @@ internal sealed class InteractiveConsoleApp
             .Take(5)
             .ToArray();
         var featuredBundles = GetPrimaryBundles()
-            .Take(6)
+            .Take(5)
             .ToArray();
-        var largestStack = stackViews
-            .OrderByDescending(stack => stack.TokenCount)
-            .ThenBy(stack => stack.Stack, StringComparer.Ordinal)
+        var largestCollection = collectionViews
+            .OrderByDescending(collection => collection.TokenCount)
+            .ThenBy(collection => collection.Collection, StringComparer.Ordinal)
             .FirstOrDefault();
+        var homeActions = GetHomeActions()
+            .Where(action => action.Action != HomeAction.Exit)
+            .ToArray();
+        var consoleWidth = GetConsoleWidth();
+        var wideMode = consoleWidth >= 132;
+        var splitPanes = consoleWidth >= 165;
+        var compactHeader = consoleWidth < 100;
 
-        var ratio = skillCatalog.Skills.Count > 0 ? (double)installedSkills.Count / skillCatalog.Skills.Count : 0;
-        var barWidth = 20;
-        var filled = (int)(ratio * barWidth);
-        var bar = new string('\u2588', filled) + new string('\u2591', barWidth - filled);
+        var header = compactHeader
+            ? BuildRichStack(
+                new Spectre.Console.Markup($"[bold deepskyblue1]dotnet skills[/] [dim]v{Escape(ToolVersionInfo.CurrentVersion)}[/]"),
+                new Spectre.Console.Markup("[grey]collection-first control center[/]"),
+                new Spectre.Console.Markup($"[bold springgreen3]{Escape(skillCatalog.CatalogVersion)}[/] [dim]{Escape(skillCatalog.SourceLabel)}[/]"))
+            : BuildRichTwoColumn(
+                BuildRichStack(
+                    new Spectre.Console.Markup($"[bold deepskyblue1]dotnet skills[/] [dim]v{Escape(ToolVersionInfo.CurrentVersion)}[/]"),
+                    new Spectre.Console.Markup("[grey]collection-first control center[/]")),
+                BuildRichStack(
+                    new Spectre.Console.Markup($"[bold springgreen3]{Escape(skillCatalog.CatalogVersion)}[/]"),
+                    new Spectre.Console.Markup($"[dim]{Escape(skillCatalog.SourceLabel)}[/]")),
+                gap: 4,
+                noWrapLeft: false,
+                noWrapRight: true);
+        SpectreConsole.Write(BuildRichShellPanel("control center", header));
+        AnsiConsole.WriteLine();
 
-        var overview = new Grid();
-        overview.AddColumn(new GridColumn().NoWrap());
-        overview.AddColumn();
-        overview.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(skillCatalog.SourceLabel)} [dim]({Escape(skillCatalog.CatalogVersion)})[/]"));
-        overview.AddRow(new Markup("[dim]session[/]"), new Markup($"{Escape(Session.Agent.ToString())} [dim]/[/] {Escape(Session.Scope.ToString())}"));
-        overview.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))}[/]"));
-        overview.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(skillLayout.PrimaryRoot.FullName)}[/]"));
-        overview.AddRow(new Markup("[dim]skills[/]"), new Markup($"[green]{bar}[/] {installedSkills.Count}/{skillCatalog.Skills.Count}" + (outdatedSkills > 0 ? $" [yellow]({outdatedSkills} outdated)[/]" : "")));
-        overview.AddRow(new Markup("[dim]bundles[/]"), new Markup($"{primaryBundleCount} focused installs"));
-        overview.AddRow(new Markup("[dim]tokenizer[/]"), new Markup($"{Escape(SkillTokenCounter.ModelName)} [dim]({FormatTokenCount(totalTokens)} tokens)[/]"));
-        overview.AddRow(new Markup("[dim]agents[/]"), new Markup($"{agentCatalog.Agents.Count} [dim]({Escape(agentStatus.Summary)})[/]"));
-        var flowTable = new Table().Border(TableBorder.None).Expand();
-        flowTable.AddColumn("Flow");
-        flowTable.AddColumn("Intent");
-        flowTable.AddColumn("Command");
-        flowTable.AddRow("[deepskyblue1]Project[/]", "[dim]sync from .csproj signals[/]", "[grey]dotnet skills install --auto[/]");
-        flowTable.AddRow("[deepskyblue1]Stacks[/]", "[dim]Stack -> Lane -> Skill[/]", "[grey]dotnet skills list --available-only[/]");
-        flowTable.AddRow("[deepskyblue1]Analysis[/]", "[dim]tree, tokens, package signals[/]", "[grey]dotnet skills catalog tokens[/]");
-        flowTable.AddRow("[deepskyblue1]Bundles[/]", "[dim]focused multi-skill installs[/]", "[grey]dotnet skills bundle list[/]");
-        flowTable.AddRow("[deepskyblue1]Installed[/]", "[dim]repair, move, remove, update[/]", "[grey]dotnet skills list --installed-only[/]");
-        flowTable.AddRow("[deepskyblue1]Workspace[/]", "[dim]platform, scope, catalog source[/]", "[grey]dotnet skills where[/]");
+        Spectre.Console.Rendering.IRenderable navigation = wideMode
+            ? BuildRichNavigationTable(homeActions)
+            : BuildRichNavigationList(homeActions);
 
-        var telemetryTable = new Table().Border(TableBorder.None).Expand();
-        telemetryTable.AddColumn("Signal");
-        telemetryTable.AddColumn("Value");
-        telemetryTable.AddRow("Stacks", stackViews.Count.ToString());
-        telemetryTable.AddRow("Lanes", stackViews.Sum(stack => stack.Lanes.Count).ToString());
-        telemetryTable.AddRow("Package signals", BuildPackageSignals().Count.ToString());
-        telemetryTable.AddRow("Installed coverage", $"{installedSkills.Count}/{skillCatalog.Skills.Count}");
-        telemetryTable.AddRow("Largest stack", largestStack is null ? "-" : $"{Escape(largestStack.Stack)} [dim]({FormatTokenCount(largestStack.TokenCount)})[/]");
-        telemetryTable.AddRow("Outdated", outdatedSkills == 0 ? "[green]0[/]" : $"[yellow]{outdatedSkills}[/]");
+        var workspace = new Spectre.Console.Grid { Expand = true };
+        workspace.AddColumn(new Spectre.Console.GridColumn { NoWrap = true, Padding = new Spectre.Console.Padding(0, 0, 2, 0) });
+        workspace.AddColumn();
+        workspace.AddRow(new Spectre.Console.Markup("[dim]catalog[/]"), new Spectre.Console.Markup($"{Escape(skillCatalog.SourceLabel)} [dim]({Escape(skillCatalog.CatalogVersion)})[/]"));
+        workspace.AddRow(new Spectre.Console.Markup("[dim]session[/]"), new Spectre.Console.Markup($"{Escape(Session.Agent.ToString())} [dim]/[/] {Escape(Session.Scope.ToString())}"));
+        workspace.AddRow(new Spectre.Console.Markup("[dim]project[/]"), new Spectre.Console.Markup($"[dim]{Escape(CompactPath(Program.ResolveProjectRoot(Session.ProjectDirectory)))}[/]"));
+        workspace.AddRow(new Spectre.Console.Markup("[dim]target[/]"), new Spectre.Console.Markup($"[dim]{Escape(CompactPath(skillLayout.PrimaryRoot.FullName))}[/]"));
+        workspace.AddRow(new Spectre.Console.Markup("[dim]agents[/]"), new Spectre.Console.Markup(Escape(CompactText(agentStatus.Summary, 64))));
+        workspace.AddRow(new Spectre.Console.Markup("[dim]tokenizer[/]"), new Spectre.Console.Markup($"{Escape(SkillTokenCounter.ModelName)} [dim]({FormatTokenCount(totalTokens)})[/]"));
 
-        var stackTable = new Table().Border(TableBorder.None).Expand();
-        stackTable.AddColumn("Stack");
-        stackTable.AddColumn("Lanes");
-        stackTable.AddColumn("Skills");
-        stackTable.AddColumn("Tokens");
+        var metricGrid = new Spectre.Console.Grid { Expand = true };
+        metricGrid.AddColumn(new Spectre.Console.GridColumn { Padding = new Spectre.Console.Padding(0, 0, 2, 0) });
+        metricGrid.AddColumn(new Spectre.Console.GridColumn { Padding = new Spectre.Console.Padding(0, 0, 2, 0) });
+        metricGrid.AddColumn();
+        metricGrid.AddRow(
+            BuildRichMetricCard("Installed", $"{installedSkills.Count}/{skillCatalog.Skills.Count}", outdatedSkills == 0 ? "up to date" : $"{outdatedSkills} outdated", "deepskyblue1"),
+            BuildRichMetricCard("Bundles", primaryBundleCount.ToString(), "focused installs", "springgreen3"),
+            BuildRichMetricCard("Collections", collectionViews.Count.ToString(), $"{collectionViews.Sum(collection => collection.Lanes.Count)} lanes", "gold1"));
+        metricGrid.AddRow(
+            BuildRichMetricCard("Signals", packageSignals.Count.ToString(), "NuGet entry points", "turquoise2"),
+            BuildRichMetricCard("Largest collection", largestCollection?.Collection ?? "-", largestCollection is null ? "-" : FormatTokenCount(largestCollection.TokenCount), "orange3"),
+            BuildRichMetricCard("Tokens", FormatTokenCount(totalTokens), SkillTokenCounter.ModelName, "green3"));
 
-        foreach (var stack in stackViews.Take(6))
+        var stackTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
+        stackTable.AddColumn("Collection");
+        stackTable.AddColumn("In");
+        stackTable.AddColumn("Tok");
+        foreach (var collection in collectionViews.Take(5))
         {
             stackTable.AddRow(
-                Escape(stack.Stack),
-                stack.Lanes.Count.ToString(),
-                $"{stack.InstalledCount}/{stack.SkillCount}",
-                FormatTokenCount(stack.TokenCount));
+                Escape(CompactText(collection.Collection, 22)),
+                $"{collection.InstalledCount}/{collection.SkillCount}",
+                FormatTokenCount(collection.TokenCount));
         }
 
-        var heavyTable = new Table().Border(TableBorder.None).Expand();
-        heavyTable.AddColumn("Skill");
-        heavyTable.AddColumn("Area");
-        heavyTable.AddColumn("Tokens");
-
-        foreach (var skill in largestSkills)
-        {
-            heavyTable.AddRow(
-                Escape(ToAlias(skill.Name)),
-                Escape($"{skill.Stack} / {skill.Lane}"),
-                FormatTokenCount(skill.TokenCount));
-        }
-
-        var bundleTable = new Table().Border(TableBorder.None).Expand();
+        var bundleTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
         bundleTable.AddColumn("Bundle");
         bundleTable.AddColumn("Area");
-        bundleTable.AddColumn("Tokens");
-
+        bundleTable.AddColumn("Tok");
         foreach (var bundle in featuredBundles)
         {
             var bundleTokens = bundle.Skills
@@ -234,35 +220,264 @@ internal sealed class InteractiveConsoleApp
                 .Sum(skill => skill!.TokenCount);
             bundleTable.AddRow(
                 Escape(bundle.Name),
-                Escape(CatalogOrganization.ResolveBundleAreaLabel(bundle)),
+                Escape(CompactText(CatalogOrganization.ResolveBundleAreaLabel(bundle), 26)),
                 FormatTokenCount(bundleTokens));
         }
 
-        var topGrid = new Grid();
-        topGrid.AddColumn();
-        topGrid.AddColumn();
-        topGrid.AddColumn();
-        topGrid.AddRow(
-            new Panel(flowTable).Header("[deepskyblue1]navigation rail[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(overview).Header("[deepskyblue1]workspace[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(telemetryTable).Header("[deepskyblue1]catalog telemetry[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(topGrid);
+        var surfaces = splitPanes
+            ? BuildRichTwoColumn(stackTable, bundleTable, gap: 3)
+            : BuildRichStack(stackTable, bundleTable);
+
+        var heavyTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
+        heavyTable.AddColumn("Skill");
+        heavyTable.AddColumn("Area");
+        heavyTable.AddColumn("Tok");
+        foreach (var skill in largestSkills)
+        {
+            heavyTable.AddRow(
+                Escape(ToAlias(skill.Name)),
+                Escape(CompactText($"{skill.Stack} / {skill.Lane}", 28)),
+                FormatTokenCount(skill.TokenCount));
+        }
+
+        var signalTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
+        signalTable.AddColumn("Signal");
+        signalTable.AddColumn("Skill");
+        foreach (var signal in packageSignals.Take(5))
+        {
+            signalTable.AddRow(
+                Escape(CompactText(signal.Signal, 24)),
+                Escape(ToAlias(signal.Skill.Name)));
+        }
+
+        var analysis = splitPanes
+            ? BuildRichTwoColumn(heavyTable, signalTable, gap: 3)
+            : BuildRichStack(heavyTable, signalTable);
+
+        var leftColumn = BuildRichStack(
+            BuildRichShellPanel("navigation", navigation),
+            BuildRichShellPanel("workspace", workspace),
+            BuildRichShellPanel("controls", BuildRichStack(
+                new Spectre.Console.Markup("[bold grey]Enter[/] [dim]select[/]   [bold grey]Space[/] [dim]multi-select[/]"),
+                new Spectre.Console.Markup("[dim]Collections narrow before install[/]   [dim]Bundles stay focused[/]"),
+                new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"))));
+
+        var rightColumn = BuildRichStack(
+            BuildRichShellPanel("catalog telemetry", metricGrid),
+            BuildRichShellPanel("install surfaces", surfaces),
+            BuildRichShellPanel("analysis", analysis));
+
+        var content = wideMode
+            ? BuildRichTwoColumn(leftColumn, rightColumn, gap: 3, noWrapLeft: true, noWrapRight: false, leftWidth: 58)
+            : BuildRichStack(leftColumn, rightColumn);
+        SpectreConsole.Write(content);
         AnsiConsole.WriteLine();
-        var bottomGrid = new Grid();
-        bottomGrid.AddColumn();
-        bottomGrid.AddColumn();
-        bottomGrid.AddColumn();
-        bottomGrid.AddRow(
-            new Panel(stackTable).Header("[deepskyblue1]stack coverage[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(heavyTable).Header("[deepskyblue1]largest skills[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(bundleTable).Header("[deepskyblue1]focused bundles[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(bottomGrid);
-        AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup("[dim]Enter[/] [grey]select[/] [dim]\u2022[/] [dim]Space[/] [grey]multi-select[/] [dim]\u2022[/] [dim]Stacks now narrow before install[/] [dim]\u2022[/] [dim]Bundles stay focused[/] [dim]\u2022[/] [dim]Token counts use[/] [green]gpt-5 / o200k_base[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
-        AnsiConsole.WriteLine();
+    }
+
+    private static IReadOnlyList<HomeActionView> GetHomeActions()
+    {
+        return
+        [
+            new HomeActionView(HomeAction.SyncProject, "Project", "sync from .csproj signals", "dotnet skills install --auto", "deepskyblue1"),
+            new HomeActionView(HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
+            new HomeActionView(HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
+            new HomeActionView(HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "turquoise2"),
+            new HomeActionView(HomeAction.ManageInstalled, "Installed", "repair, move, remove, update", "dotnet skills list --installed-only", "orange3"),
+            new HomeActionView(HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
+            new HomeActionView(HomeAction.Settings, "Workspace", "platform, scope, catalog source", "dotnet skills where", "deepskyblue1"),
+            new HomeActionView(HomeAction.Exit, "Exit", "leave the control center", "exit", "grey"),
+        ];
+    }
+
+    private static Spectre.Console.Grid BuildRichStack(params Spectre.Console.Rendering.IRenderable[] items)
+    {
+        var grid = new Spectre.Console.Grid();
+        grid.AddColumn();
+        foreach (var item in items)
+        {
+            grid.AddRow(item);
+        }
+
+        return grid;
+    }
+
+    private static Spectre.Console.Panel BuildRichShellPanel(string title, Spectre.Console.Rendering.IRenderable content)
+    {
+        var panel = new Spectre.Console.Panel(content)
+            .Header($"[bold deepskyblue1]{Escape(title)}[/]")
+            .Border(Spectre.Console.BoxBorder.Rounded)
+            .Expand();
+        panel.Padding = new Spectre.Console.Padding(1, 0, 1, 0);
+        return panel;
+    }
+
+    private static Spectre.Console.Panel BuildRichMetricCard(string title, string value, string detail, string accent)
+    {
+        var body = BuildRichStack(
+            new Spectre.Console.Markup($"[{accent}]{Escape(title)}[/]"),
+            new Spectre.Console.Markup($"[bold]{Escape(value)}[/]"),
+            new Spectre.Console.Markup($"[grey]{Escape(detail)}[/]"));
+
+        var panel = new Spectre.Console.Panel(body)
+            .Border(Spectre.Console.BoxBorder.Rounded)
+            .Expand();
+        panel.Padding = new Spectre.Console.Padding(1, 0, 1, 0);
+        return panel;
+    }
+
+    private static Spectre.Console.Grid BuildRichTwoColumn(
+        Spectre.Console.Rendering.IRenderable left,
+        Spectre.Console.Rendering.IRenderable right,
+        int gap,
+        bool noWrapLeft = false,
+        bool noWrapRight = false,
+        int? leftWidth = null)
+    {
+        var grid = new Spectre.Console.Grid { Expand = true };
+        var leftColumn = new Spectre.Console.GridColumn
+        {
+            Padding = new Spectre.Console.Padding(0, 0, gap, 0),
+            NoWrap = noWrapLeft,
+        };
+
+        if (leftWidth.HasValue)
+        {
+            leftColumn.Width = leftWidth.Value;
+        }
+
+        grid.AddColumn(leftColumn);
+        grid.AddColumn(new Spectre.Console.GridColumn { NoWrap = noWrapRight });
+        grid.AddRow(left, right);
+        return grid;
+    }
+
+    private static Spectre.Console.Table BuildRichNavigationTable(IReadOnlyList<HomeActionView> homeActions)
+    {
+        var table = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
+        table.AddColumn("Area");
+        table.AddColumn("Use");
+        table.AddColumn("Command");
+
+        foreach (var action in homeActions)
+        {
+            table.AddRow(
+                $"[{action.Accent}]{Escape(action.Label)}[/]",
+                $"[dim]{Escape(action.Summary)}[/]",
+                $"[grey]{Escape(action.Command)}[/]");
+        }
+
+        return table;
+    }
+
+    private static Spectre.Console.Grid BuildRichNavigationList(IReadOnlyList<HomeActionView> homeActions)
+    {
+        var grid = new Spectre.Console.Grid { Expand = true };
+        grid.AddColumn();
+        foreach (var action in homeActions)
+        {
+            grid.AddRow(new Spectre.Console.Markup($"[{action.Accent}]{Escape(action.Label)}[/] [dim]{Escape(action.Summary)}[/]"));
+            grid.AddRow(new Spectre.Console.Markup($"[grey]{Escape(action.Command)}[/]"));
+        }
+
+        return grid;
+    }
+
+    private static Spectre.Console.Grid BuildRichPropertyGrid(params (string Label, string Value)[] rows)
+    {
+        var grid = new Spectre.Console.Grid { Expand = true };
+        grid.AddColumn(new Spectre.Console.GridColumn { NoWrap = true, Padding = new Spectre.Console.Padding(0, 0, 2, 0) });
+        grid.AddColumn();
+
+        foreach (var (label, value) in rows)
+        {
+            grid.AddRow(
+                new Spectre.Console.Markup($"[dim]{Escape(label)}[/]"),
+                new Spectre.Console.Markup(value));
+        }
+
+        return grid;
+    }
+
+    private static string FormatSkillActionMarkup(SkillAction action) => action switch
+    {
+        SkillAction.Installed => "[green]Installed[/]",
+        SkillAction.Removed => "[red]Removed[/]",
+        SkillAction.Updated => "[yellow]Updated[/]",
+        SkillAction.Missing => "[grey]Missing[/]",
+        SkillAction.Skipped => "[grey]Skipped[/]",
+        _ => Escape(action.ToString()),
+    };
+
+    private static string FormatConfidenceMarkup(RecommendationConfidence confidence) => confidence switch
+    {
+        RecommendationConfidence.High => "[green]High[/]",
+        RecommendationConfidence.Medium => "[yellow]Medium[/]",
+        RecommendationConfidence.Low => "[grey]Low[/]",
+        _ => Escape(confidence.ToString()),
+    };
+
+    private static string SummarizeAliases(IEnumerable<string> values, int take = 4)
+    {
+        var aliases = values
+            .Select(ToAlias)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (aliases.Length == 0)
+        {
+            return "-";
+        }
+
+        var preview = aliases.Take(take).ToArray();
+        return string.Join(", ", preview) + (aliases.Length > preview.Length ? $" (+{aliases.Length - preview.Length})" : string.Empty);
+    }
+
+    private static int GetConsoleWidth()
+    {
+        try
+        {
+            return Console.WindowWidth > 0 ? Console.WindowWidth : 120;
+        }
+        catch
+        {
+            return 120;
+        }
+    }
+
+    private static string CompactPath(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var normalized = value.Replace('\\', '/');
+        if (normalized.Length <= 54)
+        {
+            return normalized;
+        }
+
+        var segments = normalized
+            .Split('/', StringSplitOptions.RemoveEmptyEntries)
+            .TakeLast(4)
+            .ToArray();
+
+        return segments.Length == 0
+            ? CompactText(normalized, 54)
+            : $".../{string.Join("/", segments)}";
+    }
+
+    private static string CompactText(string value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return maxLength <= 1
+            ? value[..maxLength]
+            : $"{value[..(maxLength - 1)]}…";
     }
 
     private async Task ShowCatalogSkillsAsync()
@@ -272,14 +487,14 @@ internal sealed class InteractiveConsoleApp
             var layout = ResolveSkillLayout();
             var installer = new SkillInstaller(skillCatalog);
             var installedSkills = installer.GetInstalledSkills(layout);
-            var stackViews = BuildStackViews(installedSkills);
+            var collectionViews = BuildCollectionViews(installedSkills);
 
             AnsiConsole.Clear();
-            RenderStackBrowserPanel(stackViews, layout);
+            RenderCollectionBrowserPanel(collectionViews, layout);
 
             var actions = new List<MenuOption<SkillCatalogAction>>
             {
-                new("Browse a stack", SkillCatalogAction.Inspect),
+                new("Browse a collection", SkillCatalogAction.Inspect),
             };
 
             if (installedSkills.Any(record => !record.IsCurrent))
@@ -289,16 +504,16 @@ internal sealed class InteractiveConsoleApp
 
             actions.Add(new MenuOption<SkillCatalogAction>("Back", SkillCatalogAction.Back));
 
-            var action = prompts.Select("Stack catalog actions", actions, option => option.Label);
+            var action = prompts.Select("Collection actions", actions, option => option.Label);
             switch (action.Value)
             {
                 case SkillCatalogAction.Inspect:
                 {
-                    var selectedStack = prompts.Select(
-                        "Browse a stack",
-                        stackViews,
-                        BuildStackChoiceLabel);
-                    ShowStackDetail(selectedStack.Stack);
+                    var selectedCollection = prompts.Select(
+                        "Browse a collection",
+                        collectionViews,
+                        BuildCollectionChoiceLabel);
+                    ShowCollectionDetail(selectedCollection.Collection);
                     break;
                 }
                 case SkillCatalogAction.UpdateOutdated:
@@ -342,11 +557,11 @@ internal sealed class InteractiveConsoleApp
             var layout = ResolveSkillLayout();
             var installer = new SkillInstaller(skillCatalog);
             var installedSkills = installer.GetInstalledSkills(layout);
-            var stackViews = BuildStackViews(installedSkills);
+            var collectionViews = BuildCollectionViews(installedSkills);
             var packageSignals = BuildPackageSignals();
 
             AnsiConsole.Clear();
-            RenderCatalogAnalysisPanel(stackViews, layout, packageSignals);
+            RenderCatalogAnalysisPanel(collectionViews, layout, packageSignals);
 
             var action = prompts.Select(
                 "Catalog analysis",
@@ -362,7 +577,7 @@ internal sealed class InteractiveConsoleApp
             switch (action.Value)
             {
                 case CatalogAnalysisAction.Tree:
-                    ShowCatalogTree(stackViews);
+                    ShowCatalogTree(collectionViews);
                     break;
                 case CatalogAnalysisAction.HeavySkill:
                 {
@@ -386,12 +601,12 @@ internal sealed class InteractiveConsoleApp
         }
     }
 
-    private void ShowCatalogTree(IReadOnlyList<StackCatalogView> stackViews)
+    private void ShowCatalogTree(IReadOnlyList<CollectionCatalogView> collectionViews)
     {
         while (true)
         {
             AnsiConsole.Clear();
-            RenderCatalogTreePanel(stackViews);
+            RenderCatalogTreePanel(collectionViews);
 
             var action = prompts.Select(
                 "Tree view",
@@ -442,24 +657,24 @@ internal sealed class InteractiveConsoleApp
         }
     }
 
-    private void ShowStackDetail(string stackName)
+    private void ShowCollectionDetail(string collectionName)
     {
         while (true)
         {
             var layout = ResolveSkillLayout();
             var installer = new SkillInstaller(skillCatalog);
             var installedSkills = installer.GetInstalledSkills(layout);
-            var stackView = BuildStackViews(installedSkills)
-                .FirstOrDefault(view => string.Equals(view.Stack, stackName, StringComparison.OrdinalIgnoreCase));
+            var collectionView = BuildCollectionViews(installedSkills)
+                .FirstOrDefault(view => string.Equals(view.Collection, collectionName, StringComparison.OrdinalIgnoreCase));
 
-            if (stackView is null)
+            if (collectionView is null)
             {
-                RenderInfo($"Stack {stackName} is not available in this catalog version.");
+                RenderInfo($"Collection {collectionName} is not available in this catalog version.");
                 return;
             }
 
             AnsiConsole.Clear();
-            RenderStackDetailPanel(stackView, layout);
+            RenderCollectionDetailPanel(collectionView, layout);
 
             var actions = new List<MenuOption<SkillCatalogAction>>
             {
@@ -467,21 +682,21 @@ internal sealed class InteractiveConsoleApp
                 new("Install from a lane", SkillCatalogAction.Install),
             };
 
-            if (installedSkills.Any(record => !record.IsCurrent && string.Equals(record.Skill.Stack, stackView.Stack, StringComparison.OrdinalIgnoreCase)))
+            if (installedSkills.Any(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase)))
             {
-                actions.Add(new MenuOption<SkillCatalogAction>("Update outdated skills in this stack", SkillCatalogAction.UpdateOutdated));
+                actions.Add(new MenuOption<SkillCatalogAction>("Update outdated skills in this collection", SkillCatalogAction.UpdateOutdated));
             }
 
             actions.Add(new MenuOption<SkillCatalogAction>("Back", SkillCatalogAction.Back));
 
-            var action = prompts.Select("Stack actions", actions, option => option.Label);
+            var action = prompts.Select("Collection actions", actions, option => option.Label);
             switch (action.Value)
             {
                 case SkillCatalogAction.Inspect:
                 {
                     var selectedLane = prompts.Select(
                         "Inspect a lane",
-                        stackView.Lanes,
+                        collectionView.Lanes,
                         BuildLaneChoiceLabel);
                     var selectedSkill = prompts.Select(
                         "Inspect a skill",
@@ -494,7 +709,7 @@ internal sealed class InteractiveConsoleApp
                 {
                     var selectedLane = prompts.Select(
                         "Install from a lane",
-                        stackView.Lanes,
+                        collectionView.Lanes,
                         BuildLaneChoiceLabel);
                     var installableSkills = selectedLane.Skills
                         .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
@@ -503,7 +718,7 @@ internal sealed class InteractiveConsoleApp
 
                     if (installableSkills.Length == 0)
                     {
-                        RenderInfo($"Everything in {stackView.Stack} / {selectedLane.Lane} is already installed in this target.");
+                        RenderInfo($"Everything in {collectionView.Collection} / {selectedLane.Lane} is already installed in this target.");
                         break;
                     }
 
@@ -516,7 +731,7 @@ internal sealed class InteractiveConsoleApp
                         break;
                     }
 
-                    if (ConfirmSkillInstallPreview($"Lane install: {stackView.Stack} / {selectedLane.Lane}", selectedSkills, layout, force: false))
+                    if (ConfirmSkillInstallPreview($"Lane install: {collectionView.Collection} / {selectedLane.Lane}", selectedSkills, layout, force: false))
                     {
                         InstallSkills(selectedSkills, layout, force: false);
                     }
@@ -526,13 +741,13 @@ internal sealed class InteractiveConsoleApp
                 case SkillCatalogAction.UpdateOutdated:
                 {
                     var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, stackView.Stack, StringComparison.OrdinalIgnoreCase))
+                        .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase))
                         .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
                         .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
                         .ToArray();
                     if (outdatedSkills.Length == 0)
                     {
-                        RenderInfo($"No outdated skills are installed in the {stackView.Stack} stack.");
+                        RenderInfo($"No outdated skills are installed in the {collectionView.Collection} collection.");
                         break;
                     }
 
@@ -568,14 +783,7 @@ internal sealed class InteractiveConsoleApp
             var scopeInventory = Program.BuildScopeInventory(layout, Session.ProjectDirectory, installer, installedSkills);
 
             AnsiConsole.Clear();
-            ConsoleUi.RenderList(
-                skillCatalog,
-                layout,
-                installedSkills,
-                scopeInventory,
-                layout.Scope == InstallScope.Project ? Program.ResolveProjectRoot(Session.ProjectDirectory) : null,
-                showInstalledSection: true,
-                showAvailableSection: false);
+            RenderInstalledSkillsPanel(layout, installedSkills, scopeInventory);
 
             var actions = new List<MenuOption<InstalledSkillsAction>>
             {
@@ -793,7 +1001,7 @@ internal sealed class InteractiveConsoleApp
         {
             var visibleBundles = GetPrimaryBundles();
             AnsiConsole.Clear();
-            ConsoleUi.RenderPackageList(skillCatalog);
+            RenderBundleBrowserPanel(visibleBundles);
 
             var action = prompts.Select(
                 "Focused bundle actions",
@@ -922,41 +1130,10 @@ internal sealed class InteractiveConsoleApp
             .ToArray();
 
         AnsiConsole.Clear();
-
-        var grid = new Grid();
-        grid.AddColumn(new GridColumn().NoWrap());
-        grid.AddColumn();
-        grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(plan.ScanResult.ProjectRoot.FullName)}[/]"));
-        grid.AddRow(new Markup("[dim]scanned[/]"), new Markup($"{plan.ScanResult.ProjectFiles.Count} .csproj files"));
-        grid.AddRow(new Markup("[dim]matched[/]"), new Markup($"{plan.DesiredSkills.Count} skills"));
-        grid.AddRow(new Markup("[dim]new[/]"), new Markup(newSkills.Length > 0 ? $"[green]{newSkills.Length}[/]" : "0"));
-        grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]project sync[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.WriteLine();
-
-        var table = new Table().Expand();
-        table.AddColumn("Skill");
-        table.AddColumn("Confidence");
-        table.AddColumn("Status");
-
-        foreach (var recommendation in plan.ScanResult.Recommendations
-                     .Where(recommendation => recommendation.IsAutoInstallCandidate)
-                     .OrderByDescending(recommendation => recommendation.Confidence)
-                     .ThenBy(recommendation => recommendation.Skill.Name, StringComparer.Ordinal))
-        {
-            var isInstalled = installedBefore.ContainsKey(recommendation.Skill.Name);
-            table.AddRow(
-                Escape(ToAlias(recommendation.Skill.Name)),
-                Escape(recommendation.Confidence.ToString()),
-                isInstalled ? "[dim]already installed[/]" : "[green]new[/]");
-        }
-
-        AnsiConsole.Write(table);
-        AnsiConsole.WriteLine();
+        RenderProjectSyncPanel(plan, layout, installedBefore, newSkills);
 
         if (newSkills.Length == 0)
         {
-            AnsiConsole.MarkupLine("[dim]All matched skills are already installed.[/]");
             prompts.Pause("Press any key to continue...");
             return;
         }
@@ -977,14 +1154,7 @@ internal sealed class InteractiveConsoleApp
             var installedAgents = layout is null ? [] : installer.GetInstalledAgents(layout);
 
             AnsiConsole.Clear();
-            if (layout is null)
-            {
-                RenderAgentFallback(layoutError ?? "No agent target is available for the current session.");
-            }
-            else
-            {
-                ConsoleUi.RenderAgentList(agentCatalog, layout, installedAgents);
-            }
+            RenderAgentBrowserPanel(layout, layoutError, installedAgents);
 
             var actions = new List<MenuOption<AgentAction>>
             {
@@ -1257,7 +1427,7 @@ internal sealed class InteractiveConsoleApp
                     break;
                 case SettingsAction.Help:
                     AnsiConsole.Clear();
-                    ConsoleUi.RenderUsage();
+                    RenderHelpPanel();
                     prompts.Pause("Press any key to return to the interactive shell...");
                     break;
                 case SettingsAction.Back:
@@ -1281,7 +1451,14 @@ internal sealed class InteractiveConsoleApp
         var rows = Program.BuildInstallRows(skills, installedBefore, force, summary);
 
         AnsiConsole.Clear();
-        ConsoleUi.RenderInstallSummary(skillCatalog, layout, rows, summary);
+        RenderSkillOperationSummary(
+            force ? "Repair results" : "Install results",
+            force ? "rewritten" : "installed",
+            force ? $"[yellow]{summary.InstalledCount}[/]" : $"[green]{summary.InstalledCount}[/]",
+            layout,
+            rows,
+            skipped: summary.SkippedExisting,
+            generatedAdapters: summary.GeneratedAdapters);
         prompts.Pause("Press any key to return to the interactive shell...");
     }
 
@@ -1313,7 +1490,13 @@ internal sealed class InteractiveConsoleApp
         var rows = Program.BuildRemoveRows(skills, installedBefore, summary);
 
         AnsiConsole.Clear();
-        ConsoleUi.RenderRemoveSummary(skillCatalog, layout, rows, summary.RemovedCount, null);
+        RenderSkillOperationSummary(
+            "Remove results",
+            "removed",
+            summary.RemovedCount == 0 ? "[grey]0[/]" : $"[red]{summary.RemovedCount}[/]",
+            layout,
+            rows,
+            statusMessage: rows.Count == 0 ? "No matching catalog skills were removed from this target." : null);
         if (pause)
         {
             prompts.Pause("Press any key to return to the interactive shell...");
@@ -1332,7 +1515,13 @@ internal sealed class InteractiveConsoleApp
             .ToArray();
 
         AnsiConsole.Clear();
-        ConsoleUi.RenderUpdateSummary(skillCatalog, layout, rows, rows.Length, null);
+        RenderSkillOperationSummary(
+            "Update results",
+            "updated",
+            rows.Length == 0 ? "[grey]0[/]" : $"[yellow]{rows.Length}[/]",
+            layout,
+            rows,
+            statusMessage: rows.Length == 0 ? "All selected installed skills already match the catalog version." : null);
         prompts.Pause("Press any key to return to the interactive shell...");
     }
 
@@ -1370,7 +1559,13 @@ internal sealed class InteractiveConsoleApp
         var summary = installer.Install(agents, layout, force);
 
         AnsiConsole.Clear();
-        ConsoleUi.RenderAgentInstallSummary(agentCatalog, layout, agents, summary);
+        RenderAgentOperationSummary(
+            force ? "Repair agents" : "Install agents",
+            force ? "rewritten" : "installed",
+            force ? $"[yellow]{summary.InstalledCount}[/]" : $"[green]{summary.InstalledCount}[/]",
+            layout,
+            agents,
+            skipped: summary.SkippedExisting);
         prompts.Pause("Press any key to return to the interactive shell...");
     }
 
@@ -1380,7 +1575,13 @@ internal sealed class InteractiveConsoleApp
         var summary = installer.Remove(agents, layout);
 
         AnsiConsole.Clear();
-        ConsoleUi.RenderAgentRemoveSummary(agentCatalog, layout, agents, summary);
+        RenderAgentOperationSummary(
+            "Remove agents",
+            "removed",
+            summary.RemovedCount == 0 ? "[grey]0[/]" : $"[red]{summary.RemovedCount}[/]",
+            layout,
+            agents,
+            missing: summary.MissingAgents);
         prompts.Pause("Press any key to return to the interactive shell...");
     }
 
@@ -1464,7 +1665,7 @@ internal sealed class InteractiveConsoleApp
         }
     }
 
-    private IReadOnlyList<StackCatalogView> BuildStackViews(IReadOnlyList<InstalledSkillRecord> installedSkills)
+    private IReadOnlyList<CollectionCatalogView> BuildCollectionViews(IReadOnlyList<InstalledSkillRecord> installedSkills)
     {
         var installedNames = installedSkills
             .Select(record => record.Skill.Name)
@@ -1485,7 +1686,7 @@ internal sealed class InteractiveConsoleApp
                         var laneSkills = laneGroup
                             .OrderBy(skill => skill.Name, StringComparer.Ordinal)
                             .ToArray();
-                        return new LaneCatalogView(
+                        return new CollectionLaneView(
                             group.Key,
                             laneGroup.Key,
                             laneSkills,
@@ -1495,7 +1696,7 @@ internal sealed class InteractiveConsoleApp
                     .ToArray();
 
                 var stackSkills = group.ToArray();
-                return new StackCatalogView(
+                return new CollectionCatalogView(
                     group.Key,
                     lanes,
                     stackSkills.Length,
@@ -1532,107 +1733,104 @@ internal sealed class InteractiveConsoleApp
             .ToArray();
     }
 
-    private void RenderStackBrowserPanel(IReadOnlyList<StackCatalogView> stackViews, SkillInstallLayout layout)
+    private void RenderCollectionBrowserPanel(IReadOnlyList<CollectionCatalogView> collectionViews, SkillInstallLayout layout)
     {
-        var overview = new Grid();
-        overview.AddColumn(new GridColumn().NoWrap());
-        overview.AddColumn();
-        overview.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        overview.AddRow(new Markup("[dim]stacks[/]"), new Markup(stackViews.Count.ToString()));
-        overview.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
-        overview.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(skillCatalog.Skills.Sum(skill => skill.TokenCount))));
-        var flow = new Table().Border(TableBorder.None).Expand();
-        flow.AddColumn("Step");
-        flow.AddColumn("Action");
-        flow.AddRow("1", "[deepskyblue1]Choose a stack[/] [dim]to narrow the catalog surface[/]");
-        flow.AddRow("2", "[deepskyblue1]Inspect a lane[/] [dim]to see concrete skills and size[/]");
-        flow.AddRow("3", "[deepskyblue1]Install from a lane[/] [dim]without broad mixed bundles[/]");
+        var splitPanes = GetConsoleWidth() >= 155;
 
-        var table = new Table().Expand().Border(TableBorder.Rounded);
-        table.Title = new TableTitle("[bold]Stack -> Lane -> Skill[/]");
-        table.AddColumn("Stack");
+        var overview = new Spectre.Console.Grid();
+        overview.AddColumn(new Spectre.Console.GridColumn { NoWrap = true });
+        overview.AddColumn();
+        overview.AddRow(new Spectre.Console.Markup("[dim]target[/]"), new Spectre.Console.Markup($"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"));
+        overview.AddRow(new Spectre.Console.Markup("[dim]collections[/]"), new Spectre.Console.Markup(collectionViews.Count.ToString()));
+        overview.AddRow(new Spectre.Console.Markup("[dim]skills[/]"), new Spectre.Console.Markup(skillCatalog.Skills.Count.ToString()));
+        overview.AddRow(new Spectre.Console.Markup("[dim]tokens[/]"), new Spectre.Console.Markup(FormatTokenCount(skillCatalog.Skills.Sum(skill => skill.TokenCount))));
+
+        var flow = BuildRichStack(
+            new Spectre.Console.Markup("[deepskyblue1]1[/] [bold]Choose a collection[/] [dim]to narrow the catalog surface[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]2[/] [bold]Inspect a lane[/] [dim]to see concrete skills and size[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]3[/] [bold]Install from a lane[/] [dim]without broad mixed bundles[/]"));
+
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle("[bold]Collection -> Lane -> Skill[/]");
+        table.AddColumn("Collection");
         table.AddColumn("Lanes");
         table.AddColumn("Installed");
         table.AddColumn("Tokens");
         table.AddColumn("Sample lanes");
 
-        foreach (var stack in stackViews)
+        foreach (var collection in collectionViews)
         {
-            var sampleLanes = stack.Lanes
-                .Take(3)
-                .Select(lane => lane.Lane)
-                .ToArray();
+            var sampleLanes = collection.Lanes.Take(3).Select(lane => lane.Lane).ToArray();
             table.AddRow(
-                Escape(stack.Stack),
-                stack.Lanes.Count.ToString(),
-                $"{stack.InstalledCount}/{stack.SkillCount}",
-                FormatTokenCount(stack.TokenCount),
-                Escape(string.Join(", ", sampleLanes)) + (stack.Lanes.Count > sampleLanes.Length ? $" [grey](+{stack.Lanes.Count - sampleLanes.Length})[/]" : string.Empty));
+                Escape(collection.Collection),
+                collection.Lanes.Count.ToString(),
+                $"{collection.InstalledCount}/{collection.SkillCount}",
+                FormatTokenCount(collection.TokenCount),
+                Escape(string.Join(", ", sampleLanes)) + (collection.Lanes.Count > sampleLanes.Length ? $" [grey](+{collection.Lanes.Count - sampleLanes.Length})[/]" : string.Empty));
         }
 
-        var spotlight = new Table().Expand().Border(TableBorder.None);
+        var spotlight = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.None);
         spotlight.AddColumn("Focus");
         spotlight.AddColumn("Value");
 
-        foreach (var stack in stackViews
-                     .OrderByDescending(entry => entry.TokenCount)
-                     .ThenBy(entry => entry.Stack, StringComparer.Ordinal)
-                     .Take(5))
+        foreach (var collection in collectionViews.OrderByDescending(entry => entry.TokenCount).ThenBy(entry => entry.Collection, StringComparer.Ordinal).Take(5))
         {
             spotlight.AddRow(
-                Escape(stack.Stack),
-                $"{FormatTokenCount(stack.TokenCount)} [dim]({stack.InstalledCount}/{stack.SkillCount})[/]");
+                Escape(collection.Collection),
+                $"{FormatTokenCount(collection.TokenCount)} [dim]({collection.InstalledCount}/{collection.SkillCount})[/]");
         }
 
-        var headerGrid = new Grid();
-        headerGrid.AddColumn();
-        headerGrid.AddColumn();
-        headerGrid.AddRow(
-            new Panel(flow).Header("[deepskyblue1]navigation[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(overview).Header("[deepskyblue1]stack browser[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(headerGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("navigation", flow),
+                    BuildRichShellPanel("collection browser", overview),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("navigation", flow),
+                    BuildRichShellPanel("collection browser", overview)));
         AnsiConsole.WriteLine();
 
-        var bodyGrid = new Grid();
-        bodyGrid.AddColumn();
-        bodyGrid.AddColumn();
-        bodyGrid.AddRow(
-            new Panel(table).Header("[deepskyblue1]stack matrix[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(spotlight).Header("[deepskyblue1]heaviest stacks[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(bodyGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("collection matrix", table),
+                    BuildRichShellPanel("heaviest collections", spotlight),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("collection matrix", table),
+                    BuildRichShellPanel("heaviest collections", spotlight)));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup("[dim]Choose a stack first. Install surfaces only appear after the lane boundary is explicit.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Choose a collection first. Install surfaces only appear after the lane boundary is explicit.[/]")));
     }
 
-    private void RenderStackDetailPanel(StackCatalogView stackView, SkillInstallLayout layout)
+    private void RenderCollectionDetailPanel(CollectionCatalogView collectionView, SkillInstallLayout layout)
     {
-        var summary = new Grid();
-        summary.AddColumn(new GridColumn().NoWrap());
-        summary.AddColumn();
-        summary.AddRow(new Markup("[dim]stack[/]"), new Markup(Escape(stackView.Stack)));
-        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        summary.AddRow(new Markup("[dim]lanes[/]"), new Markup(stackView.Lanes.Count.ToString()));
-        summary.AddRow(new Markup("[dim]skills[/]"), new Markup($"{stackView.InstalledCount}/{stackView.SkillCount}"));
-        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(stackView.TokenCount)));
-        var flow = new Table().Border(TableBorder.None).Expand();
-        flow.AddColumn("Mode");
-        flow.AddColumn("Effect");
-        flow.AddRow("[deepskyblue1]Inspect a lane[/]", "[dim]see each skill and its detail card[/]");
-        flow.AddRow("[deepskyblue1]Install from a lane[/]", "[dim]install only the narrowed slice[/]");
-        flow.AddRow("[deepskyblue1]Update outdated[/]", "[dim]refresh this stack only[/]");
+        var splitPanes = GetConsoleWidth() >= 155;
 
-        var laneTable = new Table().Expand().Border(TableBorder.Rounded);
-        laneTable.Title = new TableTitle("[bold]Lanes[/]");
+        var summary = BuildRichPropertyGrid(
+            ("collection", Escape(collectionView.Collection)),
+            ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("lanes", collectionView.Lanes.Count.ToString()),
+            ("skills", $"{collectionView.InstalledCount}/{collectionView.SkillCount}"),
+            ("tokens", FormatTokenCount(collectionView.TokenCount)));
+
+        var flow = BuildRichStack(
+            new Spectre.Console.Markup("[deepskyblue1]Inspect a lane[/] [dim]to drill into concrete skill cards[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Install from a lane[/] [dim]to keep the write set explicit[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Update outdated[/] [dim]to refresh only this collection surface[/]"));
+
+        var laneTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        laneTable.Title = new Spectre.Console.TableTitle("[bold]Lanes[/]");
         laneTable.AddColumn("Lane");
         laneTable.AddColumn("Skills");
         laneTable.AddColumn("Installed");
         laneTable.AddColumn("Tokens");
         laneTable.AddColumn("Examples");
 
-        foreach (var lane in stackView.Lanes)
+        foreach (var lane in collectionView.Lanes)
         {
             var examples = lane.Skills.Take(3).Select(skill => ToAlias(skill.Name)).ToArray();
             laneTable.AddRow(
@@ -1643,14 +1841,14 @@ internal sealed class InteractiveConsoleApp
                 Escape(string.Join(", ", examples)) + (lane.Skills.Count > examples.Length ? $" [grey](+{lane.Skills.Count - examples.Length})[/]" : string.Empty));
         }
 
-        var skillTable = new Table().Expand().Border(TableBorder.Rounded);
-        skillTable.Title = new TableTitle("[bold]Heaviest skills in stack[/]");
+        var skillTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        skillTable.Title = new Spectre.Console.TableTitle("[bold]Heaviest skills in collection[/]");
         skillTable.AddColumn("Alias");
         skillTable.AddColumn("Lane");
         skillTable.AddColumn("Tokens");
         skillTable.AddColumn("Summary");
 
-        foreach (var skill in stackView.Lanes
+        foreach (var skill in collectionView.Lanes
                      .SelectMany(lane => lane.Skills)
                      .OrderByDescending(skill => skill.TokenCount)
                      .ThenBy(skill => skill.Name, StringComparer.Ordinal)
@@ -1664,16 +1862,16 @@ internal sealed class InteractiveConsoleApp
         }
 
         var relatedBundles = GetPrimaryBundles()
-            .Where(package => string.Equals(package.Stack, stackView.Stack, StringComparison.OrdinalIgnoreCase)
+            .Where(package => string.Equals(package.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase)
                               || package.Skills.Any(skillName =>
-                                  stackView.Lanes.SelectMany(lane => lane.Skills)
+                                  collectionView.Lanes.SelectMany(lane => lane.Skills)
                                       .Any(skill => string.Equals(skill.Name, skillName, StringComparison.OrdinalIgnoreCase))))
             .DistinctBy(package => package.Name, StringComparer.OrdinalIgnoreCase)
             .OrderBy(CatalogOrganization.FormatBundleSortKey, StringComparer.Ordinal)
             .Take(6)
             .ToArray();
 
-        var relatedBundleTable = new Table().Expand().Border(TableBorder.None);
+        var relatedBundleTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.None);
         relatedBundleTable.AddColumn("Bundle");
         relatedBundleTable.AddColumn("Area");
         relatedBundleTable.AddColumn("Tokens");
@@ -1690,49 +1888,54 @@ internal sealed class InteractiveConsoleApp
                 FormatTokenCount(tokenCount));
         }
 
-        var headerGrid = new Grid();
-        headerGrid.AddColumn();
-        headerGrid.AddColumn();
-        headerGrid.AddRow(
-            new Panel(flow).Header("[deepskyblue1]stack modes[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(summary).Header($"[deepskyblue1]{Escape(stackView.Stack)}[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(headerGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("collection modes", flow),
+                    BuildRichShellPanel(collectionView.Collection, summary),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("collection modes", flow),
+                    BuildRichShellPanel(collectionView.Collection, summary)));
         AnsiConsole.WriteLine();
 
-        var detailGrid = new Grid();
-        detailGrid.AddColumn();
-        detailGrid.AddColumn();
-        detailGrid.AddRow(
-            new Panel(laneTable).Header("[deepskyblue1]lane map[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(skillTable).Header("[deepskyblue1]heavy skills[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(detailGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("lane map", laneTable),
+                    BuildRichShellPanel("heavy skills", skillTable),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("lane map", laneTable),
+                    BuildRichShellPanel("heavy skills", skillTable)));
         AnsiConsole.WriteLine();
 
         if (relatedBundles.Length > 0)
         {
-            AnsiConsole.Write(new Panel(relatedBundleTable).Header("[deepskyblue1]related bundles[/]").Border(BoxBorder.Rounded).Expand());
+            SpectreConsole.Write(BuildRichShellPanel("related bundles", relatedBundleTable));
             AnsiConsole.WriteLine();
         }
 
-        AnsiConsole.Write(new Panel(new Markup("[dim]This stack is already narrowed. Next selection happens at the lane level, not against the full catalog.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]This collection is already narrowed. The next selection happens at the lane level, never against the full catalog.[/]")));
     }
 
-    private void RenderCatalogAnalysisPanel(IReadOnlyList<StackCatalogView> stackViews, SkillInstallLayout layout, IReadOnlyList<PackageSignalView> packageSignals)
+    private void RenderCatalogAnalysisPanel(IReadOnlyList<CollectionCatalogView> collectionViews, SkillInstallLayout layout, IReadOnlyList<PackageSignalView> packageSignals)
     {
-        var summary = new Grid();
-        summary.AddColumn(new GridColumn().NoWrap());
-        summary.AddColumn();
-        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        summary.AddRow(new Markup("[dim]stacks[/]"), new Markup(stackViews.Count.ToString()));
-        summary.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
-        summary.AddRow(new Markup("[dim]package signals[/]"), new Markup(packageSignals.Count.ToString()));
-        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(skillCatalog.Skills.Sum(skill => skill.TokenCount))));
+        var splitPanes = GetConsoleWidth() >= 155;
 
-        var heavyTable = new Table().Expand().Border(TableBorder.Rounded);
-        heavyTable.Title = new TableTitle("[bold]Heaviest skills[/]");
+        var summary = new Spectre.Console.Grid();
+        summary.AddColumn(new Spectre.Console.GridColumn { NoWrap = true });
+        summary.AddColumn();
+        summary.AddRow(new Spectre.Console.Markup("[dim]target[/]"), new Spectre.Console.Markup($"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"));
+        summary.AddRow(new Spectre.Console.Markup("[dim]collections[/]"), new Spectre.Console.Markup(collectionViews.Count.ToString()));
+        summary.AddRow(new Spectre.Console.Markup("[dim]skills[/]"), new Spectre.Console.Markup(skillCatalog.Skills.Count.ToString()));
+        summary.AddRow(new Spectre.Console.Markup("[dim]package signals[/]"), new Spectre.Console.Markup(packageSignals.Count.ToString()));
+        summary.AddRow(new Spectre.Console.Markup("[dim]tokens[/]"), new Spectre.Console.Markup(FormatTokenCount(skillCatalog.Skills.Sum(skill => skill.TokenCount))));
+
+        var heavyTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        heavyTable.Title = new Spectre.Console.TableTitle("[bold]Heaviest skills[/]");
         heavyTable.AddColumn("Skill");
         heavyTable.AddColumn("Area");
         heavyTable.AddColumn("Tokens");
@@ -1748,8 +1951,8 @@ internal sealed class InteractiveConsoleApp
                 FormatTokenCount(skill.TokenCount));
         }
 
-        var packageTable = new Table().Expand().Border(TableBorder.Rounded);
-        packageTable.Title = new TableTitle("[bold]Package entry points[/]");
+        var packageTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        packageTable.Title = new Spectre.Console.TableTitle("[bold]Package entry points[/]");
         packageTable.AddColumn("Signal");
         packageTable.AddColumn("Kind");
         packageTable.AddColumn("Skill");
@@ -1764,55 +1967,58 @@ internal sealed class InteractiveConsoleApp
                 Escape($"{entry.Skill.Stack} / {entry.Skill.Lane}"));
         }
 
-        var stackTable = new Table().Expand().Border(TableBorder.Rounded);
-        stackTable.Title = new TableTitle("[bold]Stack composition[/]");
-        stackTable.AddColumn("Stack");
-        stackTable.AddColumn("Lanes");
-        stackTable.AddColumn("Skills");
-        stackTable.AddColumn("Tokens");
+        var collectionTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        collectionTable.Title = new Spectre.Console.TableTitle("[bold]Collection composition[/]");
+        collectionTable.AddColumn("Collection");
+        collectionTable.AddColumn("Lanes");
+        collectionTable.AddColumn("Skills");
+        collectionTable.AddColumn("Tokens");
 
-        foreach (var stack in stackViews)
+        foreach (var collection in collectionViews)
         {
-            stackTable.AddRow(
-                Escape(stack.Stack),
-                stack.Lanes.Count.ToString(),
-                stack.SkillCount.ToString(),
-                FormatTokenCount(stack.TokenCount));
+            collectionTable.AddRow(
+                Escape(collection.Collection),
+                collection.Lanes.Count.ToString(),
+                collection.SkillCount.ToString(),
+                FormatTokenCount(collection.TokenCount));
         }
 
-        var headerGrid = new Grid();
-        headerGrid.AddColumn();
-        headerGrid.AddColumn();
-        headerGrid.AddRow(
-            new Panel(summary).Header("[deepskyblue1]catalog analysis[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(packageTable).Header("[deepskyblue1]package signals[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(headerGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("catalog analysis", summary),
+                    BuildRichShellPanel("package signals", packageTable),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("catalog analysis", summary),
+                    BuildRichShellPanel("package signals", packageTable)));
         AnsiConsole.WriteLine();
 
-        var bodyGrid = new Grid();
-        bodyGrid.AddColumn();
-        bodyGrid.AddColumn();
-        bodyGrid.AddRow(
-            new Panel(stackTable).Header("[deepskyblue1]stack matrix[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(heavyTable).Header("[deepskyblue1]token hotspots[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(bodyGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("collection matrix", collectionTable),
+                    BuildRichShellPanel("token hotspots", heavyTable),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("collection matrix", collectionTable),
+                    BuildRichShellPanel("token hotspots", heavyTable)));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup("[dim]Use the tree view for hierarchy-first browsing, then inspect heavy skills or package entry points before installing.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Use the tree view for hierarchy-first browsing, then inspect heavy skills or package entry points before installing.[/]")));
     }
 
-    private void RenderCatalogTreePanel(IReadOnlyList<StackCatalogView> stackViews)
+    private void RenderCatalogTreePanel(IReadOnlyList<CollectionCatalogView> collectionViews)
     {
-        var tree = new Tree("[bold]catalog[/]");
+        var tree = new Spectre.Console.Tree("[bold]catalog[/]");
 
-        foreach (var stack in stackViews)
+        foreach (var collection in collectionViews)
         {
-            var stackNode = tree.AddNode($"{Escape(stack.Stack)} [dim]({stack.SkillCount} skills, {FormatTokenCount(stack.TokenCount)} tokens)[/]");
-            foreach (var lane in stack.Lanes)
+            var collectionNode = tree.AddNode($"{Escape(collection.Collection)} [dim]({collection.SkillCount} skills, {FormatTokenCount(collection.TokenCount)} tokens)[/]");
+            foreach (var lane in collection.Lanes)
             {
-                var laneNode = stackNode.AddNode($"{Escape(lane.Lane)} [dim]({lane.Skills.Count} skills, {FormatTokenCount(lane.TokenCount)} tokens)[/]");
+                var laneNode = collectionNode.AddNode($"{Escape(lane.Lane)} [dim]({lane.Skills.Count} skills, {FormatTokenCount(lane.TokenCount)} tokens)[/]");
                 foreach (var skill in lane.Skills.OrderByDescending(skill => skill.TokenCount).ThenBy(skill => skill.Name, StringComparer.Ordinal))
                 {
                     laneNode.AddNode($"{Escape(ToAlias(skill.Name))} [dim]({FormatTokenCount(skill.TokenCount)})[/]");
@@ -1820,29 +2026,24 @@ internal sealed class InteractiveConsoleApp
             }
         }
 
-        AnsiConsole.MarkupLine("[bold deepskyblue1]stack tree[/]");
-        AnsiConsole.Write(tree);
+        SpectreConsole.Write(BuildRichShellPanel("collection tree", tree));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup("[dim]This is the full Stack -> Lane -> Skill hierarchy for the current catalog payload.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]This is the full Collection -> Lane -> Skill hierarchy for the current catalog payload.[/]")));
     }
 
     private void RenderPackageSignalPanel(IReadOnlyList<PackageSignalView> packageSignals)
     {
-        var summary = new Grid();
-        summary.AddColumn(new GridColumn().NoWrap());
-        summary.AddColumn();
-        summary.AddRow(new Markup("[dim]signals[/]"), new Markup(packageSignals.Count.ToString()));
-        summary.AddRow(new Markup("[dim]exact[/]"), new Markup(packageSignals.Count(entry => string.Equals(entry.Kind, "Exact", StringComparison.Ordinal)).ToString()));
-        summary.AddRow(new Markup("[dim]prefix[/]"), new Markup(packageSignals.Count(entry => string.Equals(entry.Kind, "Prefix", StringComparison.Ordinal)).ToString()));
-        summary.AddRow(new Markup("[dim]skills[/]"), new Markup(skillCatalog.Skills.Count.ToString()));
-        AnsiConsole.Write(new Panel(summary).Header("[deepskyblue1]package signals[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.WriteLine();
+        var splitPanes = GetConsoleWidth() >= 155;
+        var summary = BuildRichPropertyGrid(
+            ("signals", packageSignals.Count.ToString()),
+            ("exact", packageSignals.Count(entry => string.Equals(entry.Kind, "Exact", StringComparison.Ordinal)).ToString()),
+            ("prefix", packageSignals.Count(entry => string.Equals(entry.Kind, "Prefix", StringComparison.Ordinal)).ToString()),
+            ("skills", skillCatalog.Skills.Count.ToString()));
 
-        var table = new Table().Expand().Border(TableBorder.Rounded);
-        table.Title = new TableTitle("[bold]NuGet entry points[/]");
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle("[bold]NuGet entry points[/]");
         table.AddColumn("Signal");
         table.AddColumn("Kind");
         table.AddColumn("Skill");
@@ -1859,12 +2060,19 @@ internal sealed class InteractiveConsoleApp
                 FormatTokenCount(entry.Skill.TokenCount));
         }
 
-        AnsiConsole.Write(table);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("package signals", summary),
+                    BuildRichShellPanel("signal map", table),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("package signals", summary),
+                    BuildRichShellPanel("signal map", table)));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup("[dim]Package signals connect exact NuGet ids and prefixes to the skill that should be installed when that package appears in a project.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Package signals connect exact NuGet ids and prefixes to the skill that should be installed when that package appears in a project.[/]")));
     }
 
     private void RenderInstallPreviewPanel(string title, IReadOnlyList<SkillEntry> skills, SkillInstallLayout layout, bool force, IReadOnlyList<SkillPackageEntry>? bundles = null)
@@ -1876,23 +2084,24 @@ internal sealed class InteractiveConsoleApp
             .ToArray();
         var totalTokens = selectedSkills.Sum(skill => skill.TokenCount);
         var stackCount = selectedSkills.Select(skill => skill.Stack).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        var splitPanes = GetConsoleWidth() >= 155;
 
-        var summary = new Grid();
-        summary.AddColumn(new GridColumn().NoWrap());
+        var summary = new Spectre.Console.Grid();
+        summary.AddColumn(new Spectre.Console.GridColumn { NoWrap = true });
         summary.AddColumn();
-        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        summary.AddRow(new Markup("[dim]mode[/]"), new Markup(force ? "Repair / overwrite" : "Install"));
-        summary.AddRow(new Markup("[dim]skills[/]"), new Markup(selectedSkills.Length.ToString()));
-        summary.AddRow(new Markup("[dim]stacks[/]"), new Markup(stackCount.ToString()));
-        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(totalTokens)));
+        summary.AddRow(new Spectre.Console.Markup("[dim]target[/]"), new Spectre.Console.Markup($"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"));
+        summary.AddRow(new Spectre.Console.Markup("[dim]mode[/]"), new Spectre.Console.Markup(force ? "Repair / overwrite" : "Install"));
+        summary.AddRow(new Spectre.Console.Markup("[dim]skills[/]"), new Spectre.Console.Markup(selectedSkills.Length.ToString()));
+        summary.AddRow(new Spectre.Console.Markup("[dim]collections[/]"), new Spectre.Console.Markup(stackCount.ToString()));
+        summary.AddRow(new Spectre.Console.Markup("[dim]tokens[/]"), new Spectre.Console.Markup(FormatTokenCount(totalTokens)));
         if (bundles is not null)
         {
-            summary.AddRow(new Markup("[dim]bundles[/]"), new Markup(bundles.Count.ToString()));
+            summary.AddRow(new Spectre.Console.Markup("[dim]bundles[/]"), new Spectre.Console.Markup(bundles.Count.ToString()));
         }
 
-        var stackTable = new Table().Expand().Border(TableBorder.Rounded);
-        stackTable.Title = new TableTitle("[bold]Write set by stack[/]");
-        stackTable.AddColumn("Stack");
+        var stackTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        stackTable.Title = new Spectre.Console.TableTitle("[bold]Write set by collection[/]");
+        stackTable.AddColumn("Collection");
         stackTable.AddColumn("Lanes");
         stackTable.AddColumn("Skills");
         stackTable.AddColumn("Tokens");
@@ -1915,8 +2124,8 @@ internal sealed class InteractiveConsoleApp
                 FormatTokenCount(group.Sum(skill => skill.TokenCount)));
         }
 
-        var skillTable = new Table().Expand().Border(TableBorder.Rounded);
-        skillTable.Title = new TableTitle("[bold]Selected skills[/]");
+        var skillTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        skillTable.Title = new Spectre.Console.TableTitle("[bold]Selected skills[/]");
         skillTable.AddColumn("Skill");
         skillTable.AddColumn("Area");
         skillTable.AddColumn("Tokens");
@@ -1929,21 +2138,23 @@ internal sealed class InteractiveConsoleApp
                 FormatTokenCount(skill.TokenCount));
         }
 
-        var headerGrid = new Grid();
-        headerGrid.AddColumn();
-        headerGrid.AddColumn();
-        headerGrid.AddRow(
-            new Panel(summary).Header($"[deepskyblue1]{Escape(title)}[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(skillTable).Header("[deepskyblue1]selected skills[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(headerGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel(title, summary),
+                    BuildRichShellPanel("selected skills", skillTable),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel(title, summary),
+                    BuildRichShellPanel("selected skills", skillTable)));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(stackTable).Header("[deepskyblue1]install overview[/]").Border(BoxBorder.Rounded).Expand());
+        SpectreConsole.Write(BuildRichShellPanel("install overview", stackTable));
         AnsiConsole.WriteLine();
 
         if (bundles is not null && bundles.Count > 0)
         {
-            var bundleTable = new Table().Expand().Border(TableBorder.Rounded);
-            bundleTable.Title = new TableTitle("[bold]Selected bundles[/]");
+            var bundleTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+            bundleTable.Title = new Spectre.Console.TableTitle("[bold]Selected bundles[/]");
             bundleTable.AddColumn("Bundle");
             bundleTable.AddColumn("Area");
             bundleTable.AddColumn("Skills");
@@ -1956,33 +2167,485 @@ internal sealed class InteractiveConsoleApp
                     bundle.Skills.Count.ToString());
             }
 
-            AnsiConsole.Write(bundleTable);
+            SpectreConsole.Write(BuildRichShellPanel("selected bundles", bundleTable));
             AnsiConsole.WriteLine();
         }
 
-        AnsiConsole.Write(new Panel(new Markup("[dim]This preview is the exact write set that will be installed into the selected target if you confirm.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]This preview is the exact write set that will be installed into the selected target if you confirm.[/]")));
+    }
+
+    private void RenderInstalledSkillsPanel(
+        SkillInstallLayout layout,
+        IReadOnlyList<InstalledSkillRecord> installedSkills,
+        IReadOnlyList<ScopeInventoryRow> scopeInventory)
+    {
+        var splitPanes = GetConsoleWidth() >= 155;
+        var outdatedCount = installedSkills.Count(record => !record.IsCurrent);
+        var installedByCollection = installedSkills
+            .GroupBy(record => record.Skill.Stack, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(group => group.Count())
+            .ThenBy(group => group.Key, StringComparer.Ordinal)
+            .Take(6)
+            .ToArray();
+
+        var summary = BuildRichPropertyGrid(
+            ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("installed", installedSkills.Count.ToString()),
+            ("outdated", outdatedCount == 0 ? "[green]0[/]" : $"[yellow]{outdatedCount}[/]"),
+            ("collections", installedSkills.Select(record => record.Skill.Stack).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString()),
+            ("tokens", FormatTokenCount(installedSkills.Sum(record => record.Skill.TokenCount))));
+
+        var coverage = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        coverage.Title = new Spectre.Console.TableTitle("[bold]Installed coverage[/]");
+        coverage.AddColumn("Collection");
+        coverage.AddColumn("Skills");
+        coverage.AddColumn("Tokens");
+
+        foreach (var group in installedByCollection)
+        {
+            coverage.AddRow(
+                Escape(group.Key),
+                group.Count().ToString(),
+                FormatTokenCount(group.Sum(record => record.Skill.TokenCount)));
+        }
+
+        var installedTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        installedTable.Title = new Spectre.Console.TableTitle("[bold]Installed skills[/]");
+        installedTable.AddColumn("Skill");
+        installedTable.AddColumn("Area");
+        installedTable.AddColumn("Version");
+        installedTable.AddColumn("Status");
+        installedTable.AddColumn("Tokens");
+
+        foreach (var record in installedSkills.OrderBy(item => item.Skill.Stack, StringComparer.Ordinal).ThenBy(item => item.Skill.Lane, StringComparer.Ordinal).ThenBy(item => item.Skill.Name, StringComparer.Ordinal))
+        {
+            installedTable.AddRow(
+                Escape(ToAlias(record.Skill.Name)),
+                Escape($"{record.Skill.Stack} / {record.Skill.Lane}"),
+                Escape(record.InstalledVersion),
+                record.IsCurrent ? "[green]current[/]" : $"[yellow]{Escape(record.InstalledVersion)} -> {Escape(record.Skill.Version)}[/]",
+                FormatTokenCount(record.Skill.TokenCount));
+        }
+
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("installed summary", summary),
+                    BuildRichShellPanel("installed coverage", coverage),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("installed summary", summary),
+                    BuildRichShellPanel("installed coverage", coverage)));
+        AnsiConsole.WriteLine();
+
+        if (scopeInventory.Count > 1)
+        {
+            var scopeTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+            scopeTable.Title = new Spectre.Console.TableTitle("[bold]Scope comparison[/]");
+            scopeTable.AddColumn("Scope");
+            scopeTable.AddColumn("Target");
+            scopeTable.AddColumn("Installed");
+
+            foreach (var row in scopeInventory)
+            {
+                scopeTable.AddRow(
+                    Escape(row.Scope.ToString()),
+                    $"[dim]{Escape(CompactPath(row.TargetRoot.FullName))}[/]",
+                    row.InstalledSkills.Count.ToString());
+            }
+
+            SpectreConsole.Write(BuildRichShellPanel("scope inventory", scopeTable));
+            AnsiConsole.WriteLine();
+        }
+
+        if (installedSkills.Count == 0)
+        {
+            SpectreConsole.Write(BuildRichShellPanel(
+                "status rail",
+                new Spectre.Console.Markup("[dim]No catalog skills are installed in this target yet. Use Collections or Bundles to create the first write set.[/]")));
+            return;
+        }
+
+        SpectreConsole.Write(BuildRichShellPanel("installed inventory", installedTable));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Installed surfaces stay action-oriented: inspect, repair, move, update, or remove from this exact target.[/]")));
+    }
+
+    private void RenderBundleBrowserPanel(IReadOnlyList<SkillPackageEntry> visibleBundles)
+    {
+        var splitPanes = GetConsoleWidth() >= 155;
+        var skillIndex = skillCatalog.Skills.ToDictionary(skill => skill.Name, StringComparer.OrdinalIgnoreCase);
+        var bundleRows = visibleBundles
+            .Select(bundle => new
+            {
+                Bundle = bundle,
+                TokenCount = bundle.Skills.Sum(skillName => skillIndex.TryGetValue(skillName, out var skill) ? skill.TokenCount : 0),
+            })
+            .OrderBy(bundle => CatalogOrganization.FormatBundleSortKey(bundle.Bundle))
+            .ToArray();
+
+        var summary = BuildRichPropertyGrid(
+            ("bundles", visibleBundles.Count.ToString()),
+            ("collections", visibleBundles.Select(bundle => bundle.Stack).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString()),
+            ("skills", visibleBundles.SelectMany(bundle => bundle.Skills).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString()),
+            ("tokens", FormatTokenCount(bundleRows.Sum(row => row.TokenCount))));
+
+        var highlightTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.None);
+        highlightTable.AddColumn("Bundle");
+        highlightTable.AddColumn("Value");
+
+        foreach (var row in bundleRows.OrderByDescending(item => item.TokenCount).ThenBy(item => item.Bundle.Name, StringComparer.Ordinal).Take(5))
+        {
+            highlightTable.AddRow(
+                Escape(row.Bundle.Name),
+                $"{FormatTokenCount(row.TokenCount)} [dim]({row.Bundle.Skills.Count} skills)[/]");
+        }
+
+        var bundleTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        bundleTable.Title = new Spectre.Console.TableTitle("[bold]Focused bundles[/]");
+        bundleTable.AddColumn("Bundle");
+        bundleTable.AddColumn("Area");
+        bundleTable.AddColumn("Skills");
+        bundleTable.AddColumn("Tokens");
+        bundleTable.AddColumn("Sample");
+
+        foreach (var row in bundleRows)
+        {
+            bundleTable.AddRow(
+                Escape(row.Bundle.Name),
+                Escape(CatalogOrganization.ResolveBundleAreaLabel(row.Bundle)),
+                row.Bundle.Skills.Count.ToString(),
+                FormatTokenCount(row.TokenCount),
+                Escape(SummarizeAliases(row.Bundle.Skills)));
+        }
+
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("bundle summary", summary),
+                    BuildRichShellPanel("bundle hotspots", highlightTable),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("bundle summary", summary),
+                    BuildRichShellPanel("bundle hotspots", highlightTable)));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel("bundle inventory", bundleTable));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Bundles remain focused and installable. Broad category bundles are intentionally absent from this surface.[/]")));
+    }
+
+    private void RenderProjectSyncPanel(
+        ProjectSkillAutoSyncPlan plan,
+        SkillInstallLayout layout,
+        IReadOnlyDictionary<string, InstalledSkillRecord> installedBefore,
+        IReadOnlyList<SkillEntry> newSkills)
+    {
+        var splitPanes = GetConsoleWidth() >= 155;
+        var summary = BuildRichPropertyGrid(
+            ("project", $"[dim]{Escape(CompactPath(plan.ScanResult.ProjectRoot.FullName))}[/]"),
+            ("projects", plan.ScanResult.ProjectFiles.Count.ToString()),
+            ("matched", plan.DesiredSkills.Count.ToString()),
+            ("new", newSkills.Count == 0 ? "[grey]0[/]" : $"[green]{newSkills.Count}[/]"),
+            ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("frameworks", Escape(string.Join(", ", plan.ScanResult.TargetFrameworks))));
+
+        var flow = BuildRichStack(
+            new Spectre.Console.Markup("[deepskyblue1]Signals[/] [dim]come from .csproj packages, SDKs, and project properties[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]New skills[/] [dim]will be previewed before any write happens[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]State[/] [dim]is saved only after a confirmed project-driven install[/]"));
+
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle("[bold]Project matches[/]");
+        table.AddColumn("Skill");
+        table.AddColumn("Confidence");
+        table.AddColumn("Signals");
+        table.AddColumn("Status");
+
+        foreach (var recommendation in plan.ScanResult.Recommendations
+                     .Where(recommendation => recommendation.IsAutoInstallCandidate)
+                     .OrderByDescending(recommendation => recommendation.Confidence)
+                     .ThenBy(recommendation => recommendation.Skill.Name, StringComparer.Ordinal))
+        {
+            var isInstalled = installedBefore.ContainsKey(recommendation.Skill.Name);
+            table.AddRow(
+                Escape(ToAlias(recommendation.Skill.Name)),
+                FormatConfidenceMarkup(recommendation.Confidence),
+                Escape(string.Join(", ", recommendation.Signals)),
+                isInstalled ? "[grey]already installed[/]" : "[green]new[/]");
+        }
+
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("project sync", summary),
+                    BuildRichShellPanel("signal flow", flow),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("project sync", summary),
+                    BuildRichShellPanel("signal flow", flow)));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel("matched skills", table));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup(newSkills.Count == 0
+                ? "[dim]All matched skills are already installed in this target.[/]"
+                : "[dim]Only the new slice will be proposed for install. Existing skills stay untouched unless you choose update or repair separately.[/]")));
+    }
+
+    private void RenderAgentBrowserPanel(AgentInstallLayout? layout, string? layoutError, IReadOnlyList<InstalledAgentRecord> installedAgents)
+    {
+        var splitPanes = GetConsoleWidth() >= 155;
+        var installedSet = installedAgents.Select(record => record.Agent.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var summary = BuildRichPropertyGrid(
+            ("platform", Escape(Session.Agent.ToString())),
+            ("scope", Escape(Session.Scope.ToString())),
+            ("target", layout is null ? $"[grey]{Escape(layoutError ?? "Unavailable")}[/]" : $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("agents", agentCatalog.Agents.Count.ToString()),
+            ("installed", installedAgents.Count.ToString()));
+
+        var flow = BuildRichStack(
+            new Spectre.Console.Markup("[deepskyblue1]Inspect[/] [dim]agent contracts before writing any native files[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Install[/] [dim]only when a native agent target exists[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Repair / move / remove[/] [dim]remain target-specific lifecycle actions[/]"));
+
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle("[bold]Bundled agents[/]");
+        table.AddColumn("Agent");
+        table.AddColumn("Model");
+        table.AddColumn("Skills");
+        table.AddColumn("Status");
+
+        foreach (var agent in agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal))
+        {
+            table.AddRow(
+                Escape(ToAlias(agent.Name)),
+                Escape(agent.Model),
+                Escape(SummarizeAliases(agent.Skills)),
+                installedSet.Contains(agent.Name) ? "[green]installed[/]" : layout is null ? "[grey]target unavailable[/]" : "[grey]not installed[/]");
+        }
+
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("agent summary", summary),
+                    BuildRichShellPanel("agent flow", flow),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("agent summary", summary),
+                    BuildRichShellPanel("agent flow", flow)));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel("agent inventory", table));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup(layout is null
+                ? "[dim]No native agent directory is available for the current session. Choose a concrete platform or create the native target first.[/]"
+                : "[dim]Agent install surfaces are native-target only. No shared fallback directory is used for agents.[/]")));
+    }
+
+    private void RenderHelpPanel()
+    {
+        var sections = new (string Area, string Command, string Use)[]
+        {
+            ("Launch", ToolIdentity.DisplayCommand, "Open the interactive control center"),
+            ("Help", $"{ToolIdentity.DisplayCommand} help", "Show direct command reference"),
+            ("Version", $"{ToolIdentity.DisplayCommand} version", "Show version and update status"),
+            ("Collections", $"{ToolIdentity.SkillsDisplayCommand} list --available-only", "Expand Collection -> Lane -> Skill inventory"),
+            ("Bundles", $"{ToolIdentity.SkillsDisplayCommand} bundle list", "List focused install bundles"),
+            ("Tokens", $"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts"),
+            ("Project", $"{ToolIdentity.SkillsDisplayCommand} install --auto", "Install from .csproj signals"),
+            ("Install", $"{ToolIdentity.SkillsDisplayCommand} install aspire", "Install by alias"),
+            ("Install", $"{ToolIdentity.SkillsDisplayCommand} install bundle dotnet-quality", "Install a focused bundle"),
+            ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove aspire", "Remove one installed skill"),
+            ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove bundle dotnet-quality", "Remove one focused bundle"),
+            ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove collection distributed", "Remove one collection surface"),
+            ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove --all", "Clear the selected target"),
+            ("Update", $"{ToolIdentity.SkillsDisplayCommand} update", "Refresh installed skills"),
+            ("Where", $"{ToolIdentity.SkillsDisplayCommand} where", "Print resolved install paths"),
+            ("Agents", $"{ToolIdentity.AgentDisplayCommand} list", "List bundled orchestration agents"),
+            ("Agents", $"{ToolIdentity.AgentDisplayCommand} install router", "Install agents by name"),
+        };
+
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle("[bold]Command reference[/]");
+        table.AddColumn("Area");
+        table.AddColumn("Command");
+        table.AddColumn("Use");
+
+        foreach (var section in sections)
+        {
+            table.AddRow(
+                Escape(section.Area),
+                $"[grey]{Escape(section.Command)}[/]",
+                Escape(section.Use));
+        }
+
+        var notes = BuildRichStack(
+            new Spectre.Console.Markup("[dim]Interactive shell language is[/] [green]Collection -> Lane -> Skill[/] [dim]plus focused bundles.[/]"),
+            new Spectre.Console.Markup("[dim]Use[/] [green]--bundled[/] [dim]to skip network catalog fetches explicitly.[/]"),
+            new Spectre.Console.Markup("[dim]Auto-detect probes native skill roots first. Shared fallback is skills-only and appears only when no native root exists.[/]"),
+            new Spectre.Console.Markup($"[dim]Set[/] [green]{Escape(ToolIdentity.SkipUpdateEnvironmentVariable)}=1[/] [dim]to suppress update notices.[/]"));
+
+        SpectreConsole.Write(BuildRichStack(
+            BuildRichShellPanel("command reference", table),
+            BuildRichShellPanel("notes", notes)));
+    }
+
+    private void RenderSkillOperationSummary(
+        string title,
+        string resultLabel,
+        string resultValue,
+        SkillInstallLayout layout,
+        IReadOnlyList<SkillActionRow> rows,
+        string? statusMessage = null,
+        IReadOnlyList<string>? skipped = null,
+        int generatedAdapters = 0)
+    {
+        var splitPanes = GetConsoleWidth() >= 155;
+        var summary = BuildRichPropertyGrid(
+            ("catalog", $"{Escape(skillCatalog.SourceLabel)} [dim]({Escape(skillCatalog.CatalogVersion)})[/]"),
+            ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            (resultLabel, resultValue),
+            ("skipped", skipped?.Count.ToString() ?? "0"),
+            ("adapters", generatedAdapters == 0 ? "[grey]0[/]" : $"[yellow]{generatedAdapters}[/]"));
+
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle($"[bold]{Escape(title)}[/]");
+        table.AddColumn("Skill");
+        table.AddColumn("Area");
+        table.AddColumn("From");
+        table.AddColumn("To");
+        table.AddColumn("Action");
+
+        foreach (var row in rows.OrderBy(item => item.Skill.Name, StringComparer.Ordinal))
+        {
+            table.AddRow(
+                Escape(ToAlias(row.Skill.Name)),
+                Escape($"{row.Skill.Stack} / {row.Skill.Lane}"),
+                Escape(row.FromVersion),
+                Escape(row.ToVersion),
+                FormatSkillActionMarkup(row.Action));
+        }
+
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("operation summary", summary),
+                    BuildRichShellPanel("reload hint", new Spectre.Console.Markup(Escape(layout.ReloadHint))),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("operation summary", summary),
+                    BuildRichShellPanel("reload hint", new Spectre.Console.Markup(Escape(layout.ReloadHint)))));
+        AnsiConsole.WriteLine();
+
+        if (rows.Count > 0)
+        {
+            SpectreConsole.Write(BuildRichShellPanel("result matrix", table));
+            AnsiConsole.WriteLine();
+        }
+
+        if (skipped is not null && skipped.Count > 0)
+        {
+            SpectreConsole.Write(BuildRichShellPanel("skipped", new Spectre.Console.Markup(Escape(string.Join(", ", skipped)))));
+            AnsiConsole.WriteLine();
+        }
+
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup(statusMessage is null
+                ? "[dim]Operation completed for the selected target.[/]"
+                : Escape(statusMessage))));
+    }
+
+    private void RenderAgentOperationSummary(
+        string title,
+        string resultLabel,
+        string resultValue,
+        AgentInstallLayout layout,
+        IReadOnlyList<AgentEntry> agents,
+        IReadOnlyList<string>? skipped = null,
+        IReadOnlyList<string>? missing = null)
+    {
+        var splitPanes = GetConsoleWidth() >= 155;
+        var summary = BuildRichPropertyGrid(
+            ("platform", Escape(layout.Agent.ToString())),
+            ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("mode", Escape(layout.Mode.ToString())),
+            (resultLabel, resultValue),
+            ("skipped", skipped?.Count.ToString() ?? "0"),
+            ("missing", missing?.Count.ToString() ?? "0"));
+
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle($"[bold]{Escape(title)}[/]");
+        table.AddColumn("Agent");
+        table.AddColumn("Skills");
+        table.AddColumn("Status");
+
+        foreach (var agent in agents.OrderBy(entry => entry.Name, StringComparer.Ordinal))
+        {
+            var skippedAgent = skipped?.Contains(agent.Name, StringComparer.OrdinalIgnoreCase) == true;
+            var missingAgent = missing?.Contains(agent.Name, StringComparer.OrdinalIgnoreCase) == true;
+            var status = missingAgent
+                ? "[grey]missing[/]"
+                : skippedAgent
+                    ? "[grey]skipped[/]"
+                    : string.Equals(resultLabel, "removed", StringComparison.OrdinalIgnoreCase)
+                        ? "[red]removed[/]"
+                        : "[green]installed[/]";
+
+            table.AddRow(
+                Escape(ToAlias(agent.Name)),
+                Escape(SummarizeAliases(agent.Skills)),
+                status);
+        }
+
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("agent summary", summary),
+                    BuildRichShellPanel("reload hint", new Spectre.Console.Markup(Escape(layout.ReloadHint))),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("agent summary", summary),
+                    BuildRichShellPanel("reload hint", new Spectre.Console.Markup(Escape(layout.ReloadHint)))));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel("agent results", table));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Agent writes stay bound to the selected native target and file format.[/]")));
     }
 
     private void RenderSkillDetailPanel(SkillEntry skill, InstalledSkillRecord? installed, SkillInstallLayout layout)
     {
-        var summary = new Grid();
-        summary.AddColumn(new GridColumn().NoWrap());
-        summary.AddColumn();
-        summary.AddRow(new Markup("[dim]alias[/]"), new Markup(Escape(ToAlias(skill.Name))));
-        summary.AddRow(new Markup("[dim]skill[/]"), new Markup($"[dim]{Escape(skill.Name)}[/]"));
-        summary.AddRow(new Markup("[dim]area[/]"), new Markup($"{Escape(skill.Stack)} [dim]/[/] {Escape(skill.Lane)}"));
-        summary.AddRow(new Markup("[dim]category[/]"), new Markup(Escape(skill.Category)));
-        summary.AddRow(new Markup("[dim]version[/]"), new Markup(Escape(skill.Version)));
-        summary.AddRow(new Markup("[dim]tokens[/]"), new Markup($"{FormatTokenCount(skill.TokenCount)} [dim]({Escape(SkillTokenCounter.ModelName)})[/]"));
-        summary.AddRow(new Markup("[dim]status[/]"), new Markup(installed is null ? "[dim]not installed[/]" : $"{Escape(installed.InstalledVersion)} {(installed.IsCurrent ? "[green](current)[/]" : "[yellow](update available)[/]")}"));
-        summary.AddRow(new Markup("[dim]compat[/]"), new Markup(Escape(skill.Compatibility)));
-        summary.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        summary.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills install {ToAlias(skill.Name)}")}[/]"));
+        var splitPanes = GetConsoleWidth() >= 155;
+        var statusMarkup = installed is null
+            ? "[grey]not installed[/]"
+            : installed.IsCurrent
+                ? $"{Escape(installed.InstalledVersion)} [green](current)[/]"
+                : $"{Escape(installed.InstalledVersion)} [yellow](update available)[/]";
 
-        var surface = new Table().Border(TableBorder.None).Expand();
+        var summary = BuildRichPropertyGrid(
+            ("alias", Escape(ToAlias(skill.Name))),
+            ("skill", $"[dim]{Escape(skill.Name)}[/]"),
+            ("area", $"{Escape(skill.Stack)} [dim]/[/] {Escape(skill.Lane)}"),
+            ("category", Escape(skill.Category)),
+            ("version", Escape(skill.Version)),
+            ("tokens", $"{FormatTokenCount(skill.TokenCount)} [dim]({Escape(SkillTokenCounter.ModelName)})[/]"),
+            ("status", statusMarkup),
+            ("compat", Escape(skill.Compatibility)),
+            ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("install", $"[green]{Escape($"dotnet skills install {ToAlias(skill.Name)}")}[/]"));
+
+        var surface = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
         surface.AddColumn("Surface");
         surface.AddColumn("Value");
         surface.AddRow("NuGet packages", skill.Packages.Count == 0 ? "[dim]-[/]" : Escape(string.Join(", ", skill.Packages.Take(4))));
@@ -1991,64 +2654,68 @@ internal sealed class InteractiveConsoleApp
         surface.AddRow("Repository", string.IsNullOrWhiteSpace(skill.Links.Repository) ? "[dim]not declared[/]" : "[green]available[/]");
         surface.AddRow("NuGet link", string.IsNullOrWhiteSpace(skill.Links.NuGet) ? "[dim]not declared[/]" : "[green]available[/]");
 
-        var headerGrid = new Grid();
-        headerGrid.AddColumn();
-        headerGrid.AddColumn();
-        headerGrid.AddRow(
-            new Panel(summary).Header($"[deepskyblue1]{Escape(ToAlias(skill.Name))}[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(surface).Header("[deepskyblue1]skill surface[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(headerGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel(ToAlias(skill.Name), summary),
+                    BuildRichShellPanel("skill surface", surface),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel(ToAlias(skill.Name), summary),
+                    BuildRichShellPanel("skill surface", surface)));
         AnsiConsole.WriteLine();
 
-        var bodyGrid = new Grid();
-        bodyGrid.AddColumn();
-        bodyGrid.AddColumn();
-        bodyGrid.AddRow(
-            new Panel(new Markup(Escape(skill.Description))).Border(BoxBorder.Rounded).Header("[deepskyblue1]summary[/]").Expand(),
-            new Panel(new Markup(Escape(LoadSkillPreview(skill)))).Border(BoxBorder.Rounded).Header("[deepskyblue1]preview[/]").Expand());
-        AnsiConsole.Write(bodyGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel("summary", new Spectre.Console.Markup(Escape(skill.Description))),
+                    BuildRichShellPanel("preview", new Spectre.Console.Markup(Escape(LoadSkillPreview(skill)))),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel("summary", new Spectre.Console.Markup(Escape(skill.Description))),
+                    BuildRichShellPanel("preview", new Spectre.Console.Markup(Escape(LoadSkillPreview(skill))))));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup("[dim]Preview comes from the current[/] [green]SKILL.md[/] [dim]payload, so token size and visible content stay aligned.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Preview comes from the current[/] [green]SKILL.md[/] [dim]payload, so token size and visible content stay aligned.[/]")));
     }
 
     private void RenderPackageDetailPanel(SkillPackageEntry package)
     {
         var skillIndex = skillCatalog.Skills.ToDictionary(skill => skill.Name, StringComparer.OrdinalIgnoreCase);
         var tokenCount = package.Skills.Sum(skillName => skillIndex.TryGetValue(skillName, out var skill) ? skill.TokenCount : 0);
-        var grid = new Grid();
-        grid.AddColumn(new GridColumn().NoWrap());
-        grid.AddColumn();
-        grid.AddRow(new Markup("[dim]bundle[/]"), new Markup(Escape(package.Name)));
-        grid.AddRow(new Markup("[dim]area[/]"), new Markup(Escape(CatalogOrganization.ResolveBundleAreaLabel(package))));
-        grid.AddRow(new Markup("[dim]type[/]"), new Markup(Escape(package.Kind)));
-        grid.AddRow(new Markup("[dim]skills[/]"), new Markup(package.Skills.Count.ToString()));
-        grid.AddRow(new Markup("[dim]tokens[/]"), new Markup(FormatTokenCount(tokenCount)));
-        grid.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills install bundle {package.Name}")}[/]"));
+        var splitPanes = GetConsoleWidth() >= 155;
+        var grid = BuildRichPropertyGrid(
+            ("bundle", Escape(package.Name)),
+            ("area", Escape(CatalogOrganization.ResolveBundleAreaLabel(package))),
+            ("type", Escape(package.Kind)),
+            ("skills", package.Skills.Count.ToString()),
+            ("tokens", FormatTokenCount(tokenCount)),
+            ("install", $"[green]{Escape($"dotnet skills install bundle {package.Name}")}[/]"));
 
-        var coverage = new Table().Border(TableBorder.None).Expand();
+        var coverage = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
         coverage.AddColumn("Coverage");
         coverage.AddColumn("Value");
-        coverage.AddRow("Stack", Escape(package.Stack));
+        coverage.AddRow("Collection", Escape(package.Stack));
         coverage.AddRow("Lane", Escape(package.Lane));
         coverage.AddRow("Included skills", package.Skills.Count.ToString());
         coverage.AddRow("Tokenizer", Escape(SkillTokenCounter.ModelName));
 
-        var headerGrid = new Grid();
-        headerGrid.AddColumn();
-        headerGrid.AddColumn();
-        headerGrid.AddRow(
-            new Panel(grid).Header($"[deepskyblue1]{Escape(package.Name)}[/]").Border(BoxBorder.Rounded).Expand(),
-            new Panel(coverage).Header("[deepskyblue1]bundle coverage[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.Write(headerGrid);
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel(package.Name, grid),
+                    BuildRichShellPanel("bundle coverage", coverage),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel(package.Name, grid),
+                    BuildRichShellPanel("bundle coverage", coverage)));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(package.Description))).Border(BoxBorder.Rounded).Header("[deepskyblue1]summary[/]").Expand());
+        SpectreConsole.Write(BuildRichShellPanel("summary", new Spectre.Console.Markup(Escape(package.Description))));
         AnsiConsole.WriteLine();
 
-        var table = new Table().Expand();
-        table.Title = new TableTitle("Included skills");
+        var table = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
+        table.Title = new Spectre.Console.TableTitle("[bold]Included skills[/]");
         table.AddColumn("Alias");
         table.AddColumn("Area");
         table.AddColumn("Tokens");
@@ -2067,30 +2734,55 @@ internal sealed class InteractiveConsoleApp
                 FormatTokenCount(skill.TokenCount));
         }
 
-        AnsiConsole.Write(table);
+        SpectreConsole.Write(BuildRichShellPanel("included skills", table));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup("[dim]Focused bundles stay narrow by stack or workflow. Broad category-wide installs are intentionally not exposed here.[/]"))
-            .Header("[deepskyblue1]status rail[/]")
-            .Border(BoxBorder.Rounded)
-            .Expand());
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Focused bundles stay narrow by collection or workflow. Broad category-wide installs are intentionally not exposed here.[/]")));
     }
 
     private void RenderAgentDetailPanel(AgentEntry agent, AgentInstallLayout? layout, string? layoutError, bool installed)
     {
-        var grid = new Grid();
-        grid.AddColumn(new GridColumn().NoWrap());
-        grid.AddColumn();
-        grid.AddRow(new Markup("[dim]alias[/]"), new Markup(Escape(ToAlias(agent.Name))));
-        grid.AddRow(new Markup("[dim]agent[/]"), new Markup($"[dim]{Escape(agent.Name)}[/]"));
-        grid.AddRow(new Markup("[dim]model[/]"), new Markup(Escape(agent.Model)));
-        grid.AddRow(new Markup("[dim]skills[/]"), new Markup(agent.Skills.Count == 0 ? "-" : Escape(string.Join(", ", agent.Skills.Select(ToAlias)))));
-        grid.AddRow(new Markup("[dim]tools[/]"), new Markup(Escape(agent.Tools)));
-        grid.AddRow(new Markup("[dim]status[/]"), new Markup(layout is null ? "[dim]target unavailable[/]" : installed ? "[green]installed[/]" : "[dim]not installed[/]"));
-        grid.AddRow(new Markup("[dim]target[/]"), new Markup(layout is null ? $"[dim]{Escape(layoutError ?? "Unavailable")}[/]" : $"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
-        grid.AddRow(new Markup("[dim]install[/]"), new Markup($"[green]{Escape($"dotnet skills agent install {ToAlias(agent.Name)} --agent {Session.Agent.ToString().ToLowerInvariant()}")}[/]"));
-        AnsiConsole.Write(new Panel(grid).Header($"[deepskyblue1]{Escape(ToAlias(agent.Name))}[/]").Border(BoxBorder.Rounded).Expand());
+        var splitPanes = GetConsoleWidth() >= 155;
+        var statusMarkup = layout is null
+            ? "[grey]target unavailable[/]"
+            : installed
+                ? "[green]installed[/]"
+                : "[grey]not installed[/]";
+
+        var summary = BuildRichPropertyGrid(
+            ("alias", Escape(ToAlias(agent.Name))),
+            ("agent", $"[dim]{Escape(agent.Name)}[/]"),
+            ("model", Escape(agent.Model)),
+            ("skills", Escape(SummarizeAliases(agent.Skills))),
+            ("tools", Escape(agent.Tools)),
+            ("status", statusMarkup),
+            ("target", layout is null ? $"[dim]{Escape(layoutError ?? "Unavailable")}[/]" : $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("install", $"[green]{Escape($"dotnet skills agent install {ToAlias(agent.Name)} --agent {Session.Agent.ToString().ToLowerInvariant()}")}[/]"));
+
+        var surface = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.None);
+        surface.AddColumn("Surface");
+        surface.AddColumn("Value");
+        surface.AddRow("Native layout", layout is null ? "[grey]not ready[/]" : Escape(layout.Mode.ToString()));
+        surface.AddRow("Agent file", layout is null ? "[grey]-[/]" : Escape($"{agent.Name}{layout.FileExtension}"));
+        surface.AddRow("Tool contract", string.IsNullOrWhiteSpace(agent.Tools) ? "[grey]-[/]" : Escape(agent.Tools));
+        surface.AddRow("Routed skills", agent.Skills.Count.ToString());
+
+        SpectreConsole.Write(
+            splitPanes
+                ? BuildRichTwoColumn(
+                    BuildRichShellPanel(ToAlias(agent.Name), summary),
+                    BuildRichShellPanel("agent surface", surface),
+                    gap: 3)
+                : BuildRichStack(
+                    BuildRichShellPanel(ToAlias(agent.Name), summary),
+                    BuildRichShellPanel("agent surface", surface)));
         AnsiConsole.WriteLine();
-        AnsiConsole.Write(new Panel(new Markup(Escape(agent.Description))).Border(BoxBorder.Rounded).Expand());
+        SpectreConsole.Write(BuildRichShellPanel("summary", new Spectre.Console.Markup(Escape(agent.Description))));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]Agents stay on native vendor targets only. No shared fallback directory is used for the agent surface.[/]")));
     }
 
     private void RenderSessionTargetPanel()
@@ -2098,45 +2790,36 @@ internal sealed class InteractiveConsoleApp
         var skillLayout = ResolveSkillLayout();
         var agentLayout = TryResolveAgentLayout(out var agentLayoutError);
 
-        var grid = new Grid();
-        grid.AddColumn(new GridColumn().NoWrap());
-        grid.AddColumn();
-        grid.AddRow(new Markup("[dim]platform[/]"), new Markup(Escape(Session.Agent.ToString())));
-        grid.AddRow(new Markup("[dim]scope[/]"), new Markup(Escape(Session.Scope.ToString())));
-        grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(Program.ResolveProjectRoot(Session.ProjectDirectory))}[/]"));
-        grid.AddRow(new Markup("[dim]skill target[/]"), new Markup($"[dim]{Escape(skillLayout.PrimaryRoot.FullName)}[/]"));
-        grid.AddRow(new Markup("[dim]agent target[/]"), new Markup($"[dim]{(agentLayout is null ? Escape(agentLayoutError ?? "Unavailable") : Escape(agentLayout.PrimaryRoot.FullName))}[/]"));
-        AnsiConsole.Write(new Panel(grid).Header("[deepskyblue1]install destination[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.WriteLine();
+        var summary = BuildRichPropertyGrid(
+            ("platform", Escape(Session.Agent.ToString())),
+            ("scope", Escape(Session.Scope.ToString())),
+            ("project", $"[dim]{Escape(CompactPath(Program.ResolveProjectRoot(Session.ProjectDirectory)))}[/]"),
+            ("skill target", $"[dim]{Escape(CompactPath(skillLayout.PrimaryRoot.FullName))}[/]"),
+            ("agent target", $"[dim]{Escape(agentLayout is null ? agentLayoutError ?? "Unavailable" : CompactPath(agentLayout.PrimaryRoot.FullName))}[/]"));
 
-        AnsiConsole.MarkupLine("[dim]Choose the platform and scope that control where skills and agents are installed. Keep Auto for fallback behavior.[/]");
-    }
+        var surfaces = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.None);
+        surfaces.AddColumn("Surface");
+        surfaces.AddColumn("Platform");
+        surfaces.AddColumn("Scope");
+        surfaces.AddColumn("Path");
+        surfaces.AddRow(
+            "Skills",
+            Escape(skillLayout.Agent.ToString()),
+            Escape(skillLayout.Scope.ToString()),
+            $"[dim]{Escape(CompactPath(skillLayout.PrimaryRoot.FullName))}[/]");
+        surfaces.AddRow(
+            "Agents",
+            Escape(Session.Agent.ToString()),
+            Escape(Session.Scope.ToString()),
+            agentLayout is null ? $"[grey]{Escape(agentLayoutError ?? "Unavailable")}[/]" : $"[dim]{Escape(CompactPath(agentLayout.PrimaryRoot.FullName))}[/]");
 
-    private void RenderAgentFallback(string message)
-    {
-        var grid = new Grid();
-        grid.AddColumn(new GridColumn().NoWrap());
-        grid.AddColumn();
-        grid.AddRow(new Markup("[dim]session[/]"), new Markup($"{Escape(Session.Agent.ToString())} [dim]/[/] {Escape(Session.Scope.ToString())}"));
-        grid.AddRow(new Markup("[dim]status[/]"), new Markup($"[dim]{Escape(message)}[/]"));
-        AnsiConsole.Write(new Panel(grid).Header("[yellow]agent target unavailable[/]").Border(BoxBorder.Rounded).Expand());
-        AnsiConsole.WriteLine();
-
-        var table = new Table().Expand();
-        table.Title = new TableTitle("Bundled agents");
-        table.AddColumn("Agent");
-        table.AddColumn("Skills");
-        table.AddColumn("Model");
-
-        foreach (var agent in agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal))
-        {
-            table.AddRow(
-                Escape(ToAlias(agent.Name)),
-                agent.Skills.Count == 0 ? "-" : Escape(string.Join(", ", agent.Skills.Take(4).Select(ToAlias))),
-                Escape(agent.Model));
-        }
-
-        AnsiConsole.Write(table);
+        SpectreConsole.Write(
+            BuildRichStack(
+                BuildRichShellPanel("install destination", summary),
+                BuildRichShellPanel("resolved surfaces", surfaces),
+                BuildRichShellPanel(
+                    "status rail",
+                    new Spectre.Console.Markup("[dim]Choose the platform and scope that control where skills and agents are installed. Keep Auto only when native target detection is intentional.[/]"))));
     }
 
     private void RenderInfo(string message)
@@ -2229,12 +2912,12 @@ internal sealed class InteractiveConsoleApp
             : $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens, update {installed.InstalledVersion} -> {skill.Version})";
     }
 
-    private static string BuildStackChoiceLabel(StackCatalogView stack)
+    private static string BuildCollectionChoiceLabel(CollectionCatalogView collection)
     {
-        return $"{stack.Stack} ({stack.Lanes.Count} lanes, {stack.InstalledCount}/{stack.SkillCount} skills, {FormatTokenCount(stack.TokenCount)} tokens)";
+        return $"{collection.Collection} ({collection.Lanes.Count} lanes, {collection.InstalledCount}/{collection.SkillCount} skills, {FormatTokenCount(collection.TokenCount)} tokens)";
     }
 
-    private static string BuildLaneChoiceLabel(LaneCatalogView lane)
+    private static string BuildLaneChoiceLabel(CollectionLaneView lane)
     {
         return $"{lane.Lane} ({lane.InstalledCount}/{lane.Skills.Count} skills, {FormatTokenCount(lane.TokenCount)} tokens)";
     }
@@ -2342,32 +3025,24 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
             throw new InvalidOperationException($"No choices are available for {title}.");
         }
 
-        if (CanUseSpectrePrompts())
+        EnsureRichConsoleAvailable();
+
+        var labels = choices.Select(formatter).ToArray();
+        var prompt = new Spectre.Console.SelectionPrompt<string>
         {
-            try
-            {
-                var labels = choices.Select(formatter).ToArray();
-                var prompt = new Spectre.Console.SelectionPrompt<string>
-                {
-                    Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
-                    PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
-                    HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
-                };
-                prompt.AddChoices(labels);
-                var selectedLabel = SpectreConsole.Prompt(prompt);
-                var index = Array.FindIndex(labels, label => string.Equals(label, selectedLabel, StringComparison.Ordinal));
-                if (index >= 0)
-                {
-                    return choices[index];
-                }
-            }
-            catch
-            {
-                // Fall back to plain-text prompts when the terminal does not support Spectre well.
-            }
+            Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
+            PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
+            HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
+        };
+        prompt.AddChoices(labels);
+        var selectedLabel = SpectreConsole.Prompt(prompt);
+        var index = Array.FindIndex(labels, label => string.Equals(label, selectedLabel, StringComparison.Ordinal));
+        if (index >= 0)
+        {
+            return choices[index];
         }
 
-        return SelectPlainText(title, choices, formatter);
+        throw new InvalidOperationException($"Could not resolve the selected item for {title}.");
     }
 
     public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
@@ -2377,53 +3052,31 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
             return [];
         }
 
-        if (CanUseSpectrePrompts())
-        {
-            try
-            {
-                var labels = choices.Select(formatter).ToArray();
-                var prompt = new Spectre.Console.MultiSelectionPrompt<string>
-                {
-                    Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
-                    InstructionsText = "[dim](Press <space> to toggle, <enter> to accept)[/]",
-                    PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
-                    HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
-                };
-                prompt.NotRequired();
-                prompt.AddChoices(labels);
-                var selectedLabels = SpectreConsole.Prompt(prompt);
-                var selectedSet = selectedLabels.ToHashSet(StringComparer.Ordinal);
-                var selected = labels
-                    .Select((label, index) => (label, index))
-                    .Where(item => selectedSet.Contains(item.label))
-                    .Select(item => choices[item.index])
-                    .ToArray();
-                return selected;
-            }
-            catch
-            {
-                // Fall back to plain-text prompts when the terminal does not support Spectre well.
-            }
-        }
+        EnsureRichConsoleAvailable();
 
-        return MultiSelectPlainText(title, choices, formatter);
+        var labels = choices.Select(formatter).ToArray();
+        var prompt = new Spectre.Console.MultiSelectionPrompt<string>
+        {
+            Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
+            InstructionsText = "[dim](Press <space> to toggle, <enter> to accept)[/]",
+            PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
+            HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
+        };
+        prompt.NotRequired();
+        prompt.AddChoices(labels);
+        var selectedLabels = SpectreConsole.Prompt(prompt);
+        var selectedSet = selectedLabels.ToHashSet(StringComparer.Ordinal);
+        return labels
+            .Select((label, index) => (label, index))
+            .Where(item => selectedSet.Contains(item.label))
+            .Select(item => choices[item.index])
+            .ToArray();
     }
 
     public bool Confirm(string title, bool defaultValue)
     {
-        if (CanUseSpectrePrompts())
-        {
-            try
-            {
-                return SpectreConsole.Confirm($"[deepskyblue1]{EscapeMarkup(title)}[/]", defaultValue);
-            }
-            catch
-            {
-                // Fall back to plain-text prompts when the terminal does not support Spectre well.
-            }
-        }
-
-        return ConfirmPlainText(title, defaultValue);
+        EnsureRichConsoleAvailable();
+        return SpectreConsole.Confirm($"[deepskyblue1]{EscapeMarkup(title)}[/]", defaultValue);
     }
 
     public void Pause(string title)
@@ -2438,107 +3091,11 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         Console.ReadKey(intercept: true);
     }
 
-    private static bool CanUseSpectrePrompts()
+    private static void EnsureRichConsoleAvailable()
     {
-        if (Console.IsInputRedirected
-            || Console.IsOutputRedirected
-            || string.Equals(Environment.GetEnvironmentVariable("DOTNET_SKILLS_PLAIN_CONSOLE"), "1", StringComparison.Ordinal)
-            || string.Equals(Environment.GetEnvironmentVariable("CODEX_CI"), "1", StringComparison.Ordinal)
-            || string.Equals(Environment.GetEnvironmentVariable("CODEX_SHELL"), "1", StringComparison.Ordinal)
-            || !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("CODEX_THREAD_ID")))
+        if (Console.IsInputRedirected || Console.IsOutputRedirected)
         {
-            return false;
-        }
-
-        var terminal = Environment.GetEnvironmentVariable("TERM");
-        return !string.IsNullOrWhiteSpace(terminal)
-            && !string.Equals(terminal, "dumb", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static T SelectPlainText<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
-    {
-        while (true)
-        {
-            Console.WriteLine();
-            Console.WriteLine(title);
-
-            for (var index = 0; index < choices.Count; index++)
-            {
-                Console.WriteLine($"  {index + 1}. {formatter(choices[index])}");
-            }
-
-            Console.Write("> ");
-            var input = Console.ReadLine();
-            if (int.TryParse(input, out var choiceIndex) && choiceIndex >= 1 && choiceIndex <= choices.Count)
-            {
-                return choices[choiceIndex - 1];
-            }
-
-            Console.WriteLine("Enter the number of the item you want.");
-        }
-    }
-
-    private static IReadOnlyList<T> MultiSelectPlainText<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
-    {
-        while (true)
-        {
-            Console.WriteLine();
-            Console.WriteLine(title);
-
-            for (var index = 0; index < choices.Count; index++)
-            {
-                Console.WriteLine($"  {index + 1}. {formatter(choices[index])}");
-            }
-
-            Console.Write("Enter one or more numbers separated by commas, or press Enter to cancel: ");
-            var input = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return [];
-            }
-
-            var selectedIndexes = input
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(value => int.TryParse(value, out var parsed) ? parsed : -1)
-                .ToArray();
-
-            if (selectedIndexes.All(index => index >= 1 && index <= choices.Count))
-            {
-                return selectedIndexes
-                    .Distinct()
-                    .Select(index => choices[index - 1])
-                    .ToArray();
-            }
-
-            Console.WriteLine("Enter valid item numbers separated by commas.");
-        }
-    }
-
-    private static bool ConfirmPlainText(string title, bool defaultValue)
-    {
-        while (true)
-        {
-            Console.Write($"{title} {(defaultValue ? "[Y/n]" : "[y/N]")} ");
-            var input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return defaultValue;
-            }
-
-            if (string.Equals(input, "y", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(input, "yes", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            if (string.Equals(input, "n", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(input, "no", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            Console.WriteLine("Enter y or n.");
+            throw new InvalidOperationException("The interactive shell requires a real terminal with the rich console surface enabled.");
         }
     }
 
@@ -2567,10 +3124,12 @@ internal sealed record AgentLayoutStatus(AgentInstallLayout? Layout, string Summ
 
 internal sealed record PackageSignalView(string Signal, string Kind, SkillEntry Skill);
 
+internal sealed record HomeActionView(HomeAction Action, string Label, string Summary, string Command, string Accent);
+
 internal enum HomeAction
 {
     SyncProject,
-    InstallSkillStack,
+    ManageBundles,
     InstallSkills,
     Analysis,
     ManageInstalled,

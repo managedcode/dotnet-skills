@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using SpectreConsole = Spectre.Console.AnsiConsole;
 
 namespace ManagedCode.DotnetSkills;
 
@@ -26,6 +27,9 @@ internal static class AnsiConsole
         {
             case null:
                 return;
+            case Spectre.Console.Rendering.IRenderable spectreRenderable:
+                SpectreConsole.Write(spectreRenderable);
+                break;
             case IConsoleRenderable renderable:
                 Console.Write(renderable.Render());
                 break;
@@ -121,6 +125,32 @@ internal sealed class Grid : IConsoleRenderable
 internal sealed class GridColumn
 {
     public GridColumn NoWrap() => this;
+}
+
+internal sealed class ConsoleStack(params IConsoleRenderable[] items) : IConsoleRenderable
+{
+    private readonly IReadOnlyList<IConsoleRenderable> renderables = items;
+
+    public string Render()
+    {
+        if (renderables.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var builder = new StringBuilder();
+        for (var index = 0; index < renderables.Count; index++)
+        {
+            if (index > 0)
+            {
+                builder.AppendLine();
+            }
+
+            builder.Append(renderables[index].Render().TrimEnd());
+        }
+
+        return builder.ToString();
+    }
 }
 
 internal sealed class Panel(IConsoleRenderable content) : IConsoleRenderable

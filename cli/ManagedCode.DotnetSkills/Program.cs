@@ -324,65 +324,23 @@ internal static class Program
 
     private static async Task<int> RunRemoveAsync(string[] args)
     {
-        var requestedSkills = new List<string>();
-        string? targetPath = null;
-        string? cachePath = null;
-        string? catalogVersion = null;
-        string? projectDirectory = null;
-        var bundledOnly = false;
-        var removeAll = false;
-        var agent = AgentPlatform.Auto;
-        var scope = InstallScope.Project;
+        var options = ParseRemoveOptions(args);
 
-        for (var index = 0; index < args.Length; index++)
-        {
-            switch (args[index])
-            {
-                case "--all":
-                    removeAll = true;
-                    break;
-                case "--target":
-                    targetPath = ReadValue(args, ++index, "--target");
-                    break;
-                case "--cache-dir":
-                    cachePath = ReadValue(args, ++index, "--cache-dir");
-                    break;
-                case "--catalog-version":
-                    catalogVersion = ReadValue(args, ++index, "--catalog-version");
-                    break;
-                case "--agent":
-                    agent = SkillInstallTarget.ParseAgent(ReadValue(args, ++index, "--agent"));
-                    break;
-                case "--scope":
-                    scope = SkillInstallTarget.ParseScope(ReadValue(args, ++index, "--scope"));
-                    break;
-                case "--project-dir":
-                    projectDirectory = ReadValue(args, ++index, "--project-dir");
-                    break;
-                case "--bundled":
-                    bundledOnly = true;
-                    break;
-                default:
-                    requestedSkills.Add(args[index]);
-                    break;
-            }
-        }
+        await MaybeShowToolUpdateAsync(options.CachePath);
 
-        if (!removeAll && requestedSkills.Count == 0)
-        {
-            throw new InvalidOperationException("Specify one or more skills to remove, or use `dotnet skills remove --all`.");
-        }
-
-        await MaybeShowToolUpdateAsync(cachePath);
-
-        var catalog = await ResolveCatalogForDisplayAsync(bundledOnly, cachePath, catalogVersion);
-        var layout = SkillInstallTarget.Resolve(targetPath, agent, scope, projectDirectory);
+        var catalog = await ResolveCatalogForDisplayAsync(options.BundledOnly, options.CachePath, options.CatalogVersion);
+        var layout = SkillInstallTarget.Resolve(options.TargetPath, options.Agent, options.Scope, options.ProjectDirectory);
         var installer = new SkillInstaller(catalog);
         var installedBefore = installer.GetInstalledSkills(layout)
             .ToDictionary(record => record.Skill.Name, StringComparer.OrdinalIgnoreCase);
-        var selectedSkills = removeAll
+        var selectedSkills = options.RemoveAll
             ? installedBefore.Values.Select(record => record.Skill).OrderBy(skill => skill.Name, StringComparer.Ordinal).ToArray()
-            : installer.SelectSkills(requestedSkills, installAll: false);
+            : options.SelectionMode switch
+            {
+                RemoveSelectionMode.Bundle => installer.SelectSkillsFromPackages(options.RequestedTargets),
+                RemoveSelectionMode.Collection => installer.SelectSkillsFromCollections(options.RequestedTargets),
+                _ => installer.SelectSkills(options.RequestedTargets, installAll: false),
+            };
 
         if (selectedSkills.Count == 0)
         {
@@ -563,7 +521,6 @@ internal static class Program
         }
 
         var client = CreateReleaseClient(cachePath);
-
         try
         {
             var manifest = await client.LoadManifestAsync(catalogVersion, CancellationToken.None);
@@ -573,11 +530,11 @@ internal static class Program
                 string.IsNullOrWhiteSpace(catalogVersion) ? "latest GitHub catalog manifest" : $"GitHub catalog manifest {catalogVersion}",
                 string.IsNullOrWhiteSpace(catalogVersion) ? "latest" : catalogVersion);
         }
-        catch (Exception exception) when (string.IsNullOrWhiteSpace(catalogVersion))
+        catch (Exception exception)
         {
-            ConsoleUi.WriteWarning($"Remote catalog unavailable: {exception.Message}");
-            ConsoleUi.WriteWarning("Falling back to bundled catalog.");
-            return SkillCatalogPackage.LoadBundled();
+            throw new InvalidOperationException(
+                $"Remote catalog unavailable: {exception.Message}. Rerun with `--bundled` if you want the checked-in catalog explicitly.",
+                exception);
         }
     }
 
@@ -589,16 +546,15 @@ internal static class Program
         }
 
         var client = CreateReleaseClient(cachePath);
-
         try
         {
             return await client.SyncAsync(catalogVersion, refreshCatalog, CancellationToken.None);
         }
-        catch (Exception exception) when (string.IsNullOrWhiteSpace(catalogVersion))
+        catch (Exception exception)
         {
-            ConsoleUi.WriteWarning($"Remote catalog unavailable: {exception.Message}");
-            ConsoleUi.WriteWarning("Falling back to bundled catalog.");
-            return SkillCatalogPackage.LoadBundled();
+            throw new InvalidOperationException(
+                $"Remote catalog unavailable: {exception.Message}. Rerun with `--bundled` if you want the checked-in catalog explicitly.",
+                exception);
         }
     }
 
@@ -855,6 +811,101 @@ internal static class Program
             agent,
             scope,
             packageMode);
+    }
+
+    internal static RemoveCommandOptions ParseRemoveOptions(string[] args)
+    {
+        var requestedTargets = new List<string>();
+        string? targetPath = null;
+        string? cachePath = null;
+        string? catalogVersion = null;
+        string? projectDirectory = null;
+        var bundledOnly = false;
+        var removeAll = false;
+        var agent = AgentPlatform.Auto;
+        var scope = InstallScope.Project;
+
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--all":
+                    removeAll = true;
+                    break;
+                case "--target":
+                    targetPath = ReadValue(args, ++index, "--target");
+                    break;
+                case "--cache-dir":
+                    cachePath = ReadValue(args, ++index, "--cache-dir");
+                    break;
+                case "--catalog-version":
+                    catalogVersion = ReadValue(args, ++index, "--catalog-version");
+                    break;
+                case "--agent":
+                    agent = SkillInstallTarget.ParseAgent(ReadValue(args, ++index, "--agent"));
+                    break;
+                case "--scope":
+                    scope = SkillInstallTarget.ParseScope(ReadValue(args, ++index, "--scope"));
+                    break;
+                case "--project-dir":
+                    projectDirectory = ReadValue(args, ++index, "--project-dir");
+                    break;
+                case "--bundled":
+                    bundledOnly = true;
+                    break;
+                default:
+                    requestedTargets.Add(args[index]);
+                    break;
+            }
+        }
+
+        var selectionMode = RemoveSelectionMode.Skill;
+        if (requestedTargets.Count > 0)
+        {
+            if (string.Equals(requestedTargets[0], "bundle", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(requestedTargets[0], "bundles", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(requestedTargets[0], "package", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(requestedTargets[0], "packages", StringComparison.OrdinalIgnoreCase))
+            {
+                selectionMode = RemoveSelectionMode.Bundle;
+                requestedTargets.RemoveAt(0);
+            }
+            else if (string.Equals(requestedTargets[0], "collection", StringComparison.OrdinalIgnoreCase)
+                     || string.Equals(requestedTargets[0], "collections", StringComparison.OrdinalIgnoreCase))
+            {
+                selectionMode = RemoveSelectionMode.Collection;
+                requestedTargets.RemoveAt(0);
+            }
+        }
+
+        if (removeAll)
+        {
+            if (selectionMode != RemoveSelectionMode.Skill || requestedTargets.Count > 0)
+            {
+                throw new InvalidOperationException("`dotnet skills remove --all` does not accept explicit skill, bundle, or collection names.");
+            }
+        }
+        else if (requestedTargets.Count == 0)
+        {
+            throw selectionMode switch
+            {
+                RemoveSelectionMode.Bundle => new InvalidOperationException("Specify one or more bundle names after `dotnet skills remove bundle`."),
+                RemoveSelectionMode.Collection => new InvalidOperationException("Specify one or more collection names after `dotnet skills remove collection`."),
+                _ => new InvalidOperationException("Specify one or more skills to remove, or use `dotnet skills remove --all`."),
+            };
+        }
+
+        return new RemoveCommandOptions(
+            requestedTargets.ToArray(),
+            targetPath,
+            cachePath,
+            catalogVersion,
+            projectDirectory,
+            bundledOnly,
+            removeAll,
+            agent,
+            scope,
+            selectionMode);
     }
 
     private static bool IsVersionCommand(string command) =>
@@ -1306,3 +1357,22 @@ internal sealed record InstallCommandOptions(
     AgentPlatform Agent,
     InstallScope Scope,
     bool PackageMode);
+
+internal sealed record RemoveCommandOptions(
+    IReadOnlyList<string> RequestedTargets,
+    string? TargetPath,
+    string? CachePath,
+    string? CatalogVersion,
+    string? ProjectDirectory,
+    bool BundledOnly,
+    bool RemoveAll,
+    AgentPlatform Agent,
+    InstallScope Scope,
+    RemoveSelectionMode SelectionMode);
+
+internal enum RemoveSelectionMode
+{
+    Skill,
+    Bundle,
+    Collection,
+}

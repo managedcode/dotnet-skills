@@ -32,7 +32,7 @@ dotnet skills                               # open the interactive control cente
 dotnet skills version                       # show current tool version and latest NuGet version
 dotnet skills --version                     # alias for the same version view
 dotnet skills list                          # show installed and available skills
-dotnet skills bundle list                   # show focused bundles by stack and workflow
+dotnet skills bundle list                   # show focused bundles by collection and workflow
 dotnet skills list --local                  # only installed skills in the current target
 dotnet skills recommend                     # suggest skills from local .csproj files
 dotnet skills install --auto                # install skills for NuGet packages detected in local .csproj files
@@ -42,6 +42,9 @@ dotnet skills install bundle mcaf           # install the MCAF governance bundle
 dotnet skills install bundle orleans        # install the Orleans workflow bundle
 dotnet skills install aspire orleans        # install skills
 dotnet skills catalog tokens --catalog-root . # export per-skill token counts as JSON
+dotnet skills remove aspire                 # remove one installed skill
+dotnet skills remove bundle dotnet-quality  # remove every skill from a focused bundle
+dotnet skills remove collection distributed # remove every skill from a collection
 dotnet skills remove --all                  # remove installed catalog skills from the target
 dotnet skills update                        # refresh installed catalog skills
 dotnet skills install blazor --agent claude # install for a specific agent
@@ -55,17 +58,20 @@ agents install router --auto                # same agent install flow without th
 
 | Command | Description |
 |---------|-------------|
-| `dotnet skills` | Open the interactive control center with stack browsing, analysis, and install preview |
+| `dotnet skills` | Open the interactive control center with collection browsing, analysis, and install preview |
 | `dotnet skills version` | Show the current installed tool version and check whether NuGet has a newer release |
 | `dotnet skills list` | Show the current inventory, compare project/global scope when relevant, and keep the remaining catalog as a compact category summary |
-| `dotnet skills bundle list` | Show the focused bundles that expand into related skills by stack or workflow |
+| `dotnet skills bundle list` | Show the focused bundles that expand into related skills by collection or workflow |
 | `dotnet skills recommend` | Scan local `*.csproj` files, propose relevant `dotnet-*` skills, and let you decide what to install |
 | `dotnet skills install --auto` | Inspect local `*.csproj` files, detect NuGet packages and strong project signals, and install matching skills automatically |
 | `dotnet skills install --auto --prune` | Remove stale auto-managed skills that no longer match the current project's NuGet packages or app-model signals |
 | `dotnet skills install <skill...>` | Install one or more skills |
 | `dotnet skills install bundle <bundle...>` | Install one or more focused bundles such as `dotnet-quality`, `frontend-quality`, `mcaf`, or `orleans` |
 | `dotnet skills catalog tokens --catalog-root .` | Export the tokenizer model name plus per-skill token counts as JSON |
-| `dotnet skills remove [skill...]` | Remove one or more installed catalog skills, or use `--all` to clear the target |
+| `dotnet skills remove <skill...>` | Remove one or more installed catalog skills by skill id or alias |
+| `dotnet skills remove bundle <bundle...>` | Remove every installed skill mapped to one or more focused bundles |
+| `dotnet skills remove collection <collection...>` | Remove every installed skill in one or more collections |
+| `dotnet skills remove --all` | Remove every installed catalog skill from the selected target |
 | `dotnet skills update [skill...]` | Update installed catalog skills to the selected catalog version |
 | `dotnet skills sync` | Download latest catalog |
 | `dotnet skills where` | Show install paths |
@@ -82,7 +88,7 @@ Use `--agent` to target a specific agent platform, `--scope` to choose global or
 
 `dotnet-skills` remains the skill-first CLI and still supports `dotnet skills agent ...` for compatibility. The dedicated agent-only surface is published in both forms: `dotnet-agents` for `dotnet agents ...` and `agents` for `agents ...`. Both top-level `list`, `install`, `remove`, and `where` commands target orchestration agents directly.
 
-The interactive shell behind bare `dotnet skills` is the main control center: it exposes `Stack -> Lane -> Skill` browsing, package-signal analysis, token hotspots, a full tree view, and install preview before files are written.
+The interactive shell behind bare `dotnet skills` is the main control center: it exposes `Collection -> Lane -> Skill` browsing, package-signal analysis, token hotspots, a full tree view, and install preview before files are written.
 
 `dotnet skills bundle list` shows the ready-made focused bundles. Bundle installs are bulk shortcuts for related skill sets, so `dotnet skills install bundle dotnet-quality`, `dotnet skills install bundle frontend-quality`, `dotnet skills install bundle mcaf`, or `dotnet skills install bundle orleans` install every skill mapped to that focused bundle in one pass.
 
@@ -112,7 +118,7 @@ Public bundle installs use `bundle`, not `package`. The focused bundle surface i
 - `mcaf`
 - `orleans`
 
-Stacks are intentionally split so installs stay explicit instead of collapsing into one overloaded `.NET` bucket:
+Collections are intentionally split so installs stay explicit instead of collapsing into one overloaded `.NET` bucket:
 
 - `.NET Foundations`
 - `.NET Quality`
@@ -148,7 +154,7 @@ Install whichever dedicated agent package you prefer:
 | Gemini | `~/.gemini/skills/` | `.gemini/skills/` |
 | Codex | `$CODEX_HOME/skills/` (default: `~/.codex/skills/`) | `.codex/skills/` |
 | Junie | `~/.junie/skills/` | `.junie/skills/` |
-| Default fallback | `~/.agents/skills/` | `.agents/skills/` |
+| Default shared root | `~/.agents/skills/` | `.agents/skills/` |
 
 ### Orchestration Agents Installation Paths
 
@@ -164,7 +170,7 @@ Install whichever dedicated agent package you prefer:
 
 `dotnet agents ... --target <path>` and `agents ... --target <path>` require an explicit `--agent` because the generated file format depends on the selected platform.
 
-When `--agent` is omitted for skill installation, the tool checks for `.codex/`, `.claude/`, `.github/`, `.gemini/`, and `.junie/` directories in that order, installs into every already existing native platform target it finds, and creates `.agents/skills/` only when no native platform folder exists.
+When `--agent` is omitted for skill installation, the tool checks for `.codex/`, `.claude/`, `.github/`, `.gemini/`, and `.junie/` directories in that order, installs into every already existing native platform target it finds, and uses `.agents/skills/` only when no native platform folder exists yet.
 
 ## Orchestration Agents
 
