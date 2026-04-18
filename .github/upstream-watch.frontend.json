@@ -37,6 +37,14 @@
       ]
     },
     {
+      "id": "chrome-devtools-mcp-release",
+      "source": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+      "match_tag_regex": "^chrome-devtools-mcp-v",
+      "skills": [
+        "dotnet-chrome-devtools-mcp"
+      ]
+    },
+    {
       "id": "sonarjs-release",
       "source": "https://github.com/SonarSource/SonarJS",
       "skills": [

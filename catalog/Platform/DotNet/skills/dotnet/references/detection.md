@@ -37,7 +37,7 @@ Key SDK version ranges:
 - `9.0.x` - .NET 9 (STS, supported until November 2026)
 - `8.0.x` - .NET 8 (LTS, supported until November 2026)
 - `7.0.x` - .NET 7 (end of support)
-- `6.0.x` - .NET 6 (LTS)
+- `6.0.x` - .NET 6 (end of support)
 - `5.0.x` - .NET 5 (end of support)
 - `3.1.x` - .NET Core 3.1 (end of support)
 

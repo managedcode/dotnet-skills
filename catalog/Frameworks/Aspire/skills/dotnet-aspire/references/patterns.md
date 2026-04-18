@@ -63,7 +63,7 @@ Use `aspire add` when it improves repeatability, especially for:
 
 ## Servicing patch posture
 
-Aspire `13.2.0` is the current baseline release in the 13.2 line, not a new application model. Treat 13.2.x updates as CLI and AppHost servicing work that should preserve the existing topology and only refine the toolchain surface.
+Aspire `13.2.2` is the current baseline release in the 13.2 line, not a new application model. Treat 13.2.x updates as CLI and AppHost servicing work that should preserve the existing topology and only refine the toolchain surface.
 
 When you roll a 13.2.x patch:
 
