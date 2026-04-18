@@ -91,11 +91,92 @@ public sealed class SkillInstallerTests
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
 
-        var selected = installer.SelectSkillsFromCollections(["distributed", "dotnet-quality"]);
+        var selected = installer.SelectSkillsFromCollections(["aspire", "azure-functions", "background-workers", "dotnet-quality"]);
 
-        Assert.Contains(selected, skill => skill.Name == "dotnet-orleans");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-aspire");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-azure-functions");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-worker-services");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-orleans");
         Assert.Contains(selected, skill => skill.Name == "dotnet-code-analysis");
         Assert.Contains(selected, skill => skill.Name == "dotnet-format");
+        Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
+    }
+
+    [Fact]
+    public void SelectSkillsFromCollections_KeepsDistributedFocusedOnDistributedRuntimeSkills()
+    {
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+
+        var selected = installer.SelectSkillsFromCollections(["distributed"]);
+
+        Assert.Contains(selected, skill => skill.Name == "dotnet-orleans");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-managedcode-orleans-graph");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-managedcode-orleans-signalr");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-azure-functions");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-aspire");
+        Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
+    }
+
+    [Fact]
+    public void SelectSkillsFromCollections_ResolvesMobileDeviceAliases_WithoutPullingDesktopOnlySkills()
+    {
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+
+        var selected = installer.SelectSkillsFromCollections(["mobile-device"]);
+
+        Assert.Contains(selected, skill => skill.Name == "dotnet-maui");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-maui-doctor");
+        Assert.DoesNotContain(selected, skill => skill.Name == "android-tombstone-symbolication");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-mixed-reality");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-winforms");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-wpf");
+        Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
+    }
+
+    [Fact]
+    public void SelectSkillsFromCollections_ResolvesXrSpatialAliases_WithoutPullingMobileOrAiSkills()
+    {
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+
+        var selected = installer.SelectSkillsFromCollections(["xr-spatial"]);
+
+        Assert.Contains(selected, skill => skill.Name == "dotnet-mixed-reality");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-maui");
+        Assert.DoesNotContain(selected, skill => skill.Name == "technology-selection");
+        Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
+    }
+
+    [Fact]
+    public void SelectSkillsFromCollections_ResolvesTestingResearchAliases_WithoutPullingDefaultTestingFlow()
+    {
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+
+        var selected = installer.SelectSkillsFromCollections(["testing-research"]);
+
+        Assert.Contains(selected, skill => skill.Name == "code-testing-agent");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-stryker");
+        Assert.Contains(selected, skill => skill.Name == "exp-test-gap-analysis");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-xunit");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-coverlet");
+        Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
+    }
+
+    [Fact]
+    public void SelectSkillsFromCollections_ResolvesExplicitBuildSurfaces_WithoutMixingThemBackTogether()
+    {
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+
+        var selected = installer.SelectSkillsFromCollections(["msbuild", "nuget-publishing", "templates-scaffolding"]);
+
+        Assert.Contains(selected, skill => skill.Name == "msbuild-modernization");
+        Assert.Contains(selected, skill => skill.Name == "convert-to-cpm");
+        Assert.Contains(selected, skill => skill.Name == "template-authoring");
+        Assert.DoesNotContain(selected, skill => skill.Name == "csharp-scripts");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
 

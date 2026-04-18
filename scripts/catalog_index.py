@@ -216,7 +216,7 @@ CURATED_BUNDLES = [
     {
         "name": "orleans",
         "title": "Orleans bundle",
-        "description": "Install the main Orleans stack in one command, including Orleans core guidance, adjacent ManagedCode integrations, worker-hosting patterns, Aspire orchestration, and SignalR delivery support.",
+        "description": "Install the focused Orleans stack in one command: Orleans core guidance plus the adjacent ManagedCode Orleans integrations. Cross-surface hosting and generic web delivery guidance stay separate.",
         "kind": "curated",
         "stack": "Distributed",
         "lane": "Frameworks",
@@ -224,9 +224,6 @@ CURATED_BUNDLES = [
             "dotnet-orleans",
             "dotnet-managedcode-orleans-graph",
             "dotnet-managedcode-orleans-signalr",
-            "dotnet-worker-services",
-            "dotnet-aspire",
-            "dotnet-signalr",
         ],
     },
 ]
@@ -234,12 +231,20 @@ CURATED_BUNDLES = [
 STACK_ORDER = [
     ".NET Foundations",
     ".NET Quality",
-    "Build & Tooling",
+    "MSBuild",
+    "NuGet & Publishing",
+    "Templates & Scaffolding",
     "Diagnostics & Metrics",
     "Web",
+    "Aspire",
+    "Azure Functions",
+    "Background Workers",
+    "Mobile & Device",
+    "XR & Spatial",
     "Desktop & UI",
     "Frontend Quality",
     "Testing",
+    "Testing Research",
     "Architecture",
     "Governance & Delivery",
     "Data",
@@ -256,6 +261,8 @@ LANE_ORDER = [
     "Libraries",
     "Interop",
     "Quality",
+    "Mutation",
+    "Experimental",
     "Review",
     "Governance",
     "Delivery Workflow",
@@ -264,10 +271,10 @@ LANE_ORDER = [
     "Package Publishing",
     "Automation",
     "Build Pipelines",
+    "Crash Analysis",
     "Performance",
     "Observability",
     "Static Analysis",
-    "Automation & Research",
     "Runtime upgrades",
     "Testing migrations",
     "Legacy frameworks",
@@ -291,14 +298,15 @@ DOTNET_QUALITY_PACKAGES = {
     "Roslynator",
     "StyleCop-Analyzers",
 }
-BUILD_PACKAGES = {"Official-DotNet-MSBuild", "Official-DotNet-NuGet", "Official-DotNet-Template-Engine"}
+MSBUILD_PACKAGES = {"Official-DotNet-MSBuild"}
 DIAGNOSTICS_PACKAGES = {"Asynkron-Profiler", "cloc", "CodeQL", "Complexity", "Official-DotNet-Diagnostics", "Profiling", "QuickDup"}
 ARCHITECTURE_PACKAGES = {"ArchUnitNET", "Architecture", "Graphify", "NetArchTest"}
 GOVERNANCE_PACKAGES = {"Code-Review", "MCAF"}
 TESTING_FRAMEWORK_PACKAGES = {"MSTest", "NUnit", "TUnit", "xUnit"}
 TESTING_QUALITY_PACKAGES = {"Coverlet", "ReportGenerator", "Stryker"}
 LEGACY_PACKAGES = {"Entity-Framework-6", "Legacy-ASP.NET", "Official-DotNet-Upgrade", "WCF", "Workflow-Foundation"}
-DISTRIBUTED_PACKAGES = {"Aspire", "Azure-Functions", "ManagedCode-Orleans-Graph", "ManagedCode-Orleans-SignalR", "Orleans", "Worker-Services"}
+DISTRIBUTED_PACKAGES = {"ManagedCode-Orleans-Graph", "ManagedCode-Orleans-SignalR", "Orleans"}
+MOBILE_DEVICE_PACKAGES = {"MAUI", "Official-DotNet-MAUI"}
 
 
 def unquote(value: str) -> str:
@@ -356,14 +364,32 @@ def classify_skill(skill_type: str, package: str, category: str, name: str) -> t
     if is_architecture_skill(package, category):
         return "Architecture", resolve_architecture_lane(skill_type, package)
 
+    if is_testing_research_skill(package, category, name):
+        return "Testing Research", resolve_testing_research_lane(package, name)
+
     if is_testing_skill(skill_type, category):
         return "Testing", resolve_testing_lane(package, name)
 
     if is_data_skill(package, category):
         return "Data", resolve_entity_lane(skill_type)
 
+    if is_xr_spatial_skill(package):
+        return "XR & Spatial", resolve_xr_spatial_lane(skill_type, package)
+
+    if is_mobile_device_skill(package, name):
+        return "Mobile & Device", resolve_mobile_device_lane(skill_type, package, name)
+
     if is_ai_skill(package, category):
         return "AI & Agents", resolve_ai_lane(skill_type, package)
+
+    if is_aspire_skill(package):
+        return "Aspire", resolve_framework_lane(skill_type)
+
+    if is_azure_functions_skill(package):
+        return "Azure Functions", resolve_framework_lane(skill_type)
+
+    if is_background_worker_skill(package):
+        return "Background Workers", resolve_framework_lane(skill_type)
 
     if is_distributed_skill(package, category):
         return "Distributed", resolve_entity_lane(skill_type)
@@ -380,8 +406,14 @@ def classify_skill(skill_type: str, package: str, category: str, name: str) -> t
     if is_dotnet_quality_skill(package, category):
         return ".NET Quality", "Code Quality"
 
-    if is_build_skill(package, name):
-        return "Build & Tooling", resolve_build_lane(package, name)
+    if is_msbuild_skill(package):
+        return "MSBuild", "Build Pipelines"
+
+    if is_nuget_publishing_skill(package, name):
+        return "NuGet & Publishing", resolve_nuget_publishing_lane(package, name)
+
+    if is_template_skill(package):
+        return "Templates & Scaffolding", "Project & Templates"
 
     if is_diagnostics_skill(package, category, name):
         return "Diagnostics & Metrics", resolve_diagnostics_lane(package, category, name)
@@ -416,6 +448,14 @@ def is_testing_skill(skill_type: str, category: str) -> bool:
     return skill_type.lower() == "testing" or category.lower() == "testing"
 
 
+def is_testing_research_skill(package: str, category: str, name: str) -> bool:
+    return (
+        name == "code-testing-agent"
+        or package == "Stryker"
+        or (package == "Official-DotNet-Experimental" and category.lower() == "testing")
+    )
+
+
 def is_data_skill(package: str, category: str) -> bool:
     return category.lower() == "data" or package in {"Official-DotNet-Data", "Sep"}
 
@@ -424,8 +464,28 @@ def is_ai_skill(package: str, category: str) -> bool:
     return category.lower() == "ai" or package in {"MCP", "Microsoft-Extensions-AI", "Official-DotNet-AI", "Semantic-Kernel"}
 
 
+def is_mobile_device_skill(package: str, name: str) -> bool:
+    return package in MOBILE_DEVICE_PACKAGES
+
+
+def is_xr_spatial_skill(package: str) -> bool:
+    return package == "Mixed-Reality"
+
+
+def is_aspire_skill(package: str) -> bool:
+    return package == "Aspire"
+
+
+def is_azure_functions_skill(package: str) -> bool:
+    return package == "Azure-Functions"
+
+
+def is_background_worker_skill(package: str) -> bool:
+    return package == "Worker-Services"
+
+
 def is_distributed_skill(package: str, category: str) -> bool:
-    return package in DISTRIBUTED_PACKAGES or category.lower() in {"distributed", "cloud"}
+    return package in DISTRIBUTED_PACKAGES or category.lower() == "distributed"
 
 
 def is_frontend_quality_skill(package: str) -> bool:
@@ -445,7 +505,7 @@ def is_web_skill(skill_type: str, package: str, category: str) -> bool:
 def is_desktop_skill(skill_type: str, package: str, category: str) -> bool:
     return (
         category.lower() in {"cross-platform ui", "desktop"}
-        or package in {"MVVM-Toolkit", "LibVLC", "Mixed-Reality"}
+        or package in {"MVVM-Toolkit", "LibVLC"}
         or (
             skill_type.lower() == "framework"
             and any(token in package.lower() for token in ("maui", "uno", "win"))
@@ -459,8 +519,16 @@ def is_dotnet_quality_skill(package: str, category: str) -> bool:
     return package in DOTNET_QUALITY_PACKAGES or category.lower() == "code quality"
 
 
-def is_build_skill(package: str, name: str) -> bool:
-    return package in BUILD_PACKAGES or name in {"csharp-scripts", "nuget-trusted-publishing"}
+def is_msbuild_skill(package: str) -> bool:
+    return package in MSBUILD_PACKAGES
+
+
+def is_nuget_publishing_skill(package: str, name: str) -> bool:
+    return package == "Official-DotNet-NuGet" or name == "nuget-trusted-publishing"
+
+
+def is_template_skill(package: str) -> bool:
+    return package == "Official-DotNet-Template-Engine"
 
 
 def is_diagnostics_skill(package: str, category: str, name: str) -> bool:
@@ -468,6 +536,8 @@ def is_diagnostics_skill(package: str, category: str, name: str) -> bool:
 
 
 def resolve_dotnet_lane(skill_type: str, package: str, category: str, name: str) -> str:
+    if name == "csharp-scripts":
+        return "Tooling"
     if name == "dotnet-pinvoke":
         return "Interop"
     lane = resolve_entity_lane(skill_type)
@@ -480,11 +550,28 @@ def resolve_web_lane(skill_type: str, package: str) -> str:
     return resolve_entity_lane(skill_type)
 
 
+def resolve_framework_lane(skill_type: str) -> str:
+    if skill_type.lower() == "tool":
+        return "Foundations"
+    return resolve_entity_lane(skill_type)
+
+
+def resolve_mobile_device_lane(skill_type: str, package: str, name: str) -> str:
+    lowered = name.lower()
+    if "doctor" in lowered:
+        return "Tooling"
+    return resolve_entity_lane(skill_type)
+
+
+def resolve_xr_spatial_lane(skill_type: str, package: str) -> str:
+    if package == "Mixed-Reality":
+        return "Frameworks"
+    return resolve_entity_lane(skill_type)
+
+
 def resolve_desktop_lane(skill_type: str, package: str) -> str:
     if package in {"MVVM-Toolkit", "LibVLC"}:
         return "Libraries"
-    if package == "Mixed-Reality":
-        return "Frameworks"
     return resolve_entity_lane(skill_type)
 
 
@@ -493,9 +580,15 @@ def resolve_testing_lane(package: str, name: str) -> str:
         return "Frameworks"
     if package in TESTING_QUALITY_PACKAGES or name in {"coverage-analysis", "crap-score", "test-anti-patterns"}:
         return "Quality"
-    if package == "Official-DotNet-Experimental" or "code-testing" in name.lower():
-        return "Automation & Research"
     return "Foundations"
+
+
+def resolve_testing_research_lane(package: str, name: str) -> str:
+    if name == "code-testing-agent":
+        return "Automation"
+    if package == "Stryker":
+        return "Mutation"
+    return "Experimental"
 
 
 def resolve_migration_lane(package: str, name: str) -> str:
@@ -535,27 +628,26 @@ def resolve_ai_lane(skill_type: str, package: str) -> str:
     return resolve_entity_lane(skill_type)
 
 
-def resolve_build_lane(package: str, name: str) -> str:
-    if name == "csharp-scripts":
-        return "Automation"
-    if package == "Official-DotNet-Template-Engine":
-        return "Project & Templates"
+def resolve_nuget_publishing_lane(package: str, name: str) -> str:
     if package == "Official-DotNet-NuGet":
         return "Package Management"
     if name == "nuget-trusted-publishing":
         return "Package Publishing"
-    return "Build Pipelines"
+    return "Package Management"
 
 
 def resolve_diagnostics_lane(package: str, category: str, name: str) -> str:
     if package == "CodeQL":
         return "Static Analysis"
+    lowered = name.lower()
+    if "tombstone" in lowered or "dump" in lowered or "crash" in lowered:
+        return "Crash Analysis"
     if name == "exp-simd-vectorization":
-        return "Performance"
-    if category.lower() == "metrics" or package in {"Asynkron-Profiler", "Official-DotNet-Diagnostics", "Profiling"}:
         return "Performance"
     if package in {"cloc", "Complexity", "QuickDup"}:
         return "Observability"
+    if category.lower() == "metrics" or package in {"Asynkron-Profiler", "Official-DotNet-Diagnostics", "Profiling"}:
+        return "Performance"
     return "Static Analysis"
 
 

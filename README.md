@@ -122,12 +122,20 @@ Collections are intentionally split so installs stay explicit instead of collaps
 
 - `.NET Foundations`
 - `.NET Quality`
-- `Build & Tooling`
+- `MSBuild`
+- `NuGet & Publishing`
+- `Templates & Scaffolding`
 - `Diagnostics & Metrics`
 - `Web`
+- `Aspire`
+- `Azure Functions`
+- `Background Workers`
+- `Mobile & Device`
+- `XR & Spatial`
 - `Desktop & UI`
 - `Frontend Quality`
 - `Testing`
+- `Testing Research`
 - `Architecture`
 - `Governance & Delivery`
 - `Data`

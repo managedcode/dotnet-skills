@@ -47,7 +47,7 @@ public sealed class InteractiveConsoleAppTests
         var prompts = new FakeInteractivePrompts(
             "Collections",
             "Browse a collection",
-            "Distributed",
+            "Aspire",
             "Install from a lane",
             "Frameworks",
             new[] { aspireSkill },
@@ -159,6 +159,69 @@ public sealed class InteractiveConsoleAppTests
         Assert.True(new AgentInstaller(agentCatalog).IsInstalled(agent, targetLayout));
     }
 
+    [Fact]
+    public async Task RunAsync_CanReviewInstalledSet_AndRemoveDeselectedSkills()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+        var installed = installer.SelectSkills(["aspire", "orleans"], installAll: false);
+        var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        installer.Install(installed, layout, force: true);
+
+        var prompts = new FakeInteractivePrompts(
+            "Installed",
+            "Review installed set",
+            new[] { "aspire [" },
+            true,
+            "Back",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
+    }
+
+    [Fact]
+    public async Task RunAsync_CanClearInstalledTarget()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+        var installed = installer.SelectSkills(["aspire", "orleans"], installAll: false);
+        var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        installer.Install(installed, layout, force: true);
+
+        var prompts = new FakeInteractivePrompts(
+            "Installed",
+            "Clear this target",
+            true,
+            "Back",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
+    }
+
     private static InteractiveConsoleApp CreateApp(
         FakeInteractivePrompts prompts,
         SkillCatalogPackage? catalog = null,
@@ -211,7 +274,7 @@ internal sealed class FakeInteractivePrompts(params object[] responses) : IInter
         throw new InvalidOperationException($"Unsupported select response for {title}: {response.GetType().FullName}");
     }
 
-    public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
+    public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter, IReadOnlyList<T>? initiallySelected = null) where T : notnull
     {
         var response = Dequeue(title);
 

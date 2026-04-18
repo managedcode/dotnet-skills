@@ -199,7 +199,7 @@ internal sealed class InteractiveConsoleApp
         var stackTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
         stackTable.AddColumn("Collection");
         stackTable.AddColumn("In");
-        stackTable.AddColumn("Tok");
+        stackTable.AddColumn("Tokens");
         foreach (var collection in collectionViews.Take(5))
         {
             stackTable.AddRow(
@@ -211,7 +211,7 @@ internal sealed class InteractiveConsoleApp
         var bundleTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
         bundleTable.AddColumn("Bundle");
         bundleTable.AddColumn("Area");
-        bundleTable.AddColumn("Tok");
+        bundleTable.AddColumn("Tokens");
         foreach (var bundle in featuredBundles)
         {
             var bundleTokens = bundle.Skills
@@ -231,7 +231,7 @@ internal sealed class InteractiveConsoleApp
         var heavyTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
         heavyTable.AddColumn("Skill");
         heavyTable.AddColumn("Area");
-        heavyTable.AddColumn("Tok");
+        heavyTable.AddColumn("Tokens");
         foreach (var skill in largestSkills)
         {
             heavyTable.AddRow(
@@ -282,7 +282,7 @@ internal sealed class InteractiveConsoleApp
             new HomeActionView(HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
             new HomeActionView(HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
             new HomeActionView(HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "turquoise2"),
-            new HomeActionView(HomeAction.ManageInstalled, "Installed", "repair, move, remove, update", "dotnet skills list --installed-only", "orange3"),
+            new HomeActionView(HomeAction.ManageInstalled, "Installed", "keep, remove, clear, repair, move", "dotnet skills list --installed-only", "orange3"),
             new HomeActionView(HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
             new HomeActionView(HomeAction.Settings, "Workspace", "platform, scope, catalog source", "dotnet skills where", "deepskyblue1"),
             new HomeActionView(HomeAction.Exit, "Exit", "leave the control center", "exit", "grey"),
@@ -792,9 +792,11 @@ internal sealed class InteractiveConsoleApp
 
             if (installedSkills.Count > 0)
             {
+                actions.Add(new MenuOption<InstalledSkillsAction>("Review installed set", InstalledSkillsAction.ReviewState));
                 actions.Add(new MenuOption<InstalledSkillsAction>("Repair/optimize installed skills", InstalledSkillsAction.Repair));
                 actions.Add(new MenuOption<InstalledSkillsAction>("Copy or move skills to another target", InstalledSkillsAction.CopyOrMove));
-                actions.Add(new MenuOption<InstalledSkillsAction>("Remove installed skills", InstalledSkillsAction.Remove));
+                actions.Add(new MenuOption<InstalledSkillsAction>("Remove selected installed skills", InstalledSkillsAction.Remove));
+                actions.Add(new MenuOption<InstalledSkillsAction>("Clear this target", InstalledSkillsAction.RemoveAll));
             }
 
             if (installedSkills.Any(record => !record.IsCurrent))
@@ -846,6 +848,49 @@ internal sealed class InteractiveConsoleApp
 
                     break;
                 }
+                case InstalledSkillsAction.ReviewState:
+                {
+                    if (installedSkills.Count == 0)
+                    {
+                        RenderInfo("No catalog skills are installed in this target yet.");
+                        break;
+                    }
+
+                    var orderedInstalled = installedSkills
+                        .OrderBy(record => record.Skill.Stack, StringComparer.Ordinal)
+                        .ThenBy(record => record.Skill.Lane, StringComparer.Ordinal)
+                        .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+
+                    var kept = prompts.MultiSelect(
+                        "Review installed set",
+                        orderedInstalled,
+                        BuildInstalledSkillChoiceLabel,
+                        orderedInstalled);
+                    var keptNames = kept
+                        .Select(record => record.Skill.Name)
+                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    var removed = orderedInstalled
+                        .Where(record => !keptNames.Contains(record.Skill.Name))
+                        .Select(record => record.Skill)
+                        .ToArray();
+
+                    if (removed.Length == 0)
+                    {
+                        RenderInfo("No removal plan was created. The reviewed installed set is unchanged.");
+                        break;
+                    }
+
+                    var confirmation = removed.Length == orderedInstalled.Length
+                        ? $"Clear {layout.PrimaryRoot.FullName} by removing all {removed.Length} installed skill(s)?"
+                        : $"Apply the reviewed installed set by removing {removed.Length} skill(s) from {layout.PrimaryRoot.FullName}?";
+                    if (prompts.Confirm(confirmation, defaultValue: false))
+                    {
+                        RemoveSkills(removed, layout, pause: true);
+                    }
+
+                    break;
+                }
                 case InstalledSkillsAction.CopyOrMove:
                 {
                     if (installedSkills.Count == 0)
@@ -886,6 +931,21 @@ internal sealed class InteractiveConsoleApp
                     if (prompts.Confirm($"Remove {selected.Count} skill(s) from {layout.PrimaryRoot.FullName}?", defaultValue: false))
                     {
                         RemoveSkills(selected.Select(record => record.Skill).ToArray());
+                    }
+
+                    break;
+                }
+                case InstalledSkillsAction.RemoveAll:
+                {
+                    if (installedSkills.Count == 0)
+                    {
+                        RenderInfo("No catalog skills are installed in this target yet.");
+                        break;
+                    }
+
+                    if (prompts.Confirm($"Clear {layout.PrimaryRoot.FullName} by removing all {installedSkills.Count} installed skill(s)?", defaultValue: false))
+                    {
+                        RemoveSkills(installedSkills.Select(record => record.Skill).ToArray(), layout, pause: true);
                     }
 
                     break;
@@ -1757,16 +1817,22 @@ internal sealed class InteractiveConsoleApp
         table.AddColumn("Installed");
         table.AddColumn("Tokens");
         table.AddColumn("Sample lanes");
+        table.AddColumn("Included skills");
 
         foreach (var collection in collectionViews)
         {
             var sampleLanes = collection.Lanes.Take(3).Select(lane => lane.Lane).ToArray();
+            var includedSkills = collection.Lanes
+                .SelectMany(lane => lane.Skills)
+                .Select(skill => skill.Name)
+                .ToArray();
             table.AddRow(
                 Escape(collection.Collection),
                 collection.Lanes.Count.ToString(),
                 $"{collection.InstalledCount}/{collection.SkillCount}",
                 FormatTokenCount(collection.TokenCount),
-                Escape(string.Join(", ", sampleLanes)) + (collection.Lanes.Count > sampleLanes.Length ? $" [grey](+{collection.Lanes.Count - sampleLanes.Length})[/]" : string.Empty));
+                Escape(string.Join(", ", sampleLanes)) + (collection.Lanes.Count > sampleLanes.Length ? $" [grey](+{collection.Lanes.Count - sampleLanes.Length})[/]" : string.Empty),
+                Escape(SummarizeAliases(includedSkills, take: 5)));
         }
 
         var spotlight = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.None);
@@ -2272,7 +2338,7 @@ internal sealed class InteractiveConsoleApp
         AnsiConsole.WriteLine();
         SpectreConsole.Write(BuildRichShellPanel(
             "status rail",
-            new Spectre.Console.Markup("[dim]Installed surfaces stay action-oriented: inspect, repair, move, update, or remove from this exact target.[/]")));
+            new Spectre.Console.Markup("[dim]Installed state is explicit here: review the checked set, remove selected skills, or clear this exact target.[/]")));
     }
 
     private void RenderBundleBrowserPanel(IReadOnlyList<SkillPackageEntry> visibleBundles)
@@ -2462,6 +2528,7 @@ internal sealed class InteractiveConsoleApp
             ("Bundles", $"{ToolIdentity.SkillsDisplayCommand} bundle list", "List focused install bundles"),
             ("Tokens", $"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts"),
             ("Project", $"{ToolIdentity.SkillsDisplayCommand} install --auto", "Install from .csproj signals"),
+            ("Installed", $"{ToolIdentity.SkillsDisplayCommand} list --installed-only", "Inspect the current target before review, remove, or clear"),
             ("Install", $"{ToolIdentity.SkillsDisplayCommand} install aspire", "Install by alias"),
             ("Install", $"{ToolIdentity.SkillsDisplayCommand} install bundle dotnet-quality", "Install a focused bundle"),
             ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove aspire", "Remove one installed skill"),
@@ -2912,6 +2979,13 @@ internal sealed class InteractiveConsoleApp
             : $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens, update {installed.InstalledVersion} -> {skill.Version})";
     }
 
+    private static string BuildInstalledSkillChoiceLabel(InstalledSkillRecord record)
+    {
+        return record.IsCurrent
+            ? $"{ToAlias(record.Skill.Name)} [{record.Skill.Stack} / {record.Skill.Lane}] ({record.InstalledVersion}, {FormatTokenCount(record.Skill.TokenCount)} tokens)"
+            : $"{ToAlias(record.Skill.Name)} [{record.Skill.Stack} / {record.Skill.Lane}] ({record.InstalledVersion} -> {record.Skill.Version}, {FormatTokenCount(record.Skill.TokenCount)} tokens)";
+    }
+
     private static string BuildCollectionChoiceLabel(CollectionCatalogView collection)
     {
         return $"{collection.Collection} ({collection.Lanes.Count} lanes, {collection.InstalledCount}/{collection.SkillCount} skills, {FormatTokenCount(collection.TokenCount)} tokens)";
@@ -3009,7 +3083,7 @@ internal interface IInteractivePrompts
 {
     T Select<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull;
 
-    IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull;
+    IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter, IReadOnlyList<T>? initiallySelected = null) where T : notnull;
 
     bool Confirm(string title, bool defaultValue);
 
@@ -3045,7 +3119,7 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         throw new InvalidOperationException($"Could not resolve the selected item for {title}.");
     }
 
-    public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
+    public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter, IReadOnlyList<T>? initiallySelected = null) where T : notnull
     {
         if (choices.Count == 0)
         {
@@ -3064,6 +3138,13 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         };
         prompt.NotRequired();
         prompt.AddChoices(labels);
+        if (initiallySelected is not null)
+        {
+            foreach (var selectedLabel in initiallySelected.Select(formatter).Distinct(StringComparer.Ordinal))
+            {
+                prompt.Select(selectedLabel);
+            }
+        }
         var selectedLabels = SpectreConsole.Prompt(prompt);
         var selectedSet = selectedLabels.ToHashSet(StringComparer.Ordinal);
         return labels
@@ -3170,9 +3251,11 @@ internal enum CatalogTreeAction
 internal enum InstalledSkillsAction
 {
     Inspect,
+    ReviewState,
     Repair,
     CopyOrMove,
     Remove,
+    RemoveAll,
     Update,
     Back,
 }

@@ -6,12 +6,20 @@ internal static class CatalogOrganization
     [
         ".NET Foundations",
         ".NET Quality",
-        "Build & Tooling",
+        "MSBuild",
+        "NuGet & Publishing",
+        "Templates & Scaffolding",
         "Diagnostics & Metrics",
         "Web",
+        "Aspire",
+        "Azure Functions",
+        "Background Workers",
+        "Mobile & Device",
+        "XR & Spatial",
         "Desktop & UI",
         "Frontend Quality",
         "Testing",
+        "Testing Research",
         "Architecture",
         "Governance & Delivery",
         "Data",
@@ -29,6 +37,8 @@ internal static class CatalogOrganization
         "Libraries",
         "Interop",
         "Quality",
+        "Mutation",
+        "Experimental",
         "Review",
         "Governance",
         "Delivery Workflow",
@@ -37,10 +47,10 @@ internal static class CatalogOrganization
         "Package Publishing",
         "Automation",
         "Build Pipelines",
+        "Crash Analysis",
         "Performance",
         "Observability",
         "Static Analysis",
-        "Automation & Research",
         "Runtime upgrades",
         "Testing migrations",
         "Legacy frameworks",
@@ -75,11 +85,9 @@ internal static class CatalogOrganization
         "StyleCop-Analyzers",
     };
 
-    private static readonly HashSet<string> BuildPackages = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> MsBuildPackages = new(StringComparer.OrdinalIgnoreCase)
     {
         "Official-DotNet-MSBuild",
-        "Official-DotNet-NuGet",
-        "Official-DotNet-Template-Engine",
     };
 
     private static readonly HashSet<string> DiagnosticsPackages = new(StringComparer.OrdinalIgnoreCase)
@@ -133,12 +141,15 @@ internal static class CatalogOrganization
 
     private static readonly HashSet<string> DistributedPackages = new(StringComparer.OrdinalIgnoreCase)
     {
-        "Aspire",
-        "Azure-Functions",
         "ManagedCode-Orleans-Graph",
         "ManagedCode-Orleans-SignalR",
         "Orleans",
-        "Worker-Services",
+    };
+
+    private static readonly HashSet<string> MobileDevicePackages = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "MAUI",
+        "Official-DotNet-MAUI",
     };
 
     public static CatalogSkillGrouping Classify(SkillEntry skill)
@@ -168,6 +179,11 @@ internal static class CatalogOrganization
             return new("Architecture", ResolveArchitectureLane(type, package));
         }
 
+        if (IsTestingResearchSkill(package, category, name))
+        {
+            return new("Testing Research", ResolveTestingResearchLane(package, name));
+        }
+
         if (IsTestingSkill(type, category))
         {
             return new("Testing", ResolveTestingLane(package, name));
@@ -178,9 +194,34 @@ internal static class CatalogOrganization
             return new("Data", ResolveEntityLane(type));
         }
 
+        if (IsXrSpatialSkill(package))
+        {
+            return new("XR & Spatial", ResolveXrSpatialLane(type, package));
+        }
+
+        if (IsMobileDeviceSkill(package, name))
+        {
+            return new("Mobile & Device", ResolveMobileDeviceLane(type, package, name));
+        }
+
         if (IsAiSkill(package, category))
         {
             return new("AI & Agents", ResolveAiLane(type, package));
+        }
+
+        if (IsAspireSkill(package))
+        {
+            return new("Aspire", ResolveFrameworkLane(type));
+        }
+
+        if (IsAzureFunctionsSkill(package))
+        {
+            return new("Azure Functions", ResolveFrameworkLane(type));
+        }
+
+        if (IsBackgroundWorkerSkill(package))
+        {
+            return new("Background Workers", ResolveFrameworkLane(type));
         }
 
         if (IsDistributedSkill(package, category))
@@ -208,9 +249,19 @@ internal static class CatalogOrganization
             return new(".NET Quality", "Code Quality");
         }
 
-        if (IsBuildSkill(package, name))
+        if (IsMsBuildSkill(package))
         {
-            return new("Build & Tooling", ResolveBuildLane(package, name));
+            return new("MSBuild", "Build Pipelines");
+        }
+
+        if (IsNuGetPublishingSkill(package, name))
+        {
+            return new("NuGet & Publishing", ResolveNuGetPublishingLane(package, name));
+        }
+
+        if (IsTemplateSkill(package))
+        {
+            return new("Templates & Scaffolding", "Project & Templates");
         }
 
         if (IsDiagnosticsSkill(package, category, name))
@@ -318,6 +369,14 @@ internal static class CatalogOrganization
             || string.Equals(category, "Testing", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool IsTestingResearchSkill(string package, string category, string name)
+    {
+        return string.Equals(name, "code-testing-agent", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(package, "Stryker", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(package, "Official-DotNet-Experimental", StringComparison.OrdinalIgnoreCase)
+               && string.Equals(category, "Testing", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static bool IsDataSkill(string package, string category)
     {
         return string.Equals(category, "Data", StringComparison.OrdinalIgnoreCase)
@@ -330,11 +389,35 @@ internal static class CatalogOrganization
             || package is "MCP" or "Microsoft-Extensions-AI" or "Official-DotNet-AI" or "Semantic-Kernel";
     }
 
+    private static bool IsMobileDeviceSkill(string package, string name)
+    {
+        return MobileDevicePackages.Contains(package);
+    }
+
+    private static bool IsXrSpatialSkill(string package)
+    {
+        return string.Equals(package, "Mixed-Reality", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsAspireSkill(string package)
+    {
+        return string.Equals(package, "Aspire", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsAzureFunctionsSkill(string package)
+    {
+        return string.Equals(package, "Azure-Functions", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsBackgroundWorkerSkill(string package)
+    {
+        return string.Equals(package, "Worker-Services", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static bool IsDistributedSkill(string package, string category)
     {
         return DistributedPackages.Contains(package)
-            || string.Equals(category, "Distributed", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(category, "Cloud", StringComparison.OrdinalIgnoreCase);
+            || string.Equals(category, "Distributed", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsFrontendQualitySkill(string package)
@@ -359,18 +442,26 @@ internal static class CatalogOrganization
             || string.Equals(category, "Desktop", StringComparison.OrdinalIgnoreCase)
             || string.Equals(package, "MVVM-Toolkit", StringComparison.OrdinalIgnoreCase)
             || string.Equals(package, "LibVLC", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(package, "Mixed-Reality", StringComparison.OrdinalIgnoreCase)
             || string.Equals(type, "Framework", StringComparison.OrdinalIgnoreCase)
                && (package.Contains("MAUI", StringComparison.OrdinalIgnoreCase)
                    || package.Contains("Uno", StringComparison.OrdinalIgnoreCase)
                    || package.Contains("Win", StringComparison.OrdinalIgnoreCase));
     }
 
-    private static bool IsBuildSkill(string package, string name)
+    private static bool IsMsBuildSkill(string package)
     {
-        return BuildPackages.Contains(package)
-            || string.Equals(name, "csharp-scripts", StringComparison.OrdinalIgnoreCase)
+        return MsBuildPackages.Contains(package);
+    }
+
+    private static bool IsNuGetPublishingSkill(string package, string name)
+    {
+        return string.Equals(package, "Official-DotNet-NuGet", StringComparison.OrdinalIgnoreCase)
             || string.Equals(name, "nuget-trusted-publishing", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsTemplateSkill(string package)
+    {
+        return string.Equals(package, "Official-DotNet-Template-Engine", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsDotnetQualitySkill(string package, string category)
@@ -393,6 +484,11 @@ internal static class CatalogOrganization
 
     private static string ResolveDotnetLane(string type, string package, string category, string name)
     {
+        if (string.Equals(name, "csharp-scripts", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Tooling";
+        }
+
         if (string.Equals(name, "dotnet-pinvoke", StringComparison.OrdinalIgnoreCase))
         {
             return "Interop";
@@ -415,17 +511,42 @@ internal static class CatalogOrganization
         return ResolveEntityLane(type);
     }
 
+    private static string ResolveFrameworkLane(string type)
+    {
+        if (string.Equals(type, "Tool", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Foundations";
+        }
+
+        return ResolveEntityLane(type);
+    }
+
+    private static string ResolveMobileDeviceLane(string type, string package, string name)
+    {
+        if (name.Contains("doctor", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Tooling";
+        }
+
+        return ResolveEntityLane(type);
+    }
+
+    private static string ResolveXrSpatialLane(string type, string package)
+    {
+        if (string.Equals(package, "Mixed-Reality", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Frameworks";
+        }
+
+        return ResolveEntityLane(type);
+    }
+
     private static string ResolveDesktopLane(string type, string package)
     {
         if (string.Equals(package, "MVVM-Toolkit", StringComparison.OrdinalIgnoreCase)
             || string.Equals(package, "LibVLC", StringComparison.OrdinalIgnoreCase))
         {
             return "Libraries";
-        }
-
-        if (string.Equals(package, "Mixed-Reality", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Frameworks";
         }
 
         return ResolveEntityLane(type);
@@ -445,13 +566,22 @@ internal static class CatalogOrganization
             return "Quality";
         }
 
-        if (package is "Official-DotNet-Experimental"
-            || name.Contains("code-testing", StringComparison.OrdinalIgnoreCase))
+        return "Foundations";
+    }
+
+    private static string ResolveTestingResearchLane(string package, string name)
+    {
+        if (string.Equals(name, "code-testing-agent", StringComparison.OrdinalIgnoreCase))
         {
-            return "Automation & Research";
+            return "Automation";
         }
 
-        return "Foundations";
+        if (string.Equals(package, "Stryker", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Mutation";
+        }
+
+        return "Experimental";
     }
 
     private static string ResolveMigrationLane(string package, string name)
@@ -531,18 +661,8 @@ internal static class CatalogOrganization
         return ResolveEntityLane(type);
     }
 
-    private static string ResolveBuildLane(string package, string name)
+    private static string ResolveNuGetPublishingLane(string package, string name)
     {
-        if (string.Equals(name, "csharp-scripts", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Automation";
-        }
-
-        if (string.Equals(package, "Official-DotNet-Template-Engine", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Project & Templates";
-        }
-
         if (string.Equals(package, "Official-DotNet-NuGet", StringComparison.OrdinalIgnoreCase))
         {
             return "Package Management";
@@ -553,7 +673,7 @@ internal static class CatalogOrganization
             return "Package Publishing";
         }
 
-        return "Build Pipelines";
+        return "Package Management";
     }
 
     private static string ResolveDiagnosticsLane(string package, string category, string name)
@@ -563,13 +683,14 @@ internal static class CatalogOrganization
             return "Static Analysis";
         }
 
-        if (string.Equals(name, "exp-simd-vectorization", StringComparison.OrdinalIgnoreCase))
+        if (name.Contains("tombstone", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("dump", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("crash", StringComparison.OrdinalIgnoreCase))
         {
-            return "Performance";
+            return "Crash Analysis";
         }
 
-        if (string.Equals(category, "Metrics", StringComparison.OrdinalIgnoreCase)
-            || package is "Asynkron-Profiler" or "Official-DotNet-Diagnostics" or "Profiling")
+        if (string.Equals(name, "exp-simd-vectorization", StringComparison.OrdinalIgnoreCase))
         {
             return "Performance";
         }
@@ -577,6 +698,12 @@ internal static class CatalogOrganization
         if (package is "cloc" or "Complexity" or "QuickDup")
         {
             return "Observability";
+        }
+
+        if (string.Equals(category, "Metrics", StringComparison.OrdinalIgnoreCase)
+            || package is "Asynkron-Profiler" or "Official-DotNet-Diagnostics" or "Profiling")
+        {
+            return "Performance";
         }
 
         return "Static Analysis";

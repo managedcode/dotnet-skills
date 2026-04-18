@@ -202,7 +202,7 @@ internal static class CatalogScanner
         new(
             "orleans",
             "Orleans bundle",
-            "Install the main Orleans stack in one command, including Orleans core guidance, adjacent ManagedCode integrations, worker-hosting patterns, Aspire orchestration, and SignalR delivery support.",
+            "Install the focused Orleans stack in one command: Orleans core guidance plus the adjacent ManagedCode Orleans integrations. Cross-surface hosting and generic web delivery guidance stay separate.",
             "curated",
             "Distributed",
             "Frameworks",
@@ -210,9 +210,6 @@ internal static class CatalogScanner
                 "dotnet-orleans",
                 "dotnet-managedcode-orleans-graph",
                 "dotnet-managedcode-orleans-signalr",
-                "dotnet-worker-services",
-                "dotnet-aspire",
-                "dotnet-signalr",
             ]),
     ];
 
