@@ -70,6 +70,8 @@ Update this file when the user gives:
 - a high-signal frustration that indicates a rule was missed
 - a rule request for library skill quality, such as “when adding a library skill, include installation and practical usage patterns in the skill body”
 
+- In chat status updates for repository work, keep progress messages terse and execution-focused. Do not dump internal planning narration, repo-level obligation reminders, file/search counters, or step-by-step patching strategy unless the user explicitly asks for that level of detail.
+
 Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do this again" as strong signals that a durable rule should likely be captured here.
 
 - For interactive CLI UX changes in the publishable tools, run a dedicated Claude-led design pass before finalizing the console presentation.
