@@ -45,6 +45,7 @@ PLACEHOLDERS = {
     "body_class": "BODY_CLASS_PLACEHOLDER",
     "root_prefix": "ROOT_PREFIX_PLACEHOLDER",
     "root_href": "ROOT_HREF_PLACEHOLDER",
+    "asset_version": "ASSET_VERSION_PLACEHOLDER",
     "site_url": "SITE_URL_PLACEHOLDER",
     "release_tag": "RELEASE_TAG_PLACEHOLDER",
     "release_url": "RELEASE_URL_PLACEHOLDER",
@@ -158,6 +159,29 @@ def resolve_release_tag(release_version: str) -> str:
 def resolve_release_url(release_tag: str) -> str:
     """Resolve the current release URL for the public site."""
     return (os.environ.get("DOTNET_SKILLS_RELEASE_URL") or f"{DEFAULT_RELEASES_URL}{release_tag}").strip()
+
+
+def resolve_asset_version(release_tag: str) -> str:
+    """Resolve a stable cache-busting token for site assets."""
+    if release_tag:
+        return release_tag
+
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short=12", "HEAD"],
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+            timeout=5,
+        )
+        if result.returncode == 0:
+            revision = result.stdout.strip()
+            if revision:
+                return revision
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        pass
+
+    return date.today().isoformat()
 
 
 def get_git_last_modified(paths: list[str]) -> str:
@@ -2150,6 +2174,7 @@ def main() -> int:
     release_version = resolve_release_version()
     release_tag = resolve_release_tag(release_version)
     release_url = resolve_release_url(release_tag)
+    asset_version = resolve_asset_version(release_tag)
     social_image_url = build_absolute_url(site_url, SOCIAL_IMAGE_PATH)
 
     if OUTPUT_DIR.exists():
@@ -2207,6 +2232,7 @@ def main() -> int:
                 "body_class": escape_html(body_class),
                 "root_prefix": root_prefix,
                 "root_href": "./" if not root_prefix else root_prefix,
+                "asset_version": escape_html(asset_version),
                 "site_url": site_url,
                 "release_tag": escape_html(release_tag),
                 "release_url": escape_html(release_url),

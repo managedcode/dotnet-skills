@@ -211,7 +211,7 @@
   line-height: 1.4;
 }
 .directory-grid   { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
-.bundle-directory-grid { grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); }
+.bundle-directory-grid { grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); }
 .agent-grid       { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
 
 body.page-agents .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
