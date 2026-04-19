@@ -417,6 +417,39 @@ internal sealed class FakeInteractivePrompts(params object[] responses) : IInter
 {
     private readonly Queue<object> queuedResponses = new(responses);
 
+    public HomeActionView SelectHomeAction(IReadOnlyList<HomeActionView> choices)
+    {
+        var response = Dequeue("Home");
+
+        if (response is HomeActionView action)
+        {
+            return action;
+        }
+
+        if (response is string label)
+        {
+            var exact = choices.Where(choice => string.Equals(choice.Label, label, StringComparison.Ordinal)).ToArray();
+            if (exact.Length == 1)
+            {
+                return exact[0];
+            }
+
+            var hotKey = choices.Where(choice => string.Equals(choice.HotKey.ToString(), label, StringComparison.Ordinal)).ToArray();
+            if (hotKey.Length == 1)
+            {
+                return hotKey[0];
+            }
+
+            var prefix = choices.Where(choice => choice.Label.StartsWith(label, StringComparison.Ordinal)).ToArray();
+            if (prefix.Length == 1)
+            {
+                return prefix[0];
+            }
+        }
+
+        throw new InvalidOperationException($"Unsupported home action response: {response.GetType().FullName}");
+    }
+
     public T Select<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
     {
         var response = Dequeue(title);

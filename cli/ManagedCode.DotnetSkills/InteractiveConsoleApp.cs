@@ -58,10 +58,7 @@ internal sealed class InteractiveConsoleApp
                 RenderDashboard();
 
                 var homeActions = GetHomeActions(GetInstalledSkillCount(), GetOutdatedSkillCount());
-                var action = prompts.Select(
-                    "Section",
-                    homeActions,
-                    option => option.Label);
+                var action = prompts.SelectHomeAction(homeActions);
 
                 switch (action.Action)
                 {
@@ -271,7 +268,7 @@ internal sealed class InteractiveConsoleApp
 
         var controlLines = new List<Spectre.Console.Rendering.IRenderable>
         {
-            new Spectre.Console.Markup("[bold grey]Enter[/] [dim]select[/]   [bold grey]Space[/] [dim]multi-select[/]"),
+            new Spectre.Console.Markup("[bold grey]1-9[/] [dim]choose surface[/]   [bold grey]0[/] [dim]exit[/]   [bold grey]Space[/] [dim]multi-select[/]"),
             new Spectre.Console.Markup("[dim]Collections narrow before install[/]   [dim]Bundles stay focused[/]"),
             new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"),
         };
@@ -316,12 +313,13 @@ internal sealed class InteractiveConsoleApp
     {
         var actions = new List<HomeActionView>
         {
-            new HomeActionView(HomeAction.SyncProject, "Project", "sync from .csproj signals", "dotnet skills install --auto", "deepskyblue1"),
-            new HomeActionView(HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
-            new HomeActionView(HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
-            new HomeActionView(HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "turquoise2"),
-            new HomeActionView(HomeAction.ManageInstalled, "Installed", "keep, remove, repair, move", "dotnet skills list --installed-only", "orange3"),
+            new HomeActionView('1', HomeAction.SyncProject, "Project", "sync from .csproj signals", "dotnet skills install --auto", "deepskyblue1"),
+            new HomeActionView('2', HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
+            new HomeActionView('3', HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
+            new HomeActionView('4', HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "turquoise2"),
+            new HomeActionView('5', HomeAction.ManageInstalled, "Installed", "keep, remove, repair, move", "dotnet skills list --installed-only", "orange3"),
             new HomeActionView(
+                '6',
                 HomeAction.RemoveAll,
                 "Remove all skills",
                 installedSkillCount == 0 ? "0 installed skills" : $"{installedSkillCount} installed skills",
@@ -331,6 +329,7 @@ internal sealed class InteractiveConsoleApp
 
         actions.Add(
             new HomeActionView(
+                '7',
                 HomeAction.UpdateAll,
                 "Update all skills",
                 outdatedSkillCount == 0 ? "0 outdated installed skills" : $"{outdatedSkillCount} outdated installed skills",
@@ -339,9 +338,9 @@ internal sealed class InteractiveConsoleApp
 
         actions.AddRange(
         [
-            new HomeActionView(HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
-            new HomeActionView(HomeAction.Settings, "Workspace", "platform, scope, catalog source", "dotnet skills where", "deepskyblue1"),
-            new HomeActionView(HomeAction.Exit, "Exit", "leave the control center", "exit", "grey"),
+            new HomeActionView('8', HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
+            new HomeActionView('9', HomeAction.Settings, "Workspace", "platform, scope, catalog source", "dotnet skills where", "deepskyblue1"),
+            new HomeActionView('0', HomeAction.Exit, "Exit", "leave the control center", "exit", "grey"),
         ]);
 
         return actions;
@@ -435,6 +434,7 @@ internal sealed class InteractiveConsoleApp
     private static Spectre.Console.Table BuildRichNavigationTable(IReadOnlyList<HomeActionView> homeActions)
     {
         var table = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
+        table.AddColumn("Key");
         table.AddColumn("Area");
         table.AddColumn("Use");
         table.AddColumn("Command");
@@ -442,6 +442,7 @@ internal sealed class InteractiveConsoleApp
         foreach (var action in homeActions)
         {
             table.AddRow(
+                $"[bold grey]{Escape(action.HotKey.ToString())}[/]",
                 $"[{action.Accent}]{Escape(action.Label)}[/]",
                 $"[dim]{Escape(action.Summary)}[/]",
                 $"[grey]{Escape(action.Command)}[/]");
@@ -456,7 +457,7 @@ internal sealed class InteractiveConsoleApp
         grid.AddColumn();
         foreach (var action in homeActions)
         {
-            grid.AddRow(new Spectre.Console.Markup($"[{action.Accent}]{Escape(action.Label)}[/] [dim]{Escape(action.Summary)}[/]"));
+            grid.AddRow(new Spectre.Console.Markup($"[bold grey]{Escape(action.HotKey.ToString())}[/] [{action.Accent}]{Escape(action.Label)}[/] [dim]{Escape(action.Summary)}[/]"));
             grid.AddRow(new Spectre.Console.Markup($"[grey]{Escape(action.Command)}[/]"));
         }
 
@@ -3267,6 +3268,8 @@ internal sealed class InteractiveConsoleApp
 
 internal interface IInteractivePrompts
 {
+    HomeActionView SelectHomeAction(IReadOnlyList<HomeActionView> choices);
+
     T Select<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull;
 
     IReadOnlyList<T>? MultiSelect<T>(
@@ -3283,6 +3286,39 @@ internal interface IInteractivePrompts
 
 internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
 {
+    public HomeActionView SelectHomeAction(IReadOnlyList<HomeActionView> choices)
+    {
+        if (choices.Count == 0)
+        {
+            throw new InvalidOperationException("No home actions are available.");
+        }
+
+        EnsureRichConsoleAvailable();
+
+        AnsiConsole.Write(new Spectre.Console.Markup("[grey]Action key[/]: "));
+        while (true)
+        {
+            var key = Console.ReadKey(intercept: true);
+            var keyChar = char.ToUpperInvariant(key.KeyChar);
+            var selected = choices.FirstOrDefault(choice => char.ToUpperInvariant(choice.HotKey) == keyChar);
+            if (selected is not null)
+            {
+                AnsiConsole.MarkupLine($"[dim]{EscapeMarkup(selected.Label)}[/]");
+                return selected;
+            }
+
+            if (key.Key == ConsoleKey.Escape)
+            {
+                var exitAction = choices.FirstOrDefault(choice => choice.Action == HomeAction.Exit);
+                if (exitAction is not null)
+                {
+                    AnsiConsole.MarkupLine("[dim]Exit[/]");
+                    return exitAction;
+                }
+            }
+        }
+    }
+
     public T Select<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
     {
         if (choices.Count == 0)
@@ -3411,7 +3447,7 @@ internal sealed record AgentLayoutStatus(AgentInstallLayout? Layout, string Summ
 
 internal sealed record PackageSignalView(string Signal, string Kind, SkillEntry Skill);
 
-internal sealed record HomeActionView(HomeAction Action, string Label, string Summary, string Command, string Accent);
+internal sealed record HomeActionView(char HotKey, HomeAction Action, string Label, string Summary, string Command, string Accent);
 
 internal enum HomeAction
 {
