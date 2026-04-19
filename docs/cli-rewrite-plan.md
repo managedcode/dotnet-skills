@@ -143,6 +143,7 @@ The home screen should always include:
   - six primary sections
   - one-line description per section
   - one command hint per section
+  - direct bulk lifecycle actions for `Update all skills` and `Remove all skills` on the home screen
 - Workspace rail
   - platform
   - scope
@@ -521,3 +522,4 @@ This rewrite is complete only when all of the following are true:
 - 2026-04-18: Removed remaining live-shell `ConsoleUi` dependencies, deleted obsolete interactive helpers, and kept fallback removal intact for prompts and remote catalog loading.
 - 2026-04-18: Renamed the CLI browse model to `Collection*` view types, updated public help/site wording, and revalidated with `dotnet build`, `dotnet test`, catalog validation, and page generation.
 - 2026-04-19: Added a persistent home-screen tool-update rail for newer CLI versions and promoted `Update all skills` to a first-class interactive action, with review-style multi-select left as a secondary flow.
+- 2026-04-19: Promoted `Remove all skills` to the same first-class home-screen lifecycle surface as `Update all skills`, and removed the older `Clear this target` wording from installed-skill UX.

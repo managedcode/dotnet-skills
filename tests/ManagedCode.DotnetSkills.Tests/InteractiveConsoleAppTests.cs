@@ -194,7 +194,7 @@ public sealed class InteractiveConsoleAppTests
     }
 
     [Fact]
-    public async Task RunAsync_CanClearInstalledTarget()
+    public async Task RunAsync_CanRemoveAllInstalledSkillsFromInstalledSurface()
     {
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
@@ -205,7 +205,7 @@ public sealed class InteractiveConsoleAppTests
 
         var prompts = new FakeInteractivePrompts(
             "Installed",
-            "Clear this target",
+            "Remove all skills",
             true,
             "Back",
             "Exit");
@@ -290,6 +290,35 @@ public sealed class InteractiveConsoleAppTests
         Assert.Equal(0, exitCode);
         Assert.True(installedRecord.IsCurrent);
         Assert.Equal(aspireSkill.Version, installedRecord.InstalledVersion);
+    }
+
+    [Fact]
+    public async Task RunAsync_CanRemoveAllInstalledSkillsFromHomeScreen()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+        var installed = installer.SelectSkills(["aspire", "orleans"], installAll: false);
+        var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        installer.Install(installed, layout, force: true);
+
+        var prompts = new FakeInteractivePrompts(
+            "Remove all skills",
+            true,
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
     }
 
     private static InteractiveConsoleApp CreateApp(

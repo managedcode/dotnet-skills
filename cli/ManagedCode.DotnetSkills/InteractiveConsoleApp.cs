@@ -57,7 +57,7 @@ internal sealed class InteractiveConsoleApp
             {
                 RenderDashboard();
 
-                var homeActions = GetHomeActions(GetOutdatedSkillCount());
+                var homeActions = GetHomeActions(GetInstalledSkillCount(), GetOutdatedSkillCount());
                 var action = prompts.Select(
                     "Section",
                     homeActions,
@@ -79,6 +79,9 @@ internal sealed class InteractiveConsoleApp
                         break;
                     case HomeAction.ManageInstalled:
                         ShowInstalledSkills();
+                        break;
+                    case HomeAction.RemoveAll:
+                        RemoveAllInstalledSkillsForCurrentTarget();
                         break;
                     case HomeAction.UpdateAll:
                         UpdateAllOutdatedSkillsForCurrentTarget();
@@ -104,6 +107,12 @@ internal sealed class InteractiveConsoleApp
     {
         var installer = new SkillInstaller(skillCatalog);
         return installer.GetInstalledSkills(ResolveSkillLayout()).Count(record => !record.IsCurrent);
+    }
+
+    private int GetInstalledSkillCount()
+    {
+        var installer = new SkillInstaller(skillCatalog);
+        return installer.GetInstalledSkills(ResolveSkillLayout()).Count;
     }
 
     private async Task LoadCatalogsAsync(bool refreshCatalog)
@@ -149,7 +158,7 @@ internal sealed class InteractiveConsoleApp
         var featuredBundles = GetPrimaryBundles()
             .Take(5)
             .ToArray();
-        var homeActions = GetHomeActions(outdatedSkills)
+        var homeActions = GetHomeActions(installedSkills.Count, outdatedSkills)
             .Where(action => action.Action != HomeAction.Exit)
             .ToArray();
         var consoleWidth = GetConsoleWidth();
@@ -271,6 +280,10 @@ internal sealed class InteractiveConsoleApp
             outdatedSkills > 0
                 ? new Spectre.Console.Markup($"[yellow]Update all skills[/] [dim]is available for {outdatedSkills} outdated install(s)[/]")
                 : new Spectre.Console.Markup("[yellow]Update all skills[/] [dim]stays available and returns a clear no-op when everything is current[/]"));
+        controlLines.Add(
+            installedSkills.Count > 0
+                ? new Spectre.Console.Markup($"[red]Remove all skills[/] [dim]is available for {installedSkills.Count} installed skill(s)[/]")
+                : new Spectre.Console.Markup("[red]Remove all skills[/] [dim]stays available and returns a simple no-op when nothing is installed[/]"));
 
         var leftPanels = new List<Spectre.Console.Rendering.IRenderable>
         {
@@ -299,7 +312,7 @@ internal sealed class InteractiveConsoleApp
         AnsiConsole.WriteLine();
     }
 
-    private static IReadOnlyList<HomeActionView> GetHomeActions(int outdatedSkillCount)
+    private static IReadOnlyList<HomeActionView> GetHomeActions(int installedSkillCount, int outdatedSkillCount)
     {
         var actions = new List<HomeActionView>
         {
@@ -307,7 +320,13 @@ internal sealed class InteractiveConsoleApp
             new HomeActionView(HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
             new HomeActionView(HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
             new HomeActionView(HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "turquoise2"),
-            new HomeActionView(HomeAction.ManageInstalled, "Installed", "keep, remove, clear, repair, move", "dotnet skills list --installed-only", "orange3"),
+            new HomeActionView(HomeAction.ManageInstalled, "Installed", "keep, remove, repair, move", "dotnet skills list --installed-only", "orange3"),
+            new HomeActionView(
+                HomeAction.RemoveAll,
+                "Remove all skills",
+                installedSkillCount == 0 ? "0 installed skills" : $"{installedSkillCount} installed skills",
+                "dotnet skills remove --all",
+                "red"),
         };
 
         actions.Add(
@@ -865,8 +884,9 @@ internal sealed class InteractiveConsoleApp
                 actions.Add(new MenuOption<InstalledSkillsAction>("Repair/optimize installed skills", InstalledSkillsAction.Repair));
                 actions.Add(new MenuOption<InstalledSkillsAction>("Copy or move skills to another target", InstalledSkillsAction.CopyOrMove));
                 actions.Add(new MenuOption<InstalledSkillsAction>("Remove selected installed skills", InstalledSkillsAction.Remove));
-                actions.Add(new MenuOption<InstalledSkillsAction>("Clear this target", InstalledSkillsAction.RemoveAll));
             }
+
+            actions.Add(new MenuOption<InstalledSkillsAction>("Remove all skills", InstalledSkillsAction.RemoveAll));
 
             if (installedSkills.Any(record => !record.IsCurrent))
             {
@@ -952,7 +972,7 @@ internal sealed class InteractiveConsoleApp
                     }
 
                     var confirmation = removed.Length == orderedInstalled.Length
-                        ? $"Clear {layout.PrimaryRoot.FullName} by removing all {removed.Length} installed skill(s)?"
+                        ? $"Remove all {removed.Length} installed skill(s) from {layout.PrimaryRoot.FullName}?"
                         : $"Apply the reviewed installed set by removing {removed.Length} skill(s) from {layout.PrimaryRoot.FullName}?";
                     if (prompts.Confirm(confirmation, defaultValue: false))
                     {
@@ -998,7 +1018,7 @@ internal sealed class InteractiveConsoleApp
                         break;
                     }
 
-                    if (prompts.Confirm($"Remove {selected.Count} skill(s) from {layout.PrimaryRoot.FullName}?", defaultValue: false))
+                    if (prompts.Confirm($"Remove {selected.Count} skill(s) from {layout.PrimaryRoot.FullName}?", defaultValue: true))
                     {
                         RemoveSkills(selected.Select(record => record.Skill).ToArray());
                     }
@@ -1007,16 +1027,10 @@ internal sealed class InteractiveConsoleApp
                 }
                 case InstalledSkillsAction.RemoveAll:
                 {
-                    if (installedSkills.Count == 0)
-                    {
-                        RenderInfo("No catalog skills are installed in this target yet.");
-                        break;
-                    }
-
-                    if (prompts.Confirm($"Clear {layout.PrimaryRoot.FullName} by removing all {installedSkills.Count} installed skill(s)?", defaultValue: false))
-                    {
-                        RemoveSkills(installedSkills.Select(record => record.Skill).ToArray(), layout, pause: true);
-                    }
+                    RemoveAllInstalledSkills(
+                        installedSkills,
+                        layout,
+                        "No catalog skills are installed in this target yet.");
 
                     break;
                 }
@@ -1630,6 +1644,37 @@ internal sealed class InteractiveConsoleApp
         if (pause)
         {
             prompts.Pause("Press any key to return to the interactive shell...");
+        }
+    }
+
+    private void RemoveAllInstalledSkillsForCurrentTarget()
+    {
+        var layout = ResolveSkillLayout();
+        var installer = new SkillInstaller(skillCatalog);
+        var installedSkills = installer.GetInstalledSkills(layout)
+            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+            .ToArray();
+
+        RemoveAllInstalledSkills(
+            installedSkills,
+            layout,
+            "No catalog skills are installed in this target yet.");
+    }
+
+    private void RemoveAllInstalledSkills(
+        IReadOnlyList<InstalledSkillRecord> installedSkills,
+        SkillInstallLayout layout,
+        string emptyMessage)
+    {
+        if (installedSkills.Count == 0)
+        {
+            RenderInfo(emptyMessage);
+            return;
+        }
+
+        if (prompts.Confirm($"Remove all {installedSkills.Count} installed skill(s) from {layout.PrimaryRoot.FullName}?", defaultValue: true))
+        {
+            RemoveSkills(installedSkills.Select(record => record.Skill).ToArray(), layout, pause: true);
         }
     }
 
@@ -2666,7 +2711,7 @@ internal sealed class InteractiveConsoleApp
             ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove aspire", "Remove one installed skill"),
             ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove bundle dotnet-quality", "Remove one focused bundle"),
             ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove collection distributed", "Remove one collection surface"),
-            ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove --all", "Clear the selected target"),
+            ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove --all", "Remove all installed skills from the selected target"),
             ("Update", $"{ToolIdentity.SkillsDisplayCommand} update", "Refresh installed skills"),
             ("Where", $"{ToolIdentity.SkillsDisplayCommand} where", "Print resolved install paths"),
             ("Agents", $"{ToolIdentity.AgentDisplayCommand} list", "List bundled orchestration agents"),
@@ -3346,6 +3391,7 @@ internal enum HomeAction
     InstallSkills,
     Analysis,
     ManageInstalled,
+    RemoveAll,
     UpdateAll,
     Agents,
     Settings,
