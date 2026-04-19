@@ -7,6 +7,16 @@ namespace ManagedCode.DotnetSkills.Tests;
 public sealed class InteractiveConsoleAppTests
 {
     [Fact]
+    public void BuildPromptDisplayLabel_EscapesBundleLabelsWithBracketedNetAreas()
+    {
+        var label = "dotnet-base [.NET Foundations / Foundations] (4 skills)";
+
+        var escaped = CommandCenterInteractivePrompts.BuildPromptDisplayLabel(label);
+
+        Assert.Equal("dotnet-base [[.NET Foundations / Foundations]] (4 skills)", escaped);
+    }
+
+    [Fact]
     public async Task RunAsync_ReturnsZero_WhenUserExitsImmediately()
     {
         var prompts = new FakeInteractivePrompts("Exit");
@@ -69,6 +79,24 @@ public sealed class InteractiveConsoleAppTests
 
         Assert.Equal(0, exitCode);
         Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", aspireSkill.Name)));
+    }
+
+    [Fact]
+    public async Task RunAsync_CanInspectBundle_WhenAreaLabelContainsBracketedNetText()
+    {
+        var prompts = new FakeInteractivePrompts(
+            "Bundles",
+            "Inspect a focused bundle",
+            "dotnet-base",
+            "Back",
+            "Back",
+            "Exit");
+
+        var app = CreateApp(prompts);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
     }
 
     [Fact]

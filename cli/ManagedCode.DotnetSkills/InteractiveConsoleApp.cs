@@ -3329,15 +3329,16 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         EnsureRichConsoleAvailable();
 
         var labels = choices.Select(formatter).ToArray();
+        var displayLabels = labels.Select(BuildPromptDisplayLabel).ToArray();
         var prompt = new Spectre.Console.SelectionPrompt<string>
         {
             Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
-            PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
+            PageSize = Math.Min(Math.Max(displayLabels.Length, 5), 18),
             HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
         };
-        prompt.AddChoices(labels);
+        prompt.AddChoices(displayLabels);
         var selectedLabel = SpectreConsole.Prompt(prompt);
-        var index = Array.FindIndex(labels, label => string.Equals(label, selectedLabel, StringComparison.Ordinal));
+        var index = Array.FindIndex(displayLabels, label => string.Equals(label, selectedLabel, StringComparison.Ordinal));
         if (index >= 0)
         {
             return choices[index];
@@ -3361,35 +3362,37 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         EnsureRichConsoleAvailable();
 
         var labels = choices.Select(formatter).ToArray();
+        var displayLabels = labels.Select(BuildPromptDisplayLabel).ToArray();
+        var displayBackLabel = backLabel is null ? null : BuildPromptDisplayLabel(backLabel);
         var prompt = new Spectre.Console.MultiSelectionPrompt<string>
         {
             Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
             InstructionsText = backLabel is null
                 ? "[dim](Press <space> to toggle, <enter> to accept)[/]"
                 : $"[dim](Press <space> to toggle, <enter> to accept, select {EscapeMarkup(backLabel)} to cancel)[/]",
-            PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
+            PageSize = Math.Min(Math.Max(displayLabels.Length, 5), 18),
             HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
         };
         prompt.NotRequired();
-        if (backLabel is not null)
+        if (displayBackLabel is not null)
         {
-            prompt.AddChoice(backLabel);
+            prompt.AddChoice(displayBackLabel);
         }
-        prompt.AddChoices(labels);
+        prompt.AddChoices(displayLabels);
         if (initiallySelected is not null)
         {
             foreach (var selectedLabel in initiallySelected.Select(formatter).Distinct(StringComparer.Ordinal))
             {
-                prompt.Select(selectedLabel);
+                prompt.Select(BuildPromptDisplayLabel(selectedLabel));
             }
         }
         var selectedLabels = SpectreConsole.Prompt(prompt);
-        if (backLabel is not null && selectedLabels.Contains(backLabel, StringComparer.Ordinal))
+        if (displayBackLabel is not null && selectedLabels.Contains(displayBackLabel, StringComparer.Ordinal))
         {
             return null;
         }
         var selectedSet = selectedLabels.ToHashSet(StringComparer.Ordinal);
-        return labels
+        return displayLabels
             .Select((label, index) => (label, index))
             .Where(item => selectedSet.Contains(item.label))
             .Select(item => choices[item.index])
@@ -3427,6 +3430,11 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         return value
             .Replace("[", "[[", StringComparison.Ordinal)
             .Replace("]", "]]", StringComparison.Ordinal);
+    }
+
+    internal static string BuildPromptDisplayLabel(string value)
+    {
+        return EscapeMarkup(value);
     }
 }
 
