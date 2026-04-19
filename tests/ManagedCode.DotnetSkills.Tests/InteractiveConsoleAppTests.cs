@@ -262,6 +262,36 @@ public sealed class InteractiveConsoleAppTests
         Assert.Equal(aspireSkill.Version, updatedRecord.InstalledVersion);
     }
 
+    [Fact]
+    public async Task RunAsync_ExposesUpdateAllSkillsFromHomeScreen_WhenEverythingIsCurrent()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        installer.Install([aspireSkill], layout, force: true);
+
+        var prompts = new FakeInteractivePrompts(
+            "Update all skills",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+        var installedRecord = installer.GetInstalledSkills(layout)
+            .Single(record => string.Equals(record.Skill.Name, aspireSkill.Name, StringComparison.OrdinalIgnoreCase));
+
+        Assert.Equal(0, exitCode);
+        Assert.True(installedRecord.IsCurrent);
+        Assert.Equal(aspireSkill.Version, installedRecord.InstalledVersion);
+    }
+
     private static InteractiveConsoleApp CreateApp(
         FakeInteractivePrompts prompts,
         SkillCatalogPackage? catalog = null,

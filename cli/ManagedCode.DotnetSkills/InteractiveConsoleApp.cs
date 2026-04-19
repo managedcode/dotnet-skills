@@ -267,10 +267,10 @@ internal sealed class InteractiveConsoleApp
             new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"),
         };
 
-        if (outdatedSkills > 0)
-        {
-            controlLines.Add(new Spectre.Console.Markup($"[yellow]Update all skills[/] [dim]is available for {outdatedSkills} outdated install(s)[/]"));
-        }
+        controlLines.Add(
+            outdatedSkills > 0
+                ? new Spectre.Console.Markup($"[yellow]Update all skills[/] [dim]is available for {outdatedSkills} outdated install(s)[/]")
+                : new Spectre.Console.Markup("[yellow]Update all skills[/] [dim]stays available and returns a clear no-op when everything is current[/]"));
 
         var leftPanels = new List<Spectre.Console.Rendering.IRenderable>
         {
@@ -310,10 +310,13 @@ internal sealed class InteractiveConsoleApp
             new HomeActionView(HomeAction.ManageInstalled, "Installed", "keep, remove, clear, repair, move", "dotnet skills list --installed-only", "orange3"),
         };
 
-        if (outdatedSkillCount > 0)
-        {
-            actions.Add(new HomeActionView(HomeAction.UpdateAll, "Update all skills", $"{outdatedSkillCount} outdated installed skills", "dotnet skills update", "yellow"));
-        }
+        actions.Add(
+            new HomeActionView(
+                HomeAction.UpdateAll,
+                "Update all skills",
+                outdatedSkillCount == 0 ? "0 outdated installed skills" : $"{outdatedSkillCount} outdated installed skills",
+                "dotnet skills update",
+                "yellow"));
 
         actions.AddRange(
         [
