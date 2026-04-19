@@ -69,6 +69,27 @@
 .panel-grid       { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .quickstart-grid  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
+.surface-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.surface-panel h3 {
+  margin: 0;
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.surface-panel p {
+  margin: 0;
+}
+
+.surface-panel.is-active {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.08);
+}
+
 /* ---- Quick start terminal panel ---- */
 
 .qs-panel {

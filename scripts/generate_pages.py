@@ -935,8 +935,8 @@ def render_bundle_filter_tabs(current_kind: str = "all") -> str:
     """Render bundle-kind filter tabs."""
     options = [
         ("all", "All bundles"),
-        ("stack", "Collection bundles"),
-        ("workflow", "Workflow bundles"),
+        ("stack", "By collection"),
+        ("workflow", "By workflow"),
         ("curated", "Focused bundles"),
     ]
     return "".join(
@@ -1153,6 +1153,69 @@ def render_quickstart_panel() -> str:
     """.strip()
 
 
+def render_surface_distinction_section(
+    root_prefix: str,
+    collection_count: int,
+    bundle_count: int,
+    *,
+    active_surface: str | None = None,
+) -> str:
+    """Render the public explanation for collections vs bundles."""
+    collection_button = render_button(
+        "Browse collections",
+        f"{root_prefix}collections/",
+        "primary" if active_surface == "collections" else "ghost",
+    )
+    bundle_button = render_button(
+        "Browse bundles",
+        f"{root_prefix}bundles/",
+        "primary" if active_surface == "bundles" else "ghost",
+    )
+    collection_active_tag = '<span class="tag tag-accent">Current page</span>' if active_surface == "collections" else ""
+    bundle_active_tag = '<span class="tag tag-accent">Current page</span>' if active_surface == "bundles" else ""
+
+    return f"""
+      <section class="section-stack">
+        <div class="section-header">
+          <div>
+            <h2>Collections browse. Bundles install.</h2>
+            <p>Collections are the catalog taxonomy. Bundles are one-command grouped installs built from that taxonomy. They should stay aligned, but they are not the same surface.</p>
+          </div>
+        </div>
+        <div class="panel-grid">
+          <div class="panel surface-panel {"is-active" if active_surface == "collections" else ""}">
+            <div class="card-kicker">Browse surface</div>
+            <h3>Collections</h3>
+            <div class="meta-row">
+              <span class="tag">{collection_count} collections</span>
+              <span class="tag">Collection -&gt; Lane -&gt; Skill</span>
+              {collection_active_tag}
+            </div>
+            <p>Use collections to navigate the taxonomy, compare related skills and agents, and understand an area before you choose an install flow.</p>
+            <p><strong>Best when:</strong> you want discovery, lane context, and drilldowns rather than one grouped install command.</p>
+            <div class="card-actions-inline">
+              {collection_button}
+            </div>
+          </div>
+          <div class="panel surface-panel {"is-active" if active_surface == "bundles" else ""}">
+            <div class="card-kicker">Install surface</div>
+            <h3>Bundles</h3>
+            <div class="meta-row">
+              <span class="tag">{bundle_count} bundles</span>
+              <span class="tag">One command per preset</span>
+              {bundle_active_tag}
+            </div>
+            <p>Use bundles when you already know the direction and want one <code>dotnet skills install bundle ...</code> command to install a focused multi-skill set.</p>
+            <p><strong>Best when:</strong> you want a ready-made grouped install instead of browsing the full taxonomy first.</p>
+            <div class="card-actions-inline">
+              {bundle_button}
+            </div>
+          </div>
+        </div>
+      </section>
+    """.strip()
+
+
 def render_support_panel(root_prefix: str) -> str:
     """Render a compact supported-platforms panel."""
     platforms = [
@@ -1250,7 +1313,7 @@ def render_home_page(
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
         <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>
-        <p class="page-lead">Start from the NuGet packages already in your project, a focused bundle, or the interactive control center. Browse collection and lane drilldowns, inspect per-skill token counts, and install grouped skills without broad mixed-catalog noise.</p>
+        <p class="page-lead">Use collections to browse the taxonomy and bundles to run one-command grouped installs. Start from project-detected NuGet packages, a focused bundle, or the interactive control center without broad mixed-catalog noise.</p>
         <div class="hero-actions">
           {render_button("Browse bundles", f"{root_prefix}bundles/", "primary")}
           {render_button("Browse collections", f"{root_prefix}collections/", "ghost")}
@@ -1271,6 +1334,7 @@ def render_home_page(
 
     sections = [
         hero,
+        render_surface_distinction_section(root_prefix, len(category_infos), len(bundles)),
         render_quickstart_panel(),
         featured_section,
         render_bundle_listing_section(
@@ -1552,7 +1616,7 @@ def render_category_detail_page(category_name: str, category_info: dict, root_pr
     return body, page_data
 
 
-def render_categories_index_page(category_infos: dict[str, dict], root_prefix: str) -> str:
+def render_categories_index_page(category_infos: dict[str, dict], bundle_count: int, root_prefix: str) -> str:
     """Render the collection hub page."""
     return f"""
       {render_breadcrumb([("Home", root_prefix or "./"), ("Collections", None)])}
@@ -1562,8 +1626,9 @@ def render_categories_index_page(category_infos: dict[str, dict], root_prefix: s
           <span class="tag tag-accent">{len(category_infos)} collections</span>
         </div>
         <h1 class="page-title">Browse the catalog by <span class="accent">collection</span></h1>
-        <p class="page-lead">Each collection groups related skills and agents so it is easier to browse the catalog by the same taxonomy the CLI uses.</p>
+        <p class="page-lead">Collections are the browse taxonomy of the catalog. They group related lanes, skills, and agents so you can inspect an area before choosing any install surface.</p>
       </section>
+      {render_surface_distinction_section(root_prefix, len(category_infos), bundle_count, active_surface="collections")}
       {render_category_listing_section(category_infos, root_prefix)}
     """.strip()
 
@@ -1598,7 +1663,7 @@ def render_skills_index_page(skills: list[dict], category_infos: dict[str, dict]
     return body, page_data
 
 
-def render_bundles_index_page(bundles: list[dict], root_prefix: str) -> tuple[str, dict]:
+def render_bundles_index_page(bundles: list[dict], collection_count: int, root_prefix: str) -> tuple[str, dict]:
     """Render the bundle directory page."""
     body = f"""
       {render_breadcrumb([("Home", root_prefix or "./"), ("Bundles", None)])}
@@ -1608,13 +1673,14 @@ def render_bundles_index_page(bundles: list[dict], root_prefix: str) -> tuple[st
           <span class="tag tag-accent">{len(bundles)} bundles</span>
         </div>
         <h1 class="page-title">Install grouped <span class="accent">bundles</span></h1>
-        <p class="page-lead">Bundles expand one command into multiple related skills. Every bundle here is intentionally focused by collection or workflow instead of mixing broad all-purpose installs.</p>
+        <p class="page-lead">Bundles are install presets, not browse taxonomy pages. Every bundle expands one command into a focused multi-skill install shaped by a collection or workflow.</p>
       </section>
+      {render_surface_distinction_section(root_prefix, collection_count, len(bundles), active_surface="bundles")}
       {render_bundle_listing_section(
           bundles,
           root_prefix,
           "All bundles",
-          "Search bundles, inspect the exact install command, and jump to detail pages for the included skills.",
+          "Search bundles, inspect the exact install command, and open the included skills when you want to inspect the underlying collection taxonomy.",
           include_tabs=True,
           empty_message="No bundles match this search yet.",
           show_index_link=False,
@@ -2289,11 +2355,11 @@ def main() -> int:
         priority="0.95",
     )
 
-    bundles_body, bundles_page_data = render_bundles_index_page(bundles, "../")
+    bundles_body, bundles_page_data = render_bundles_index_page(bundles, len(category_infos), "../")
     add_page(
         path="bundles/",
         title=".NET Bundles | dotnet-skills",
-        description="Browse one-command .NET bundles with focused collection and workflow installs for quality, testing, architecture, Orleans, and more.",
+        description="Browse one-command .NET bundles. Bundles are focused grouped installs built from the collection taxonomy for quality, testing, architecture, Orleans, and more.",
         keywords=["dotnet bundles", "install bundle dotnet-quality", "install bundle orleans", "mcaf bundle", "dotnet-skills bundles"],
         body_class="page-bundles",
         main_content=bundles_body,
@@ -2333,11 +2399,11 @@ def main() -> int:
         priority="0.95",
     )
 
-    categories_body = render_categories_index_page(category_infos, "../")
+    categories_body = render_categories_index_page(category_infos, len(bundles), "../")
     add_page(
         path="collections/",
         title=".NET Skill Collections | dotnet-skills",
-        description="Browse the catalog by collection, from .NET foundations and testing to diagnostics, distributed systems, upgrades, and AI.",
+        description="Browse the catalog taxonomy by collection. Collections are discovery hubs for lanes, skills, and agents, not one-command install presets.",
         keywords=[".NET collections", "testing skills", "distributed .NET", "catalog collections"],
         body_class="page-collections",
         main_content=categories_body,
