@@ -26,6 +26,7 @@ CNAME_PATH = OUTPUT_DIR / "CNAME"
 
 DEFAULT_SITE_URL = "https://skills.managed-code.com/"
 DEFAULT_RELEASES_URL = "https://github.com/managedcode/dotnet-skills/releases/tag/"
+DEFAULT_NUGET_PACKAGE_URL = "https://www.nuget.org/packages/dotnet-skills"
 COPYRIGHT_START_YEAR = 2024
 SOCIAL_IMAGE_PATH = "assets/social-card.svg"
 GITHUB_REPOSITORY_URL = "https://github.com/managedcode/dotnet-skills"
@@ -859,15 +860,13 @@ def render_bundle_card(bundle: dict, root_prefix: str) -> str:
     return f"""
       <article class="directory-card bundle-card is-clickable js-filter-card" data-category="{escape_html(bundle['kind'])}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(bundle['title'])} bundle">
         <div class="card-head">
-          <div class="card-head-top">
-            <h3><a href="{escape_html(detail_href)}">{escape_html(bundle['title'])}</a></h3>
-            <div class="bundle-meta">
-              <span class="bundle-kind">{escape_html(bundle['kind_label'])}</span>
-              <span class="bundle-count">{skill_count} skills</span>
-              <span class="bundle-count">{token_count:,} tokens</span>
-              {"<span class=\"bundle-count\">" + escape_html(area_label) + "</span>" if area_label else ""}
-            </div>
+          <div class="bundle-meta">
+            <span class="bundle-kind">{escape_html(bundle['kind_label'])}</span>
+            <span class="bundle-count">{skill_count} skills</span>
+            <span class="bundle-count">{token_count:,} tokens</span>
+            {"<span class=\"bundle-count\">" + escape_html(area_label) + "</span>" if area_label else ""}
           </div>
+          <h3><a href="{escape_html(detail_href)}">{escape_html(bundle['title'])}</a></h3>
         </div>
         <p class="card-summary">{escape_html(summary)}</p>
         <div class="card-footer">
@@ -1023,7 +1022,7 @@ def render_category_listing_section(category_infos: dict[str, dict], root_prefix
           </div>
           {render_panel_links([("Collection hub", f"{root_prefix}collections/"), ("Skill directory", f"{root_prefix}skills/")])}
         </div>
-        <div class="directory-grid">
+        <div class="directory-grid bundle-directory-grid">
           {cards_html}
         </div>
       </section>
@@ -1071,7 +1070,7 @@ def render_bundle_listing_section(
         </div>
         {toolbar_html}
         {empty_state_html}
-        <div class="directory-grid">
+        <div class="directory-grid bundle-directory-grid">
           {cards_html}
         </div>
       </section>
@@ -1218,6 +1217,12 @@ def render_home_page(
         <div class="eyebrow-row">
           <span class="eyebrow">Open source</span>
           <span class="tag tag-accent">Curated for modern .NET</span>
+          <a
+            class="tag tag-accent"
+            href="{escape_html(DEFAULT_NUGET_PACKAGE_URL)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-nuget-package-id="dotnet-skills">NuGet tool</a>
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
         <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>

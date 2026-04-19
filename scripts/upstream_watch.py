@@ -415,7 +415,11 @@ def gh_api(
 
     result = subprocess.run(cmd, capture_output=True, text=True, input=payload, env=env)
     if result.returncode != 0:
-        raise RuntimeError(result.stderr.strip() or f"gh api failed for {path}")
+        stderr = result.stderr.strip()
+        stdout = result.stdout.strip()
+        if stderr and stdout and stdout not in stderr:
+            raise RuntimeError(f"{stderr}\n{stdout}")
+        raise RuntimeError(stderr or stdout or f"gh api failed for {path}")
 
     stdout = result.stdout.strip()
     if not stdout:
@@ -829,37 +833,20 @@ def issue_body(
     )
 
 
-def superseded_comment(
+def superseded_group_comment(
     *,
     replacement_issue_number: int,
     issue_key: str,
-    watch: dict[str, Any],
-    existing_watch_snapshot: dict[str, Any] | None,
-    old_snapshot: dict[str, Any] | None,
-    new_snapshot: dict[str, Any],
+    changed_watch_ids: list[str],
 ) -> str:
-    previous_value = None
-    if existing_watch_snapshot:
-        previous_value = existing_watch_snapshot.get("value")
-    elif old_snapshot:
-        previous_value = old_snapshot.get("value")
-
     lines = [
         "Automation closed this upstream-watch issue because a newer upstream event superseded it.",
         "",
         f"- Replacement issue: #{replacement_issue_number}",
         f"- Issue key: `{issue_key}`",
-        f"- Watch id: `{watch['id']}`",
-        f"- Watch: **{watch['name']}**",
+        f"- Changed watches in this run: `{len(changed_watch_ids)}`",
+        f"- Watch ids: {summarize_code_items(sorted(changed_watch_ids), max_visible=8)}",
     ]
-    if previous_value:
-        lines.append(f"- Previous tracked value: `{previous_value}`")
-    lines.extend(
-        [
-            f"- New detected value: `{new_snapshot['value']}`",
-            f"- Source: {new_snapshot['source_url']}",
-        ]
-    )
     return "\n".join(lines)
 
 
@@ -1075,28 +1062,30 @@ def reconcile_open_issues(
     return normalized, stats
 
 
-def rotate_issue(
+def rotate_issue_group(
     *,
     repo: str,
     token: str,
     labels: list[str],
-    watch: dict[str, Any],
-    old_snapshot: dict[str, Any] | None,
-    new_snapshot: dict[str, Any],
+    issue_key: str,
+    configured_issue_name: str | None,
+    fallback_skills: list[str],
+    changed_watches: dict[str, dict[str, Any]],
+    new_snapshots: dict[str, dict[str, Any]],
     watch_index: dict[str, dict[str, Any]],
     open_issue_groups: dict[str, dict[str, Any]],
     dry_run: bool,
 ) -> str:
-    issue_key = watch["issue_key"]
     existing_group = open_issue_groups.get(issue_key)
     pending_watches = dict(existing_group.get("pending_watches", {})) if existing_group else {}
-    existing_watch_snapshot = pending_watches.get(watch["id"])
-    pending_watches[watch["id"]] = minimal_snapshot(new_snapshot)
-    skills = collect_group_skills(pending_watches, watch_index, fallback_skills=watch.get("skills"))
+    for watch_id, snapshot in new_snapshots.items():
+        pending_watches[watch_id] = minimal_snapshot(snapshot)
+
+    skills = collect_group_skills(pending_watches, watch_index, fallback_skills=fallback_skills)
     issue_name = resolve_issue_name(
         issue_key=issue_key,
         skills=skills,
-        configured_issue_name=watch.get("issue_name"),
+        configured_issue_name=configured_issue_name,
         existing_issue_name=existing_group.get("issue_name") if existing_group else None,
     )
     title = issue_title(issue_name)
@@ -1115,7 +1104,10 @@ def rotate_issue(
             action = "amend"
         else:
             action = "create"
-        print(f"[dry-run] Would {action} issue for {watch['id']} via {issue_key}: {title}")
+        print(
+            f"[dry-run] Would {action} issue for "
+            f"{summarize_code_items(sorted(new_snapshots), max_visible=4)} via {issue_key}: {title}"
+        )
         return action
 
     if existing_group and existing_group.get("fresh"):
@@ -1149,13 +1141,10 @@ def rotate_issue(
             token=token,
             method="POST",
             data={
-                "body": superseded_comment(
+                "body": superseded_group_comment(
                     replacement_issue_number=created["number"],
                     issue_key=issue_key,
-                    watch=watch,
-                    existing_watch_snapshot=existing_watch_snapshot,
-                    old_snapshot=old_snapshot,
-                    new_snapshot=new_snapshot,
+                    changed_watch_ids=sorted(new_snapshots),
                 )
             },
         )
@@ -1278,6 +1267,7 @@ def main() -> int:
     amended = 0
     warnings: list[str] = []
     errors: list[str] = []
+    pending_issue_updates: dict[str, dict[str, Any]] = {}
 
     for watch in config.get("watches", []):
         previous = prior_watches.get(watch["id"])
@@ -1311,23 +1301,22 @@ def main() -> int:
             if not args.dry_run and not repo:
                 raise RuntimeError("GITHUB_REPOSITORY is required to create or update issues")
 
-            action = rotate_issue(
-                repo=repo or "",
-                token=token or "",
-                labels=issue_labels,
-                watch=watch,
-                old_snapshot=effective_previous,
-                new_snapshot=snapshot,
-                watch_index=watch_index,
-                open_issue_groups=open_issue_groups,
-                dry_run=args.dry_run,
+            issue_key = watch["issue_key"]
+            pending_update = pending_issue_updates.setdefault(
+                issue_key,
+                {
+                    "issue_key": issue_key,
+                    "configured_issue_name": watch.get("issue_name"),
+                    "fallback_skills": list(watch.get("skills", [])),
+                    "changed_watches": {},
+                    "new_snapshots": {},
+                },
             )
-            if action == "create":
-                created += 1
-            elif action == "rotate":
-                rotated += 1
-            else:
-                amended += 1
+            pending_update["changed_watches"][watch["id"]] = watch
+            pending_update["new_snapshots"][watch["id"]] = snapshot
+            for skill in watch.get("skills", []):
+                if skill not in pending_update["fallback_skills"]:
+                    pending_update["fallback_skills"].append(skill)
         except Exception as exc:  # noqa: BLE001
             if fallback_snapshot is not None:
                 next_state["watches"][watch["id"]] = fallback_snapshot
@@ -1341,6 +1330,36 @@ def main() -> int:
                 continue
             errors.append(message)
             summary.append(f"- Error for `{watch.get('id', 'unknown-watch')}`: {exc}")
+
+    for pending_update in pending_issue_updates.values():
+        try:
+            action = rotate_issue_group(
+                repo=repo or "",
+                token=token or "",
+                labels=issue_labels,
+                issue_key=pending_update["issue_key"],
+                configured_issue_name=pending_update.get("configured_issue_name"),
+                fallback_skills=pending_update["fallback_skills"],
+                changed_watches=pending_update["changed_watches"],
+                new_snapshots=pending_update["new_snapshots"],
+                watch_index=watch_index,
+                open_issue_groups=open_issue_groups,
+                dry_run=args.dry_run,
+            )
+            if action == "create":
+                created += 1
+            elif action == "rotate":
+                rotated += 1
+            else:
+                amended += 1
+        except Exception as exc:  # noqa: BLE001
+            watch_ids = sorted(pending_update["new_snapshots"])
+            issue_error = (
+                f"issue-group:{pending_update['issue_key']} "
+                f"for {summarize_code_items(watch_ids, max_visible=4)}: {exc}"
+            )
+            errors.append(issue_error)
+            summary.append(f"- Error for issue group `{pending_update['issue_key']}`: {exc}")
 
     if not args.dry_run:
         dump_json(state_path, next_state)

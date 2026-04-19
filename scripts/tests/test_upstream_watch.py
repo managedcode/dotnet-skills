@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -93,6 +94,41 @@ class UpstreamWatchIssueTests(unittest.TestCase):
         self.assertTrue(UPSTREAM_WATCH.is_transient_fetch_error("curl: (22) The requested URL returned error: 503"))
         self.assertTrue(UPSTREAM_WATCH.is_transient_fetch_error("curl: (28) Operation timed out"))
         self.assertFalse(UPSTREAM_WATCH.is_transient_fetch_error("curl: (22) The requested URL returned error: 404"))
+
+    def test_rotate_issue_group_batches_multiple_watch_changes_into_one_issue_write(self) -> None:
+        watch_index = self.build_watch_index(3)
+        pending_watches = self.build_pending_watches(3)
+        gh_calls: list[tuple[str, str, dict | None]] = []
+
+        def fake_gh_api(path: str, *, token: str | None, method: str = "GET", data: dict | None = None) -> dict:
+            gh_calls.append((path, method, data))
+            if path == "/repos/managedcode/dotnet-skills/issues" and method == "POST":
+                return {"number": 601, "title": data["title"], "body": data["body"]}
+            return {}
+
+        with mock.patch.object(UPSTREAM_WATCH, "gh_api", side_effect=fake_gh_api):
+            action = UPSTREAM_WATCH.rotate_issue_group(
+                repo="managedcode/dotnet-skills",
+                token="token",
+                labels=["upstream-update", "automation"],
+                issue_key="dotnet-microsoft-agent-framework",
+                configured_issue_name="dotnet-microsoft-agent-framework",
+                fallback_skills=["dotnet-microsoft-agent-framework"],
+                changed_watches={watch_id: watch_index[watch_id] for watch_id in pending_watches},
+                new_snapshots=pending_watches,
+                watch_index=watch_index,
+                open_issue_groups={},
+                dry_run=False,
+            )
+
+        self.assertEqual(action, "create")
+        issue_posts = [call for call in gh_calls if call[0] == "/repos/managedcode/dotnet-skills/issues" and call[1] == "POST"]
+        self.assertEqual(len(issue_posts), 1)
+        issue_body = issue_posts[0][2]["body"]
+        self.assertIn("- Pending upstream watches: `3`", issue_body)
+        self.assertIn("watch-000", issue_body)
+        self.assertIn("watch-001", issue_body)
+        self.assertIn("watch-002", issue_body)
 
 
 if __name__ == "__main__":

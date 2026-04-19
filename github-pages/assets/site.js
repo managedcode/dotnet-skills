@@ -39,6 +39,49 @@
     });
   }
 
+  async function fetchLatestNuGetVersion(packageId) {
+    const response = await fetch(`https://api.nuget.org/v3-flatcontainer/${packageId.toLowerCase()}/index.json`);
+    if (!response.ok) {
+      throw new Error(`NuGet returned ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const versions = Array.isArray(payload?.versions) ? payload.versions.filter((version) => typeof version === "string" && version) : [];
+    return versions.length > 0 ? versions[versions.length - 1] : null;
+  }
+
+  function initNuGetVersionBadges() {
+    const badges = Array.from(document.querySelectorAll("[data-nuget-package-id]"));
+    if (badges.length === 0 || !window.fetch) {
+      return;
+    }
+
+    const packageIds = Array.from(new Set(
+      badges
+        .map((badge) => badge.dataset.nugetPackageId || "")
+        .filter((packageId) => packageId),
+    ));
+
+    packageIds.forEach(async (packageId) => {
+      try {
+        const version = await fetchLatestNuGetVersion(packageId);
+        if (!version) {
+          return;
+        }
+
+        badges
+          .filter((badge) => badge.dataset.nugetPackageId === packageId)
+          .forEach((badge) => {
+            badge.textContent = `NuGet tool ${version}`;
+            badge.href = `https://www.nuget.org/packages/${packageId}/${version}`;
+            badge.dataset.nugetVersion = version;
+          });
+      } catch {
+        // Keep the static fallback label when NuGet is unreachable.
+      }
+    });
+  }
+
   function isInteractiveTarget(target, container) {
     if (!(target instanceof Element)) {
       return false;
@@ -239,6 +282,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     initCopyButtons();
+    initNuGetVersionBadges();
     initCardLinks();
     initListingFilters();
     initSkillModal();
