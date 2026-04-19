@@ -279,7 +279,7 @@ internal sealed class InteractiveConsoleApp
 
         var controlLines = new List<Spectre.Console.Rendering.IRenderable>
         {
-            new Spectre.Console.Markup("[bold grey]1-9 / U / R / W[/] [dim]choose surface[/]   [bold grey]0[/] [dim]exit[/]   [bold grey]Space[/] [dim]multi-select[/]"),
+            new Spectre.Console.Markup("[bold grey]Menu[/] [dim]uses arrow keys and Enter[/]   [bold grey]Space[/] [dim]multi-select[/]"),
             new Spectre.Console.Markup("[dim]Packages map NuGet ids -> skills[/]   [dim]Collections narrow before install[/]   [dim]Bundles stay focused[/]"),
             new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"),
         };
@@ -501,7 +501,6 @@ internal sealed class InteractiveConsoleApp
     private static Spectre.Console.Table BuildRichNavigationTable(IReadOnlyList<HomeActionView> homeActions)
     {
         var table = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
-        table.AddColumn("Key");
         table.AddColumn("Group");
         table.AddColumn("Area");
         table.AddColumn("Use");
@@ -510,7 +509,6 @@ internal sealed class InteractiveConsoleApp
         foreach (var action in homeActions)
         {
             table.AddRow(
-                $"[bold grey]{Escape(action.HotKey.ToString())}[/]",
                 $"[grey]{Escape(action.Section)}[/]",
                 $"[{action.Accent}]{Escape(action.Label)}[/]",
                 $"[dim]{Escape(action.Summary)}[/]",
@@ -533,7 +531,7 @@ internal sealed class InteractiveConsoleApp
                 grid.AddRow(new Spectre.Console.Markup($"[bold grey]{Escape(currentSection)}[/]"));
             }
 
-            grid.AddRow(new Spectre.Console.Markup($"[bold grey]{Escape(action.HotKey.ToString())}[/] [{action.Accent}]{Escape(action.Label)}[/] [dim]{Escape(action.Summary)}[/]"));
+            grid.AddRow(new Spectre.Console.Markup($"[{action.Accent}]{Escape(action.Label)}[/] [dim]{Escape(action.Summary)}[/]"));
             grid.AddRow(new Spectre.Console.Markup($"[grey]{Escape(action.Command)}[/]"));
         }
 
@@ -3557,29 +3555,36 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         }
 
         EnsureRichConsoleAvailable();
-
-        AnsiConsole.Write(new Spectre.Console.Markup("[grey]Action key[/]: "));
-        while (true)
+        var prompt = new Spectre.Console.SelectionPrompt<string>
         {
-            var key = Console.ReadKey(intercept: true);
-            var keyChar = char.ToUpperInvariant(key.KeyChar);
-            var selected = choices.FirstOrDefault(choice => char.ToUpperInvariant(choice.HotKey) == keyChar);
-            if (selected is not null)
+            Title = "[deepskyblue1]Menu[/] [dim](use arrows and Enter)[/]",
+            PageSize = Math.Min(Math.Max(choices.Count, 8), 18),
+            HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
+        };
+
+        var labelMap = new Dictionary<string, HomeActionView>(StringComparer.Ordinal);
+        foreach (var section in choices
+                     .GroupBy(choice => choice.Section, StringComparer.Ordinal)
+                     .OrderBy(group => group.Key, StringComparer.Ordinal))
+        {
+            var sectionChoices = new List<string>();
+            foreach (var choice in section)
             {
-                AnsiConsole.MarkupLine($"[dim]{EscapeMarkup(selected.Label)}[/]");
-                return selected;
+                var label = BuildPromptDisplayLabel(BuildHomeActionMenuLabel(choice));
+                labelMap[label] = choice;
+                sectionChoices.Add(label);
             }
 
-            if (key.Key == ConsoleKey.Escape)
-            {
-                var exitAction = choices.FirstOrDefault(choice => choice.Action == HomeAction.Exit);
-                if (exitAction is not null)
-                {
-                    AnsiConsole.MarkupLine("[dim]Exit[/]");
-                    return exitAction;
-                }
-            }
+            prompt.AddChoiceGroup(EscapeMarkup(section.Key), sectionChoices);
         }
+
+        var selectedLabel = SpectreConsole.Prompt(prompt);
+        if (labelMap.TryGetValue(selectedLabel, out var selected))
+        {
+            return selected;
+        }
+
+        throw new InvalidOperationException("Could not resolve the selected home action.");
     }
 
     public T Select<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull
@@ -3698,6 +3703,11 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
     internal static string BuildPromptDisplayLabel(string value)
     {
         return EscapeMarkup(value);
+    }
+
+    internal static string BuildHomeActionMenuLabel(HomeActionView action)
+    {
+        return $"{action.Label} - {action.Summary}";
     }
 }
 

@@ -459,6 +459,12 @@ Suggested accents:
 - [x] Reorder and recopy the home/control-center navigation so `Packages`, `Bundles`, `Collections`, `Skills`, and `Agents` stay visibly aligned with the site.
 - [x] Revalidate the new shared IA in a real TTY and in generated GitHub Pages output before release.
 
+### Phase 3e — Home menu interaction follow-up
+
+- [x] Replace typed `Action key:` home entry with a real arrow/enter menu prompt.
+- [x] Demote shortcut keys from the home control copy so the primary affordance reads like menu navigation instead of manual command entry.
+- [x] Revalidate the new home menu in a real TTY after installing the freshly packed tool locally.
+
 ### Phase 4 — Remove terminology drift
 
 - [x] Replace remaining public `Stack` wording with `Collection` in:
