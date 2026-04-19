@@ -1,6 +1,6 @@
 # dotnet-skills CLI Rewrite Plan
 
-Status: Implemented and validated locally. Final status link-back pending the closing summary.
+Status: Implemented, including the page-surface redesign follow-up. The browser and lifecycle screens now render as pane/card-first surfaces instead of spreadsheet-style matrices.
 Owner: Codex local rewrite pass
 Last updated: 2026-04-19
 
@@ -437,6 +437,14 @@ Suggested accents:
 - [x] Rewrite Skill Detail screen.
 - [x] Rewrite Agent Detail screen.
 - [x] Rewrite Workspace screen.
+
+### Phase 3b — Page surface redesign follow-up
+
+- [x] Replace collection browser matrix-heavy rendering with collection cards plus spotlight/support panes.
+- [x] Replace collection detail lane and heavy-skill matrices with card-style lane and skill surfaces.
+- [x] Replace bundle, installed, analysis, package-signal, project-sync, install-preview, and agent browser pages where a giant inventory table is still the dominant visual.
+- [x] Keep hierarchy-first tree browsing available, but do not let generic spreadsheet tables remain the default page design.
+- [x] Revalidate the redesigned pages in a real TTY after installing the freshly packed tool locally.
 
 ### Phase 4 — Remove terminology drift
 
