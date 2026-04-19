@@ -58,7 +58,7 @@ agents install router --auto                # same agent install flow without th
 
 | Command | Description |
 |---------|-------------|
-| `dotnet skills` | Open the interactive control center with collection browsing, analysis, and install preview |
+| `dotnet skills` | Open the interactive control center with direct skill browsing, collections, analysis, bundles, and install preview |
 | `dotnet skills version` | Show the current installed tool version and check whether NuGet has a newer release |
 | `dotnet skills list` | Show the current inventory, compare project/global scope when relevant, and keep the remaining catalog as a compact collection summary |
 | `dotnet skills bundle list` | Show the focused bundles that expand into related skills by collection or workflow |
@@ -88,7 +88,7 @@ Use `--agent` to target a specific agent platform, `--scope` to choose global or
 
 `dotnet-skills` remains the skill-first CLI and still supports `dotnet skills agent ...` for compatibility. The dedicated agent-only surface is published in both forms: `dotnet-agents` for `dotnet agents ...` and `agents` for `agents ...`. Both top-level `list`, `install`, `remove`, and `where` commands target orchestration agents directly.
 
-The interactive shell behind bare `dotnet skills` is the main control center: it exposes `Collection -> Lane -> Skill` browsing, package-signal analysis, token hotspots, a full tree view, and install preview before files are written.
+The interactive shell behind bare `dotnet skills` is the main control center: it exposes a direct individual-skill picker, `Collection -> Lane -> Skill` browsing, package-signal analysis, token hotspots, a full tree view, and install preview before files are written.
 
 The public site mirrors the same surface now: `Packages`, `Bundles`, `Collections`, `Skills`, `Agents`, and `About`. The published GitHub Pages output uses the same collection taxonomy as the CLI instead of the old manifest-category grouping.
 

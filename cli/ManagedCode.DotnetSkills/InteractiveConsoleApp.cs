@@ -65,6 +65,9 @@ internal sealed class InteractiveConsoleApp
                     case HomeAction.SyncProject:
                         ShowProjectSync();
                         break;
+                    case HomeAction.BrowseSkills:
+                        ShowSkillBrowser();
+                        break;
                     case HomeAction.ManageBundles:
                         ShowPackages();
                         break;
@@ -166,12 +169,12 @@ internal sealed class InteractiveConsoleApp
         var header = compactHeader
             ? BuildRichStack(
                 new Spectre.Console.Markup($"[bold deepskyblue1]dotnet skills[/] [dim]v{Escape(ToolVersionInfo.CurrentVersion)}[/]"),
-                new Spectre.Console.Markup("[grey]collection-first control center[/]"),
+                new Spectre.Console.Markup("[grey]skill and collection control center[/]"),
                 new Spectre.Console.Markup($"[bold springgreen3]{Escape(skillCatalog.CatalogVersion)}[/] [dim]{Escape(skillCatalog.SourceLabel)}[/]"))
             : BuildRichTwoColumn(
                 BuildRichStack(
                     new Spectre.Console.Markup($"[bold deepskyblue1]dotnet skills[/] [dim]v{Escape(ToolVersionInfo.CurrentVersion)}[/]"),
-                    new Spectre.Console.Markup("[grey]collection-first control center[/]")),
+                    new Spectre.Console.Markup("[grey]skill and collection control center[/]")),
                 BuildRichStack(
                     new Spectre.Console.Markup($"[bold springgreen3]{Escape(skillCatalog.CatalogVersion)}[/]"),
                     new Spectre.Console.Markup($"[dim]{Escape(skillCatalog.SourceLabel)}[/]")),
@@ -270,8 +273,8 @@ internal sealed class InteractiveConsoleApp
 
         var controlLines = new List<Spectre.Console.Rendering.IRenderable>
         {
-            new Spectre.Console.Markup("[bold grey]1-9[/] [dim]choose surface[/]   [bold grey]0[/] [dim]exit[/]   [bold grey]Space[/] [dim]multi-select[/]"),
-            new Spectre.Console.Markup("[dim]Collections narrow before install[/]   [dim]Bundles stay focused[/]"),
+            new Spectre.Console.Markup("[bold grey]1-9 / A[/] [dim]choose surface[/]   [bold grey]0[/] [dim]exit[/]   [bold grey]Space[/] [dim]multi-select[/]"),
+            new Spectre.Console.Markup("[dim]Collections narrow before install[/]   [dim]Skills stay direct-pick[/]   [dim]Bundles stay focused[/]"),
             new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"),
         };
 
@@ -317,11 +320,12 @@ internal sealed class InteractiveConsoleApp
         {
             new HomeActionView('1', HomeAction.SyncProject, "Project", "sync from .csproj signals", "dotnet skills install --auto", "deepskyblue1"),
             new HomeActionView('2', HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
-            new HomeActionView('3', HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
-            new HomeActionView('4', HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "turquoise2"),
-            new HomeActionView('5', HomeAction.ManageInstalled, "Installed", "keep, remove, repair, move", "dotnet skills list --installed-only", "orange3"),
+            new HomeActionView('3', HomeAction.BrowseSkills, "Skills", "browse and pick individual skills", "dotnet skills install <skill>", "turquoise2"),
+            new HomeActionView('4', HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
+            new HomeActionView('5', HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "springgreen3"),
+            new HomeActionView('6', HomeAction.ManageInstalled, "Installed", "keep, remove, repair, move", "dotnet skills list --installed-only", "orange3"),
             new HomeActionView(
-                '6',
+                '7',
                 HomeAction.RemoveAll,
                 "Remove all skills",
                 installedSkillCount == 0 ? "0 installed skills" : $"{installedSkillCount} installed skills",
@@ -331,7 +335,7 @@ internal sealed class InteractiveConsoleApp
 
         actions.Add(
             new HomeActionView(
-                '7',
+                '8',
                 HomeAction.UpdateAll,
                 "Update all skills",
                 outdatedSkillCount == 0 ? "0 outdated installed skills" : $"{outdatedSkillCount} outdated installed skills",
@@ -340,7 +344,7 @@ internal sealed class InteractiveConsoleApp
 
         actions.AddRange(
         [
-            new HomeActionView('8', HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
+            new HomeActionView('A', HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
             new HomeActionView('9', HomeAction.Settings, "Workspace", "platform, scope, catalog source", "dotnet skills where", "deepskyblue1"),
             new HomeActionView('0', HomeAction.Exit, "Exit", "leave the control center", "exit", "grey"),
         ]);
@@ -686,6 +690,108 @@ internal sealed class InteractiveConsoleApp
                         layout,
                         "No outdated skills are installed in this target.");
 
+                    break;
+                }
+                case SkillCatalogAction.Back:
+                    return;
+            }
+        }
+    }
+
+    private void ShowSkillBrowser()
+    {
+        while (true)
+        {
+            var layout = ResolveSkillLayout();
+            var installer = new SkillInstaller(skillCatalog);
+            var installedSkills = installer.GetInstalledSkills(layout);
+            var allSkills = skillCatalog.Skills
+                .OrderBy(skill => CatalogOrganization.GetStackRank(skill.Stack))
+                .ThenBy(skill => CatalogOrganization.GetLaneRank(skill.Lane))
+                .ThenBy(skill => skill.Name, StringComparer.Ordinal)
+                .ToArray();
+
+            AnsiConsole.Clear();
+            RenderSkillBrowserPanel(layout, allSkills, installedSkills);
+
+            var actions = new List<MenuOption<SkillCatalogAction>>
+            {
+                new("Inspect a skill", SkillCatalogAction.Inspect),
+                new("Install selected skills", SkillCatalogAction.Install),
+            };
+
+            if (installedSkills.Any(record => !record.IsCurrent))
+            {
+                actions.Add(new MenuOption<SkillCatalogAction>("Update all outdated skills", SkillCatalogAction.UpdateAllOutdated));
+                actions.Add(new MenuOption<SkillCatalogAction>("Review outdated skills", SkillCatalogAction.UpdateOutdated));
+            }
+
+            actions.Add(new MenuOption<SkillCatalogAction>("Back", SkillCatalogAction.Back));
+
+            var action = prompts.Select("Skill actions", actions, option => option.Label);
+            switch (action.Value)
+            {
+                case SkillCatalogAction.Inspect:
+                {
+                    var selectedSkill = prompts.Select(
+                        "Inspect a skill",
+                        allSkills,
+                        skill => BuildSkillChoiceLabel(skill, installedSkills));
+                    ShowSkillDetail(selectedSkill);
+                    break;
+                }
+                case SkillCatalogAction.Install:
+                {
+                    var installableSkills = allSkills
+                        .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
+                        .ToArray();
+
+                    if (installableSkills.Length == 0)
+                    {
+                        RenderInfo("Every catalog skill is already installed in this target.");
+                        break;
+                    }
+
+                    var selectedSkills = prompts.MultiSelect(
+                        "Install skills",
+                        installableSkills,
+                        skill => BuildSkillChoiceLabel(skill, installedSkills));
+                    if (selectedSkills is null || selectedSkills.Count == 0)
+                    {
+                        break;
+                    }
+
+                    if (ConfirmSkillInstallPreview("Direct skill install", selectedSkills, layout, force: false))
+                    {
+                        InstallSkills(selectedSkills, layout, force: false);
+                    }
+
+                    break;
+                }
+                case SkillCatalogAction.UpdateOutdated:
+                {
+                    var outdatedSkills = installedSkills
+                        .Where(record => !record.IsCurrent)
+                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+                    ReviewOutdatedSkills(
+                        outdatedSkills,
+                        layout,
+                        "No outdated skills are installed in this target.",
+                        "Review outdated skills",
+                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
+                    break;
+                }
+                case SkillCatalogAction.UpdateAllOutdated:
+                {
+                    var outdatedSkills = installedSkills
+                        .Where(record => !record.IsCurrent)
+                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+                    UpdateAllOutdatedSkills(
+                        outdatedSkills,
+                        layout,
+                        "No outdated skills are installed in this target.");
                     break;
                 }
                 case SkillCatalogAction.Back:
@@ -2110,6 +2216,66 @@ internal sealed class InteractiveConsoleApp
             new Spectre.Console.Markup("[dim]Choose a collection first. Install surfaces only appear after the lane boundary is explicit.[/]")));
     }
 
+    private void RenderSkillBrowserPanel(
+        SkillInstallLayout layout,
+        IReadOnlyList<SkillEntry> allSkills,
+        IReadOnlyList<InstalledSkillRecord> installedSkills)
+    {
+        var installedMap = installedSkills.ToDictionary(record => record.Skill.Name, StringComparer.OrdinalIgnoreCase);
+        var outdatedCount = installedSkills.Count(record => !record.IsCurrent);
+
+        var summary = BuildRichPropertyGrid(
+            ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
+            ("skills", allSkills.Count.ToString()),
+            ("installed", installedSkills.Count.ToString()),
+            ("available", (allSkills.Count - installedSkills.Count).ToString()),
+            ("outdated", outdatedCount == 0 ? "[green]0[/]" : $"[yellow]{outdatedCount}[/]"),
+            ("tokens", FormatTokenCount(allSkills.Sum(skill => skill.TokenCount))));
+
+        var flow = BuildRichStack(
+            new Spectre.Console.Markup("[turquoise2]Inspect a skill[/] [dim]when you already know you want a single capability[/]"),
+            new Spectre.Console.Markup("[turquoise2]Install selected skills[/] [dim]to build your own write set without a bundle or collection boundary[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Collections[/] [dim]still exist when you want taxonomy-first browsing by lane[/]"));
+
+        var skillCards = allSkills
+            .Select(skill =>
+            {
+                installedMap.TryGetValue(skill.Name, out var installed);
+                var statusLine = installed is null
+                    ? "[grey]not installed[/]"
+                    : installed.IsCurrent
+                        ? $"[green]{Escape(installed.InstalledVersion)} current[/]"
+                        : $"[yellow]{Escape(installed.InstalledVersion)} -> {Escape(skill.Version)}[/]";
+
+                var packagePreview = skill.Packages.Count == 0
+                    ? "[dim]no package signals[/]"
+                    : $"[dim]packages[/] {Escape(string.Join(", ", skill.Packages.Take(2)))}{(skill.Packages.Count > 2 ? $" [grey](+{skill.Packages.Count - 2})[/]" : string.Empty)}";
+
+                return (Spectre.Console.Rendering.IRenderable)BuildRichDetailCard(
+                    ToAlias(skill.Name),
+                    installed is null ? "grey" : installed.IsCurrent ? "green3" : "yellow",
+                    $"[dim]{Escape(skill.Stack)} / {Escape(skill.Lane)}[/]",
+                    $"[bold]{FormatTokenCount(skill.TokenCount)}[/] [dim]Tokens[/]",
+                    statusLine,
+                    packagePreview);
+            })
+            .ToArray();
+
+        SpectreConsole.Write(BuildRichTwoColumn(
+            BuildRichShellPanel("skill browser", summary, "turquoise2"),
+            BuildRichShellPanel("direct-pick flow", flow, "turquoise2"),
+            gap: 3));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "skill directory",
+            BuildRichCardGrid(skillCards, maxColumns: 2),
+            "turquoise2"));
+        AnsiConsole.WriteLine();
+        SpectreConsole.Write(BuildRichShellPanel(
+            "status rail",
+            new Spectre.Console.Markup("[dim]This surface is the direct individual-skill picker. Use it when you want to inspect or assemble a custom set without going through Collections or Bundles first.[/]")));
+    }
+
     private void RenderCollectionDetailPanel(CollectionCatalogView collectionView, SkillInstallLayout layout)
     {
         var summary = BuildRichPropertyGrid(
@@ -2737,11 +2903,11 @@ internal sealed class InteractiveConsoleApp
             ("Help", $"{ToolIdentity.DisplayCommand} help", "Show direct command reference"),
             ("Version", $"{ToolIdentity.DisplayCommand} version", "Show version and update status"),
             ("Collections", $"{ToolIdentity.SkillsDisplayCommand} list --available-only", "Expand Collection -> Lane -> Skill inventory"),
+            ("Skills", $"{ToolIdentity.SkillsDisplayCommand} install aspire", "Install or inspect one skill by alias"),
             ("Bundles", $"{ToolIdentity.SkillsDisplayCommand} bundle list", "List focused install bundles"),
             ("Tokens", $"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts"),
             ("Project", $"{ToolIdentity.SkillsDisplayCommand} install --auto", "Install from .csproj signals"),
             ("Installed", $"{ToolIdentity.SkillsDisplayCommand} list --installed-only", "Inspect the current target before review, remove, or clear"),
-            ("Install", $"{ToolIdentity.SkillsDisplayCommand} install aspire", "Install by alias"),
             ("Install", $"{ToolIdentity.SkillsDisplayCommand} install bundle dotnet-quality", "Install a focused bundle"),
             ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove aspire", "Remove one installed skill"),
             ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove bundle dotnet-quality", "Remove one focused bundle"),
@@ -2768,7 +2934,7 @@ internal sealed class InteractiveConsoleApp
         }
 
         var notes = BuildRichStack(
-            new Spectre.Console.Markup("[dim]Interactive shell language is[/] [green]Collection -> Lane -> Skill[/] [dim]plus focused bundles.[/]"),
+            new Spectre.Console.Markup("[dim]Interactive shell gives you direct[/] [green]Skills[/] [dim]pick, taxonomy-first[/] [green]Collections[/] [dim]and focused[/] [green]Bundles[/][dim].[/]"),
             new Spectre.Console.Markup("[dim]Use[/] [green]--bundled[/] [dim]to skip network catalog fetches explicitly.[/]"),
             new Spectre.Console.Markup("[dim]Auto-detect probes native skill roots first. Shared fallback is skills-only and appears only when no native root exists.[/]"),
             new Spectre.Console.Markup($"[dim]Set[/] [green]{Escape(ToolIdentity.SkipUpdateEnvironmentVariable)}=1[/] [dim]to suppress update notices.[/]"));
@@ -3472,6 +3638,7 @@ internal sealed record HomeActionView(char HotKey, HomeAction Action, string Lab
 internal enum HomeAction
 {
     SyncProject,
+    BrowseSkills,
     ManageBundles,
     InstallSkills,
     Analysis,

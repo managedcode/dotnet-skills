@@ -45,7 +45,7 @@ Important constraint:
 
 ### Product goals
 
-1. Bare `dotnet skills` must open a collection-first control center.
+1. Bare `dotnet skills` must open a skill-and-collection control center.
 2. The home screen must feel like a terminal application, not like a list command wrapped in boxes.
 3. Every top-level interactive surface must keep hierarchy obvious:
    - Collections
@@ -445,6 +445,12 @@ Suggested accents:
 - [x] Replace bundle, installed, analysis, package-signal, project-sync, install-preview, and agent browser pages where a giant inventory table is still the dominant visual.
 - [x] Keep hierarchy-first tree browsing available, but do not let generic spreadsheet tables remain the default page design.
 - [x] Revalidate the redesigned pages in a real TTY after installing the freshly packed tool locally.
+
+### Phase 3c — Direct skill-first browsing follow-up
+
+- [x] Add a first-class `Skills` home-screen surface for direct individual-skill browsing.
+- [x] Keep `Collections` for taxonomy-first exploration and `Bundles` for grouped installs, but do not force individual-skill picks through either surface.
+- [x] Revalidate the new direct-skill surface in a real TTY after installing the freshly packed tool locally.
 
 ### Phase 4 — Remove terminology drift
 
