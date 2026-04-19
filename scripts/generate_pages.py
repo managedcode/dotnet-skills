@@ -667,6 +667,11 @@ def render_nuget_sidebar(skill: dict) -> str:
 
 def render_nuget_pills(skill: dict) -> str:
     """Render NuGet package pills for a skill card or detail page."""
+    return render_nuget_signal_list(skill, package_limit=3)
+
+
+def render_nuget_signal_list(skill: dict, package_limit: int | None = None) -> str:
+    """Render NuGet package and prefix chips for a skill."""
     packages = skill.get("packages", [])
     prefix = skill.get("package_prefix", "")
     if not packages and not prefix:
@@ -674,9 +679,10 @@ def render_nuget_pills(skill: dict) -> str:
     pills = []
     if prefix:
         pills.append(f'<span class="chip nuget-chip nuget-prefix">{escape_html(prefix)}.*</span>')
-    for pkg in packages[:3]:
+    visible_packages = packages if package_limit is None else packages[:package_limit]
+    for pkg in visible_packages:
         pills.append(f'<span class="chip nuget-chip">{escape_html(pkg)}</span>')
-    overflow = max(0, len(packages) - 3)
+    overflow = 0 if package_limit is None else max(0, len(packages) - package_limit)
     if overflow:
         pills.append(f'<span class="chip nuget-chip nuget-more">+{overflow}</span>')
     return f'<div class="nuget-row">{"".join(pills)}</div>'
@@ -1686,17 +1692,39 @@ def build_nuget_package_index(skills: list[dict]) -> list[dict]:
 
 def render_packages_index_page(skills: list[dict], root_prefix: str) -> tuple[str, dict]:
     """Render the NuGet packages directory page."""
-    entries = build_nuget_package_index(skills)
-    skills_with_packages = len({e["skill"]["name"] for e in entries})
+    skills_with_packages = [
+        skill
+        for skill in skills
+        if skill.get("packages") or skill.get("package_prefix")
+    ]
+    skills_with_packages.sort(
+        key=lambda skill: (
+            (skill.get("packages") or [f"{skill.get('package_prefix', '')}.*"])[0].lower(),
+            skill["title"].lower(),
+        )
+    )
+    package_signal_count = sum(
+        len(skill.get("packages", [])) + (1 if skill.get("package_prefix") else 0)
+        for skill in skills_with_packages
+    )
 
     rows = []
-    for entry in entries:
-        skill = entry["skill"]
+    for skill in skills_with_packages:
         skill_href = f"{root_prefix}{skill['detail_path']}"
-        kind_class = "nuget-kind-prefix" if entry["kind"] == "prefix" else "nuget-kind-exact"
+        filter_text = " ".join(
+            dedupe_strings(
+                [
+                    skill["title"],
+                    skill["short_name"],
+                    skill["name"],
+                    *skill.get("packages", []),
+                    skill.get("package_prefix", ""),
+                ]
+            )
+        )
         rows.append(
-            f'<tr class="nuget-table-row {kind_class} js-filter-card" data-filtertext="{escape_html(entry["nuget_id"] + " " + skill["title"] + " " + skill["short_name"])}">'
-            f'<td class="nuget-table-id"><code>{escape_html(entry["nuget_id"])}</code></td>'
+            f'<tr class="nuget-table-row js-filter-card" data-filtertext="{escape_html(filter_text)}">'
+            f'<td class="nuget-table-id">{render_nuget_signal_list(skill)}</td>'
             f'<td class="nuget-table-skill"><a href="{escape_html(skill_href)}">{escape_html(skill["title"])}</a></td>'
             f'<td class="nuget-table-cmd"><code class="card-cmd">dotnet skills install {escape_html(skill["short_name"])}</code></td>'
             f'</tr>'
@@ -1704,21 +1732,20 @@ def render_packages_index_page(skills: list[dict], root_prefix: str) -> tuple[st
 
     breadcrumb = render_breadcrumb([("Home", root_prefix or "./"), ("Packages", None)])
     rows_html = "\n".join(rows)
-    entry_count = len(entries)
 
     body = f"""
       {breadcrumb}
       <section class="page-hero">
         <div class="eyebrow-row">
           <span class="eyebrow">NuGet package index</span>
-          <span class="tag tag-accent">{entry_count} packages</span>
+          <span class="tag tag-accent">{len(skills_with_packages)} skills</span>
         </div>
         <h1 class="page-title">NuGet <span class="accent">packages</span></h1>
-        <p class="page-lead">When <code>dotnet skills install --auto</code> scans your .csproj, it matches these NuGet package names and prefixes to install the right skills automatically. {skills_with_packages} skills are linked to at least one NuGet package.</p>
+        <p class="page-lead">When <code>dotnet skills install --auto</code> scans your .csproj, it matches package names and prefixes to the right skill automatically. {len(skills_with_packages)} skills are linked to {package_signal_count} package names or prefixes.</p>
       </section>
       <section class="panel">
         <div class="section-header">
-          <div><h2>All packages</h2><p>Search by NuGet package name to find the matching skill.</p></div>
+          <div><h2>Skills with NuGet entry points</h2><p>Search by NuGet package name or prefix to find the matching canonical skill.</p></div>
         </div>
         <div class="toolbar">
           <input class="search-input" id="search-input" type="search" placeholder="Search by NuGet package name..." autocomplete="off">
@@ -1727,7 +1754,7 @@ def render_packages_index_page(skills: list[dict], root_prefix: str) -> tuple[st
           <table class="nuget-table">
             <thead>
               <tr>
-                <th>NuGet package</th>
+                <th>NuGet packages / prefixes</th>
                 <th>Skill</th>
                 <th>Install command</th>
               </tr>

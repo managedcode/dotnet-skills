@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using ManagedCode.DotnetSkills.Runtime;
 
 namespace ManagedCode.DotnetSkills.Tests;
@@ -222,6 +224,44 @@ public sealed class InteractiveConsoleAppTests
         Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
     }
 
+    [Fact]
+    public async Task RunAsync_CanUpdateAllOutdatedSkillsFromHomeScreen()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        installer.Install([aspireSkill], layout, force: true);
+
+        var installedManifestPath = Path.Combine(projectDirectory.Path, ".codex", "skills", aspireSkill.Name, "manifest.json");
+        var installedManifest = JsonNode.Parse(await File.ReadAllTextAsync(installedManifestPath))!.AsObject();
+        installedManifest["version"] = "0.0.1";
+        await File.WriteAllTextAsync(
+            installedManifestPath,
+            installedManifest.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var prompts = new FakeInteractivePrompts(
+            "Update all skills",
+            true,
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+        var updatedRecord = installer.GetInstalledSkills(layout)
+            .Single(record => string.Equals(record.Skill.Name, aspireSkill.Name, StringComparison.OrdinalIgnoreCase));
+
+        Assert.Equal(0, exitCode);
+        Assert.True(updatedRecord.IsCurrent);
+        Assert.Equal(aspireSkill.Version, updatedRecord.InstalledVersion);
+    }
+
     private static InteractiveConsoleApp CreateApp(
         FakeInteractivePrompts prompts,
         SkillCatalogPackage? catalog = null,
@@ -236,7 +276,7 @@ public sealed class InteractiveConsoleAppTests
             prompts: prompts,
             loadSkillCatalogAsync: (_, _, _, _) => Task.FromResult(catalog),
             loadAgentCatalog: () => agentCatalog,
-            maybeShowToolUpdateAsync: _ => Task.CompletedTask,
+            getToolUpdateStatusAsync: _ => Task.FromResult<ToolUpdateStatusInfo?>(null),
             initialAgent: initialAgent,
             initialScope: initialScope,
             projectDirectory: projectDirectory);

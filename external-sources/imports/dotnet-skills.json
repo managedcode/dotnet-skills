@@ -18,28 +18,16 @@
       "compatibility": "Requires a .NET repository working with AI, ML, or MCP workloads.",
       "skillOverrides": {
         "mcp-csharp-create": {
-          "packages": [
-            "ModelContextProtocol",
-            "ModelContextProtocol.AspNetCore"
-          ]
+          "exclude": true
         },
         "mcp-csharp-debug": {
-          "packages": [
-            "ModelContextProtocol",
-            "ModelContextProtocol.AspNetCore"
-          ]
+          "exclude": true
         },
         "mcp-csharp-publish": {
-          "packages": [
-            "ModelContextProtocol",
-            "ModelContextProtocol.AspNetCore"
-          ]
+          "exclude": true
         },
         "mcp-csharp-test": {
-          "packages": [
-            "ModelContextProtocol",
-            "ModelContextProtocol.AspNetCore"
-          ]
+          "exclude": true
         }
       }
     },

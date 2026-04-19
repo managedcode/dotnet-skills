@@ -1009,15 +1009,30 @@ internal static class Program
 
     private static ToolUpdateService CreateToolUpdateService() => new(new NuGetPackageVersionClient());
 
-    internal static async Task MaybeShowToolUpdateAsync(string? cachePath)
+    internal static async Task<ToolUpdateStatusInfo?> GetToolUpdateStatusAsync(string? cachePath, bool includeDevelopmentBuilds = false)
     {
         if (ToolUpdateService.ShouldSkipAutomaticCheck())
         {
-            return;
+            return null;
         }
 
-        var status = await CreateToolUpdateService().GetStatusAsync(ResolveCacheRoot(cachePath), includeDevelopmentBuilds: false, CancellationToken.None);
-        if (status.HasUpdate)
+        try
+        {
+            return await CreateToolUpdateService().GetStatusAsync(
+                ResolveCacheRoot(cachePath),
+                includeDevelopmentBuilds,
+                CancellationToken.None);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    internal static async Task MaybeShowToolUpdateAsync(string? cachePath)
+    {
+        var status = await GetToolUpdateStatusAsync(cachePath, includeDevelopmentBuilds: false);
+        if (status?.HasUpdate == true)
         {
             ConsoleUi.RenderToolUpdateNotice(status);
         }

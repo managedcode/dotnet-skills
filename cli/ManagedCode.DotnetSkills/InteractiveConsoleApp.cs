@@ -9,17 +9,18 @@ internal sealed class InteractiveConsoleApp
     private readonly IInteractivePrompts prompts;
     private readonly Func<bool, string?, string?, bool, Task<SkillCatalogPackage>> loadSkillCatalogAsync;
     private readonly Func<AgentCatalogPackage> loadAgentCatalog;
-    private readonly Func<string?, Task> maybeShowToolUpdateAsync;
+    private readonly Func<string?, Task<ToolUpdateStatusInfo?>> getToolUpdateStatusAsync;
     private readonly string? cachePath;
     private readonly string? catalogVersion;
     private SkillCatalogPackage skillCatalog = null!;
     private AgentCatalogPackage agentCatalog = null!;
+    private ToolUpdateStatusInfo? toolUpdateStatus;
 
     public InteractiveConsoleApp(
         IInteractivePrompts? prompts = null,
         Func<bool, string?, string?, bool, Task<SkillCatalogPackage>>? loadSkillCatalogAsync = null,
         Func<AgentCatalogPackage>? loadAgentCatalog = null,
-        Func<string?, Task>? maybeShowToolUpdateAsync = null,
+        Func<string?, Task<ToolUpdateStatusInfo?>>? getToolUpdateStatusAsync = null,
         string? cachePath = null,
         string? catalogVersion = null,
         bool bundledOnly = false,
@@ -30,7 +31,7 @@ internal sealed class InteractiveConsoleApp
         this.prompts = prompts ?? new CommandCenterInteractivePrompts();
         this.loadSkillCatalogAsync = loadSkillCatalogAsync ?? Program.ResolveCatalogForInstallAsync;
         this.loadAgentCatalog = loadAgentCatalog ?? AgentCatalogPackage.LoadBundled;
-        this.maybeShowToolUpdateAsync = maybeShowToolUpdateAsync ?? Program.MaybeShowToolUpdateAsync;
+        this.getToolUpdateStatusAsync = getToolUpdateStatusAsync ?? (cache => Program.GetToolUpdateStatusAsync(cache));
         this.cachePath = cachePath;
         this.catalogVersion = catalogVersion;
 
@@ -47,7 +48,7 @@ internal sealed class InteractiveConsoleApp
 
     public async Task<int> RunAsync()
     {
-        await maybeShowToolUpdateAsync(cachePath);
+        toolUpdateStatus = await getToolUpdateStatusAsync(cachePath);
         await LoadCatalogsAsync(refreshCatalog: false);
 
         while (true)
@@ -56,7 +57,7 @@ internal sealed class InteractiveConsoleApp
             {
                 RenderDashboard();
 
-                var homeActions = GetHomeActions();
+                var homeActions = GetHomeActions(GetOutdatedSkillCount());
                 var action = prompts.Select(
                     "Section",
                     homeActions,
@@ -79,6 +80,9 @@ internal sealed class InteractiveConsoleApp
                     case HomeAction.ManageInstalled:
                         ShowInstalledSkills();
                         break;
+                    case HomeAction.UpdateAll:
+                        UpdateAllOutdatedSkillsForCurrentTarget();
+                        break;
                     case HomeAction.Agents:
                         ShowAgents();
                         break;
@@ -94,6 +98,12 @@ internal sealed class InteractiveConsoleApp
                 RenderError(exception.Message);
             }
         }
+    }
+
+    private int GetOutdatedSkillCount()
+    {
+        var installer = new SkillInstaller(skillCatalog);
+        return installer.GetInstalledSkills(ResolveSkillLayout()).Count(record => !record.IsCurrent);
     }
 
     private async Task LoadCatalogsAsync(bool refreshCatalog)
@@ -139,11 +149,7 @@ internal sealed class InteractiveConsoleApp
         var featuredBundles = GetPrimaryBundles()
             .Take(5)
             .ToArray();
-        var largestCollection = collectionViews
-            .OrderByDescending(collection => collection.TokenCount)
-            .ThenBy(collection => collection.Collection, StringComparer.Ordinal)
-            .FirstOrDefault();
-        var homeActions = GetHomeActions()
+        var homeActions = GetHomeActions(outdatedSkills)
             .Where(action => action.Action != HomeAction.Exit)
             .ToArray();
         var consoleWidth = GetConsoleWidth();
@@ -193,7 +199,7 @@ internal sealed class InteractiveConsoleApp
             BuildRichMetricCard("Collections", collectionViews.Count.ToString(), $"{collectionViews.Sum(collection => collection.Lanes.Count)} lanes", "gold1"));
         metricGrid.AddRow(
             BuildRichMetricCard("Signals", packageSignals.Count.ToString(), "NuGet entry points", "turquoise2"),
-            BuildRichMetricCard("Largest collection", largestCollection?.Collection ?? "-", largestCollection is null ? "-" : FormatTokenCount(largestCollection.TokenCount), "orange3"),
+            BuildRichMetricCard("Outdated", outdatedSkills.ToString(), outdatedSkills == 0 ? "installed skills current" : "update all available", outdatedSkills == 0 ? "green3" : "yellow"),
             BuildRichMetricCard("Tokens", FormatTokenCount(totalTokens), SkillTokenCounter.ModelName, "green3"));
 
         var stackTable = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
@@ -254,13 +260,32 @@ internal sealed class InteractiveConsoleApp
             ? BuildRichTwoColumn(heavyTable, signalTable, gap: 3)
             : BuildRichStack(heavyTable, signalTable);
 
-        var leftColumn = BuildRichStack(
+        var controlLines = new List<Spectre.Console.Rendering.IRenderable>
+        {
+            new Spectre.Console.Markup("[bold grey]Enter[/] [dim]select[/]   [bold grey]Space[/] [dim]multi-select[/]"),
+            new Spectre.Console.Markup("[dim]Collections narrow before install[/]   [dim]Bundles stay focused[/]"),
+            new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"),
+        };
+
+        if (outdatedSkills > 0)
+        {
+            controlLines.Add(new Spectre.Console.Markup($"[yellow]Update all skills[/] [dim]is available for {outdatedSkills} outdated install(s)[/]"));
+        }
+
+        var leftPanels = new List<Spectre.Console.Rendering.IRenderable>
+        {
             BuildRichShellPanel("navigation", navigation),
             BuildRichShellPanel("workspace", workspace),
-            BuildRichShellPanel("controls", BuildRichStack(
-                new Spectre.Console.Markup("[bold grey]Enter[/] [dim]select[/]   [bold grey]Space[/] [dim]multi-select[/]"),
-                new Spectre.Console.Markup("[dim]Collections narrow before install[/]   [dim]Bundles stay focused[/]"),
-                new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"))));
+        };
+
+        var toolUpdatePanel = BuildToolUpdatePanel(toolUpdateStatus);
+        if (toolUpdatePanel is not null)
+        {
+            leftPanels.Add(toolUpdatePanel);
+        }
+
+        leftPanels.Add(BuildRichShellPanel("controls", BuildRichStack([.. controlLines])));
+        var leftColumn = BuildRichStack([.. leftPanels]);
 
         var rightColumn = BuildRichStack(
             BuildRichShellPanel("catalog telemetry", metricGrid),
@@ -274,19 +299,30 @@ internal sealed class InteractiveConsoleApp
         AnsiConsole.WriteLine();
     }
 
-    private static IReadOnlyList<HomeActionView> GetHomeActions()
+    private static IReadOnlyList<HomeActionView> GetHomeActions(int outdatedSkillCount)
     {
-        return
-        [
+        var actions = new List<HomeActionView>
+        {
             new HomeActionView(HomeAction.SyncProject, "Project", "sync from .csproj signals", "dotnet skills install --auto", "deepskyblue1"),
             new HomeActionView(HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
             new HomeActionView(HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
             new HomeActionView(HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "turquoise2"),
             new HomeActionView(HomeAction.ManageInstalled, "Installed", "keep, remove, clear, repair, move", "dotnet skills list --installed-only", "orange3"),
+        };
+
+        if (outdatedSkillCount > 0)
+        {
+            actions.Add(new HomeActionView(HomeAction.UpdateAll, "Update all skills", $"{outdatedSkillCount} outdated installed skills", "dotnet skills update", "yellow"));
+        }
+
+        actions.AddRange(
+        [
             new HomeActionView(HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
             new HomeActionView(HomeAction.Settings, "Workspace", "platform, scope, catalog source", "dotnet skills where", "deepskyblue1"),
             new HomeActionView(HomeAction.Exit, "Exit", "leave the control center", "exit", "grey"),
-        ];
+        ]);
+
+        return actions;
     }
 
     private static Spectre.Console.Grid BuildRichStack(params Spectre.Console.Rendering.IRenderable[] items)
@@ -323,6 +359,29 @@ internal sealed class InteractiveConsoleApp
             .Expand();
         panel.Padding = new Spectre.Console.Padding(1, 0, 1, 0);
         return panel;
+    }
+
+    private static Spectre.Console.Panel? BuildToolUpdatePanel(ToolUpdateStatusInfo? status)
+    {
+        if (status?.HasUpdate != true)
+        {
+            return null;
+        }
+
+        var freshness = status.CheckedAt is null
+            ? "[dim]latest release detected[/]"
+            : status.UsedCachedValue
+                ? $"[dim]cached[/] [grey]{Escape(status.CheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))}[/]"
+                : $"[dim]checked[/] [grey]{Escape(status.CheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))}[/]";
+
+        return BuildRichShellPanel(
+            "tool update",
+            BuildRichStack(
+                new Spectre.Console.Markup("[bold yellow]New dotnet-skills version available[/]"),
+                new Spectre.Console.Markup($"[dim]current[/] [grey]{Escape(status.CurrentVersion)}[/] [dim]-> latest[/] [green]{Escape(status.LatestVersion ?? "?")}[/]"),
+                new Spectre.Console.Markup($"[green]{Escape(GlobalToolUpdateCommand)}[/]"),
+                new Spectre.Console.Markup($"[dim]local tool manifest[/] [green]{Escape(LocalToolUpdateCommand)}[/]"),
+                new Spectre.Console.Markup(freshness)));
     }
 
     private static Spectre.Console.Grid BuildRichTwoColumn(
@@ -480,6 +539,10 @@ internal sealed class InteractiveConsoleApp
             : $"{value[..(maxLength - 1)]}…";
     }
 
+    private static string GlobalToolUpdateCommand => $"dotnet tool update --global {ToolIdentity.PackageId}";
+
+    private static string LocalToolUpdateCommand => $"dotnet tool update {ToolIdentity.PackageId}";
+
     private async Task ShowCatalogSkillsAsync()
     {
         while (true)
@@ -499,7 +562,8 @@ internal sealed class InteractiveConsoleApp
 
             if (installedSkills.Any(record => !record.IsCurrent))
             {
-                actions.Add(new MenuOption<SkillCatalogAction>("Update outdated skills", SkillCatalogAction.UpdateOutdated));
+                actions.Add(new MenuOption<SkillCatalogAction>("Update all outdated skills", SkillCatalogAction.UpdateAllOutdated));
+                actions.Add(new MenuOption<SkillCatalogAction>("Review outdated skills", SkillCatalogAction.UpdateOutdated));
             }
 
             actions.Add(new MenuOption<SkillCatalogAction>("Back", SkillCatalogAction.Back));
@@ -522,25 +586,25 @@ internal sealed class InteractiveConsoleApp
                         .Where(record => !record.IsCurrent)
                         .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
                         .ToArray();
-                    if (outdatedSkills.Length == 0)
-                    {
-                        RenderInfo("No outdated skills are installed in this target.");
-                        break;
-                    }
-
-                    var selected = prompts.MultiSelect(
-                        "Update outdated skills",
+                    ReviewOutdatedSkills(
                         outdatedSkills,
+                        layout,
+                        "No outdated skills are installed in this target.",
+                        "Review outdated skills",
                         record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
-                    if (selected.Count == 0)
-                    {
-                        break;
-                    }
 
-                    if (prompts.Confirm($"Update {selected.Count} skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        UpdateSkills(selected);
-                    }
+                    break;
+                }
+                case SkillCatalogAction.UpdateAllOutdated:
+                {
+                    var outdatedSkills = installedSkills
+                        .Where(record => !record.IsCurrent)
+                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+                    UpdateAllOutdatedSkills(
+                        outdatedSkills,
+                        layout,
+                        "No outdated skills are installed in this target.");
 
                     break;
                 }
@@ -684,7 +748,8 @@ internal sealed class InteractiveConsoleApp
 
             if (installedSkills.Any(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase)))
             {
-                actions.Add(new MenuOption<SkillCatalogAction>("Update outdated skills in this collection", SkillCatalogAction.UpdateOutdated));
+                actions.Add(new MenuOption<SkillCatalogAction>("Update all outdated skills in this collection", SkillCatalogAction.UpdateAllOutdated));
+                actions.Add(new MenuOption<SkillCatalogAction>("Review outdated skills in this collection", SkillCatalogAction.UpdateOutdated));
             }
 
             actions.Add(new MenuOption<SkillCatalogAction>("Back", SkillCatalogAction.Back));
@@ -745,25 +810,26 @@ internal sealed class InteractiveConsoleApp
                         .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
                         .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
                         .ToArray();
-                    if (outdatedSkills.Length == 0)
-                    {
-                        RenderInfo($"No outdated skills are installed in the {collectionView.Collection} collection.");
-                        break;
-                    }
-
-                    var selected = prompts.MultiSelect(
-                        "Update outdated skills",
+                    ReviewOutdatedSkills(
                         outdatedSkills,
+                        layout,
+                        $"No outdated skills are installed in the {collectionView.Collection} collection.",
+                        "Review outdated skills",
                         record => $"{ToAlias(record.Skill.Name)} [{record.Skill.Lane}] ({record.InstalledVersion} -> {record.Skill.Version})");
-                    if (selected.Count == 0)
-                    {
-                        break;
-                    }
 
-                    if (prompts.Confirm($"Update {selected.Count} skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        UpdateSkills(selected);
-                    }
+                    break;
+                }
+                case SkillCatalogAction.UpdateAllOutdated:
+                {
+                    var outdatedSkills = installedSkills
+                        .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
+                        .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+                    UpdateAllOutdatedSkills(
+                        outdatedSkills,
+                        layout,
+                        $"No outdated skills are installed in the {collectionView.Collection} collection.");
 
                     break;
                 }
@@ -801,7 +867,8 @@ internal sealed class InteractiveConsoleApp
 
             if (installedSkills.Any(record => !record.IsCurrent))
             {
-                actions.Add(new MenuOption<InstalledSkillsAction>("Update outdated skills", InstalledSkillsAction.Update));
+                actions.Add(new MenuOption<InstalledSkillsAction>("Update all outdated skills", InstalledSkillsAction.UpdateAll));
+                actions.Add(new MenuOption<InstalledSkillsAction>("Review outdated skills", InstalledSkillsAction.Update));
             }
 
             actions.Add(new MenuOption<InstalledSkillsAction>("Back", InstalledSkillsAction.Back));
@@ -956,25 +1023,25 @@ internal sealed class InteractiveConsoleApp
                         .Where(record => !record.IsCurrent)
                         .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
                         .ToArray();
-                    if (outdatedSkills.Length == 0)
-                    {
-                        RenderInfo("No outdated skills are installed in this target.");
-                        break;
-                    }
-
-                    var selected = prompts.MultiSelect(
-                        "Update outdated skills",
+                    ReviewOutdatedSkills(
                         outdatedSkills,
+                        layout,
+                        "No outdated skills are installed in this target.",
+                        "Review outdated skills",
                         record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
-                    if (selected.Count == 0)
-                    {
-                        break;
-                    }
 
-                    if (prompts.Confirm($"Update {selected.Count} skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        UpdateSkills(selected);
-                    }
+                    break;
+                }
+                case InstalledSkillsAction.UpdateAll:
+                {
+                    var outdatedSkills = installedSkills
+                        .Where(record => !record.IsCurrent)
+                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                        .ToArray();
+                    UpdateAllOutdatedSkills(
+                        outdatedSkills,
+                        layout,
+                        "No outdated skills are installed in this target.");
 
                     break;
                 }
@@ -1563,6 +1630,67 @@ internal sealed class InteractiveConsoleApp
         }
     }
 
+    private void UpdateAllOutdatedSkillsForCurrentTarget()
+    {
+        var layout = ResolveSkillLayout();
+        var installer = new SkillInstaller(skillCatalog);
+        var outdatedSkills = installer.GetInstalledSkills(layout)
+            .Where(record => !record.IsCurrent)
+            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+            .ToArray();
+
+        UpdateAllOutdatedSkills(
+            outdatedSkills,
+            layout,
+            "No outdated skills are installed in this target.");
+    }
+
+    private void UpdateAllOutdatedSkills(
+        IReadOnlyList<InstalledSkillRecord> outdatedSkills,
+        SkillInstallLayout layout,
+        string emptyMessage)
+    {
+        if (outdatedSkills.Count == 0)
+        {
+            RenderInfo(emptyMessage);
+            return;
+        }
+
+        if (prompts.Confirm($"Update all {outdatedSkills.Count} outdated skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
+        {
+            UpdateSkills(outdatedSkills);
+        }
+    }
+
+    private void ReviewOutdatedSkills(
+        IReadOnlyList<InstalledSkillRecord> outdatedSkills,
+        SkillInstallLayout layout,
+        string emptyMessage,
+        string title,
+        Func<InstalledSkillRecord, string> formatter)
+    {
+        if (outdatedSkills.Count == 0)
+        {
+            RenderInfo(emptyMessage);
+            return;
+        }
+
+        var selected = prompts.MultiSelect(
+            title,
+            outdatedSkills,
+            formatter,
+            outdatedSkills);
+        if (selected.Count == 0)
+        {
+            return;
+        }
+
+        if (prompts.Confirm($"Update {selected.Count} skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
+        {
+            UpdateSkills(selected);
+        }
+    }
+
     private void UpdateSkills(IReadOnlyList<InstalledSkillRecord> skills)
     {
         var layout = ResolveSkillLayout();
@@ -1886,7 +2014,8 @@ internal sealed class InteractiveConsoleApp
         var flow = BuildRichStack(
             new Spectre.Console.Markup("[deepskyblue1]Inspect a lane[/] [dim]to drill into concrete skill cards[/]"),
             new Spectre.Console.Markup("[deepskyblue1]Install from a lane[/] [dim]to keep the write set explicit[/]"),
-            new Spectre.Console.Markup("[deepskyblue1]Update outdated[/] [dim]to refresh only this collection surface[/]"));
+            new Spectre.Console.Markup("[yellow]Update all outdated[/] [dim]to refresh this collection in one action[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Review outdated[/] [dim]only when the update set needs pruning[/]"));
 
         var laneTable = new Spectre.Console.Table().Expand().Border(Spectre.Console.TableBorder.Rounded);
         laneTable.Title = new Spectre.Console.TableTitle("[bold]Lanes[/]");
@@ -2338,7 +2467,7 @@ internal sealed class InteractiveConsoleApp
         AnsiConsole.WriteLine();
         SpectreConsole.Write(BuildRichShellPanel(
             "status rail",
-            new Spectre.Console.Markup("[dim]Installed state is explicit here: review the checked set, remove selected skills, or clear this exact target.[/]")));
+            new Spectre.Console.Markup("[dim]Installed state is explicit here: update all outdated skills directly, review the checked set, remove selected skills, or clear this exact target.[/]")));
     }
 
     private void RenderBundleBrowserPanel(IReadOnlyList<SkillPackageEntry> visibleBundles)
@@ -3214,6 +3343,7 @@ internal enum HomeAction
     InstallSkills,
     Analysis,
     ManageInstalled,
+    UpdateAll,
     Agents,
     Settings,
     Exit,
@@ -3231,6 +3361,7 @@ internal enum SkillCatalogAction
 {
     Inspect,
     Install,
+    UpdateAllOutdated,
     UpdateOutdated,
     Back,
 }
@@ -3256,6 +3387,7 @@ internal enum InstalledSkillsAction
     CopyOrMove,
     Remove,
     RemoveAll,
+    UpdateAll,
     Update,
     Back,
 }

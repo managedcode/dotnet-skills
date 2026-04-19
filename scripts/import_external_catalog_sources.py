@@ -15,6 +15,7 @@ CONFIG_ROOT = EXTERNAL_SOURCES_ROOT / "imports"
 
 ALLOWED_TYPES = {"Frameworks", "Libraries", "Tools", "Testing", "Platform"}
 ALLOWED_SKILL_MANIFEST_KEYS = {"version", "category", "compatibility", "packages", "package_prefix"}
+ALLOWED_SKILL_OVERRIDE_KEYS = ALLOWED_SKILL_MANIFEST_KEYS | {"exclude"}
 ALLOWED_PLUGIN_DEFAULT_KEYS = {"type", "category", "compatibility"}
 ALLOWED_PLUGIN_OVERRIDE_KEYS = {
     "type",
@@ -225,10 +226,15 @@ def validate_plugin_metadata_block(config_path: Path, plugin_name: str, block_na
     for skill_name, skill_override in block.items():
         if not isinstance(skill_override, dict):
             raise ValueError(f"{config_path} plugin {plugin_name!r} skill override {skill_name!r} must be an object")
-        unknown = sorted(set(skill_override) - ALLOWED_SKILL_MANIFEST_KEYS - {"compatibility"})
+        unknown = sorted(set(skill_override) - ALLOWED_SKILL_OVERRIDE_KEYS)
         if unknown:
             raise ValueError(
                 f"{config_path} plugin {plugin_name!r} skill override {skill_name!r} has unsupported keys: {', '.join(unknown)}"
+            )
+        exclude = skill_override.get("exclude")
+        if exclude is not None and not isinstance(exclude, bool):
+            raise ValueError(
+                f"{config_path} plugin {plugin_name!r} skill override {skill_name!r} field exclude must be a boolean"
             )
 
 
@@ -391,6 +397,15 @@ def resolve_skill_manifest(plugin_policy: dict, skill_name: str, plugin_version:
     return manifest
 
 
+def is_skill_excluded(plugin_policy: dict, skill_name: str) -> bool:
+    skill_overrides = plugin_policy.get("skillOverrides", {})
+    if not isinstance(skill_overrides, dict):
+        return False
+
+    override = skill_overrides.get(skill_name)
+    return isinstance(override, dict) and override.get("exclude") is True
+
+
 def validate_skill_manifest(manifest_path: Path, manifest: dict[str, object]) -> None:
     version = manifest.get("version")
     category = manifest.get("category")
@@ -531,6 +546,8 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
                 description = normalize_text(metadata.get("description"))
                 if not skill_name or not description:
                     raise ValueError(f"{upstream_skill_md} must define non-empty name and description")
+                if is_skill_excluded(plugin_policy, skill_name):
+                    continue
 
                 conflicts = existing_skills.get(skill_name, [])
                 if conflicts:

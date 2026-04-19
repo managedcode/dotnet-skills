@@ -2,7 +2,7 @@
 
 Status: Implemented and validated locally. Final status link-back pending the closing summary.
 Owner: Codex local rewrite pass
-Last updated: 2026-04-18
+Last updated: 2026-04-19
 
 ## Why This Rewrite Exists
 
@@ -135,6 +135,10 @@ The home screen should always include:
   - CLI version
   - catalog version
   - current source label
+- Tool update rail
+  - visible when a newer `dotnet-skills` version exists
+  - current versus latest version
+  - direct update command for global and local tool installs
 - Navigation rail
   - six primary sections
   - one-line description per section
@@ -261,7 +265,8 @@ Flow:
 1. inspect lane
 2. inspect skill
 3. install selected skills from lane
-4. update outdated skills for this collection only
+4. update all outdated skills for this collection in one action
+5. review outdated skills only when the update set needs pruning
 
 #### 4. Analysis
 
@@ -515,3 +520,4 @@ This rewrite is complete only when all of the following are true:
 - 2026-04-18: Rebuilt `InteractiveConsoleApp` around Spectre renderables only for the live shell, including the control center, collections, analysis, bundles, installed inventory, agents, workspace, previews, and post-action summaries.
 - 2026-04-18: Removed remaining live-shell `ConsoleUi` dependencies, deleted obsolete interactive helpers, and kept fallback removal intact for prompts and remote catalog loading.
 - 2026-04-18: Renamed the CLI browse model to `Collection*` view types, updated public help/site wording, and revalidated with `dotnet build`, `dotnet test`, catalog validation, and page generation.
+- 2026-04-19: Added a persistent home-screen tool-update rail for newer CLI versions and promoted `Update all skills` to a first-class interactive action, with review-style multi-select left as a secondary flow.
