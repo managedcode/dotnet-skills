@@ -62,17 +62,26 @@ internal sealed class InteractiveConsoleApp
 
                 switch (action.Action)
                 {
+                    case HomeAction.BrowsePackages:
+                        ShowPackagesBrowser();
+                        break;
+                    case HomeAction.BrowseBundles:
+                        ShowBundles();
+                        break;
+                    case HomeAction.BrowseCollections:
+                        await ShowCatalogCollectionsAsync();
+                        break;
+                    case HomeAction.BrowseAgents:
+                        ShowAgents();
+                        break;
+                    case HomeAction.About:
+                        ShowAbout();
+                        break;
                     case HomeAction.SyncProject:
                         ShowProjectSync();
                         break;
                     case HomeAction.BrowseSkills:
                         ShowSkillBrowser();
-                        break;
-                    case HomeAction.ManageBundles:
-                        ShowPackages();
-                        break;
-                    case HomeAction.InstallSkills:
-                        await ShowCatalogSkillsAsync();
                         break;
                     case HomeAction.Analysis:
                         ShowCatalogAnalysis();
@@ -86,10 +95,7 @@ internal sealed class InteractiveConsoleApp
                     case HomeAction.UpdateAll:
                         UpdateAllOutdatedSkillsForCurrentTarget();
                         break;
-                    case HomeAction.Agents:
-                        ShowAgents();
-                        break;
-                    case HomeAction.Settings:
+                    case HomeAction.Workspace:
                         await ShowSettingsAsync();
                         break;
                     case HomeAction.Exit:
@@ -169,12 +175,12 @@ internal sealed class InteractiveConsoleApp
         var header = compactHeader
             ? BuildRichStack(
                 new Spectre.Console.Markup($"[bold deepskyblue1]dotnet skills[/] [dim]v{Escape(ToolVersionInfo.CurrentVersion)}[/]"),
-                new Spectre.Console.Markup("[grey]skill and collection control center[/]"),
+                new Spectre.Console.Markup("[grey]site-aligned catalog control center[/]"),
                 new Spectre.Console.Markup($"[bold springgreen3]{Escape(skillCatalog.CatalogVersion)}[/] [dim]{Escape(skillCatalog.SourceLabel)}[/]"))
             : BuildRichTwoColumn(
                 BuildRichStack(
                     new Spectre.Console.Markup($"[bold deepskyblue1]dotnet skills[/] [dim]v{Escape(ToolVersionInfo.CurrentVersion)}[/]"),
-                    new Spectre.Console.Markup("[grey]skill and collection control center[/]")),
+                    new Spectre.Console.Markup("[grey]site-aligned catalog control center[/]")),
                 BuildRichStack(
                     new Spectre.Console.Markup($"[bold springgreen3]{Escape(skillCatalog.CatalogVersion)}[/]"),
                     new Spectre.Console.Markup($"[dim]{Escape(skillCatalog.SourceLabel)}[/]")),
@@ -273,8 +279,8 @@ internal sealed class InteractiveConsoleApp
 
         var controlLines = new List<Spectre.Console.Rendering.IRenderable>
         {
-            new Spectre.Console.Markup("[bold grey]1-9 / A[/] [dim]choose surface[/]   [bold grey]0[/] [dim]exit[/]   [bold grey]Space[/] [dim]multi-select[/]"),
-            new Spectre.Console.Markup("[dim]Collections narrow before install[/]   [dim]Skills stay direct-pick[/]   [dim]Bundles stay focused[/]"),
+            new Spectre.Console.Markup("[bold grey]1-9 / U / R / W[/] [dim]choose surface[/]   [bold grey]0[/] [dim]exit[/]   [bold grey]Space[/] [dim]multi-select[/]"),
+            new Spectre.Console.Markup("[dim]Packages map NuGet ids -> skills[/]   [dim]Collections narrow before install[/]   [dim]Bundles stay focused[/]"),
             new Spectre.Console.Markup("[dim]Install preview stays mandatory before writes[/]"),
         };
 
@@ -316,38 +322,38 @@ internal sealed class InteractiveConsoleApp
 
     private static IReadOnlyList<HomeActionView> GetHomeActions(int installedSkillCount, int outdatedSkillCount)
     {
-        var actions = new List<HomeActionView>
+        var manifest = NavigationSurfaceManifest.Current;
+        var actions = new List<HomeActionView>();
+
+        foreach (var section in manifest.CliSections)
         {
-            new HomeActionView('1', HomeAction.SyncProject, "Project", "sync from .csproj signals", "dotnet skills install --auto", "deepskyblue1"),
-            new HomeActionView('2', HomeAction.InstallSkills, "Collections", "browse Collection -> Lane -> Skill", "dotnet skills list --available-only", "springgreen3"),
-            new HomeActionView('3', HomeAction.BrowseSkills, "Skills", "browse and pick individual skills", "dotnet skills install <skill>", "turquoise2"),
-            new HomeActionView('4', HomeAction.Analysis, "Analysis", "tree, tokens, package signals", "dotnet skills catalog tokens", "gold1"),
-            new HomeActionView('5', HomeAction.ManageBundles, "Bundles", "focused multi-skill installs", "dotnet skills bundle list", "springgreen3"),
-            new HomeActionView('6', HomeAction.ManageInstalled, "Installed", "keep, remove, repair, move", "dotnet skills list --installed-only", "orange3"),
-            new HomeActionView(
-                '7',
-                HomeAction.RemoveAll,
-                "Remove all skills",
-                installedSkillCount == 0 ? "0 installed skills" : $"{installedSkillCount} installed skills",
-                "dotnet skills remove --all",
-                "red"),
-        };
+            foreach (var surfaceId in section.Items)
+            {
+                var surface = manifest.GetSurface(surfaceId);
+                var cli = surface.Cli ?? throw new InvalidOperationException($"Navigation surface '{surfaceId}' is missing CLI metadata.");
+                if (string.IsNullOrWhiteSpace(cli.HotKey))
+                {
+                    throw new InvalidOperationException($"Navigation surface '{surfaceId}' is missing a CLI hotkey.");
+                }
 
-        actions.Add(
-            new HomeActionView(
-                '8',
-                HomeAction.UpdateAll,
-                "Update all skills",
-                outdatedSkillCount == 0 ? "0 outdated installed skills" : $"{outdatedSkillCount} outdated installed skills",
-                "dotnet skills update",
-                "yellow"));
+                var summary = surfaceId switch
+                {
+                    "update-all" => outdatedSkillCount == 0 ? "0 outdated installed skills" : $"{outdatedSkillCount} outdated installed skills",
+                    "remove-all" => installedSkillCount == 0 ? "0 installed skills" : $"{installedSkillCount} installed skills",
+                    _ => cli.Summary,
+                };
 
-        actions.AddRange(
-        [
-            new HomeActionView('A', HomeAction.Agents, "Agents", "native agent lifecycle", "dotnet agents list", "green3"),
-            new HomeActionView('9', HomeAction.Settings, "Workspace", "platform, scope, catalog source", "dotnet skills where", "deepskyblue1"),
-            new HomeActionView('0', HomeAction.Exit, "Exit", "leave the control center", "exit", "grey"),
-        ]);
+                actions.Add(
+                    new HomeActionView(
+                        cli.HotKey[0],
+                        Enum.Parse<HomeAction>(cli.Action, ignoreCase: false),
+                        surface.Label,
+                        summary,
+                        cli.Command,
+                        cli.Accent,
+                        section.Label));
+            }
+        }
 
         return actions;
     }
@@ -496,6 +502,7 @@ internal sealed class InteractiveConsoleApp
     {
         var table = new Spectre.Console.Table().Border(Spectre.Console.TableBorder.None).Expand();
         table.AddColumn("Key");
+        table.AddColumn("Group");
         table.AddColumn("Area");
         table.AddColumn("Use");
         table.AddColumn("Command");
@@ -504,6 +511,7 @@ internal sealed class InteractiveConsoleApp
         {
             table.AddRow(
                 $"[bold grey]{Escape(action.HotKey.ToString())}[/]",
+                $"[grey]{Escape(action.Section)}[/]",
                 $"[{action.Accent}]{Escape(action.Label)}[/]",
                 $"[dim]{Escape(action.Summary)}[/]",
                 $"[grey]{Escape(action.Command)}[/]");
@@ -516,8 +524,15 @@ internal sealed class InteractiveConsoleApp
     {
         var grid = new Spectre.Console.Grid { Expand = true };
         grid.AddColumn();
+        string? currentSection = null;
         foreach (var action in homeActions)
         {
+            if (!string.Equals(currentSection, action.Section, StringComparison.Ordinal))
+            {
+                currentSection = action.Section;
+                grid.AddRow(new Spectre.Console.Markup($"[bold grey]{Escape(currentSection)}[/]"));
+            }
+
             grid.AddRow(new Spectre.Console.Markup($"[bold grey]{Escape(action.HotKey.ToString())}[/] [{action.Accent}]{Escape(action.Label)}[/] [dim]{Escape(action.Summary)}[/]"));
             grid.AddRow(new Spectre.Console.Markup($"[grey]{Escape(action.Command)}[/]"));
         }
@@ -627,7 +642,7 @@ internal sealed class InteractiveConsoleApp
 
     private static string LocalToolUpdateCommand => $"dotnet tool update {ToolIdentity.PackageId}";
 
-    private async Task ShowCatalogSkillsAsync()
+    private async Task ShowCatalogCollectionsAsync()
     {
         while (true)
         {
@@ -819,7 +834,7 @@ internal sealed class InteractiveConsoleApp
                 {
                     new MenuOption<CatalogAnalysisAction>("View full skill tree", CatalogAnalysisAction.Tree),
                     new MenuOption<CatalogAnalysisAction>("Inspect heaviest skill", CatalogAnalysisAction.HeavySkill),
-                    new MenuOption<CatalogAnalysisAction>("Browse package signals", CatalogAnalysisAction.PackageSignals),
+                    new MenuOption<CatalogAnalysisAction>("Browse packages", CatalogAnalysisAction.PackageSignals),
                     new MenuOption<CatalogAnalysisAction>("Back", CatalogAnalysisAction.Back),
                 },
                 option => option.Label);
@@ -875,36 +890,7 @@ internal sealed class InteractiveConsoleApp
 
     private void ShowPackageSignals()
     {
-        while (true)
-        {
-            var packageSignals = BuildPackageSignals();
-            AnsiConsole.Clear();
-            RenderPackageSignalPanel(packageSignals);
-
-            var action = prompts.Select(
-                "Package signals",
-                new[]
-                {
-                    new MenuOption<PackageSignalAction>("Inspect a linked skill", PackageSignalAction.InspectSkill),
-                    new MenuOption<PackageSignalAction>("Back", PackageSignalAction.Back),
-                },
-                option => option.Label);
-
-            switch (action.Value)
-            {
-                case PackageSignalAction.InspectSkill:
-                {
-                    var signal = prompts.Select(
-                        "Inspect a linked skill",
-                        packageSignals.ToArray(),
-                        entry => $"{entry.Signal} [{entry.Kind}] -> {ToAlias(entry.Skill.Name)} [{entry.Skill.Stack} / {entry.Skill.Lane}]");
-                    ShowSkillDetail(signal.Skill);
-                    break;
-                }
-                case PackageSignalAction.Back:
-                    return;
-            }
-        }
+        ShowPackagesBrowser();
     }
 
     private void ShowCollectionDetail(string collectionName)
@@ -1311,7 +1297,54 @@ internal sealed class InteractiveConsoleApp
         }
     }
 
-    private void ShowPackages()
+    private void ShowPackagesBrowser()
+    {
+        while (true)
+        {
+            var packageSignals = BuildPackageSignals();
+            AnsiConsole.Clear();
+            RenderPackagesPanel(packageSignals);
+
+            var actions = new[]
+            {
+                new MenuOption<PackageSignalAction>("Inspect a linked skill", PackageSignalAction.InspectSkill),
+                new MenuOption<PackageSignalAction>("Install from a package signal", PackageSignalAction.InstallSkill),
+                new MenuOption<PackageSignalAction>("Back", PackageSignalAction.Back),
+            };
+
+            var action = prompts.Select("Package actions", actions, option => option.Label);
+            switch (action.Value)
+            {
+                case PackageSignalAction.InspectSkill:
+                {
+                    var signal = prompts.Select(
+                        "Inspect a linked skill",
+                        packageSignals.ToArray(),
+                        BuildPackageSignalChoiceLabel);
+                    ShowSkillDetail(signal.Skill);
+                    break;
+                }
+                case PackageSignalAction.InstallSkill:
+                {
+                    var signal = prompts.Select(
+                        "Install from a package signal",
+                        packageSignals.ToArray(),
+                        BuildPackageSignalChoiceLabel);
+                    var layout = ResolveSkillLayout();
+                    if (ConfirmSkillInstallPreview($"Install from package signal: {signal.Signal}", [signal.Skill], layout, force: false))
+                    {
+                        InstallSkills([signal.Skill], layout, force: false);
+                    }
+
+                    break;
+                }
+                case PackageSignalAction.Back:
+                    return;
+            }
+        }
+    }
+
+    private void ShowBundles()
     {
         while (true)
         {
@@ -1375,6 +1408,28 @@ internal sealed class InteractiveConsoleApp
                 }
                 case PackageAction.Back:
                     return;
+            }
+        }
+    }
+
+    private void ShowAbout()
+    {
+        while (true)
+        {
+            AnsiConsole.Clear();
+            RenderHelpPanel();
+
+            var action = prompts.Select(
+                "About",
+                new[]
+                {
+                    new MenuOption<AboutAction>("Back", AboutAction.Back),
+                },
+                option => option.Label);
+
+            if (action.Value == AboutAction.Back)
+            {
+                return;
             }
         }
     }
@@ -1742,9 +1797,7 @@ internal sealed class InteractiveConsoleApp
                     await RefreshCatalogAsync();
                     break;
                 case SettingsAction.Help:
-                    AnsiConsole.Clear();
-                    RenderHelpPanel();
-                    prompts.Pause("Press any key to return to the interactive shell...");
+                    ShowAbout();
                     break;
                 case SettingsAction.Back:
                     return;
@@ -2473,7 +2526,7 @@ internal sealed class InteractiveConsoleApp
             new Spectre.Console.Markup("[dim]This is the full Collection -> Lane -> Skill hierarchy for the current catalog payload.[/]")));
     }
 
-    private void RenderPackageSignalPanel(IReadOnlyList<PackageSignalView> packageSignals)
+    private void RenderPackagesPanel(IReadOnlyList<PackageSignalView> packageSignals)
     {
         var summary = BuildRichPropertyGrid(
             ("signals", packageSignals.Count.ToString()),
@@ -2482,9 +2535,9 @@ internal sealed class InteractiveConsoleApp
             ("skills", skillCatalog.Skills.Count.ToString()));
 
         var flow = BuildRichStack(
-            new Spectre.Console.Markup("[green3]Exact[/] [dim]matches fire on a concrete NuGet id[/]"),
+            new Spectre.Console.Markup("[green3]Exact[/] [dim]matches fire on a concrete NuGet id from a project file[/]"),
             new Spectre.Console.Markup("[deepskyblue1]Prefix[/] [dim]matches catch package families such as provider or SDK prefixes[/]"),
-            new Spectre.Console.Markup("[yellow]Tokens[/] [dim]show the prompt cost of the routed skill before install[/]"));
+            new Spectre.Console.Markup("[yellow]Packages[/] [dim]stay the NuGet-entry surface; the linked skill remains the canonical install unit[/]"));
 
         var exactCards = packageSignals
             .Where(entry => string.Equals(entry.Kind, "Exact", StringComparison.Ordinal))
@@ -2507,23 +2560,23 @@ internal sealed class InteractiveConsoleApp
             .ToArray();
 
         SpectreConsole.Write(BuildRichTwoColumn(
-            BuildRichShellPanel("package signals", summary),
-            BuildRichShellPanel("signal flow", flow),
+            BuildRichShellPanel("packages", summary),
+            BuildRichShellPanel("package flow", flow),
             gap: 3));
         AnsiConsole.WriteLine();
         SpectreConsole.Write(BuildRichShellPanel(
-            "exact entry points",
+            "exact package entry points",
             BuildRichCardGrid(exactCards, maxColumns: 2),
             "green3"));
         AnsiConsole.WriteLine();
         SpectreConsole.Write(BuildRichShellPanel(
-            "prefix entry points",
+            "prefix package entry points",
             BuildRichCardGrid(prefixCards, maxColumns: 2),
             "deepskyblue1"));
         AnsiConsole.WriteLine();
         SpectreConsole.Write(BuildRichShellPanel(
             "status rail",
-            new Spectre.Console.Markup("[dim]Package signals connect exact NuGet ids and prefixes to the skill that should be installed when that package appears in a project.[/]")));
+            new Spectre.Console.Markup("[dim]This is the site-aligned Packages surface: concrete NuGet ids and prefixes route to one canonical skill rather than duplicating install rows by package name.[/]")));
     }
 
     private void RenderInstallPreviewPanel(string title, IReadOnlyList<SkillEntry> skills, SkillInstallLayout layout, bool force, IReadOnlyList<SkillPackageEntry>? bundles = null)
@@ -2897,14 +2950,37 @@ internal sealed class InteractiveConsoleApp
 
     private void RenderHelpPanel()
     {
+        var manifest = NavigationSurfaceManifest.Current;
+        var catalogSurfaceLabels = string.Join(" / ", manifest.CliSections
+            .First(section => string.Equals(section.Id, "catalog", StringComparison.OrdinalIgnoreCase))
+            .Items
+            .Select(id => manifest.GetSurface(id).Label));
+        var workflowSurfaceLabels = string.Join(" / ", manifest.CliSections
+            .First(section => string.Equals(section.Id, "workflow", StringComparison.OrdinalIgnoreCase))
+            .Items
+            .Select(id => manifest.GetSurface(id).Label));
+
+        var overview = BuildRichPropertyGrid(
+            ("tool", $"[bold deepskyblue1]{Escape(ToolVersionInfo.CurrentVersion)}[/]"),
+            ("catalog", $"{Escape(skillCatalog.CatalogVersion)} [dim]{Escape(skillCatalog.SourceLabel)}[/]"),
+            ("catalog nav", Escape(catalogSurfaceLabels)),
+            ("workflow", Escape(workflowSurfaceLabels)));
+
+        var surfaceNotes = BuildRichStack(
+            new Spectre.Console.Markup("[dim]Site and CLI now share one primary navigation manifest for[/] [green]Packages / Bundles / Collections / Skills / Agents / About[/][dim].[/]"),
+            new Spectre.Console.Markup("[dim]CLI-only lifecycle surfaces stay separate below that catalog row:[/] [green]Project / Installed / Analysis / Update / Remove / Workspace[/]."),
+            new Spectre.Console.Markup("[dim]Packages are NuGet ids and prefixes. Skills are the canonical install units. Bundles are grouped install presets.[/]"));
+
         var sections = new (string Area, string Command, string Use)[]
         {
             ("Launch", ToolIdentity.DisplayCommand, "Open the interactive control center"),
             ("Help", $"{ToolIdentity.DisplayCommand} help", "Show direct command reference"),
             ("Version", $"{ToolIdentity.DisplayCommand} version", "Show version and update status"),
+            ("Packages", $"{ToolIdentity.SkillsDisplayCommand} install --auto", "Use NuGet package signals to route into canonical skills"),
+            ("Bundles", $"{ToolIdentity.SkillsDisplayCommand} bundle list", "List focused install bundles"),
             ("Collections", $"{ToolIdentity.SkillsDisplayCommand} list --available-only", "Expand Collection -> Lane -> Skill inventory"),
             ("Skills", $"{ToolIdentity.SkillsDisplayCommand} install aspire", "Install or inspect one skill by alias"),
-            ("Bundles", $"{ToolIdentity.SkillsDisplayCommand} bundle list", "List focused install bundles"),
+            ("About", $"{ToolIdentity.DisplayCommand} help", "Show the site-aligned surface map and command reference"),
             ("Tokens", $"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts"),
             ("Project", $"{ToolIdentity.SkillsDisplayCommand} install --auto", "Install from .csproj signals"),
             ("Installed", $"{ToolIdentity.SkillsDisplayCommand} list --installed-only", "Inspect the current target before review, remove, or clear"),
@@ -2934,12 +3010,16 @@ internal sealed class InteractiveConsoleApp
         }
 
         var notes = BuildRichStack(
-            new Spectre.Console.Markup("[dim]Interactive shell gives you direct[/] [green]Skills[/] [dim]pick, taxonomy-first[/] [green]Collections[/] [dim]and focused[/] [green]Bundles[/][dim].[/]"),
+            new Spectre.Console.Markup("[dim]Interactive shell gives you direct[/] [green]Packages[/], [green]Collections[/], [green]Skills[/], [green]Bundles[/], [green]Agents[/] [dim]and[/] [green]About[/] [dim]as first-class surfaces.[/]"),
             new Spectre.Console.Markup("[dim]Use[/] [green]--bundled[/] [dim]to skip network catalog fetches explicitly.[/]"),
             new Spectre.Console.Markup("[dim]Auto-detect probes native skill roots first. Shared fallback is skills-only and appears only when no native root exists.[/]"),
             new Spectre.Console.Markup($"[dim]Set[/] [green]{Escape(ToolIdentity.SkipUpdateEnvironmentVariable)}=1[/] [dim]to suppress update notices.[/]"));
 
         SpectreConsole.Write(BuildRichStack(
+            BuildRichTwoColumn(
+                BuildRichShellPanel("about", overview),
+                BuildRichShellPanel("surface map", surfaceNotes),
+                gap: 3),
             BuildRichShellPanel("command reference", table),
             BuildRichShellPanel("notes", notes)));
     }
@@ -3351,6 +3431,11 @@ internal sealed class InteractiveConsoleApp
             : $"{ToAlias(record.Skill.Name)} [{record.Skill.Stack} / {record.Skill.Lane}] ({record.InstalledVersion} -> {record.Skill.Version}, {FormatTokenCount(record.Skill.TokenCount)} tokens)";
     }
 
+    private static string BuildPackageSignalChoiceLabel(PackageSignalView signal)
+    {
+        return $"{signal.Signal} [{signal.Kind}] -> {ToAlias(signal.Skill.Name)} [{signal.Skill.Stack} / {signal.Skill.Lane}] ({FormatTokenCount(signal.Skill.TokenCount)} tokens)";
+    }
+
     private static string BuildCollectionChoiceLabel(CollectionCatalogView collection)
     {
         return $"{collection.Collection} ({collection.Lanes.Count} lanes, {collection.InstalledCount}/{collection.SkillCount} skills, {FormatTokenCount(collection.TokenCount)} tokens)";
@@ -3633,20 +3718,22 @@ internal sealed record AgentLayoutStatus(AgentInstallLayout? Layout, string Summ
 
 internal sealed record PackageSignalView(string Signal, string Kind, SkillEntry Skill);
 
-internal sealed record HomeActionView(char HotKey, HomeAction Action, string Label, string Summary, string Command, string Accent);
+internal sealed record HomeActionView(char HotKey, HomeAction Action, string Label, string Summary, string Command, string Accent, string Section);
 
 internal enum HomeAction
 {
+    BrowsePackages,
+    BrowseBundles,
+    BrowseCollections,
+    BrowseAgents,
+    About,
     SyncProject,
     BrowseSkills,
-    ManageBundles,
-    InstallSkills,
     Analysis,
     ManageInstalled,
     RemoveAll,
     UpdateAll,
-    Agents,
-    Settings,
+    Workspace,
     Exit,
 }
 
@@ -3676,6 +3763,11 @@ internal enum CatalogAnalysisAction
 }
 
 internal enum CatalogTreeAction
+{
+    Back,
+}
+
+internal enum AboutAction
 {
     Back,
 }
@@ -3719,6 +3811,7 @@ internal enum PackageDetailAction
 internal enum PackageSignalAction
 {
     InspectSkill,
+    InstallSkill,
     Back,
 }
 

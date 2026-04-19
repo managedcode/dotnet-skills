@@ -452,6 +452,13 @@ Suggested accents:
 - [x] Keep `Collections` for taxonomy-first exploration and `Bundles` for grouped installs, but do not force individual-skill picks through either surface.
 - [x] Revalidate the new direct-skill surface in a real TTY after installing the freshly packed tool locally.
 
+### Phase 3d — Site/CLI IA parity follow-up
+
+- [x] Move primary site and CLI navigation labels into one shared repo-owned model instead of parallel hardcoded lists.
+- [x] Add a first-class `Packages` browser in the interactive shell so the home surface matches the public site's package-entry taxonomy.
+- [x] Reorder and recopy the home/control-center navigation so `Packages`, `Bundles`, `Collections`, `Skills`, and `Agents` stay visibly aligned with the site.
+- [x] Revalidate the new shared IA in a real TTY and in generated GitHub Pages output before release.
+
 ### Phase 4 — Remove terminology drift
 
 - [x] Replace remaining public `Stack` wording with `Collection` in:

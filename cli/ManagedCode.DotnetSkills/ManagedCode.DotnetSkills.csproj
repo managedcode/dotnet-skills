@@ -32,6 +32,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>false</Pack>
     </Content>
+    <EmbeddedResource Include="../../config/navigation-surfaces.json">
+      <Link>Config/navigation-surfaces.json</Link>
+    </EmbeddedResource>
     <None Include="../../README.md">
       <Link>README.md</Link>
       <Pack>true</Pack>

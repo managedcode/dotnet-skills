@@ -1,0 +1,203 @@
+{
+  "sitePrimary": [
+    "home",
+    "packages",
+    "bundles",
+    "collections",
+    "skills",
+    "agents",
+    "about"
+  ],
+  "siteFooterBrowse": [
+    "home",
+    "packages",
+    "bundles",
+    "collections",
+    "skills",
+    "agents",
+    "about"
+  ],
+  "cliSections": [
+    {
+      "id": "catalog",
+      "label": "Catalog",
+      "items": [
+        "packages",
+        "bundles",
+        "collections",
+        "skills",
+        "agents",
+        "about"
+      ]
+    },
+    {
+      "id": "workflow",
+      "label": "Workflow",
+      "items": [
+        "project",
+        "installed",
+        "analysis",
+        "update-all",
+        "remove-all",
+        "workspace",
+        "exit"
+      ]
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "home",
+      "label": "Home",
+      "href": ""
+    },
+    {
+      "id": "packages",
+      "label": "Packages",
+      "href": "packages/",
+      "cli": {
+        "hotKey": "1",
+        "action": "BrowsePackages",
+        "summary": "NuGet ids and prefixes -> skills",
+        "command": "dotnet skills install --auto",
+        "accent": "turquoise2"
+      }
+    },
+    {
+      "id": "bundles",
+      "label": "Bundles",
+      "href": "bundles/",
+      "cli": {
+        "hotKey": "2",
+        "action": "BrowseBundles",
+        "summary": "focused multi-skill installs",
+        "command": "dotnet skills bundle list",
+        "accent": "springgreen3"
+      }
+    },
+    {
+      "id": "collections",
+      "label": "Collections",
+      "href": "collections/",
+      "cli": {
+        "hotKey": "3",
+        "action": "BrowseCollections",
+        "summary": "browse Collection -> Lane -> Skill",
+        "command": "dotnet skills list --available-only",
+        "accent": "springgreen3"
+      }
+    },
+    {
+      "id": "skills",
+      "label": "Skills",
+      "href": "skills/",
+      "cli": {
+        "hotKey": "4",
+        "action": "BrowseSkills",
+        "summary": "browse and pick individual skills",
+        "command": "dotnet skills install <skill>",
+        "accent": "turquoise2"
+      }
+    },
+    {
+      "id": "agents",
+      "label": "Agents",
+      "href": "agents/",
+      "cli": {
+        "hotKey": "5",
+        "action": "BrowseAgents",
+        "summary": "native agent lifecycle",
+        "command": "dotnet agents list",
+        "accent": "green3"
+      }
+    },
+    {
+      "id": "about",
+      "label": "About",
+      "href": "about/",
+      "cli": {
+        "hotKey": "6",
+        "action": "About",
+        "summary": "surface map, help, release context",
+        "command": "dotnet skills help",
+        "accent": "deepskyblue1"
+      }
+    },
+    {
+      "id": "project",
+      "label": "Project",
+      "cli": {
+        "hotKey": "7",
+        "action": "SyncProject",
+        "summary": "sync from .csproj signals",
+        "command": "dotnet skills install --auto",
+        "accent": "deepskyblue1"
+      }
+    },
+    {
+      "id": "installed",
+      "label": "Installed",
+      "cli": {
+        "hotKey": "8",
+        "action": "ManageInstalled",
+        "summary": "keep, remove, repair, move",
+        "command": "dotnet skills list --installed-only",
+        "accent": "orange3"
+      }
+    },
+    {
+      "id": "analysis",
+      "label": "Analysis",
+      "cli": {
+        "hotKey": "9",
+        "action": "Analysis",
+        "summary": "tree, tokens, package signals",
+        "command": "dotnet skills catalog tokens",
+        "accent": "gold1"
+      }
+    },
+    {
+      "id": "update-all",
+      "label": "Update all skills",
+      "cli": {
+        "hotKey": "U",
+        "action": "UpdateAll",
+        "summary": "dynamic-outdated-summary",
+        "command": "dotnet skills update",
+        "accent": "yellow"
+      }
+    },
+    {
+      "id": "remove-all",
+      "label": "Remove all skills",
+      "cli": {
+        "hotKey": "R",
+        "action": "RemoveAll",
+        "summary": "dynamic-installed-summary",
+        "command": "dotnet skills remove --all",
+        "accent": "red"
+      }
+    },
+    {
+      "id": "workspace",
+      "label": "Workspace",
+      "cli": {
+        "hotKey": "W",
+        "action": "Workspace",
+        "summary": "platform, scope, catalog source",
+        "command": "dotnet skills where",
+        "accent": "deepskyblue1"
+      }
+    },
+    {
+      "id": "exit",
+      "label": "Exit",
+      "cli": {
+        "hotKey": "0",
+        "action": "Exit",
+        "summary": "leave the control center",
+        "command": "exit",
+        "accent": "grey"
+      }
+    }
+  ]
+}

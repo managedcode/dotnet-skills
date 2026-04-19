@@ -109,6 +109,33 @@ public sealed class InteractiveConsoleAppTests
     }
 
     [Fact]
+    public async Task RunAsync_CanInstallSkillFromPackagesBrowser()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var prompts = new FakeInteractivePrompts(
+            "Packages",
+            "Install from a package signal",
+            "Aspire.*",
+            true,
+            "Back",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", aspireSkill.Name)));
+    }
+
+    [Fact]
     public async Task RunAsync_CanInspectBundle_WhenAreaLabelContainsBracketedNetText()
     {
         var prompts = new FakeInteractivePrompts(

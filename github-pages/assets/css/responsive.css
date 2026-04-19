@@ -30,13 +30,13 @@
   .section-stack { gap: 28px; }
   .panel-grid, .directory-grid, .agent-grid, .spotlight-grid, .quickstart-grid, .directory-links, .detail-layout { gap: 10px; }
   .quickstart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  body.page-skills #listing-grid, body.page-categories .panel #listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.page-skills #listing-grid, body.page-collections .panel #listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1240px) {
   body.page-agents .agent-grid { grid-template-columns: 1fr; }
   body.page-home .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  body.page-skills #listing-grid, body.page-categories .panel #listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.page-skills #listing-grid, body.page-collections .panel #listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 900px) {
@@ -67,7 +67,7 @@
   .filter-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
   .filter-tabs::-webkit-scrollbar { display: none; }
   .filter-tab { flex: 0 0 auto; white-space: nowrap; }
-  body.page-skills #listing-grid, body.page-categories .panel #listing-grid { grid-template-columns: 1fr; }
+  body.page-skills #listing-grid, body.page-collections .panel #listing-grid { grid-template-columns: 1fr; }
   .credits-table-wrap { overflow: visible; margin: 0; padding: 0; }
   .credits-table, .credits-table tbody, .credits-table tr, .credits-table td { display: block; width: 100%; }
   .credits-table thead { display: none; }

@@ -88,9 +88,9 @@ Use `--agent` to target a specific agent platform, `--scope` to choose global or
 
 `dotnet-skills` remains the skill-first CLI and still supports `dotnet skills agent ...` for compatibility. The dedicated agent-only surface is published in both forms: `dotnet-agents` for `dotnet agents ...` and `agents` for `agents ...`. Both top-level `list`, `install`, `remove`, and `where` commands target orchestration agents directly.
 
-The interactive shell behind bare `dotnet skills` is the main control center: it exposes a direct individual-skill picker, `Collection -> Lane -> Skill` browsing, package-signal analysis, token hotspots, a full tree view, and install preview before files are written.
+The interactive shell behind bare `dotnet skills` is the main control center: its primary catalog row now mirrors the public site with `Packages`, `Bundles`, `Collections`, `Skills`, `Agents`, and `About`, then layers CLI-only lifecycle surfaces such as `Project`, `Installed`, `Analysis`, and `Workspace` underneath. Inside that control center you still get direct individual-skill picking, `Collection -> Lane -> Skill` browsing, package-entry analysis, token hotspots, a full tree view, and install preview before files are written.
 
-The public site mirrors the same surface now: `Packages`, `Bundles`, `Collections`, `Skills`, `Agents`, and `About`. The published GitHub Pages output uses the same collection taxonomy as the CLI instead of the old manifest-category grouping.
+The public site mirrors the same primary surface now: `Packages`, `Bundles`, `Collections`, `Skills`, `Agents`, and `About`. The published GitHub Pages output uses the same shared navigation manifest and collection taxonomy as the CLI instead of the old manifest-category grouping.
 
 `dotnet skills bundle list` shows the ready-made focused bundles. Bundle installs are bulk shortcuts for related skill sets, so `dotnet skills install bundle dotnet-quality`, `dotnet skills install bundle frontend-quality`, `dotnet skills install bundle mcaf`, or `dotnet skills install bundle orleans` install every skill mapped to that focused bundle in one pass.
 
@@ -111,7 +111,7 @@ python3 scripts/generate_catalog.py
 python3 scripts/generate_pages.py
 ```
 
-`README.md` is refreshed from the scanned catalog, and the GitHub Pages output is written to `artifacts/github-pages/` with the same `Packages / Bundles / Collections / Skills / Agents / About` navigation that the published site uses.
+`README.md` is refreshed from the scanned catalog, and the GitHub Pages output is written to `artifacts/github-pages/` with the same shared `Packages / Bundles / Collections / Skills / Agents / About` navigation that the site and CLI home surface now use.
 
 ## Install Surface
 

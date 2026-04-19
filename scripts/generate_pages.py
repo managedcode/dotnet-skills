@@ -23,6 +23,7 @@ OUTPUT_DIR = REPO_ROOT / "artifacts" / "github-pages"
 SITEMAP_PATH = OUTPUT_DIR / "sitemap.xml"
 ROBOTS_PATH = OUTPUT_DIR / "robots.txt"
 CNAME_PATH = OUTPUT_DIR / "CNAME"
+NAVIGATION_CONFIG_PATH = REPO_ROOT / "config" / "navigation-surfaces.json"
 
 DEFAULT_SITE_URL = "https://skills.managed-code.com/"
 DEFAULT_RELEASES_URL = "https://github.com/managedcode/dotnet-skills/releases/tag/"
@@ -45,6 +46,8 @@ PLACEHOLDERS = {
     "body_class": "BODY_CLASS_PLACEHOLDER",
     "root_prefix": "ROOT_PREFIX_PLACEHOLDER",
     "root_href": "ROOT_HREF_PLACEHOLDER",
+    "primary_nav": "PRIMARY_NAV_PLACEHOLDER",
+    "footer_browse": "FOOTER_BROWSE_PLACEHOLDER",
     "asset_version": "ASSET_VERSION_PLACEHOLDER",
     "site_url": "SITE_URL_PLACEHOLDER",
     "release_tag": "RELEASE_TAG_PLACEHOLDER",
@@ -104,6 +107,53 @@ def relative_root_prefix(path: str) -> str:
 
     depth = len([segment for segment in path.strip("/").split("/") if segment])
     return "../" * depth
+
+
+def load_navigation_manifest() -> dict:
+    """Load the shared site/CLI navigation manifest."""
+    with NAVIGATION_CONFIG_PATH.open("r", encoding="utf-8") as handle:
+        manifest = json.load(handle)
+
+    surfaces = manifest.get("surfaces", [])
+    manifest["surfaces_by_id"] = {surface["id"]: surface for surface in surfaces}
+    return manifest
+
+
+def resolve_navigation_surface(manifest: dict, surface_id: str) -> dict:
+    """Resolve one navigation surface definition from the shared manifest."""
+    surface = manifest.get("surfaces_by_id", {}).get(surface_id)
+    if surface is None:
+        raise KeyError(f"Unknown navigation surface '{surface_id}'.")
+    return surface
+
+
+def navigation_href(surface: dict, root_prefix: str) -> str:
+    """Resolve a site-relative href for one shared navigation surface."""
+    href = surface.get("href", "")
+    return (root_prefix or "./") if not href else f"{root_prefix}{href}"
+
+
+def render_primary_navigation(manifest: dict, root_prefix: str) -> str:
+    """Render the shared primary site navigation."""
+    parts = []
+    for surface_id in manifest.get("sitePrimary", []):
+        surface = resolve_navigation_surface(manifest, surface_id)
+        parts.append(
+            f'<a href="{escape_html(navigation_href(surface, root_prefix))}" '
+            f'class="nav-link nav-link-{escape_html(surface["id"])}">{escape_html(surface["label"])}</a>'
+        )
+    return "\n".join(parts)
+
+
+def render_footer_browse_navigation(manifest: dict, root_prefix: str) -> str:
+    """Render the footer browse links from the shared navigation manifest."""
+    parts = []
+    for surface_id in manifest.get("siteFooterBrowse", []):
+        surface = resolve_navigation_surface(manifest, surface_id)
+        parts.append(
+            f'<li><a href="{escape_html(navigation_href(surface, root_prefix))}">{escape_html(surface["label"])}</a></li>'
+        )
+    return "\n".join(parts)
 
 
 def build_absolute_url(site_url: str, path: str) -> str:
@@ -2257,6 +2307,7 @@ def main() -> int:
     agents = load_agent_documents(raw_agents, site_url)
     category_infos = build_category_infos(skills, agents)
     credits = parse_credits_from_readme()
+    navigation_manifest = load_navigation_manifest()
 
     print(f"Loaded {len(skills)} skills from catalog")
     print(f"Loaded {len(bundles)} bundles from catalog")
@@ -2284,6 +2335,7 @@ def main() -> int:
     ) -> None:
         root_prefix = relative_root_prefix(path)
         canonical_url = build_absolute_url(site_url, path)
+        root_href = "./" if not root_prefix else root_prefix
         page_html = render_page(
             template,
             {
@@ -2297,7 +2349,9 @@ def main() -> int:
                 "page_extra_head": extra_head,
                 "body_class": escape_html(body_class),
                 "root_prefix": root_prefix,
-                "root_href": "./" if not root_prefix else root_prefix,
+                "root_href": root_href,
+                "primary_nav": render_primary_navigation(navigation_manifest, root_prefix),
+                "footer_browse": render_footer_browse_navigation(navigation_manifest, root_prefix),
                 "asset_version": escape_html(asset_version),
                 "site_url": site_url,
                 "release_tag": escape_html(release_tag),
