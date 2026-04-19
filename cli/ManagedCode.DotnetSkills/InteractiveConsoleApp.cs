@@ -813,7 +813,7 @@ internal sealed class InteractiveConsoleApp
                         "Install skills",
                         installableSkills,
                         skill => $"{ToAlias(skill.Name)} [{skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)");
-                    if (selectedSkills.Count == 0)
+                    if (selectedSkills is null || selectedSkills.Count == 0)
                     {
                         break;
                     }
@@ -925,8 +925,9 @@ internal sealed class InteractiveConsoleApp
                     var selected = prompts.MultiSelect(
                         "Repair/optimize installed skills",
                         installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})");
-                    if (selected.Count == 0)
+                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
+                        backLabel: "Back");
+                    if (selected is null || selected.Count == 0)
                     {
                         break;
                     }
@@ -956,7 +957,12 @@ internal sealed class InteractiveConsoleApp
                         "Review installed set",
                         orderedInstalled,
                         BuildInstalledSkillChoiceLabel,
-                        orderedInstalled);
+                        orderedInstalled,
+                        backLabel: "Back");
+                    if (kept is null)
+                    {
+                        break;
+                    }
                     var keptNames = kept
                         .Select(record => record.Skill.Name)
                         .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -992,8 +998,9 @@ internal sealed class InteractiveConsoleApp
                     var selected = prompts.MultiSelect(
                         "Copy or move skills",
                         installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})");
-                    if (selected.Count == 0)
+                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
+                        backLabel: "Back");
+                    if (selected is null || selected.Count == 0)
                     {
                         break;
                     }
@@ -1012,8 +1019,9 @@ internal sealed class InteractiveConsoleApp
                     var selected = prompts.MultiSelect(
                         "Remove installed skills",
                         installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})");
-                    if (selected.Count == 0)
+                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
+                        backLabel: "Back");
+                    if (selected is null || selected.Count == 0)
                     {
                         break;
                     }
@@ -1186,7 +1194,7 @@ internal sealed class InteractiveConsoleApp
                         "Install focused bundles",
                         visibleBundles.ToArray(),
                         package => $"{package.Name} [{CatalogOrganization.ResolveBundleAreaLabel(package)}] ({package.Skills.Count} skills)");
-                    if (selectedPackages.Count == 0)
+                    if (selectedPackages is null || selectedPackages.Count == 0)
                     {
                         break;
                     }
@@ -1349,7 +1357,7 @@ internal sealed class InteractiveConsoleApp
                         "Install agents",
                         agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal).ToArray(),
                         entry => $"{ToAlias(entry.Name)} ({entry.Model})");
-                    if (selectedAgents.Count == 0)
+                    if (selectedAgents is null || selectedAgents.Count == 0)
                     {
                         break;
                     }
@@ -1373,7 +1381,7 @@ internal sealed class InteractiveConsoleApp
                         "Repair/optimize installed agents",
                         installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
                         record => ToAlias(record.Agent.Name));
-                    if (selectedAgents.Count == 0)
+                    if (selectedAgents is null || selectedAgents.Count == 0)
                     {
                         break;
                     }
@@ -1397,7 +1405,7 @@ internal sealed class InteractiveConsoleApp
                         "Copy or move agents",
                         installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
                         record => ToAlias(record.Agent.Name));
-                    if (selectedAgents.Count == 0)
+                    if (selectedAgents is null || selectedAgents.Count == 0)
                     {
                         break;
                     }
@@ -1417,7 +1425,7 @@ internal sealed class InteractiveConsoleApp
                         "Remove installed agents",
                         installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
                         record => ToAlias(record.Agent.Name));
-                    if (selectedAgents.Count == 0)
+                    if (selectedAgents is null || selectedAgents.Count == 0)
                     {
                         break;
                     }
@@ -1727,8 +1735,9 @@ internal sealed class InteractiveConsoleApp
             title,
             outdatedSkills,
             formatter,
-            outdatedSkills);
-        if (selected.Count == 0)
+            outdatedSkills,
+            backLabel: "Back");
+        if (selected is null || selected.Count == 0)
         {
             return;
         }
@@ -3260,7 +3269,12 @@ internal interface IInteractivePrompts
 {
     T Select<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter) where T : notnull;
 
-    IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter, IReadOnlyList<T>? initiallySelected = null) where T : notnull;
+    IReadOnlyList<T>? MultiSelect<T>(
+        string title,
+        IReadOnlyList<T> choices,
+        Func<T, string> formatter,
+        IReadOnlyList<T>? initiallySelected = null,
+        string? backLabel = null) where T : notnull;
 
     bool Confirm(string title, bool defaultValue);
 
@@ -3296,7 +3310,12 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         throw new InvalidOperationException($"Could not resolve the selected item for {title}.");
     }
 
-    public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter, IReadOnlyList<T>? initiallySelected = null) where T : notnull
+    public IReadOnlyList<T>? MultiSelect<T>(
+        string title,
+        IReadOnlyList<T> choices,
+        Func<T, string> formatter,
+        IReadOnlyList<T>? initiallySelected = null,
+        string? backLabel = null) where T : notnull
     {
         if (choices.Count == 0)
         {
@@ -3309,11 +3328,17 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
         var prompt = new Spectre.Console.MultiSelectionPrompt<string>
         {
             Title = $"[deepskyblue1]{EscapeMarkup(title)}[/]",
-            InstructionsText = "[dim](Press <space> to toggle, <enter> to accept)[/]",
+            InstructionsText = backLabel is null
+                ? "[dim](Press <space> to toggle, <enter> to accept)[/]"
+                : $"[dim](Press <space> to toggle, <enter> to accept, select {EscapeMarkup(backLabel)} to cancel)[/]",
             PageSize = Math.Min(Math.Max(labels.Length, 5), 18),
             HighlightStyle = new Spectre.Console.Style(foreground: Spectre.Console.Color.Aqua),
         };
         prompt.NotRequired();
+        if (backLabel is not null)
+        {
+            prompt.AddChoice(backLabel);
+        }
         prompt.AddChoices(labels);
         if (initiallySelected is not null)
         {
@@ -3323,6 +3348,10 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
             }
         }
         var selectedLabels = SpectreConsole.Prompt(prompt);
+        if (backLabel is not null && selectedLabels.Contains(backLabel, StringComparer.Ordinal))
+        {
+            return null;
+        }
         var selectedSet = selectedLabels.ToHashSet(StringComparer.Ordinal);
         return labels
             .Select((label, index) => (label, index))

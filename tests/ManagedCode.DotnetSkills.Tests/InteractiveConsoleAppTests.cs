@@ -225,6 +225,37 @@ public sealed class InteractiveConsoleAppTests
     }
 
     [Fact]
+    public async Task RunAsync_CanBackOutOfRemoveInstalledSkillsSelection()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+        var installed = installer.SelectSkills(["aspire", "orleans"], installAll: false);
+        var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        installer.Install(installed, layout, force: true);
+
+        var prompts = new FakeInteractivePrompts(
+            "Installed",
+            "Remove selected installed skills",
+            "Back",
+            "Back",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
+    }
+
+    [Fact]
     public async Task RunAsync_CanUpdateAllOutdatedSkillsFromHomeScreen()
     {
         using var projectDirectory = new TemporaryDirectory();
@@ -290,6 +321,46 @@ public sealed class InteractiveConsoleAppTests
         Assert.Equal(0, exitCode);
         Assert.True(installedRecord.IsCurrent);
         Assert.Equal(aspireSkill.Version, installedRecord.InstalledVersion);
+    }
+
+    [Fact]
+    public async Task RunAsync_CanBackOutOfReviewOutdatedSkillsSelection()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var catalog = TestCatalog.Load();
+        var installer = new SkillInstaller(catalog);
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
+        installer.Install([aspireSkill], layout, force: true);
+
+        var installedManifestPath = Path.Combine(projectDirectory.Path, ".codex", "skills", aspireSkill.Name, "manifest.json");
+        var installedManifest = JsonNode.Parse(await File.ReadAllTextAsync(installedManifestPath))!.AsObject();
+        installedManifest["version"] = "0.0.1";
+        await File.WriteAllTextAsync(
+            installedManifestPath,
+            installedManifest.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var prompts = new FakeInteractivePrompts(
+            "Installed",
+            "Review outdated skills",
+            "Back",
+            "Back",
+            "Exit");
+
+        var app = CreateApp(
+            prompts,
+            catalog,
+            initialAgent: AgentPlatform.Codex,
+            initialScope: InstallScope.Project,
+            projectDirectory: projectDirectory.Path);
+
+        var exitCode = await app.RunAsync();
+        var installedRecord = installer.GetInstalledSkills(layout)
+            .Single(record => string.Equals(record.Skill.Name, aspireSkill.Name, StringComparison.OrdinalIgnoreCase));
+
+        Assert.Equal(0, exitCode);
+        Assert.False(installedRecord.IsCurrent);
+        Assert.Equal("0.0.1", installedRecord.InstalledVersion);
     }
 
     [Fact]
@@ -373,9 +444,21 @@ internal sealed class FakeInteractivePrompts(params object[] responses) : IInter
         throw new InvalidOperationException($"Unsupported select response for {title}: {response.GetType().FullName}");
     }
 
-    public IReadOnlyList<T> MultiSelect<T>(string title, IReadOnlyList<T> choices, Func<T, string> formatter, IReadOnlyList<T>? initiallySelected = null) where T : notnull
+    public IReadOnlyList<T>? MultiSelect<T>(
+        string title,
+        IReadOnlyList<T> choices,
+        Func<T, string> formatter,
+        IReadOnlyList<T>? initiallySelected = null,
+        string? backLabel = null) where T : notnull
     {
         var response = Dequeue(title);
+
+        if (backLabel is not null
+            && response is string backResponse
+            && string.Equals(backResponse, backLabel, StringComparison.Ordinal))
+        {
+            return null;
+        }
 
         if (response is IEnumerable<T> typedChoices)
         {
