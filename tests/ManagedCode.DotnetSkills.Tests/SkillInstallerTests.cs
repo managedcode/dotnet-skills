@@ -70,6 +70,8 @@ public sealed class SkillInstallerTests
         Assert.Contains(selected, skill => skill.Name == "dotnet-orleans");
         Assert.Contains(selected, skill => skill.Name == "dotnet-managedcode-orleans-graph");
         Assert.Contains(selected, skill => skill.Name == "dotnet-code-analysis");
+        Assert.Contains(selected, skill => skill.Name == "dotnet-complexity");
+        Assert.Contains(selected, skill => skill.Name == "crap-score");
         Assert.Contains(selected, skill => skill.Name == "dotnet-format");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }

@@ -33,6 +33,7 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "template-authoring", "Templates & Scaffolding", "Project & Templates");
         AssertSkill(catalog, "analyzing-dotnet-performance", "Diagnostics & Metrics", "Performance");
         AssertSkill(catalog, "dotnet-cloc", "Diagnostics & Metrics", "Observability");
+        AssertSkill(catalog, "dotnet-complexity", ".NET Quality", "Code Quality");
         AssertSkill(catalog, "dotnet-codeql", "Diagnostics & Metrics", "Static Analysis");
         AssertSkill(catalog, "mtp-hot-reload", "Upgrades & Migration", "Testing migrations");
         AssertSkill(catalog, "migrate-xunit-to-xunit-v3", "Upgrades & Migration", "Testing migrations");
@@ -59,6 +60,8 @@ public sealed class CatalogOrganizationTests
         Assert.Equal(".NET Quality", dotnetQuality.Stack);
         Assert.Equal("Code Quality", dotnetQuality.Lane);
         Assert.DoesNotContain(dotnetQuality.Skills, skill => string.Equals(skill, "dotnet-eslint", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(dotnetQuality.Skills, skill => string.Equals(skill, "dotnet-complexity", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(dotnetQuality.Skills, skill => string.Equals(skill, "crap-score", StringComparison.OrdinalIgnoreCase));
 
         Assert.Equal(".NET Foundations", dotnetBase.Stack);
         Assert.Equal("Foundations", dotnetBase.Lane);

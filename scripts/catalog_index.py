@@ -32,7 +32,7 @@ CURATED_BUNDLES = [
     {
         "name": "dotnet-quality",
         "title": ".NET quality bundle",
-        "description": "Install the core .NET quality toolchain: formatter, analyzers, editorconfig guidance, and CI quality checks. Frontend linters stay out of this bundle on purpose.",
+        "description": "Install the core .NET quality toolchain: formatter, analyzers, complexity checks, CRAP analysis, editorconfig guidance, and CI quality checks. Frontend linters stay out of this bundle on purpose.",
         "kind": "stack",
         "stack": ".NET Quality",
         "lane": "Code Quality",
@@ -45,6 +45,8 @@ CURATED_BUNDLES = [
             "dotnet-stylecop-analyzers",
             "dotnet-analyzer-config",
             "dotnet-code-analysis",
+            "dotnet-complexity",
+            "crap-score",
         ],
     },
     {

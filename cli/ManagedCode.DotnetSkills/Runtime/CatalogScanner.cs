@@ -29,7 +29,7 @@ internal static class CatalogScanner
         new(
             "dotnet-quality",
             ".NET quality bundle",
-            "Install the core .NET quality toolchain: formatter, analyzers, editorconfig guidance, and CI quality checks. Frontend linters stay out of this bundle on purpose.",
+            "Install the core .NET quality toolchain: formatter, analyzers, complexity checks, CRAP analysis, editorconfig guidance, and CI quality checks. Frontend linters stay out of this bundle on purpose.",
             "stack",
             ".NET Quality",
             "Code Quality",
@@ -42,6 +42,8 @@ internal static class CatalogScanner
                 "dotnet-stylecop-analyzers",
                 "dotnet-analyzer-config",
                 "dotnet-code-analysis",
+                "dotnet-complexity",
+                "crap-score",
             ]),
         new(
             "frontend-quality",
