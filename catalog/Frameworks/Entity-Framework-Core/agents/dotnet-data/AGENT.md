@@ -4,10 +4,10 @@ description: Data-access orchestration agent for EF Core, EF6, migrations, query
 tools: Read, Edit, Glob, Grep, Bash
 model: inherit
 skills:
-  - dotnet-entity-framework-core
-  - dotnet-entity-framework6
-  - dotnet-managedcode-storage
-  - dotnet-managedcode-markitdown
+  - entity-framework-core
+  - entity-framework6
+  - managedcode-storage
+  - managedcode-markitdown
 ---
 
 # .NET Data
@@ -33,9 +33,9 @@ This is a grouped top-level agent spanning several data-focused skills. If a fut
 
 ## Skill Routing
 
-- Modern EF Core design and performance: `dotnet-entity-framework-core`
-- Legacy EF6 maintenance and migration boundaries: `dotnet-entity-framework6`
-- Non-relational or abstraction-heavy storage concerns: `dotnet-managedcode-storage`
+- Modern EF Core design and performance: `entity-framework-core`
+- Legacy EF6 maintenance and migration boundaries: `entity-framework6`
+- Non-relational or abstraction-heavy storage concerns: `managedcode-storage`
 
 ## Deliver
 
@@ -46,5 +46,5 @@ This is a grouped top-level agent spanning several data-focused skills. If a fut
 
 ## Boundaries
 
-- Do not answer broad architecture questions that belong with `dotnet-architecture` unless the data boundary is the actual core issue.
+- Do not answer broad architecture questions that belong with `architecture` unless the data boundary is the actual core issue.
 - Do not route to EF skills when the problem is really HTTP, background processing, or UI state.

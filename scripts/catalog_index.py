@@ -16,7 +16,7 @@ LINK_KEYS = ("repository", "docs", "nuget")
 
 CURATED_BUNDLES = [
     {
-        "name": "dotnet-base",
+        "name": "foundations",
         "title": ".NET base bundle",
         "description": "Install the focused .NET baseline: core platform guidance, project setup, modern C#, and Microsoft.Extensions composition patterns without pulling in diagnostics, migrations, or frontend tooling.",
         "kind": "stack",
@@ -24,28 +24,28 @@ CURATED_BUNDLES = [
         "lane": "Foundations",
         "skills": [
             "dotnet",
-            "dotnet-project-setup",
-            "dotnet-modern-csharp",
-            "dotnet-microsoft-extensions",
+            "project-setup",
+            "modern-csharp",
+            "microsoft-extensions",
         ],
     },
     {
-        "name": "dotnet-quality",
+        "name": "quality",
         "title": ".NET quality bundle",
         "description": "Install the core .NET quality toolchain: formatter, analyzers, complexity checks, CRAP analysis, editorconfig guidance, and CI quality checks. Frontend linters stay out of this bundle on purpose.",
         "kind": "stack",
         "stack": ".NET Quality",
         "lane": "Code Quality",
         "skills": [
-            "dotnet-quality-ci",
-            "dotnet-format",
-            "dotnet-csharpier",
-            "dotnet-roslynator",
-            "dotnet-meziantou-analyzer",
-            "dotnet-stylecop-analyzers",
-            "dotnet-analyzer-config",
-            "dotnet-code-analysis",
-            "dotnet-complexity",
+            "quality-ci",
+            "format",
+            "csharpier",
+            "roslynator",
+            "meziantou-analyzer",
+            "stylecop-analyzers",
+            "analyzer-config",
+            "code-analysis",
+            "complexity",
             "crap-score",
         ],
     },
@@ -57,12 +57,12 @@ CURATED_BUNDLES = [
         "stack": "Frontend Quality",
         "lane": "Code Quality",
         "skills": [
-            "dotnet-biome",
-            "dotnet-eslint",
-            "dotnet-stylelint",
-            "dotnet-htmlhint",
-            "dotnet-webhint",
-            "dotnet-sonarjs",
+            "biome",
+            "eslint",
+            "stylelint",
+            "htmlhint",
+            "webhint",
+            "sonarjs",
         ],
     },
     {
@@ -73,10 +73,10 @@ CURATED_BUNDLES = [
         "stack": "Architecture",
         "lane": "Architecture",
         "skills": [
-            "dotnet-architecture",
-            "dotnet-netarchtest",
-            "dotnet-archunitnet",
-            "dotnet-graphify-dotnet",
+            "architecture",
+            "netarchtest",
+            "archunitnet",
+            "graphify-dotnet",
         ],
     },
     {
@@ -87,11 +87,11 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Foundations",
         "skills": [
-            "dotnet-test-frameworks",
+            "test-frameworks",
             "run-tests",
             "coverage-analysis",
-            "dotnet-coverlet",
-            "dotnet-reportgenerator",
+            "coverlet",
+            "reportgenerator",
             "test-anti-patterns",
         ],
     },
@@ -103,13 +103,13 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
+            "test-frameworks",
             "run-tests",
             "coverage-analysis",
-            "dotnet-coverlet",
-            "dotnet-reportgenerator",
+            "coverlet",
+            "reportgenerator",
             "test-anti-patterns",
-            "dotnet-xunit",
+            "xunit",
         ],
     },
     {
@@ -120,13 +120,13 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
+            "test-frameworks",
             "run-tests",
             "coverage-analysis",
-            "dotnet-coverlet",
-            "dotnet-reportgenerator",
+            "coverlet",
+            "reportgenerator",
             "test-anti-patterns",
-            "dotnet-nunit",
+            "nunit",
         ],
     },
     {
@@ -137,13 +137,13 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
+            "test-frameworks",
             "run-tests",
             "coverage-analysis",
-            "dotnet-coverlet",
-            "dotnet-reportgenerator",
+            "coverlet",
+            "reportgenerator",
             "test-anti-patterns",
-            "dotnet-mstest",
+            "mstest",
             "writing-mstest-tests",
         ],
     },
@@ -155,13 +155,13 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
+            "test-frameworks",
             "run-tests",
             "coverage-analysis",
-            "dotnet-coverlet",
-            "dotnet-reportgenerator",
+            "coverlet",
+            "reportgenerator",
             "test-anti-patterns",
-            "dotnet-tunit",
+            "tunit",
         ],
     },
     {
@@ -187,7 +187,7 @@ CURATED_BUNDLES = [
         "stack": "Upgrades & Migration",
         "lane": "Runtime upgrades",
         "skills": [
-            "dotnet-aot-compat",
+            "aot-compat",
             "migrate-dotnet8-to-dotnet9",
             "migrate-dotnet9-to-dotnet10",
             "migrate-dotnet10-to-dotnet11",
@@ -203,16 +203,16 @@ CURATED_BUNDLES = [
         "stack": "Governance & Delivery",
         "lane": "Governance",
         "skills": [
-            "dotnet-mcaf",
-            "dotnet-mcaf-agile-delivery",
-            "dotnet-mcaf-devex",
-            "dotnet-mcaf-documentation",
-            "dotnet-mcaf-feature-spec",
-            "dotnet-mcaf-human-review-planning",
-            "dotnet-mcaf-ml-ai-delivery",
-            "dotnet-mcaf-nfr",
-            "dotnet-mcaf-source-control",
-            "dotnet-mcaf-ui-ux",
+            "mcaf",
+            "mcaf-agile-delivery",
+            "mcaf-devex",
+            "mcaf-documentation",
+            "mcaf-feature-spec",
+            "mcaf-human-review-planning",
+            "mcaf-ml-ai-delivery",
+            "mcaf-nfr",
+            "mcaf-source-control",
+            "mcaf-ui-ux",
         ],
     },
     {
@@ -223,9 +223,9 @@ CURATED_BUNDLES = [
         "stack": "Distributed",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-orleans",
-            "dotnet-managedcode-orleans-graph",
-            "dotnet-managedcode-orleans-signalr",
+            "orleans",
+            "managedcode-orleans-graph",
+            "managedcode-orleans-signalr",
         ],
     },
 ]
@@ -433,14 +433,14 @@ def classify_skill(skill_type: str, package: str, category: str, name: str) -> t
 
 
 def is_governance_skill(package: str, name: str) -> bool:
-    return package in GOVERNANCE_PACKAGES or name == "dotnet-code-review"
+    return package in GOVERNANCE_PACKAGES or name == "code-review"
 
 
 def is_migration_skill(package: str, name: str) -> bool:
     lowered = name.lower()
     return (
         package == "Official-DotNet-Upgrade"
-        or name == "dotnet-aot-compat"
+        or name == "aot-compat"
         or "migrate-" in lowered
         or "migration" in lowered
         or name == "mtp-hot-reload"
@@ -549,7 +549,7 @@ def is_diagnostics_skill(package: str, category: str, name: str) -> bool:
 def resolve_dotnet_lane(skill_type: str, package: str, category: str, name: str) -> str:
     if name == "csharp-scripts":
         return "Tooling"
-    if name == "dotnet-pinvoke":
+    if name == "pinvoke":
         return "Interop"
     lane = resolve_entity_lane(skill_type)
     return "Libraries" if lane == "Libraries" else "Foundations"
@@ -587,7 +587,7 @@ def resolve_desktop_lane(skill_type: str, package: str) -> str:
 
 
 def resolve_testing_lane(package: str, name: str) -> str:
-    if package in TESTING_FRAMEWORK_PACKAGES or name in {"writing-mstest-tests", "dotnet-mstest", "dotnet-nunit", "dotnet-tunit", "dotnet-xunit"}:
+    if package in TESTING_FRAMEWORK_PACKAGES or name in {"writing-mstest-tests", "mstest", "nunit", "tunit", "xunit"}:
         return "Frameworks"
     if package in TESTING_QUALITY_PACKAGES or name in {"coverage-analysis", "crap-score", "test-anti-patterns"}:
         return "Quality"
@@ -606,7 +606,7 @@ def resolve_migration_lane(package: str, name: str) -> str:
     lowered = name.lower()
     if any(token in lowered for token in ("mstest", "xunit", "vstest", "mtp")):
         return "Testing migrations"
-    if package == "Official-DotNet-Upgrade" or name == "dotnet-aot-compat":
+    if package == "Official-DotNet-Upgrade" or name == "aot-compat":
         return "Runtime upgrades"
     return "Migration"
 
@@ -626,7 +626,7 @@ def resolve_architecture_lane(skill_type: str, package: str) -> str:
 
 def resolve_governance_lane(package: str, name: str) -> str:
     lowered = name.lower()
-    if name == "dotnet-code-review":
+    if name == "code-review":
         return "Review"
     if any(token in lowered for token in ("delivery", "devex", "ui-ux", "ml-ai")):
         return "Delivery Workflow"

@@ -33,71 +33,71 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
         var builders = new Dictionary<string, RecommendationBuilder>(StringComparer.OrdinalIgnoreCase);
 
         Add("dotnet", RecommendationConfidence.Low, $"Detected {projectCount} .NET project file(s).", RecommendationSignalKind.Project, builders);
-        Add("dotnet-modern-csharp", RecommendationConfidence.Low, FormatFrameworkReason(inventory.TargetFrameworks), RecommendationSignalKind.TargetFramework, builders);
+        Add("modern-csharp", RecommendationConfidence.Low, FormatFrameworkReason(inventory.TargetFrameworks), RecommendationSignalKind.TargetFramework, builders);
 
         if (projectCount > 1 || HasSolutionFile(rootPath))
         {
-            Add("dotnet-project-setup", RecommendationConfidence.Medium, $"Repository layout includes {projectCount} projects.", RecommendationSignalKind.Project, builders);
+            Add("project-setup", RecommendationConfidence.Medium, $"Repository layout includes {projectCount} projects.", RecommendationSignalKind.Project, builders);
         }
 
         if (inventory.HasSdk("Microsoft.NET.Sdk.Web"))
         {
-            Add("dotnet-aspnet-core", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.Web.", RecommendationSignalKind.Sdk, builders);
-            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "ASP.NET Core apps rely on the Microsoft.Extensions hosting stack.", RecommendationSignalKind.Sdk, builders);
+            Add("aspnet-core", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.Web.", RecommendationSignalKind.Sdk, builders);
+            Add("microsoft-extensions", RecommendationConfidence.Medium, "ASP.NET Core apps rely on the Microsoft.Extensions hosting stack.", RecommendationSignalKind.Sdk, builders);
         }
 
         if (inventory.HasSdk("Microsoft.NET.Sdk.BlazorWebAssembly"))
         {
-            Add("dotnet-blazor", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.BlazorWebAssembly.", RecommendationSignalKind.Sdk, builders);
+            Add("blazor", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.BlazorWebAssembly.", RecommendationSignalKind.Sdk, builders);
         }
 
         if (inventory.HasSdk("Aspire.AppHost.Sdk"))
         {
-            Add("dotnet-aspire", RecommendationConfidence.High, "Project uses Aspire.AppHost.Sdk.", RecommendationSignalKind.Sdk, builders);
+            Add("aspire", RecommendationConfidence.High, "Project uses Aspire.AppHost.Sdk.", RecommendationSignalKind.Sdk, builders);
         }
 
         if (inventory.HasSdkPrefix("Uno."))
         {
-            Add("dotnet-uno-platform", RecommendationConfidence.High, "Project uses an Uno SDK.", RecommendationSignalKind.Sdk, builders);
+            Add("uno-platform", RecommendationConfidence.High, "Project uses an Uno SDK.", RecommendationSignalKind.Sdk, builders);
         }
 
         AddManifestDrivenPackageRecommendations(builders, inventory);
-        AddPackageRecommendation("dotnet-grpc", RecommendationConfidence.High, builders, inventory, "Google.Protobuf", "Detected Google.Protobuf alongside gRPC-style dependencies.");
-        AddPackagePrefixRecommendation("dotnet-orleans", RecommendationConfidence.High, builders, inventory, "Orleans.", "Detected Orleans packages.");
-        AddPackagePrefixRecommendation("dotnet-uno-platform", RecommendationConfidence.High, builders, inventory, "Uno.", "Detected Uno Platform packages.");
-        AddPackagePrefixRecommendation("dotnet-wcf", RecommendationConfidence.Medium, builders, inventory, "CoreWCF", "Detected CoreWCF packages.");
-        AddPackageRecommendation("dotnet-mvvm", RecommendationConfidence.High, builders, inventory, "CommunityToolkit.Mvvm", "Detected MVVM Toolkit packages.");
+        AddPackageRecommendation("grpc", RecommendationConfidence.High, builders, inventory, "Google.Protobuf", "Detected Google.Protobuf alongside gRPC-style dependencies.");
+        AddPackagePrefixRecommendation("orleans", RecommendationConfidence.High, builders, inventory, "Orleans.", "Detected Orleans packages.");
+        AddPackagePrefixRecommendation("uno-platform", RecommendationConfidence.High, builders, inventory, "Uno.", "Detected Uno Platform packages.");
+        AddPackagePrefixRecommendation("wcf", RecommendationConfidence.Medium, builders, inventory, "CoreWCF", "Detected CoreWCF packages.");
+        AddPackageRecommendation("mvvm", RecommendationConfidence.High, builders, inventory, "CommunityToolkit.Mvvm", "Detected MVVM Toolkit packages.");
 
         if (inventory.HasSdk("Microsoft.NET.Sdk.Worker"))
         {
-            Add("dotnet-worker-services", RecommendationConfidence.Medium, "Project uses Microsoft.NET.Sdk.Worker.", RecommendationSignalKind.Sdk, builders);
-            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "Worker services are built on Microsoft.Extensions hosting primitives.", RecommendationSignalKind.Sdk, builders);
+            Add("worker-services", RecommendationConfidence.Medium, "Project uses Microsoft.NET.Sdk.Worker.", RecommendationSignalKind.Sdk, builders);
+            Add("microsoft-extensions", RecommendationConfidence.Medium, "Worker services are built on Microsoft.Extensions hosting primitives.", RecommendationSignalKind.Sdk, builders);
         }
 
         if (inventory.HasPackage("Microsoft.Extensions.Hosting"))
         {
-            Add("dotnet-worker-services", RecommendationConfidence.Medium, "Detected Microsoft.Extensions.Hosting package usage.", RecommendationSignalKind.Package, builders);
-            Add("dotnet-microsoft-extensions", RecommendationConfidence.Medium, "Detected Microsoft.Extensions.Hosting package usage.", RecommendationSignalKind.Package, builders);
+            Add("worker-services", RecommendationConfidence.Medium, "Detected Microsoft.Extensions.Hosting package usage.", RecommendationSignalKind.Package, builders);
+            Add("microsoft-extensions", RecommendationConfidence.Medium, "Detected Microsoft.Extensions.Hosting package usage.", RecommendationSignalKind.Package, builders);
         }
 
         if (inventory.UsesMaui)
         {
-            Add("dotnet-maui", RecommendationConfidence.High, "Project enables UseMaui.", RecommendationSignalKind.ProjectProperty, builders);
+            Add("maui", RecommendationConfidence.High, "Project enables UseMaui.", RecommendationSignalKind.ProjectProperty, builders);
         }
 
         if (inventory.HasPackagePrefix("Microsoft.Maui"))
         {
-            Add("dotnet-maui", RecommendationConfidence.High, "Detected Microsoft.Maui packages.", RecommendationSignalKind.Package, builders);
+            Add("maui", RecommendationConfidence.High, "Detected Microsoft.Maui packages.", RecommendationSignalKind.Package, builders);
         }
 
         if (inventory.UsesWpf)
         {
-            Add("dotnet-wpf", RecommendationConfidence.High, "Project enables UseWPF.", RecommendationSignalKind.ProjectProperty, builders);
+            Add("wpf", RecommendationConfidence.High, "Project enables UseWPF.", RecommendationSignalKind.ProjectProperty, builders);
         }
 
         if (inventory.UsesWindowsForms)
         {
-            Add("dotnet-winforms", RecommendationConfidence.High, "Project enables UseWindowsForms.", RecommendationSignalKind.ProjectProperty, builders);
+            Add("winforms", RecommendationConfidence.High, "Project enables UseWindowsForms.", RecommendationSignalKind.ProjectProperty, builders);
         }
 
         return builders.Values
@@ -187,7 +187,7 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
             {
                 Add(
                     skill.Name,
-                    skill.Name.Equals("dotnet-microsoft-extensions", StringComparison.OrdinalIgnoreCase)
+                    skill.Name.Equals("microsoft-extensions", StringComparison.OrdinalIgnoreCase)
                         ? RecommendationConfidence.Medium
                         : RecommendationConfidence.High,
                     $"Detected packages with prefix {skill.PackagePrefix}.",

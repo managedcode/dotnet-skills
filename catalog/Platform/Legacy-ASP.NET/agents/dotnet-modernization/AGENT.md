@@ -4,12 +4,12 @@ description: Modernization orchestration agent for upgrades, legacy migrations, 
 tools: Read, Edit, Glob, Grep, Bash
 model: inherit
 skills:
-  - dotnet-modern-csharp
-  - dotnet-project-setup
-  - dotnet-legacy-aspnet
-  - dotnet-wcf
-  - dotnet-workflow-foundation
-  - dotnet-entity-framework6
+  - modern-csharp
+  - project-setup
+  - legacy-aspnet
+  - wcf
+  - workflow-foundation
+  - entity-framework6
 ---
 
 # .NET Modernization
@@ -35,11 +35,11 @@ This is a top-level agent because modernization usually spans multiple legacy an
 
 ## Skill Routing
 
-- Legacy web apps: `dotnet-legacy-aspnet`
-- Service-oriented legacy stacks: `dotnet-wcf`
-- Workflow Foundation estates: `dotnet-workflow-foundation`
-- EF6 migration boundaries: `dotnet-entity-framework6`
-- Language and project modernization: `dotnet-modern-csharp`, `dotnet-project-setup`
+- Legacy web apps: `legacy-aspnet`
+- Service-oriented legacy stacks: `wcf`
+- Workflow Foundation estates: `workflow-foundation`
+- EF6 migration boundaries: `entity-framework6`
+- Language and project modernization: `modern-csharp`, `project-setup`
 
 ## Deliver
 

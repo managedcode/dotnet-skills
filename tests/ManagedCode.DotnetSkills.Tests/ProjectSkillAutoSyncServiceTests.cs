@@ -37,11 +37,11 @@ public sealed class ProjectSkillAutoSyncServiceTests
         var plan = service.BuildPlan(tempDirectory.Path, layout, installer, prune: true);
 
         Assert.True(plan.MatchedPreviousProject);
-        Assert.Contains(plan.SkillsToRemove, skill => skill.Name == "dotnet-aspire");
-        Assert.Contains(plan.SkillsToRemove, skill => skill.Name == "dotnet-xunit");
-        Assert.DoesNotContain(plan.SkillsToRemove, skill => skill.Name == "dotnet-graphify-dotnet");
-        Assert.DoesNotContain(plan.SkillsToRemove, skill => skill.Name == "dotnet-coverlet");
-        Assert.Contains(plan.ProtectedStaleSkills, skill => skill.Name == "dotnet-coverlet");
-        Assert.Contains(plan.ProtectedStaleSkills, skill => skill.Name == "dotnet-graphify-dotnet");
+        Assert.Contains(plan.SkillsToRemove, skill => skill.Name == "aspire");
+        Assert.Contains(plan.SkillsToRemove, skill => skill.Name == "xunit");
+        Assert.DoesNotContain(plan.SkillsToRemove, skill => skill.Name == "graphify-dotnet");
+        Assert.DoesNotContain(plan.SkillsToRemove, skill => skill.Name == "coverlet");
+        Assert.Contains(plan.ProtectedStaleSkills, skill => skill.Name == "coverlet");
+        Assert.Contains(plan.ProtectedStaleSkills, skill => skill.Name == "graphify-dotnet");
     }
 }

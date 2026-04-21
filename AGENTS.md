@@ -74,6 +74,8 @@ Update this file when the user gives:
 
 Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do this again" as strong signals that a durable rule should likely be captured here.
 
+- The repo is moving away from the repo-authored `dotnet-*` skill-id namespace. Prefer clean canonical skill ids without the `dotnet-` prefix for repo-authored skills, and when renaming public skill ids, do a clean cutover instead of keeping backward-compatible legacy aliases unless the user explicitly asks for a compatibility bridge.
+
 - For interactive CLI UX changes in the publishable tools, run a dedicated Claude-led design pass before finalizing the console presentation.
 - If Claude or Opus is unavailable in the current environment, still do a separate CLI UX design pass locally before finalizing the console presentation.
 - For interactive CLI UX changes, do not stop at rearranging prompts. The result must feel like a real terminal UI with structured panels, visible hierarchy, and information-dense navigation instead of a flat questionnaire.
@@ -116,7 +118,7 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - When CLI UX changes are the point of the task, finish by installing or updating the local `dotnet-skills` tool from the freshly built package in the current environment so the new shell can be verified immediately instead of only existing in git.
 - When changing the publishable `dotnet-skills` tool UX or behavior, do not stop at local verification. Also verify the release path end-to-end: the packed tool version, the publish workflow, and the publicly installable package or release artifact must all reflect the new behavior before reporting the work as complete.
 - Track per-skill token size as first-class catalog metadata when the user asks for token visibility. Compute it during catalog generation or build, surface it in generated aggregates, and show it in the interactive UI where users inspect or compare skills.
-- In public UX, docs, CLI commands, and generated site content, always use `bundles` for grouped multi-skill installs (e.g. `dotnet skills install bundle dotnet-quality`). The word `packages` means NuGet library packages — concrete individual libraries such as AutoMapper, MediatR, Sep, etc. — and the skills that correspond to them. Never conflate these two concepts.
+- In public UX, docs, CLI commands, and generated site content, always use `bundles` for grouped multi-skill installs (e.g. `dotnet skills install bundle quality`). The word `packages` means NuGet library packages — concrete individual libraries such as AutoMapper, MediatR, Sep, etc. — and the skills that correspond to them. Never conflate these two concepts.
 - In public UX, docs, CLI help, and generated site content, keep `Collections` and `Bundles` explicitly distinct. `Collections` are the browse taxonomy (`Collection -> Lane -> Skill`); `Bundles` are installable grouped presets. Do not leave either surface without a plain-language explanation of that difference.
 - In public catalog and site surfaces, when multiple NuGet package ids map to the same skill or install slug, collapse them into one canonical skill entry instead of duplicating rows or install commands per package signal. Package-signal metadata may stay visible in details, but the public install surface must show one skill per capability.
 - When an upstream source splits one library/framework surface into several narrow task-specific shards but this repository already has a strong canonical skill for that same surface, prefer the single canonical skill. Do not expose near-duplicate `create` / `debug` / `test` / `publish` variants as separate installable catalog skills unless they are intentionally independent workflows with clearly different install value.
@@ -126,7 +128,7 @@ Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do 
 - External repositories that contribute skills or agents must live under `external-sources/`: keep vendir transport config in `external-sources/vendir.yml`, the lockfile in `external-sources/vendir.lock.yml`, and checked-in upstream snapshots under `external-sources/upstreams/`. Do not copy external repositories into `catalog/` by hand.
 - Normalize vendir-managed upstream content into `catalog/` through `scripts/import_external_catalog_sources.py` plus checked-in overrides under `external-sources/imports/`.
 - Import configs under `external-sources/imports/` are overrides-only. Auto-discover upstream plugins from vendored `plugin.json` files instead of maintaining a second manual plugin registry in local config.
-- Imported official upstream skills or agents may keep their upstream canonical ids instead of being renamed to fit the local `dotnet-*` convention.
+- Imported official upstream skills or agents may keep their upstream canonical ids instead of being renamed to fit the local repo-authored convention.
 - If an imported official upstream skill or agent is a true duplicate of a repo-authored local entry, prefer the official upstream source and remove the local duplicate instead of keeping two copies.
 - Do not inject HTML provenance comments such as `Imported from ... via vendir` into generated `SKILL.md` or `AGENT.md` files. Keep imported content clean; provenance belongs in package metadata, external-source config, or importer logic, not inside the skill or agent body.
 - When importing upstream skills or agents, copy upstream `SKILL.md`, `AGENT.md`, and `references/` content verbatim. Do not rewrite their frontmatter, add local headings, inject `compatibility`, synthesize `skills:` lists, or otherwise mutate the markdown body. If local catalog metadata is still needed, keep it in sibling `manifest.json`, not inside the imported markdown.
@@ -256,20 +258,20 @@ Other important repository files:
 
 Use clean `.NET` skill names:
 
-- Good: `dotnet-aspnet-core`
-- Good: `dotnet-aspire`
-- Good: `dotnet-entity-framework-core`
-- Good: `dotnet-microsoft-agent-framework`
+- Good: `aspnet-core`
+- Good: `aspire`
+- Good: `entity-framework-core`
+- Good: `microsoft-agent-framework`
 
 Rules:
 
-- Use the `dotnet-*` prefix for repo-authored catalog skills in this repository.
+- Do not use the `dotnet-*` prefix for repo-authored catalog skills in this repository.
 - Vendir-imported upstream skills may preserve their upstream canonical ids.
 - Keep one clear responsibility per skill.
 - Prefer framework or capability names that match official Microsoft naming.
 - Do not invent vanity prefixes.
 - Do not create duplicate skills that differ only by wording.
-- When a skill in this repository references an external framework that is not itself a `.NET` framework, keep the external framework's canonical name in titles and prose. The `dotnet-*` prefix is this catalog's namespace, not a claim that every referenced framework is part of `.NET`. For example, MCAF should be described as `MCAF`, not as a `.NET` framework.
+- When a skill in this repository references an external framework that is not itself a `.NET` framework, keep the external framework's canonical name in titles and prose. For example, MCAF should be described as `MCAF`, not as a `.NET` framework.
 
 ## When Adding or Updating a Skill
 
@@ -278,7 +280,7 @@ Before adding a new skill:
 1. Check whether the capability already exists in [`catalog/`](catalog).
 2. Confirm the framework or feature is important enough to justify a dedicated skill.
 3. Prefer official Microsoft or first-party documentation to shape the content.
-4. Check whether the capability is already covered indirectly by a broader skill such as `dotnet`, `dotnet-architecture`, or `dotnet-aspire`.
+4. Check whether the capability is already covered indirectly by a broader skill such as `dotnet`, `architecture`, or `aspire`.
 5. For `.NET`-scoped skills, prefer `.NET` and C# API references, samples, and watch coverage. Do not add Python-only API references or Python-only upstream watches unless the user explicitly asks for cross-language coverage.
 
 When creating a new skill:
@@ -310,7 +312,7 @@ When creating a new agent:
 2. Keep each agent in its own folder; flat loose agent files in the repo are not the canonical source layout.
 3. Add `AGENT.md` with a clear role and routing scope.
 4. Prefer concise, role-based agent slugs. Avoid awkward names that simply repeat the full parent skill slug with a generic suffix like `-specialist` when a shorter slug such as `agent-framework-router` or `aspire-orchestrator` would be clearer.
-5. Reference the relevant `dotnet-*` skills it is expected to orchestrate.
+5. Reference the relevant canonical skills it is expected to orchestrate.
 6. Keep validation explicit: what a good completion looks like, what the agent should hand off, and what it should refuse.
 7. Keep `AGENT.md` short and routing-focused. Put bulk framework notes, decision tables, protocol details, and other deep material in sibling `references/` files or in the paired skill instead of turning `AGENT.md` into a second skill-sized document.
 
@@ -420,7 +422,7 @@ Rules:
 - Prefer the public NuGet package IDs `dotnet-skills`, `dotnet-agents`, and `agents` so installation stays `dotnet tool install --global dotnet-skills`, `dotnet tool install --global dotnet-agents`, or `dotnet tool install --global agents`.
 - Keep only the manual base version in the project file; CI must derive the publish version automatically by appending the GitHub run number as the numeric patch segment.
 - Do not require or document local `dotnet tool install --add-source ...` smoke tests for contributors; validate installability in CI instead and keep user-facing docs focused on the public NuGet install flow.
-- Keep canonical skill IDs namespaced as `dotnet-*` in the repository, but let the CLI accept short aliases such as `aspire` or `orleans` in commands.
+- Keep canonical repo-authored skill IDs clean and prefix-free in the repository instead of maintaining a separate alias layer.
 - Keep `dotnet-skills` as the skill-first CLI. Publish the dedicated agent-only CLI in both supported surfaces: `dotnet-agents` for `dotnet agents ...` and `agents` for `agents ...`. Keep them behaviorally aligned; do not collapse the skill-first and agent-first surfaces into one ambiguous default tool.
 - Canonical repo-owned agents live in folder-per-agent layouts with `AGENT.md`; runtime-specific `.agent.md` or native Claude files are adapters, not the source of truth.
 - The installer must account for Codex, Claude, Copilot, Gemini, and Junie target layouts instead of assuming only one global skills directory.
@@ -518,7 +520,7 @@ Every shard may contain the same two human-maintained lists:
 Each entry should stay minimal:
 
 - `source`
-- `skills`: affected `dotnet-*` skills
+- `skills`: affected skills
 
 Use `source` for both:
 
@@ -554,7 +556,7 @@ When adding a GitHub release watch:
 - Prefer the repository that actually signals the .NET-facing release stream.
 - If the repository publishes multiple language or package streams, add `match_tag_regex`.
 - Use `match_tag_regex` for mixed repos such as Semantic Kernel or Agent Framework, where the latest release may otherwise point to Python or another stream.
-- Project-specific watches must point to project-specific skills. Do not map a library watch for a concrete repository to generic umbrella skills such as `dotnet`, `dotnet-architecture`, or `dotnet-orleans` as a substitute for a missing dedicated skill.
+- Project-specific watches must point to project-specific skills. Do not map a library watch for a concrete repository to generic umbrella skills such as `dotnet`, `architecture`, or `orleans` as a substitute for a missing dedicated skill.
 
 When adding a documentation watch:
 
@@ -664,7 +666,7 @@ This repository should behave like a maintainable documentation-and-automation s
 ### Likes
 
 - Public NuGet distribution and CI-verified installability for the tool instead of contributor-local `--add-source` install loops.
-- Canonical `dotnet-*` skill IDs in the repository, with short aliases in CLI commands.
+- Canonical prefix-free skill IDs in the repository, without a separate legacy alias layer.
 - Agent-aware install flows that understand Codex, Claude, Copilot, Gemini, and Junie instead of assuming one shared folder layout.
 - Official agent standards and native agent layouts instead of repo-local pseudo-standards.
 - One obvious upstream watch config surface: a small base file plus optional shard files with the same two obvious lists: `github_releases` and `documentation`.

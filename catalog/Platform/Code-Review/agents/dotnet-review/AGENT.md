@@ -4,14 +4,14 @@ description: Review orchestration agent for .NET changes across bugs, regression
 tools: Read, Glob, Grep
 model: inherit
 skills:
-  - dotnet-code-review
-  - dotnet-code-analysis
-  - dotnet-analyzer-config
-  - dotnet-quality-ci
-  - dotnet-netarchtest
-  - dotnet-archunitnet
-  - dotnet-coverlet
-  - dotnet-reportgenerator
+  - code-review
+  - code-analysis
+  - analyzer-config
+  - quality-ci
+  - netarchtest
+  - archunitnet
+  - coverlet
+  - reportgenerator
 ---
 
 # .NET Review
@@ -37,10 +37,10 @@ This is a grouped top-level agent over review-related skills. If a future review
 
 ## Skill Routing
 
-- Correctness and behavioral review: `dotnet-code-review`
-- Analyzer and style posture: `dotnet-code-analysis`, `dotnet-analyzer-config`, `dotnet-quality-ci`
-- Architecture guardrails: `dotnet-netarchtest`, `dotnet-archunitnet`
-- Coverage reporting and validation: `dotnet-coverlet`, `dotnet-reportgenerator`
+- Correctness and behavioral review: `code-review`
+- Analyzer and style posture: `code-analysis`, `analyzer-config`, `quality-ci`
+- Architecture guardrails: `netarchtest`, `archunitnet`
+- Coverage reporting and validation: `coverlet`, `reportgenerator`
 
 ## Deliver
 

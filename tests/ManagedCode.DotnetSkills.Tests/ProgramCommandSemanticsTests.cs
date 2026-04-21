@@ -19,7 +19,7 @@ public sealed class ProgramCommandSemanticsTests
 
         Assert.Equal("local workspace catalog", catalog.SourceLabel);
         Assert.Equal("workspace", catalog.CatalogVersion);
-        Assert.Contains(catalog.Packages, package => string.Equals(package.Name, "dotnet-base", StringComparison.Ordinal));
+        Assert.Contains(catalog.Packages, package => string.Equals(package.Name, "foundations", StringComparison.Ordinal));
         Assert.DoesNotContain(catalog.Packages, package => string.Equals(package.Name, "core", StringComparison.OrdinalIgnoreCase));
     }
 
@@ -94,11 +94,11 @@ public sealed class ProgramCommandSemanticsTests
     [Fact]
     public void ParseRemoveOptions_RecognizesBundleMode()
     {
-        var options = Program.ParseRemoveOptions(["bundle", "dotnet-quality"]);
+        var options = Program.ParseRemoveOptions(["bundle", "quality"]);
 
         Assert.Equal(RemoveSelectionMode.Bundle, options.SelectionMode);
         Assert.False(options.RemoveAll);
-        Assert.Equal(["dotnet-quality"], options.RequestedTargets);
+        Assert.Equal(["quality"], options.RequestedTargets);
     }
 
     [Fact]

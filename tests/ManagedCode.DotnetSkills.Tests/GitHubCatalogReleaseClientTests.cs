@@ -96,9 +96,9 @@ public sealed class GitHubCatalogReleaseClientTests
         var catalog = await client.SyncAsync(catalogVersion: null, force: true, CancellationToken.None);
 
         Assert.Equal("2026.4.10.0", catalog.CatalogVersion);
-        Assert.Contains(catalog.Skills, skill => skill.Name == "dotnet-aspire");
+        Assert.Contains(catalog.Skills, skill => skill.Name == "aspire");
         Assert.True(Directory.Exists(Path.Combine(tempDirectory.Path, "catalog-v2026.4.10.0", "catalog")));
-        Assert.True(catalog.ResolveSkillSource("dotnet-aspire").Exists);
+        Assert.True(catalog.ResolveSkillSource("aspire").Exists);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public sealed class GitHubCatalogReleaseClientTests
                     {
                       "skills": [
                         {
-                          "name": "dotnet-aspire",
+                          "name": "aspire",
                           "title": ".NET Aspire",
                           "version": "1.0.0",
                           "category": "Cloud",
@@ -196,7 +196,7 @@ public sealed class GitHubCatalogReleaseClientTests
                           "package": "Aspire",
                           "description": "Aspire",
                           "compatibility": "codex",
-                          "path": "catalog/Frameworks/Aspire/skills/dotnet-aspire"
+                          "path": "catalog/Frameworks/Aspire/skills/aspire"
                         }
                       ],
                       "bundles": []
@@ -210,7 +210,7 @@ public sealed class GitHubCatalogReleaseClientTests
 
         var manifest = await client.LoadManifestAsync(catalogVersion: null, CancellationToken.None);
 
-        Assert.Contains(manifest.Skills, skill => skill.Name == "dotnet-aspire");
+        Assert.Contains(manifest.Skills, skill => skill.Name == "aspire");
     }
 
     private static HttpResponseMessage JsonResponse(string json)

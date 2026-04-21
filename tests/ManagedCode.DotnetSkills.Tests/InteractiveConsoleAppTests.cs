@@ -9,11 +9,11 @@ public sealed class InteractiveConsoleAppTests
     [Fact]
     public void BuildPromptDisplayLabel_EscapesBundleLabelsWithBracketedNetAreas()
     {
-        var label = "dotnet-base [.NET Foundations / Foundations] (4 skills)";
+        var label = "foundations [.NET Foundations / Foundations] (4 skills)";
 
         var escaped = CommandCenterInteractivePrompts.BuildPromptDisplayLabel(label);
 
-        Assert.Equal("dotnet-base [[.NET Foundations / Foundations]] (4 skills)", escaped);
+        Assert.Equal("foundations [[.NET Foundations / Foundations]] (4 skills)", escaped);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class InteractiveConsoleAppTests
     {
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
-        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
             "Collections",
             "Browse a collection",
@@ -86,7 +86,7 @@ public sealed class InteractiveConsoleAppTests
     {
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
-        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
             "Skills",
             "Install selected skills",
@@ -113,7 +113,7 @@ public sealed class InteractiveConsoleAppTests
     {
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
-        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "aspire", StringComparison.Ordinal));
         var prompts = new FakeInteractivePrompts(
             "Packages",
             "Install from a package signal",
@@ -141,7 +141,7 @@ public sealed class InteractiveConsoleAppTests
         var prompts = new FakeInteractivePrompts(
             "Bundles",
             "Inspect a focused bundle",
-            "dotnet-base",
+            "foundations",
             "Back",
             "Back",
             "Exit");
@@ -175,7 +175,7 @@ public sealed class InteractiveConsoleAppTests
     {
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
-        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "aspire", StringComparison.Ordinal));
         var sourceLayout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
         new SkillInstaller(catalog).Install([aspireSkill], sourceLayout, force: true);
 
@@ -271,8 +271,8 @@ public sealed class InteractiveConsoleAppTests
         var exitCode = await app.RunAsync();
 
         Assert.Equal(0, exitCode);
-        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
-        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "aspire")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "orleans")));
     }
 
     [Fact]
@@ -302,8 +302,8 @@ public sealed class InteractiveConsoleAppTests
         var exitCode = await app.RunAsync();
 
         Assert.Equal(0, exitCode);
-        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
-        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "aspire")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "orleans")));
     }
 
     [Fact]
@@ -333,8 +333,8 @@ public sealed class InteractiveConsoleAppTests
         var exitCode = await app.RunAsync();
 
         Assert.Equal(0, exitCode);
-        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
-        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "aspire")));
+        Assert.True(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "orleans")));
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public sealed class InteractiveConsoleAppTests
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
-        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "aspire", StringComparison.Ordinal));
         var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
         installer.Install([aspireSkill], layout, force: true);
 
@@ -381,7 +381,7 @@ public sealed class InteractiveConsoleAppTests
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
-        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "aspire", StringComparison.Ordinal));
         var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
         installer.Install([aspireSkill], layout, force: true);
 
@@ -411,7 +411,7 @@ public sealed class InteractiveConsoleAppTests
         using var projectDirectory = new TemporaryDirectory();
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
-        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "dotnet-aspire", StringComparison.Ordinal));
+        var aspireSkill = catalog.Skills.Single(skill => string.Equals(skill.Name, "aspire", StringComparison.Ordinal));
         var layout = SkillInstallTarget.Resolve(null, AgentPlatform.Codex, InstallScope.Project, projectDirectory.Path);
         installer.Install([aspireSkill], layout, force: true);
 
@@ -470,8 +470,8 @@ public sealed class InteractiveConsoleAppTests
         var exitCode = await app.RunAsync();
 
         Assert.Equal(0, exitCode);
-        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-aspire")));
-        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "dotnet-orleans")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "aspire")));
+        Assert.False(Directory.Exists(Path.Combine(projectDirectory.Path, ".codex", "skills", "orleans")));
     }
 
     private static InteractiveConsoleApp CreateApp(

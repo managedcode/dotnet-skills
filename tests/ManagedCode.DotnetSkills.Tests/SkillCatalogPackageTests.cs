@@ -53,22 +53,22 @@ public sealed class SkillCatalogPackageTests
               }
             }
             """);
-        WriteSkill(tempDirectory.Path, "Frameworks", "Aspire", "dotnet-aspire", ".NET Aspire");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Aspire", "dotnet-aspire", """{"version":"1.0.0","category":"Cloud","package_prefix":"Aspire"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Aspire", "aspire", ".NET Aspire");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Aspire", "aspire", """{"version":"1.0.0","category":"Cloud","package_prefix":"Aspire"}""");
 
         WritePackageManifest(tempDirectory.Path, "Platform", "MCAF", """{"name":"MCAF","title":"MCAF","description":"","links":{}}""");
         foreach (var skillName in new[]
                  {
-                     "dotnet-mcaf",
-                     "dotnet-mcaf-agile-delivery",
-                     "dotnet-mcaf-devex",
-                     "dotnet-mcaf-documentation",
-                     "dotnet-mcaf-feature-spec",
-                     "dotnet-mcaf-human-review-planning",
-                     "dotnet-mcaf-ml-ai-delivery",
-                     "dotnet-mcaf-nfr",
-                     "dotnet-mcaf-source-control",
-                     "dotnet-mcaf-ui-ux",
+                     "mcaf",
+                     "mcaf-agile-delivery",
+                     "mcaf-devex",
+                     "mcaf-documentation",
+                     "mcaf-feature-spec",
+                     "mcaf-human-review-planning",
+                     "mcaf-ml-ai-delivery",
+                     "mcaf-nfr",
+                     "mcaf-source-control",
+                     "mcaf-ui-ux",
                  })
         {
             WriteSkill(tempDirectory.Path, "Platform", "MCAF", skillName, skillName);
@@ -76,31 +76,31 @@ public sealed class SkillCatalogPackageTests
         }
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Orleans", """{"name":"Orleans","title":"Orleans","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "dotnet-orleans", "Orleans");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "dotnet-orleans", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "orleans", "Orleans");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "orleans", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", """{"name":"ManagedCode-Orleans-Graph","title":"ManagedCode Orleans Graph","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "dotnet-managedcode-orleans-graph", "ManagedCode Orleans Graph");
-        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "dotnet-managedcode-orleans-graph", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "managedcode-orleans-graph", "ManagedCode Orleans Graph");
+        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "managedcode-orleans-graph", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", """{"name":"ManagedCode-Orleans-SignalR","title":"ManagedCode Orleans SignalR","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "dotnet-managedcode-orleans-signalr", "ManagedCode Orleans SignalR");
-        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "dotnet-managedcode-orleans-signalr", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "managedcode-orleans-signalr", "ManagedCode Orleans SignalR");
+        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "managedcode-orleans-signalr", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Worker-Services", """{"name":"Worker-Services","title":"Worker Services","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Worker-Services", "dotnet-worker-services", "Worker Services");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Worker-Services", "dotnet-worker-services", """{"version":"1.0.0","category":"Cloud"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Worker-Services", "worker-services", "Worker Services");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Worker-Services", "worker-services", """{"version":"1.0.0","category":"Cloud"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "SignalR", """{"name":"SignalR","title":"SignalR","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "SignalR", "dotnet-signalr", "SignalR");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "SignalR", "dotnet-signalr", """{"version":"1.0.0","category":"Web"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "SignalR", "signalr", "SignalR");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "SignalR", "signalr", """{"version":"1.0.0","category":"Web"}""");
 
         var package = SkillCatalogPackage.LoadFromDirectory(
             new DirectoryInfo(tempDirectory.Path),
             "test payload",
             "test");
 
-        var aspire = Assert.Single(package.Skills, skill => skill.Name == "dotnet-aspire");
+        var aspire = Assert.Single(package.Skills, skill => skill.Name == "aspire");
         Assert.Equal("Aspire", aspire.PackagePrefix);
         Assert.Equal("https://github.com/dotnet/aspire", aspire.Links.Repository);
         Assert.Equal("https://learn.microsoft.com/en-us/dotnet/aspire/", aspire.Links.Docs);
@@ -108,14 +108,14 @@ public sealed class SkillCatalogPackageTests
         Assert.True(aspire.TokenCount > 0);
         Assert.Contains(package.Packages, bundle => bundle.Name == "orleans");
         Assert.DoesNotContain(package.Packages, bundle => string.Equals(bundle.Kind, "category", StringComparison.OrdinalIgnoreCase));
-        Assert.Equal("dotnet-aspire", package.ResolveSkillSource("dotnet-aspire").Name);
+        Assert.Equal("aspire", package.ResolveSkillSource("aspire").Name);
     }
 
     [Fact]
     public void LoadFromDirectory_RejectsInlineSkillVersionAndCategory()
     {
         using var tempDirectory = new TemporaryDirectory();
-        var skillDirectory = Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Frameworks", "Aspire", "skills", "dotnet-aspire"));
+        var skillDirectory = Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Frameworks", "Aspire", "skills", "aspire"));
 
         File.WriteAllText(
             Path.Combine(tempDirectory.Path, "catalog", "Frameworks", "Aspire", "manifest.json"),
@@ -124,7 +124,7 @@ public sealed class SkillCatalogPackageTests
             Path.Combine(skillDirectory.FullName, "SKILL.md"),
             """
             ---
-            name: dotnet-aspire
+            name: aspire
             version: "1.0.0"
             category: "Cloud"
             description: "Aspire"
@@ -178,16 +178,16 @@ public sealed class SkillCatalogPackageTests
         WritePackageManifest(tempDirectory.Path, "Platform", "MCAF", """{"name":"MCAF","title":"MCAF","description":"","links":{}}""");
         foreach (var skillName in new[]
                  {
-                     "dotnet-mcaf",
-                     "dotnet-mcaf-agile-delivery",
-                     "dotnet-mcaf-devex",
-                     "dotnet-mcaf-documentation",
-                     "dotnet-mcaf-feature-spec",
-                     "dotnet-mcaf-human-review-planning",
-                     "dotnet-mcaf-ml-ai-delivery",
-                     "dotnet-mcaf-nfr",
-                     "dotnet-mcaf-source-control",
-                     "dotnet-mcaf-ui-ux",
+                     "mcaf",
+                     "mcaf-agile-delivery",
+                     "mcaf-devex",
+                     "mcaf-documentation",
+                     "mcaf-feature-spec",
+                     "mcaf-human-review-planning",
+                     "mcaf-ml-ai-delivery",
+                     "mcaf-nfr",
+                     "mcaf-source-control",
+                     "mcaf-ui-ux",
                  })
         {
             WriteSkill(tempDirectory.Path, "Platform", "MCAF", skillName, skillName);
@@ -195,31 +195,31 @@ public sealed class SkillCatalogPackageTests
         }
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Orleans", """{"name":"Orleans","title":"Orleans","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "dotnet-orleans", "Orleans");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "dotnet-orleans", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "orleans", "Orleans");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "orleans", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", """{"name":"ManagedCode-Orleans-Graph","title":"ManagedCode Orleans Graph","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "dotnet-managedcode-orleans-graph", "ManagedCode Orleans Graph");
-        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "dotnet-managedcode-orleans-graph", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "managedcode-orleans-graph", "ManagedCode Orleans Graph");
+        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "managedcode-orleans-graph", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", """{"name":"ManagedCode-Orleans-SignalR","title":"ManagedCode Orleans SignalR","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "dotnet-managedcode-orleans-signalr", "ManagedCode Orleans SignalR");
-        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "dotnet-managedcode-orleans-signalr", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "managedcode-orleans-signalr", "ManagedCode Orleans SignalR");
+        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "managedcode-orleans-signalr", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Worker-Services", """{"name":"Worker-Services","title":"Worker Services","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Worker-Services", "dotnet-worker-services", "Worker Services");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Worker-Services", "dotnet-worker-services", """{"version":"1.0.0","category":"Cloud"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Worker-Services", "worker-services", "Worker Services");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Worker-Services", "worker-services", """{"version":"1.0.0","category":"Cloud"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Aspire", """{"name":"Aspire","title":"Aspire","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Aspire", "dotnet-aspire", "Aspire");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Aspire", "dotnet-aspire", """{"version":"1.0.0","category":"Cloud"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Aspire", "aspire", "Aspire");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Aspire", "aspire", """{"version":"1.0.0","category":"Cloud"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "SignalR", """{"name":"SignalR","title":"SignalR","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "SignalR", "dotnet-signalr", "SignalR");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "SignalR", "dotnet-signalr", """{"version":"1.0.0","category":"Web"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "SignalR", "signalr", "SignalR");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "SignalR", "signalr", """{"version":"1.0.0","category":"Web"}""");
 
         var packageDirectory = Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Analyzers", "Observability"));
-        var skillDirectory = Directory.CreateDirectory(Path.Combine(packageDirectory.FullName, "skills", "dotnet-observability-analyzer"));
+        var skillDirectory = Directory.CreateDirectory(Path.Combine(packageDirectory.FullName, "skills", "observability-analyzer"));
 
         File.WriteAllText(
             Path.Combine(packageDirectory.FullName, "manifest.json"),
@@ -228,7 +228,7 @@ public sealed class SkillCatalogPackageTests
             Path.Combine(skillDirectory.FullName, "SKILL.md"),
             """
             ---
-            name: dotnet-observability-analyzer
+            name: observability-analyzer
             description: "Observability analyzer"
             compatibility: "codex"
             ---
@@ -244,7 +244,7 @@ public sealed class SkillCatalogPackageTests
             "test payload",
             "test");
 
-        var skill = Assert.Single(package.Skills, candidate => candidate.Name == "dotnet-observability-analyzer");
+        var skill = Assert.Single(package.Skills, candidate => candidate.Name == "observability-analyzer");
         Assert.Equal("Analyzer", skill.Type);
         Assert.DoesNotContain(package.Packages, bundle => string.Equals(bundle.Kind, "category", StringComparison.OrdinalIgnoreCase));
     }
@@ -285,16 +285,16 @@ public sealed class SkillCatalogPackageTests
         WritePackageManifest(tempDirectory.Path, "Platform", "MCAF", """{"name":"MCAF","title":"MCAF","description":"","links":{}}""");
         foreach (var skillName in new[]
                  {
-                     "dotnet-mcaf",
-                     "dotnet-mcaf-agile-delivery",
-                     "dotnet-mcaf-devex",
-                     "dotnet-mcaf-documentation",
-                     "dotnet-mcaf-feature-spec",
-                     "dotnet-mcaf-human-review-planning",
-                     "dotnet-mcaf-ml-ai-delivery",
-                     "dotnet-mcaf-nfr",
-                     "dotnet-mcaf-source-control",
-                     "dotnet-mcaf-ui-ux",
+                     "mcaf",
+                     "mcaf-agile-delivery",
+                     "mcaf-devex",
+                     "mcaf-documentation",
+                     "mcaf-feature-spec",
+                     "mcaf-human-review-planning",
+                     "mcaf-ml-ai-delivery",
+                     "mcaf-nfr",
+                     "mcaf-source-control",
+                     "mcaf-ui-ux",
                  })
         {
             WriteSkill(tempDirectory.Path, "Platform", "MCAF", skillName, skillName);
@@ -302,28 +302,28 @@ public sealed class SkillCatalogPackageTests
         }
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Orleans", """{"name":"Orleans","title":"Orleans","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "dotnet-orleans", "Orleans");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "dotnet-orleans", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "orleans", "Orleans");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "orleans", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", """{"name":"ManagedCode-Orleans-Graph","title":"ManagedCode Orleans Graph","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "dotnet-managedcode-orleans-graph", "ManagedCode Orleans Graph");
-        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "dotnet-managedcode-orleans-graph", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "managedcode-orleans-graph", "ManagedCode Orleans Graph");
+        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-Graph", "managedcode-orleans-graph", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", """{"name":"ManagedCode-Orleans-SignalR","title":"ManagedCode Orleans SignalR","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "dotnet-managedcode-orleans-signalr", "ManagedCode Orleans SignalR");
-        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "dotnet-managedcode-orleans-signalr", """{"version":"1.0.0","category":"Distributed"}""");
+        WriteSkill(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "managedcode-orleans-signalr", "ManagedCode Orleans SignalR");
+        WriteSkillManifest(tempDirectory.Path, "Libraries", "ManagedCode-Orleans-SignalR", "managedcode-orleans-signalr", """{"version":"1.0.0","category":"Distributed"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Worker-Services", """{"name":"Worker-Services","title":"Worker Services","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Worker-Services", "dotnet-worker-services", "Worker Services");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Worker-Services", "dotnet-worker-services", """{"version":"1.0.0","category":"Cloud"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Worker-Services", "worker-services", "Worker Services");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Worker-Services", "worker-services", """{"version":"1.0.0","category":"Cloud"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Aspire", """{"name":"Aspire","title":"Aspire","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "Aspire", "dotnet-aspire", "Aspire");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Aspire", "dotnet-aspire", """{"version":"1.0.0","category":"Cloud"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "Aspire", "aspire", "Aspire");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "Aspire", "aspire", """{"version":"1.0.0","category":"Cloud"}""");
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "SignalR", """{"name":"SignalR","title":"SignalR","description":"","links":{}}""");
-        WriteSkill(tempDirectory.Path, "Frameworks", "SignalR", "dotnet-signalr", "SignalR");
-        WriteSkillManifest(tempDirectory.Path, "Frameworks", "SignalR", "dotnet-signalr", """{"version":"1.0.0","category":"Web"}""");
+        WriteSkill(tempDirectory.Path, "Frameworks", "SignalR", "signalr", "SignalR");
+        WriteSkillManifest(tempDirectory.Path, "Frameworks", "SignalR", "signalr", """{"version":"1.0.0","category":"Web"}""");
 
         var packageDirectory = Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Platform", "Official-DotNet-AI"));
         var skillDirectory = Directory.CreateDirectory(Path.Combine(packageDirectory.FullName, "skills", "mcp-csharp-create"));

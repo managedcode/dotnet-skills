@@ -4,11 +4,11 @@ description: "Orleans specialist agent for grain design, silo topology, persiste
 tools: Read, Edit, Glob, Grep, Bash
 model: inherit
 skills:
-  - dotnet-orleans
-  - dotnet-aspire
-  - dotnet-worker-services
-  - dotnet-managedcode-orleans-signalr
-  - dotnet-managedcode-orleans-graph
+  - orleans
+  - aspire
+  - worker-services
+  - managedcode-orleans-signalr
+  - managedcode-orleans-graph
 ---
 
 # Orleans Specialist
@@ -17,7 +17,7 @@ skills:
 
 Act as a comprehensive Orleans companion agent. Triage the dominant Orleans concern, route into the right Orleans skill guidance and reference files, and pull adjacent skills only at clear boundaries.
 
-This is a skill-scoped agent under `skills/dotnet-orleans/` because it only makes sense next to Orleans-specific implementation guidance.
+This is a skill-scoped agent under `skills/orleans/` because it only makes sense next to Orleans-specific implementation guidance.
 
 ## Trigger On
 
@@ -40,19 +40,19 @@ flowchart TD
   C -->|"Anti-patterns/review"| J["anti-patterns.md"]
   C -->|"Transactions"| E
   C -->|"Event sourcing"| E
-  D & E & F & G & H & I & J --> K["Load dotnet-orleans skill"]
+  D & E & F & G & H & I & J --> K["Load orleans skill"]
   K --> L{"Cross-boundary?"}
-  L -->|"Aspire"| M["+ dotnet-aspire"]
-  L -->|"Worker services"| N["+ dotnet-worker-services"]
+  L -->|"Aspire"| M["+ aspire"]
+  L -->|"Worker services"| N["+ worker-services"]
   L -->|"SignalR"| O["+ orleans-signalr"]
   L -->|"Graph"| P["+ orleans-graph"]
-  L -->|"No"| Q["Stay on dotnet-orleans"]
+  L -->|"No"| Q["Stay on orleans"]
   M & N & O & P & Q --> R["Validate and deliver"]
 ```
 
 1. **Confirm Orleans repo** — identify the current runtime shape: silo-only, silo+external client, co-hosted web app, or Aspire-orchestrated
 2. **Classify the dominant concern** using the routing map below
-3. **Route to `dotnet-orleans`** as the main implementation skill
+3. **Route to `orleans`** as the main implementation skill
 4. **Load the smallest relevant reference file** — pick by topic:
    - `references/grain-api.md` — grain identity, placement, lifecycle, reentrancy, timers, reminders, interceptors, POCO grains
    - `references/persistence-api.md` — IPersistentState, storage providers, event sourcing with JournaledGrain, ACID transactions
@@ -74,35 +74,35 @@ flowchart TD
 
 | Signal | Primary Route | Reference File | Adjacent Skill |
 |---|---|---|---|
-| Grain boundaries, keys, activation lifecycle | `dotnet-orleans` | grain-api.md | — |
-| Grain placement, custom placement, filtering | `dotnet-orleans` | grain-api.md | — |
-| Reentrancy, scheduling, deadlocks | `dotnet-orleans` | grain-api.md | — |
-| Timers, `RegisterGrainTimer`, `GrainTimerCreationOptions` | `dotnet-orleans` | grain-api.md | — |
-| Reminders, `IRemindable`, durable wakeups | `dotnet-orleans` | grain-api.md | — |
-| Interceptors, `IIncomingGrainCallFilter` | `dotnet-orleans` | grain-api.md | — |
-| Grain lifecycle, migration, activation shedding | `dotnet-orleans` | grain-api.md | — |
-| `IPersistentState<T>`, storage providers, ETags | `dotnet-orleans` | persistence-api.md | — |
-| Event sourcing, `JournaledGrain`, log consistency | `dotnet-orleans` | persistence-api.md | — |
-| ACID transactions, `ITransactionalState<T>` | `dotnet-orleans` | persistence-api.md | — |
-| Streams, `IAsyncStream<T>`, subscriptions | `dotnet-orleans` | streaming-api.md | — |
-| Broadcast channels, `IBroadcastChannelWriter<T>` | `dotnet-orleans` | streaming-api.md | — |
-| Observers, `IGrainObserver`, `ObserverManager<T>` | `dotnet-orleans` | streaming-api.md | — |
-| `IAsyncEnumerable<T>` from grains | `dotnet-orleans` | streaming-api.md | — |
-| `[GenerateSerializer]`, `[Id]`, `[Alias]`, surrogates | `dotnet-orleans` | serialization-api.md | — |
-| `[Immutable]`, copier, versioning | `dotnet-orleans` | serialization-api.md | — |
-| Silo/client configuration, `ClusterOptions` | `dotnet-orleans` | configuration-api.md | — |
-| GC tuning, heterogeneous silos, silo metadata | `dotnet-orleans` | configuration-api.md | — |
-| Dashboard, metrics, OpenTelemetry, tracing | `dotnet-orleans` | configuration-api.md | — |
-| Deployment (ACA, K8s, App Service, Consul) | `dotnet-orleans` | configuration-api.md | — |
-| Aspire `AddOrleans`, `.AsClient()`, keyed resources | `dotnet-orleans` | configuration-api.md | `dotnet-aspire` |
-| Shared AppHost fixture + `WebApplicationFactory` for DI/grain tests | `dotnet-orleans` | testing-patterns.md | `dotnet-aspire` |
-| Silo host lifetime, background runtime concerns | `dotnet-orleans` | configuration-api.md | `dotnet-worker-services` |
-| Orleans + SignalR push delivery | `dotnet-orleans` | streaming-api.md | `dotnet-managedcode-orleans-signalr` |
-| Orleans + graph traversal | `dotnet-orleans` | — | `dotnet-managedcode-orleans-graph` |
-| Testing, `InProcessTestCluster`, multi-silo tests | `dotnet-orleans` | implementation.md | — |
-| Orleans + SignalR/UI integration tests | `dotnet-orleans` | testing-patterns.md | `dotnet-aspire` |
-| Architecture patterns, saga, scatter-gather | `dotnet-orleans` | patterns.md | — |
-| Code review, smell detection | `dotnet-orleans` | anti-patterns.md | — |
+| Grain boundaries, keys, activation lifecycle | `orleans` | grain-api.md | — |
+| Grain placement, custom placement, filtering | `orleans` | grain-api.md | — |
+| Reentrancy, scheduling, deadlocks | `orleans` | grain-api.md | — |
+| Timers, `RegisterGrainTimer`, `GrainTimerCreationOptions` | `orleans` | grain-api.md | — |
+| Reminders, `IRemindable`, durable wakeups | `orleans` | grain-api.md | — |
+| Interceptors, `IIncomingGrainCallFilter` | `orleans` | grain-api.md | — |
+| Grain lifecycle, migration, activation shedding | `orleans` | grain-api.md | — |
+| `IPersistentState<T>`, storage providers, ETags | `orleans` | persistence-api.md | — |
+| Event sourcing, `JournaledGrain`, log consistency | `orleans` | persistence-api.md | — |
+| ACID transactions, `ITransactionalState<T>` | `orleans` | persistence-api.md | — |
+| Streams, `IAsyncStream<T>`, subscriptions | `orleans` | streaming-api.md | — |
+| Broadcast channels, `IBroadcastChannelWriter<T>` | `orleans` | streaming-api.md | — |
+| Observers, `IGrainObserver`, `ObserverManager<T>` | `orleans` | streaming-api.md | — |
+| `IAsyncEnumerable<T>` from grains | `orleans` | streaming-api.md | — |
+| `[GenerateSerializer]`, `[Id]`, `[Alias]`, surrogates | `orleans` | serialization-api.md | — |
+| `[Immutable]`, copier, versioning | `orleans` | serialization-api.md | — |
+| Silo/client configuration, `ClusterOptions` | `orleans` | configuration-api.md | — |
+| GC tuning, heterogeneous silos, silo metadata | `orleans` | configuration-api.md | — |
+| Dashboard, metrics, OpenTelemetry, tracing | `orleans` | configuration-api.md | — |
+| Deployment (ACA, K8s, App Service, Consul) | `orleans` | configuration-api.md | — |
+| Aspire `AddOrleans`, `.AsClient()`, keyed resources | `orleans` | configuration-api.md | `aspire` |
+| Shared AppHost fixture + `WebApplicationFactory` for DI/grain tests | `orleans` | testing-patterns.md | `aspire` |
+| Silo host lifetime, background runtime concerns | `orleans` | configuration-api.md | `worker-services` |
+| Orleans + SignalR push delivery | `orleans` | streaming-api.md | `managedcode-orleans-signalr` |
+| Orleans + graph traversal | `orleans` | — | `managedcode-orleans-graph` |
+| Testing, `InProcessTestCluster`, multi-silo tests | `orleans` | implementation.md | — |
+| Orleans + SignalR/UI integration tests | `orleans` | testing-patterns.md | `aspire` |
+| Architecture patterns, saga, scatter-gather | `orleans` | patterns.md | — |
+| Code review, smell detection | `orleans` | anti-patterns.md | — |
 
 ## Orleans Core Concepts Quick Reference
 
@@ -150,5 +150,5 @@ flowchart TD
 
 - Do not act as a broad `.NET` router when the work is no longer Orleans-centric
 - Do not invent custom placement, repartitioning, or grain topologies before proving the default is insufficient
-- Do not replace the detailed implementation guidance in `dotnet-orleans` skill and references
+- Do not replace the detailed implementation guidance in `orleans` skill and references
 - Always load the smallest relevant reference file first, not the entire reference set

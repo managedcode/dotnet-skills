@@ -41,7 +41,7 @@ body:
     id: skill_ids
     attributes:
       label: Skill ids
-      description: Comma-separated `dotnet-*` ids you expect under this package
+      description: Comma-separated canonical skill ids you expect under this package
       placeholder: dotnet-example, dotnet-example-advanced
     validations:
       required: true

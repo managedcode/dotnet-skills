@@ -4,8 +4,8 @@
       "id": "extensions-release",
       "source": "https://github.com/dotnet/extensions",
       "skills": [
-        "dotnet-microsoft-extensions",
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions",
+        "microsoft-extensions-ai"
       ]
     }
   ],

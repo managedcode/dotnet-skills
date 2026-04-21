@@ -4,7 +4,7 @@
       "id": "mlnet-release",
       "source": "https://github.com/dotnet/machinelearning",
       "skills": [
-        "dotnet-mlnet"
+        "mlnet"
       ]
     },
     {
@@ -12,7 +12,7 @@
       "source": "https://github.com/microsoft/semantic-kernel",
       "match_tag_regex": "^dotnet-",
       "skills": [
-        "dotnet-semantic-kernel"
+        "semantic-kernel"
       ]
     },
     {
@@ -20,14 +20,14 @@
       "source": "https://github.com/microsoft/agent-framework",
       "match_tag_regex": "^dotnet-",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "mcp-csharp-sdk-release",
       "source": "https://github.com/modelcontextprotocol/csharp-sdk",
       "skills": [
-        "dotnet-mcp"
+        "mcp"
       ]
     }
   ],
@@ -36,1079 +36,1079 @@
       "id": "dotnet-ai-docs-overview",
       "source": "https://learn.microsoft.com/dotnet/ai/overview",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-dotnet-ai-ecosystem",
       "source": "https://learn.microsoft.com/dotnet/ai/dotnet-ai-ecosystem",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-microsoft-agent-framework"
+        "microsoft-extensions-ai",
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "extensions-ai-docs",
       "source": "https://learn.microsoft.com/dotnet/ai/microsoft-extensions-ai",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-ichatclient",
       "source": "https://learn.microsoft.com/dotnet/ai/ichatclient",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-iembeddinggenerator",
       "source": "https://learn.microsoft.com/dotnet/ai/iembeddinggenerator",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-azure-ai-services-authentication",
       "source": "https://learn.microsoft.com/dotnet/ai/azure-ai-services-authentication",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-get-started-app-chat-scaling-with-azure-container-apps",
       "source": "https://learn.microsoft.com/dotnet/ai/get-started-app-chat-scaling-with-azure-container-apps",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-get-started-app-chat-template",
       "source": "https://learn.microsoft.com/dotnet/ai/get-started-app-chat-template",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-get-started-mcp",
       "source": "https://learn.microsoft.com/dotnet/ai/get-started-mcp",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-mcp"
+        "microsoft-extensions-ai",
+        "mcp"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-agents",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/agents",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-microsoft-agent-framework"
+        "microsoft-extensions-ai",
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-ai-tools",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/ai-tools",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-chain-of-thought-prompting",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/chain-of-thought-prompting",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-data-ingestion",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/data-ingestion",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-embeddings",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/embeddings",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-how-genai-and-llms-work",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/how-genai-and-llms-work",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-prompt-engineering-dotnet",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/prompt-engineering-dotnet",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-rag",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/rag",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-understanding-tokens",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/understanding-tokens",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-vector-databases",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/vector-databases",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-conceptual-zero-shot-learning",
       "source": "https://learn.microsoft.com/dotnet/ai/conceptual/zero-shot-learning",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-evaluation-evaluate-ai-response",
       "source": "https://learn.microsoft.com/dotnet/ai/evaluation/evaluate-ai-response",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-evaluation-evaluate-safety",
       "source": "https://learn.microsoft.com/dotnet/ai/evaluation/evaluate-safety",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-evaluation-evaluate-with-reporting",
       "source": "https://learn.microsoft.com/dotnet/ai/evaluation/evaluate-with-reporting",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-evaluation-libraries",
       "source": "https://learn.microsoft.com/dotnet/ai/evaluation/libraries",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-evaluation-responsible-ai",
       "source": "https://learn.microsoft.com/dotnet/ai/evaluation/responsible-ai",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-how-to-access-data-in-functions",
       "source": "https://learn.microsoft.com/dotnet/ai/how-to/access-data-in-functions",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-how-to-app-service-aoai-auth",
       "source": "https://learn.microsoft.com/dotnet/ai/how-to/app-service-aoai-auth",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-how-to-content-filtering",
       "source": "https://learn.microsoft.com/dotnet/ai/how-to/content-filtering",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-how-to-handle-invalid-tool-input",
       "source": "https://learn.microsoft.com/dotnet/ai/how-to/handle-invalid-tool-input",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-how-to-use-tokenizers",
       "source": "https://learn.microsoft.com/dotnet/ai/how-to/use-tokenizers",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-ai-templates",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/ai-templates",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-build-chat-app",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-chat-app",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-build-mcp-client",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-mcp-client",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-mcp"
+        "microsoft-extensions-ai",
+        "mcp"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-build-mcp-server",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-mcp-server",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-mcp"
+        "microsoft-extensions-ai",
+        "mcp"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-build-vector-search-app",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/build-vector-search-app",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-chat-local-model",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/chat-local-model",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-create-assistant",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/create-assistant",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-microsoft-agent-framework"
+        "microsoft-extensions-ai",
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-generate-images",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/generate-images",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-process-data",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/process-data",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-prompt-model",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/prompt-model",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-publish-mcp-registry",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/publish-mcp-registry",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-mcp"
+        "microsoft-extensions-ai",
+        "mcp"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-structured-output",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/structured-output",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-text-to-image",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/text-to-image",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-quickstarts-use-function-calling",
       "source": "https://learn.microsoft.com/dotnet/ai/quickstarts/use-function-calling",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-resources-azure-ai",
       "source": "https://learn.microsoft.com/dotnet/ai/resources/azure-ai",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-resources-get-started",
       "source": "https://learn.microsoft.com/dotnet/ai/resources/get-started",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "dotnet-ai-docs-resources-mcp-servers",
       "source": "https://learn.microsoft.com/dotnet/ai/resources/mcp-servers",
       "skills": [
-        "dotnet-microsoft-extensions-ai",
-        "dotnet-mcp"
+        "microsoft-extensions-ai",
+        "mcp"
       ]
     },
     {
       "id": "dotnet-ai-docs-tutorials-tutorial-ai-vector-search",
       "source": "https://learn.microsoft.com/dotnet/ai/tutorials/tutorial-ai-vector-search",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "extensions-ai-api-reference",
       "source": "https://learn.microsoft.com/dotnet/api/microsoft.extensions.ai",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "extensions-vector-data-api-reference",
       "source": "https://learn.microsoft.com/dotnet/api/microsoft.extensions.vectordata",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "extensions-data-ingestion-api-reference",
       "source": "https://learn.microsoft.com/dotnet/api/microsoft.extensions.dataingestion",
       "skills": [
-        "dotnet-microsoft-extensions-ai"
+        "microsoft-extensions-ai"
       ]
     },
     {
       "id": "mcp-csharp-sdk-docs",
       "source": "https://csharp.sdk.modelcontextprotocol.io/",
       "skills": [
-        "dotnet-mcp"
+        "mcp"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui-backend-tool-rendering",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/backend-tool-rendering",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui-frontend-tools",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/frontend-tools",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui-getting-started",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/getting-started",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui-human-in-the-loop",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/human-in-the-loop",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui-security-considerations",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/security-considerations",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui-state-management",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/state-management",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-integrations-ag-ui-testing-with-dojo",
       "source": "https://learn.microsoft.com/agent-framework/integrations/ag-ui/testing-with-dojo",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-migration-guide-from-autogen",
       "source": "https://learn.microsoft.com/agent-framework/migration-guide/from-autogen/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-migration-guide-from-semantic-kernel",
       "source": "https://learn.microsoft.com/agent-framework/migration-guide/from-semantic-kernel/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-migration-guide-from-semantic-kernel-samples",
       "source": "https://learn.microsoft.com/agent-framework/migration-guide/from-semantic-kernel/samples",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-overview",
       "source": "https://learn.microsoft.com/agent-framework/overview/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-support-faq",
       "source": "https://learn.microsoft.com/agent-framework/support/faq",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-support",
       "source": "https://learn.microsoft.com/agent-framework/support/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-support-troubleshooting",
       "source": "https://learn.microsoft.com/agent-framework/support/troubleshooting",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-support-upgrade",
       "source": "https://learn.microsoft.com/agent-framework/support/upgrade/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-agent-as-mcp-tool",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/agent-as-mcp-tool",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-create-and-run-durable-agent",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/create-and-run-durable-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-enable-observability",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/enable-observability",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-function-tools-approvals",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/function-tools-approvals",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-function-tools",
       "source": "https://learn.microsoft.com/agent-framework/agents/tools/function-tools",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-images",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/images",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-memory",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/memory",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-multi-turn-conversation",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/multi-turn-conversation",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-orchestrate-durable-agents",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/orchestrate-durable-agents",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-persisted-conversation",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/persisted-conversation",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-run-agent",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/run-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-structured-output",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/structured-output",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-agents-third-party-chat-history-storage",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/agents/third-party-chat-history-storage",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-overview",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/overview",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-plugins-use-purview-with-agent-framework-sdk",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/plugins/use-purview-with-agent-framework-sdk",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-quick-start",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/quick-start",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-agents-in-workflows",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/workflows/agents-in-workflows",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-checkpointing-and-resuming",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/workflows/checkpointing-and-resuming",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-requests-and-responses",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/workflows/requests-and-responses",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-simple-concurrent-workflow",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/workflows/simple-concurrent-workflow",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-simple-sequential-workflow",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/workflows/simple-sequential-workflow",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-workflow-builder-with-factories",
       "source": "https://learn.microsoft.com/agent-framework/workflows/workflows",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-tutorials-workflows-workflow-with-branching-logic",
       "source": "https://learn.microsoft.com/agent-framework/tutorials/workflows/workflow-with-branching-logic",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-background-responses",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-background-responses",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-memory",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-memory",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-middleware",
       "source": "https://learn.microsoft.com/agent-framework/agents/middleware/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-rag",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-rag",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-tools",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-tools",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-a2a-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/a2a-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-anthropic-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/anthropic-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-models-chat-completion-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-models-chat-completion-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-azure-ai-foundry-models-responses-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-models-responses-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-azure-openai-chat-completion-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-openai-chat-completion-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-azure-openai-responses-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/azure-openai-responses-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-chat-client-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/chat-client-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-custom-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/custom-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-durable-agent-create-durable-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/durable-agent/create-durable-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-durable-agent-features",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/durable-agent/features",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-openai-assistants-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/openai-assistants-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-openai-chat-completion-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/openai-chat-completion-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-agent-types-openai-responses-agent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/agent-types/openai-responses-agent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-multi-turn-conversation",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/multi-turn-conversation",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-agents-running-agents",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/agents/running-agents",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-devui-api-reference",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/devui/api-reference",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-devui-directory-discovery",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/devui/directory-discovery",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-devui",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/devui/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-devui-samples",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/devui/samples",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-devui-security",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/devui/security",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-devui-tracing",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/devui/tracing",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-hosting-agent-to-agent-integration",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/hosting/agent-to-agent-integration",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-hosting",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/hosting/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-hosting-openai-integration",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/hosting/openai-integration",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-model-context-protocol",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/model-context-protocol/",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-model-context-protocol-using-mcp-tools",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/model-context-protocol/using-mcp-tools",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-model-context-protocol-using-mcp-with-foundry-agents",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/model-context-protocol/using-mcp-with-foundry-agents",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-observability",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/observability",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-overview",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/overview",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-as-agents",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/as-agents",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-checkpoints",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/checkpoints",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-core-concepts-edges",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/edges",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-core-concepts-events",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/events",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-core-concepts-executors",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/executors",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-core-concepts-overview",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/overview",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-core-concepts-workflows",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/core-concepts/workflows",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-declarative-workflows-actions-reference",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows/actions-reference",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-declarative-workflows-advanced-patterns",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows/advanced-patterns",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-declarative-workflows-expressions",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows/expressions",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-declarative-workflows",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/declarative-workflows",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-observability",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/observability",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-orchestrations-concurrent",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/concurrent",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-orchestrations-group-chat",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/group-chat",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-orchestrations-handoff",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/handoff",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-orchestrations-human-in-the-loop",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/human-in-the-loop",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-orchestrations-magentic",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/magentic",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-orchestrations-overview",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/overview",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-orchestrations-sequential",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/orchestrations/sequential",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-overview",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/overview",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-requests-and-responses",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/requests-and-responses",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-shared-states",
       "source": "https://learn.microsoft.com/agent-framework/workflows/state",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-state-isolation",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/state-isolation",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-using-agents",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/using-agents",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-docs-user-guide-workflows-visualization",
       "source": "https://learn.microsoft.com/agent-framework/user-guide/workflows/visualization",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     },
     {
       "id": "agent-framework-dotnet-api-reference",
       "source": "https://learn.microsoft.com/dotnet/api/microsoft.agents.ai",
       "skills": [
-        "dotnet-microsoft-agent-framework"
+        "microsoft-agent-framework"
       ]
     }
   ]

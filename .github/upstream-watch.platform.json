@@ -5,8 +5,8 @@
       "source": "https://github.com/dotnet/sdk",
       "skills": [
         "dotnet",
-        "dotnet-project-setup",
-        "dotnet-modern-csharp"
+        "project-setup",
+        "modern-csharp"
       ]
     },
     {
@@ -14,34 +14,34 @@
       "source": "https://github.com/dotnet/runtime",
       "skills": [
         "dotnet",
-        "dotnet-worker-services",
-        "dotnet-modern-csharp"
+        "worker-services",
+        "modern-csharp"
       ]
     },
     {
       "id": "aspnetcore-release",
       "source": "https://github.com/dotnet/aspnetcore",
       "skills": [
-        "dotnet-aspnet-core",
-        "dotnet-minimal-apis",
-        "dotnet-web-api",
-        "dotnet-blazor",
-        "dotnet-signalr",
-        "dotnet-grpc"
+        "aspnet-core",
+        "minimal-apis",
+        "web-api",
+        "blazor",
+        "signalr",
+        "grpc"
       ]
     },
     {
       "id": "dotnet-maui-release",
       "source": "https://github.com/dotnet/maui",
       "skills": [
-        "dotnet-maui"
+        "maui"
       ]
     },
     {
       "id": "windows-app-sdk-release",
       "source": "https://github.com/microsoft/WindowsAppSDK",
       "skills": [
-        "dotnet-winui"
+        "winui"
       ]
     }
   ],
@@ -51,40 +51,40 @@
       "source": "https://learn.microsoft.com/dotnet/core/apps",
       "skills": [
         "dotnet",
-        "dotnet-project-setup"
+        "project-setup"
       ]
     },
     {
       "id": "aspnetcore-overview-docs",
       "source": "https://learn.microsoft.com/aspnet/core/overview?view=aspnetcore-10.0",
       "skills": [
-        "dotnet-aspnet-core",
-        "dotnet-minimal-apis",
-        "dotnet-web-api",
-        "dotnet-blazor",
-        "dotnet-signalr",
-        "dotnet-grpc"
+        "aspnet-core",
+        "minimal-apis",
+        "web-api",
+        "blazor",
+        "signalr",
+        "grpc"
       ]
     },
     {
       "id": "maui-overview-docs",
       "source": "https://learn.microsoft.com/dotnet/maui/what-is-maui?view=net-maui-10.0",
       "skills": [
-        "dotnet-maui"
+        "maui"
       ]
     },
     {
       "id": "wpf-overview-docs",
       "source": "https://learn.microsoft.com/dotnet/desktop/wpf/overview/",
       "skills": [
-        "dotnet-wpf"
+        "wpf"
       ]
     },
     {
       "id": "winforms-overview-docs",
       "source": "https://learn.microsoft.com/dotnet/desktop/winforms/overview/",
       "skills": [
-        "dotnet-winforms"
+        "winforms"
       ]
     }
   ]

@@ -69,7 +69,7 @@
         }
       }
     },
-    "dotnet-maui": {
+    "maui": {
       "type": "Frameworks",
       "package": "Official-DotNet-MAUI",
       "category": "Cross-Platform UI",

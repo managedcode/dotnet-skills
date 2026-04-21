@@ -5,9 +5,9 @@ tools: Read, Glob, Grep, Bash
 model: inherit
 skills:
   - dotnet
-  - dotnet-architecture
-  - dotnet-project-setup
-  - dotnet-code-review
+  - architecture
+  - project-setup
+  - code-review
 ---
 
 # .NET Router
@@ -35,10 +35,10 @@ This is a top-level orchestration agent. It sits above groups of skills and shou
 
 | Signal | Route |
 |-------|-------|
-| `AspNetCore`, controllers, Minimal APIs, Blazor, SignalR | `dotnet-aspnet-core`, `dotnet-minimal-apis`, `dotnet-blazor`, `dotnet-signalr`, `dotnet-web-api` |
+| `AspNetCore`, controllers, Minimal APIs, Blazor, SignalR | `aspnet-core`, `minimal-apis`, `blazor`, `signalr`, `web-api` |
 | `package.json`, `ClientApp/`, `src/`, frontend lint configs, browser-quality audits | `dotnet-frontend` |
-| EF Core, EF6, migrations, repositories, LINQ translation | `dotnet-data` plus `dotnet-entity-framework-core` or `dotnet-entity-framework6` |
-| Semantic Kernel, MCP, Agent Framework, `IChatClient`, embeddings | `dotnet-ai` plus `dotnet-semantic-kernel`, `dotnet-mcp`, `dotnet-microsoft-agent-framework`, `dotnet-microsoft-extensions-ai` |
+| EF Core, EF6, migrations, repositories, LINQ translation | `dotnet-data` plus `entity-framework-core` or `entity-framework6` |
+| Semantic Kernel, MCP, Agent Framework, `IChatClient`, embeddings | `dotnet-ai` plus `semantic-kernel`, `mcp`, `microsoft-agent-framework`, `microsoft-extensions-ai` |
 | Build failures, restore, packaging, CI, diagnostics | `dotnet-build` |
 | Migration, legacy frameworks, upgrade planning | `dotnet-modernization` |
 | Review, analyzers, architecture, tests | `dotnet-review` |

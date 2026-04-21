@@ -4,12 +4,12 @@ description: Build-focused orchestration agent for .NET restore, build, test, pa
 tools: Read, Edit, Glob, Grep, Bash
 model: inherit
 skills:
-  - dotnet-project-setup
-  - dotnet-quality-ci
-  - dotnet-code-analysis
-  - dotnet-profiling
-  - dotnet-coverlet
-  - dotnet-reportgenerator
+  - project-setup
+  - quality-ci
+  - code-analysis
+  - profiling
+  - coverlet
+  - reportgenerator
 ---
 
 # .NET Build
@@ -35,10 +35,10 @@ This is a grouped top-level agent. It orchestrates several quality and build ski
 
 ## Skill Routing
 
-- Build layout and project organization: `dotnet-project-setup`
-- Analyzer and warning policy problems: `dotnet-code-analysis`, `dotnet-analyzer-config`, `dotnet-quality-ci`
-- Test and coverage pipeline issues: `dotnet-coverlet`, `dotnet-reportgenerator`, test-framework-specific skills
-- Runtime or performance diagnostics that affect build or test execution: `dotnet-profiling`
+- Build layout and project organization: `project-setup`
+- Analyzer and warning policy problems: `code-analysis`, `analyzer-config`, `quality-ci`
+- Test and coverage pipeline issues: `coverlet`, `reportgenerator`, test-framework-specific skills
+- Runtime or performance diagnostics that affect build or test execution: `profiling`
 
 ## Deliver
 

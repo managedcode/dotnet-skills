@@ -12,7 +12,7 @@ The goal is to make usage of a library or project explicit, concrete, and reusab
 
 Please contribute:
 
-- New repo-authored `dotnet-*` skills for important libraries, frameworks, and integrations, or new vendir-managed upstream source mappings when official repositories should be imported instead.
+- New repo-authored skills with clean canonical ids for important libraries, frameworks, and integrations, or new vendir-managed upstream source mappings when official repositories should be imported instead.
 - New orchestration agents in `agents/` for broad routing roles, or in `catalog/<type>/<package>/agents/` for package-owned specialist behavior.
 - Improvements to existing skills when usage guidance is incomplete or outdated.
 - Upstream watch entries for projects that should trigger refresh issues when a new release or documentation change happens.
@@ -50,7 +50,7 @@ Normal entry shape:
 {
   "source": "https://github.com/managedcode/Storage",
   "skills": [
-    "dotnet-managedcode-storage"
+    "managedcode-storage"
   ]
 }
 ```
@@ -267,10 +267,10 @@ Do not trigger ad-hoc publish runs for every merge; the unified `04:00` UTC rele
 
 CLI naming rule:
 
-- keep repo-authored canonical skill IDs in the catalog as `dotnet-*`
+- keep repo-authored canonical skill IDs in the catalog clean and prefix-free where possible
 - allow vendir-imported official upstream skills to preserve their upstream ids
-- allow short aliases in commands, for example `dotnet skills install aspire`
-- treat the CLI alias layer as user-facing convenience, not as a replacement for stable skill names in `skills/`
+- use the canonical skill id directly in commands, for example `dotnet skills install aspire`
+- treat the canonical skill id as the stable user-facing install surface in `skills/`
 
 Agent target rule:
 
@@ -450,7 +450,7 @@ You can still override those fields explicitly, but do it only when the default 
 Issues are deduplicated at the library or skill-group level, so related documentation pages should normally roll up into one open upstream issue instead of one issue per page.
 
 For project-specific libraries, the `skills` list must point to the dedicated project skill.
-Do not use umbrella skills such as `dotnet`, `dotnet-architecture`, or `dotnet-orleans` as placeholders for a concrete library watch.
+Do not use umbrella skills such as `dotnet`, `architecture`, or `orleans` as placeholders for a concrete library watch.
 
 ### Commands To Run After Editing Watches
 

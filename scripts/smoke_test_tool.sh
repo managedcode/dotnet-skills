@@ -101,32 +101,32 @@ agents version --no-check > "$skills_path/plain-agents-version.txt"
 grep -q "agents" "$skills_path/plain-agents-version.txt"
 
 dotnet skills list --available-only --bundled --target "$skills_path" > "$skills_path/available-list.txt"
-grep -q "dotnet-aspire" "$skills_path/available-list.txt"
+grep -q "aspire" "$skills_path/available-list.txt"
 
 dotnet skills bundle list --bundled > "$skills_path/bundle-list.txt"
-grep -q "dotnet-quality" "$skills_path/bundle-list.txt"
+grep -q "quality" "$skills_path/bundle-list.txt"
 
 dotnet agents list --agent claude --scope project --project-dir "$workspace_path" > "$skills_path/agents-list.txt"
 grep -q "router" "$skills_path/agents-list.txt"
 
 dotnet skills install aspire --bundled --target "$skills_path"
-test -f "$skills_path/dotnet-aspire/SKILL.md"
-dotnet skills list --local --target "$skills_path" > "$skills_path/local-list.txt"
+test -f "$skills_path/aspire/SKILL.md"
+dotnet skills list --local --bundled --target "$skills_path" > "$skills_path/local-list.txt"
 grep -q "aspire" "$skills_path/local-list.txt"
 dotnet skills remove --all --bundled --target "$skills_path"
-test ! -e "$skills_path/dotnet-aspire"
+test ! -e "$skills_path/aspire"
 
 dotnet skills install bundle orleans --bundled --target "$bundle_path"
-test -f "$bundle_path/dotnet-orleans/SKILL.md"
-test -f "$bundle_path/dotnet-managedcode-orleans-graph/SKILL.md"
-test -f "$bundle_path/dotnet-managedcode-orleans-signalr/SKILL.md"
+test -f "$bundle_path/orleans/SKILL.md"
+test -f "$bundle_path/managedcode-orleans-graph/SKILL.md"
+test -f "$bundle_path/managedcode-orleans-signalr/SKILL.md"
 dotnet skills remove collection distributed --bundled --target "$bundle_path"
-test ! -e "$bundle_path/dotnet-orleans"
-test ! -e "$bundle_path/dotnet-managedcode-orleans-graph"
-test ! -e "$bundle_path/dotnet-managedcode-orleans-signalr"
+test ! -e "$bundle_path/orleans"
+test ! -e "$bundle_path/managedcode-orleans-graph"
+test ! -e "$bundle_path/managedcode-orleans-signalr"
 
-dotnet skills install aspire --agent anthropic --scope project --project-dir "$workspace_path"
-test -f "$workspace_path/.claude/skills/dotnet-aspire/SKILL.md"
+dotnet skills install aspire --bundled --agent anthropic --scope project --project-dir "$workspace_path"
+test -f "$workspace_path/.claude/skills/aspire/SKILL.md"
 
 auto_codex_target="$(dotnet skills where --project-dir "$codex_workspace")"
 case "$auto_codex_target" in
@@ -138,7 +138,7 @@ case "$auto_codex_target" in
 esac
 
 dotnet skills install aspire --bundled --project-dir "$codex_workspace"
-test -f "$codex_workspace/.codex/skills/dotnet-aspire/SKILL.md"
+test -f "$codex_workspace/.codex/skills/aspire/SKILL.md"
 test ! -e "$codex_workspace/.agents"
 
 auto_claude_target="$(dotnet skills where --project-dir "$claude_workspace")"
@@ -151,17 +151,17 @@ case "$auto_claude_target" in
 esac
 
 dotnet skills install aspire --bundled --project-dir "$claude_workspace"
-test -f "$claude_workspace/.claude/skills/dotnet-aspire/SKILL.md"
+test -f "$claude_workspace/.claude/skills/aspire/SKILL.md"
 
 dotnet skills install aspire --bundled --project-dir "$hybrid_workspace"
-test -f "$hybrid_workspace/.codex/skills/dotnet-aspire/SKILL.md"
-test -f "$hybrid_workspace/.claude/skills/dotnet-aspire/SKILL.md"
+test -f "$hybrid_workspace/.codex/skills/aspire/SKILL.md"
+test -f "$hybrid_workspace/.claude/skills/aspire/SKILL.md"
 test ! -e "$hybrid_workspace/.agents"
 
 dotnet skills install aspire --bundled --project-dir "$shared_workspace"
-test -f "$shared_workspace/.codex/skills/dotnet-aspire/SKILL.md"
-test -f "$shared_workspace/.claude/skills/dotnet-aspire/SKILL.md"
-test ! -e "$shared_workspace/.agents/skills/dotnet-aspire"
+test -f "$shared_workspace/.codex/skills/aspire/SKILL.md"
+test -f "$shared_workspace/.claude/skills/aspire/SKILL.md"
+test ! -e "$shared_workspace/.agents/skills/aspire"
 
 auto_plain_target="$(dotnet skills where --project-dir "$plain_workspace")"
 case "$auto_plain_target" in
@@ -173,7 +173,7 @@ case "$auto_plain_target" in
 esac
 
 dotnet skills install aspire --bundled --project-dir "$plain_workspace"
-test -f "$plain_workspace/.agents/skills/dotnet-aspire/SKILL.md"
+test -f "$plain_workspace/.agents/skills/aspire/SKILL.md"
 
 copilot_project_target="$(dotnet skills where --agent copilot --scope project)"
 case "$copilot_project_target" in

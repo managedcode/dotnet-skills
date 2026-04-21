@@ -508,7 +508,7 @@ def load_skill_documents(skills: list[dict], site_url: str) -> list[dict]:
 
     for skill in skills:
         skill_slug = skill["name"]
-        skill_short_name = skill_slug.replace("dotnet-", "")
+        skill_short_name = skill_slug
         skill_path = REPO_ROOT / skill["path"] / "SKILL.md"
         raw_markdown = read_text(skill_path)
         _, body = split_frontmatter(raw_markdown)
@@ -1157,7 +1157,7 @@ def render_quickstart_panel() -> str:
         ("Install", "dotnet tool install --global dotnet-skills", "Get the CLI onto your machine"),
         ("Open", "dotnet skills", "Launch the interactive collection/lane control center"),
         ("Detect", "dotnet skills install --auto", "Scan .csproj and match NuGet packages"),
-        ("Bundle", "dotnet skills install bundle dotnet-quality", "Install a focused multi-skill bundle"),
+        ("Bundle", "dotnet skills install bundle quality", "Install a focused multi-skill bundle"),
         ("Measure", "dotnet skills catalog tokens --catalog-root .", "Export per-skill token counts"),
     ]
     items = []
@@ -2414,7 +2414,7 @@ def main() -> int:
         path="bundles/",
         title=".NET Bundles | dotnet-skills",
         description="Browse one-command .NET bundles. Bundles are focused grouped installs built from the collection taxonomy for quality, testing, architecture, Orleans, and more.",
-        keywords=["dotnet bundles", "install bundle dotnet-quality", "install bundle orleans", "mcaf bundle", "dotnet-skills bundles"],
+        keywords=["dotnet bundles", "install bundle quality", "install bundle orleans", "mcaf bundle", "dotnet-skills bundles"],
         body_class="page-bundles",
         main_content=bundles_body,
         json_ld=build_collection_json_ld(

@@ -57,7 +57,7 @@ class ImportExternalCatalogSourcesTests(unittest.TestCase):
                     "skills": ["./skills/"],
                 },
             )
-            self.write_skill(plugin_dir, "dotnet-mcp", "MCP C# SDK for .NET")
+            self.write_skill(plugin_dir, "mcp", "MCP C# SDK for .NET")
             self.write_skill(plugin_dir, "mcp-csharp-create", "C# MCP Server Creation")
 
             config_path = config_root / "dotnet-skills.json"
@@ -95,7 +95,7 @@ class ImportExternalCatalogSourcesTests(unittest.TestCase):
             self.assertEqual(summary["skills"], 1)
 
             package_root = catalog_root / "Platform" / "Official-DotNet-AI" / "skills"
-            self.assertTrue((package_root / "dotnet-mcp" / "SKILL.md").is_file())
+            self.assertTrue((package_root / "mcp" / "SKILL.md").is_file())
             self.assertFalse((package_root / "mcp-csharp-create").exists())
 
 

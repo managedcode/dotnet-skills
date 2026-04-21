@@ -10,9 +10,9 @@ public sealed class SkillInstallerTests
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
 
-        var selected = installer.SelectSkills(["aspire", "dotnet-orleans"], installAll: false);
+        var selected = installer.SelectSkills(["aspire", "orleans"], installAll: false);
 
-        Assert.Equal(["dotnet-aspire", "dotnet-orleans"], selected.Select(skill => skill.Name).ToArray());
+        Assert.Equal(["aspire", "orleans"], selected.Select(skill => skill.Name).ToArray());
     }
 
     [Fact]
@@ -31,16 +31,16 @@ public sealed class SkillInstallerTests
         Assert.Equal(0, installSummary.GeneratedAdapters);
         Assert.Equal(2, installed.Count);
         Assert.All(installed, record => Assert.True(record.IsCurrent));
-        Assert.Contains(installed, record => record.Skill.Name == "dotnet-aspire");
-        Assert.True(File.Exists(Path.Combine(tempDirectory.Path, "dotnet-aspire", "SKILL.md")));
+        Assert.Contains(installed, record => record.Skill.Name == "aspire");
+        Assert.True(File.Exists(Path.Combine(tempDirectory.Path, "aspire", "SKILL.md")));
 
         var removeSummary = installer.Remove([selected[0]], layout);
         var remaining = installer.GetInstalledSkills(layout);
 
         Assert.Equal(1, removeSummary.RemovedCount);
         Assert.Empty(removeSummary.MissingSkills);
-        Assert.DoesNotContain(remaining, record => record.Skill.Name == "dotnet-aspire");
-        Assert.True(File.Exists(Path.Combine(tempDirectory.Path, "dotnet-orleans", "SKILL.md")));
+        Assert.DoesNotContain(remaining, record => record.Skill.Name == "aspire");
+        Assert.True(File.Exists(Path.Combine(tempDirectory.Path, "orleans", "SKILL.md")));
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public sealed class SkillInstallerTests
         installer.Install(selected, layout, force: false);
 
         Assert.Equal(SkillInstallMode.SkillDirectories, layout.Mode);
-        Assert.True(File.Exists(Path.Combine(tempDirectory.Path, "dotnet-aspire", "SKILL.md")));
-        Assert.False(File.Exists(Path.Combine(tempDirectory.Path, "dotnet-aspire.md")));
+        Assert.True(File.Exists(Path.Combine(tempDirectory.Path, "aspire", "SKILL.md")));
+        Assert.False(File.Exists(Path.Combine(tempDirectory.Path, "aspire.md")));
     }
 
     [Fact]
@@ -65,14 +65,14 @@ public sealed class SkillInstallerTests
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
 
-        var selected = installer.SelectSkillsFromPackages(["orleans", "dotnet-quality"]);
+        var selected = installer.SelectSkillsFromPackages(["orleans", "quality"]);
 
-        Assert.Contains(selected, skill => skill.Name == "dotnet-orleans");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-managedcode-orleans-graph");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-code-analysis");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-complexity");
+        Assert.Contains(selected, skill => skill.Name == "orleans");
+        Assert.Contains(selected, skill => skill.Name == "managedcode-orleans-graph");
+        Assert.Contains(selected, skill => skill.Name == "code-analysis");
+        Assert.Contains(selected, skill => skill.Name == "complexity");
         Assert.Contains(selected, skill => skill.Name == "crap-score");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-format");
+        Assert.Contains(selected, skill => skill.Name == "format");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
 
@@ -93,14 +93,14 @@ public sealed class SkillInstallerTests
         var catalog = TestCatalog.Load();
         var installer = new SkillInstaller(catalog);
 
-        var selected = installer.SelectSkillsFromCollections(["aspire", "azure-functions", "background-workers", "dotnet-quality"]);
+        var selected = installer.SelectSkillsFromCollections(["aspire", "azure-functions", "background-workers", "quality"]);
 
-        Assert.Contains(selected, skill => skill.Name == "dotnet-aspire");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-azure-functions");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-worker-services");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-orleans");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-code-analysis");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-format");
+        Assert.Contains(selected, skill => skill.Name == "aspire");
+        Assert.Contains(selected, skill => skill.Name == "azure-functions");
+        Assert.Contains(selected, skill => skill.Name == "worker-services");
+        Assert.DoesNotContain(selected, skill => skill.Name == "orleans");
+        Assert.Contains(selected, skill => skill.Name == "code-analysis");
+        Assert.Contains(selected, skill => skill.Name == "format");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
 
@@ -112,11 +112,11 @@ public sealed class SkillInstallerTests
 
         var selected = installer.SelectSkillsFromCollections(["distributed"]);
 
-        Assert.Contains(selected, skill => skill.Name == "dotnet-orleans");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-managedcode-orleans-graph");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-managedcode-orleans-signalr");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-azure-functions");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-aspire");
+        Assert.Contains(selected, skill => skill.Name == "orleans");
+        Assert.Contains(selected, skill => skill.Name == "managedcode-orleans-graph");
+        Assert.Contains(selected, skill => skill.Name == "managedcode-orleans-signalr");
+        Assert.DoesNotContain(selected, skill => skill.Name == "azure-functions");
+        Assert.DoesNotContain(selected, skill => skill.Name == "aspire");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
 
@@ -128,12 +128,12 @@ public sealed class SkillInstallerTests
 
         var selected = installer.SelectSkillsFromCollections(["mobile-device"]);
 
-        Assert.Contains(selected, skill => skill.Name == "dotnet-maui");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-maui-doctor");
+        Assert.Contains(selected, skill => skill.Name == "maui");
+        Assert.Contains(selected, skill => skill.Name == "maui-doctor");
         Assert.DoesNotContain(selected, skill => skill.Name == "android-tombstone-symbolication");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-mixed-reality");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-winforms");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-wpf");
+        Assert.DoesNotContain(selected, skill => skill.Name == "mixed-reality");
+        Assert.DoesNotContain(selected, skill => skill.Name == "winforms");
+        Assert.DoesNotContain(selected, skill => skill.Name == "wpf");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
 
@@ -145,8 +145,8 @@ public sealed class SkillInstallerTests
 
         var selected = installer.SelectSkillsFromCollections(["xr-spatial"]);
 
-        Assert.Contains(selected, skill => skill.Name == "dotnet-mixed-reality");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-maui");
+        Assert.Contains(selected, skill => skill.Name == "mixed-reality");
+        Assert.DoesNotContain(selected, skill => skill.Name == "maui");
         Assert.DoesNotContain(selected, skill => skill.Name == "technology-selection");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
@@ -160,10 +160,10 @@ public sealed class SkillInstallerTests
         var selected = installer.SelectSkillsFromCollections(["testing-research"]);
 
         Assert.Contains(selected, skill => skill.Name == "code-testing-agent");
-        Assert.Contains(selected, skill => skill.Name == "dotnet-stryker");
+        Assert.Contains(selected, skill => skill.Name == "stryker");
         Assert.Contains(selected, skill => skill.Name == "exp-test-gap-analysis");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-xunit");
-        Assert.DoesNotContain(selected, skill => skill.Name == "dotnet-coverlet");
+        Assert.DoesNotContain(selected, skill => skill.Name == "xunit");
+        Assert.DoesNotContain(selected, skill => skill.Name == "coverlet");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);
     }
 
@@ -204,7 +204,7 @@ public sealed class SkillInstallerTests
                     Package = "Aspire",
                     Description = "Escape test",
                     Compatibility = "codex",
-                    Path = "catalog/Frameworks/Aspire/skills/dotnet-safe"
+                    Path = "catalog/Frameworks/Aspire/skills/safe"
                 },
             ],
         };
@@ -216,7 +216,7 @@ public sealed class SkillInstallerTests
 
         var exception = Assert.Throws<InvalidOperationException>(() => installer.Install(catalog.Skills, layout, force: false));
 
-        Assert.Contains("must stay within", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("Skill payload is missing for ../escape", exception.Message, StringComparison.Ordinal);
         Assert.False(Directory.Exists(Path.Combine(tempDirectory.Path, "escape")));
     }
 }

@@ -4,16 +4,16 @@ description: Frontend-focused orchestration agent for .NET repositories that shi
 tools: Read, Edit, Glob, Grep, Bash
 model: inherit
 skills:
-  - dotnet-aspnet-core
-  - dotnet-blazor
-  - dotnet-eslint
-  - dotnet-stylelint
-  - dotnet-htmlhint
-  - dotnet-webhint
-  - dotnet-biome
-  - dotnet-sonarjs
-  - dotnet-metalint
-  - dotnet-chous
+  - aspnet-core
+  - blazor
+  - eslint
+  - stylelint
+  - htmlhint
+  - webhint
+  - biome
+  - sonarjs
+  - metalint
+  - chous
 ---
 
 # .NET Frontend
@@ -25,15 +25,15 @@ Act as the frontend router for `.NET` repositories that expose a browser UI. Cla
 ```mermaid
 flowchart LR
   A["Frontend work in a .NET repo"] --> B{"Blazor or Razor component issue?"}
-  B -->|Yes| C["dotnet-blazor"]
+  B -->|Yes| C["blazor"]
   B -->|No| D{"Primary concern"}
-  D -->|JS or TS linting| E["dotnet-eslint or dotnet-biome"]
-  D -->|CSS or SCSS linting| F["dotnet-stylelint"]
-  D -->|Static HTML correctness| G["dotnet-htmlhint"]
-  D -->|Runtime site audits| H["dotnet-webhint"]
-  D -->|Smells or complexity| I["dotnet-sonarjs"]
-  D -->|One command over many linters| J["dotnet-metalint"]
-  D -->|File-tree architecture| K["dotnet-chous"]
+  D -->|JS or TS linting| E["eslint or biome"]
+  D -->|CSS or SCSS linting| F["stylelint"]
+  D -->|Static HTML correctness| G["htmlhint"]
+  D -->|Runtime site audits| H["webhint"]
+  D -->|Smells or complexity| I["sonarjs"]
+  D -->|One command over many linters| J["metalint"]
+  D -->|File-tree architecture| K["chous"]
 ```
 
 ## Trigger On
@@ -57,15 +57,15 @@ flowchart LR
    - wrapper orchestration
    - file-structure architecture
 3. Route to the narrowest skill:
-   - `dotnet-blazor` for component-model and Razor concerns
-   - `dotnet-eslint` or `dotnet-biome` for JS and TS ownership
-   - `dotnet-stylelint` for stylesheets
-   - `dotnet-htmlhint` for static HTML
-   - `dotnet-webhint` for served-site audits
-   - `dotnet-sonarjs` for deeper smell and complexity rules
-   - `dotnet-metalint` for one-entrypoint orchestration over multiple linters
-   - `dotnet-chous` for frontend folder and naming policy
-4. Pull in `dotnet-aspnet-core` only when frontend tooling and server hosting behavior are coupled, such as SPA proxying, static asset serving, or publish output wiring.
+   - `blazor` for component-model and Razor concerns
+   - `eslint` or `biome` for JS and TS ownership
+   - `stylelint` for stylesheets
+   - `htmlhint` for static HTML
+   - `webhint` for served-site audits
+   - `sonarjs` for deeper smell and complexity rules
+   - `metalint` for one-entrypoint orchestration over multiple linters
+   - `chous` for frontend folder and naming policy
+4. Pull in `aspnet-core` only when frontend tooling and server hosting behavior are coupled, such as SPA proxying, static asset serving, or publish output wiring.
 5. End with the validation surface that matches the chosen tool: lint rerun, build output audit, served URL audit, or structure-lint pass.
 
 ## Deliver

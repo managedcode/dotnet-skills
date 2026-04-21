@@ -339,13 +339,13 @@ internal static class CatalogOrganization
     private static bool IsGovernanceSkill(string package, string name)
     {
         return GovernancePackages.Contains(package)
-            || string.Equals(name, "dotnet-code-review", StringComparison.OrdinalIgnoreCase);
+            || string.Equals(name, "code-review", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsMigrationSkill(string package, string name)
     {
         return string.Equals(package, "Official-DotNet-Upgrade", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(name, "dotnet-aot-compat", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, "aot-compat", StringComparison.OrdinalIgnoreCase)
             || name.Contains("migrate-", StringComparison.OrdinalIgnoreCase)
             || name.Contains("migration", StringComparison.OrdinalIgnoreCase)
             || string.Equals(name, "mtp-hot-reload", StringComparison.OrdinalIgnoreCase);
@@ -489,7 +489,7 @@ internal static class CatalogOrganization
             return "Tooling";
         }
 
-        if (string.Equals(name, "dotnet-pinvoke", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(name, "pinvoke", StringComparison.OrdinalIgnoreCase))
         {
             return "Interop";
         }
@@ -555,7 +555,7 @@ internal static class CatalogOrganization
     private static string ResolveTestingLane(string package, string name)
     {
         if (TestingFrameworkPackages.Contains(package)
-            || name is "writing-mstest-tests" or "dotnet-mstest" or "dotnet-nunit" or "dotnet-tunit" or "dotnet-xunit")
+            || name is "writing-mstest-tests" or "mstest" or "nunit" or "tunit" or "xunit")
         {
             return "Frameworks";
         }
@@ -595,7 +595,7 @@ internal static class CatalogOrganization
         }
 
         if (string.Equals(package, "Official-DotNet-Upgrade", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(name, "dotnet-aot-compat", StringComparison.OrdinalIgnoreCase))
+            || string.Equals(name, "aot-compat", StringComparison.OrdinalIgnoreCase))
         {
             return "Runtime upgrades";
         }
@@ -634,7 +634,7 @@ internal static class CatalogOrganization
 
     private static string ResolveGovernanceLane(string package, string name)
     {
-        if (string.Equals(name, "dotnet-code-review", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(name, "code-review", StringComparison.OrdinalIgnoreCase))
         {
             return "Review";
         }

@@ -26,9 +26,9 @@ Use these placement rules:
 
 ## Skill-Scoped Specialists
 
-- [`skills/dotnet-orleans/agents/dotnet-orleans-specialist/AGENT.md`](../skills/dotnet-orleans/agents/dotnet-orleans-specialist/AGENT.md): Orleans-specific triage for grain boundaries, persistence, streams, reminders, placement, Aspire wiring, and cluster validation
-- [`skills/dotnet-aspire/agents/dotnet-aspire-orchestrator/AGENT.md`](../skills/dotnet-aspire/agents/dotnet-aspire-orchestrator/AGENT.md): framework-specific routing for AppHost, first-party versus CommunityToolkit/Aspire integrations, dashboard and testing, and deployment choices inside Aspire
-- [`skills/dotnet-microsoft-agent-framework/agents/agent-framework-router/AGENT.md`](../skills/dotnet-microsoft-agent-framework/agents/agent-framework-router/AGENT.md): Agent Framework-only triage for agent-vs-workflow choice, `AgentThread`, tools, hosting, MCP/A2A/AG-UI, durable agents, and migration
+- [`skills/orleans/agents/dotnet-orleans-specialist/AGENT.md`](../skills/orleans/agents/dotnet-orleans-specialist/AGENT.md): Orleans-specific triage for grain boundaries, persistence, streams, reminders, placement, Aspire wiring, and cluster validation
+- [`skills/aspire/agents/dotnet-aspire-orchestrator/AGENT.md`](../skills/aspire/agents/dotnet-aspire-orchestrator/AGENT.md): framework-specific routing for AppHost, first-party versus CommunityToolkit/Aspire integrations, dashboard and testing, and deployment choices inside Aspire
+- [`skills/microsoft-agent-framework/agents/agent-framework-router/AGENT.md`](../skills/microsoft-agent-framework/agents/agent-framework-router/AGENT.md): Agent Framework-only triage for agent-vs-workflow choice, `AgentThread`, tools, hosting, MCP/A2A/AG-UI, durable agents, and migration
 
 ## Layout
 

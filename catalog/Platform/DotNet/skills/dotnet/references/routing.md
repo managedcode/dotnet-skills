@@ -22,58 +22,58 @@ Evaluate project indicators in this order and route to the first matching skill:
 
 | Indicator | Route To |
 |-----------|----------|
-| Blazor components (`.razor`, `@page`, `RenderModeInteractiveServer`) | `dotnet-blazor` |
-| Minimal API patterns (`app.MapGet`, `app.MapPost`, no controllers) | `dotnet-minimal-apis` |
-| MVC or Web API controllers (`[ApiController]`, `ControllerBase`) | `dotnet-web-api` |
-| SignalR hubs (`Hub`, `IHubContext`, `/hubs/` routes) | `dotnet-signalr` |
-| gRPC services (`.proto`, `Grpc.AspNetCore`) | `dotnet-grpc` |
-| General ASP.NET Core hosting without specific pattern | `dotnet-aspnet-core` |
+| Blazor components (`.razor`, `@page`, `RenderModeInteractiveServer`) | `blazor` |
+| Minimal API patterns (`app.MapGet`, `app.MapPost`, no controllers) | `minimal-apis` |
+| MVC or Web API controllers (`[ApiController]`, `ControllerBase`) | `web-api` |
+| SignalR hubs (`Hub`, `IHubContext`, `/hubs/` routes) | `signalr` |
+| gRPC services (`.proto`, `Grpc.AspNetCore`) | `grpc` |
+| General ASP.NET Core hosting without specific pattern | `aspnet-core` |
 
 ### 2. Cloud and Hosting
 
 | Indicator | Route To |
 |-----------|----------|
-| Aspire app host or service defaults (`Aspire.Hosting`, `AddProject`) | `dotnet-aspire` |
-| Azure Functions (`[Function]`, `Microsoft.Azure.Functions.Worker`) | `dotnet-azure-functions` |
-| Background services (`BackgroundService`, `IHostedService`) | `dotnet-worker-services` |
+| Aspire app host or service defaults (`Aspire.Hosting`, `AddProject`) | `aspire` |
+| Azure Functions (`[Function]`, `Microsoft.Azure.Functions.Worker`) | `azure-functions` |
+| Background services (`BackgroundService`, `IHostedService`) | `worker-services` |
 
 ### 3. Desktop and Client
 
 | Indicator | Route To |
 |-----------|----------|
-| MAUI app (`Microsoft.Maui`, `.maui`) | `dotnet-maui` |
-| Uno Platform (`Uno.WinUI`, cross-platform XAML) | `dotnet-uno-platform` |
-| WinUI 3 (`Microsoft.WindowsAppSDK`, `WinUI`) | `dotnet-winui` |
-| WPF (`UseWPF`, `PresentationFramework`) | `dotnet-wpf` |
-| Windows Forms (`UseWindowsForms`, `System.Windows.Forms`) | `dotnet-winforms` |
-| MVVM patterns in any client app | `dotnet-mvvm` |
+| MAUI app (`Microsoft.Maui`, `.maui`) | `maui` |
+| Uno Platform (`Uno.WinUI`, cross-platform XAML) | `uno-platform` |
+| WinUI 3 (`Microsoft.WindowsAppSDK`, `WinUI`) | `winui` |
+| WPF (`UseWPF`, `PresentationFramework`) | `wpf` |
+| Windows Forms (`UseWindowsForms`, `System.Windows.Forms`) | `winforms` |
+| MVVM patterns in any client app | `mvvm` |
 
 ### 4. Data and Distributed
 
 | Indicator | Route To |
 |-----------|----------|
-| EF Core (`Microsoft.EntityFrameworkCore`, `DbContext`) | `dotnet-entity-framework-core` |
-| EF6 (`EntityFramework`, `System.Data.Entity`) | `dotnet-entity-framework6` |
-| Orleans grains and silos (`Orleans.Core`, `[Grain]`) | `dotnet-orleans` |
+| EF Core (`Microsoft.EntityFrameworkCore`, `DbContext`) | `entity-framework-core` |
+| EF6 (`EntityFramework`, `System.Data.Entity`) | `entity-framework6` |
+| Orleans grains and silos (`Orleans.Core`, `[Grain]`) | `orleans` |
 
 ### 5. AI and Agentic
 
 | Indicator | Route To |
 |-----------|----------|
-| Semantic Kernel (`Microsoft.SemanticKernel`, `Kernel.CreateBuilder`) | `dotnet-semantic-kernel` |
-| Microsoft.Extensions.AI (`IChatClient`, `IEmbeddingGenerator`) | `dotnet-microsoft-extensions-ai` |
-| Microsoft Agent Framework (`Microsoft.Agents`) | `dotnet-microsoft-agent-framework` |
-| ML.NET (`Microsoft.ML`, `MLContext`) | `dotnet-mlnet` |
-| Mixed Reality (`Microsoft.MixedReality`) | `dotnet-mixed-reality` |
-| MCP servers (`ModelContextProtocol`) | `dotnet-mcp` |
+| Semantic Kernel (`Microsoft.SemanticKernel`, `Kernel.CreateBuilder`) | `semantic-kernel` |
+| Microsoft.Extensions.AI (`IChatClient`, `IEmbeddingGenerator`) | `microsoft-extensions-ai` |
+| Microsoft Agent Framework (`Microsoft.Agents`) | `microsoft-agent-framework` |
+| ML.NET (`Microsoft.ML`, `MLContext`) | `mlnet` |
+| Mixed Reality (`Microsoft.MixedReality`) | `mixed-reality` |
+| MCP servers (`ModelContextProtocol`) | `mcp` |
 
 ### 6. Legacy
 
 | Indicator | Route To |
 |-----------|----------|
-| Legacy ASP.NET (`System.Web`, `Global.asax`) | `dotnet-legacy-aspnet` |
-| WCF (`System.ServiceModel`, `.svc`) | `dotnet-wcf` |
-| Windows Workflow Foundation (`System.Activities`) | `dotnet-workflow-foundation` |
+| Legacy ASP.NET (`System.Web`, `Global.asax`) | `legacy-aspnet` |
+| WCF (`System.ServiceModel`, `.svc`) | `wcf` |
+| Windows Workflow Foundation (`System.Activities`) | `workflow-foundation` |
 
 ## Cross-Cutting Concerns
 
@@ -83,65 +83,65 @@ After platform routing, check if the task is primarily about a cross-cutting con
 
 | Concern | Route To |
 |---------|----------|
-| Project creation, solution structure, SDK selection | `dotnet-project-setup` |
-| Architecture decisions, patterns, layering | `dotnet-architecture` |
-| Microsoft.Extensions patterns (DI, config, logging) | `dotnet-microsoft-extensions` |
+| Project creation, solution structure, SDK selection | `project-setup` |
+| Architecture decisions, patterns, layering | `architecture` |
+| Microsoft.Extensions patterns (DI, config, logging) | `microsoft-extensions` |
 
 ### Code Quality and Review
 
 | Concern | Route To |
 |---------|----------|
-| Code review, PR feedback | `dotnet-code-review` |
-| Modern C# language features | `dotnet-modern-csharp` |
+| Code review, PR feedback | `code-review` |
+| Modern C# language features | `modern-csharp` |
 
 ### Testing
 
 | Concern | Route To |
 |---------|----------|
-| TUnit test framework | `dotnet-tunit` |
-| xUnit test framework | `dotnet-xunit` |
-| MSTest test framework | `dotnet-mstest` |
+| TUnit test framework | `tunit` |
+| xUnit test framework | `xunit` |
+| MSTest test framework | `mstest` |
 
 ### Formatting and Analysis
 
 | Concern | Route To |
 |---------|----------|
-| `dotnet format` usage | `dotnet-format` |
-| CSharpier formatting | `dotnet-csharpier` |
-| Built-in code analysis, editorconfig | `dotnet-code-analysis` |
-| EditorConfig and analyzer configuration | `dotnet-analyzer-config` |
-| Roslyn analyzers (Roslynator) | `dotnet-roslynator` |
-| StyleCop rules | `dotnet-stylecop-analyzers` |
-| Meziantou analyzers | `dotnet-meziantou-analyzer` |
-| ReSharper CLI tools | `dotnet-resharper-clt` |
-| CodeQL security scanning | `dotnet-codeql` |
+| `dotnet format` usage | `format` |
+| CSharpier formatting | `csharpier` |
+| Built-in code analysis, editorconfig | `code-analysis` |
+| EditorConfig and analyzer configuration | `analyzer-config` |
+| Roslyn analyzers (Roslynator) | `roslynator` |
+| StyleCop rules | `stylecop-analyzers` |
+| Meziantou analyzers | `meziantou-analyzer` |
+| ReSharper CLI tools | `resharper-clt` |
+| CodeQL security scanning | `codeql` |
 
 ### Quality and CI
 
 | Concern | Route To |
 |---------|----------|
-| CI quality gates, build pipelines | `dotnet-quality-ci` |
-| Code coverage collection | `dotnet-coverlet` |
-| Coverage report generation | `dotnet-reportgenerator` |
-| Mutation testing | `dotnet-stryker` |
-| Complexity metrics | `dotnet-complexity` |
-| Lines of code counting | `dotnet-cloc` |
-| Duplicate code detection | `dotnet-quickdup` |
-| Performance profiling | `dotnet-profiling` |
+| CI quality gates, build pipelines | `quality-ci` |
+| Code coverage collection | `coverlet` |
+| Coverage report generation | `reportgenerator` |
+| Mutation testing | `stryker` |
+| Complexity metrics | `complexity` |
+| Lines of code counting | `cloc` |
+| Duplicate code detection | `quickdup` |
+| Performance profiling | `profiling` |
 
 ### Architecture Enforcement
 
 | Concern | Route To |
 |---------|----------|
-| NetArchTest rules | `dotnet-netarchtest` |
-| ArchUnitNET rules | `dotnet-archunitnet` |
+| NetArchTest rules | `netarchtest` |
+| ArchUnitNET rules | `archunitnet` |
 
 ## Multi-Skill Tasks
 
 When a task spans multiple skills:
 
-1. **Prefer the user-visible behavior skill first** - if the task is about adding a Blazor feature with tests, start with `dotnet-blazor`
-2. **Pull in quality/tooling skills second** - after the feature is implemented, route testing to `dotnet-xunit` or `dotnet-tunit`
+1. **Prefer the user-visible behavior skill first** - if the task is about adding a Blazor feature with tests, start with `blazor`
+2. **Pull in quality/tooling skills second** - after the feature is implemented, route testing to `xunit` or `tunit`
 3. **Do not combine incompatible guidance** - runner-specific commands and patterns should come from one skill at a time
 
 ## Fallback Behavior

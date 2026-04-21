@@ -33,12 +33,12 @@ public sealed class ProjectSkillRecommenderTests
             .Select(item => item.Skill.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        Assert.Contains("dotnet-aspnet-core", recommendations);
-        Assert.Contains("dotnet-entity-framework-core", recommendations);
-        Assert.Contains("dotnet-mvvm", recommendations);
-        Assert.Contains("dotnet-coverlet", recommendations);
-        Assert.Contains("dotnet-xunit", recommendations);
-        Assert.Contains("dotnet-microsoft-extensions", recommendations);
+        Assert.Contains("aspnet-core", recommendations);
+        Assert.Contains("entity-framework-core", recommendations);
+        Assert.Contains("mvvm", recommendations);
+        Assert.Contains("coverlet", recommendations);
+        Assert.Contains("xunit", recommendations);
+        Assert.Contains("microsoft-extensions", recommendations);
     }
 
     [Fact]
@@ -65,9 +65,9 @@ public sealed class ProjectSkillRecommenderTests
             .ToDictionary(item => item.Skill.Name, StringComparer.OrdinalIgnoreCase);
 
         Assert.False(recommendations["dotnet"].IsAutoInstallCandidate);
-        Assert.False(recommendations["dotnet-modern-csharp"].IsAutoInstallCandidate);
-        Assert.True(recommendations["dotnet-aspnet-core"].IsAutoInstallCandidate);
-        Assert.True(recommendations["dotnet-xunit"].IsAutoInstallCandidate);
+        Assert.False(recommendations["modern-csharp"].IsAutoInstallCandidate);
+        Assert.True(recommendations["aspnet-core"].IsAutoInstallCandidate);
+        Assert.True(recommendations["xunit"].IsAutoInstallCandidate);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public sealed class ProjectSkillRecommenderTests
             .Select(item => item.Skill.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        Assert.Contains("dotnet-aspnet-core", recommendations);
-        Assert.Contains("dotnet-xunit", recommendations);
+        Assert.Contains("aspnet-core", recommendations);
+        Assert.Contains("xunit", recommendations);
     }
 }

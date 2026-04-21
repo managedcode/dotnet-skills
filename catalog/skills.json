@@ -1,7 +1,7 @@
 {
   "skills": [
     {
-      "name": "dotnet-aspnet-core",
+      "name": "aspnet-core",
       "title": "ASP.NET Core",
       "version": "1.0.0",
       "category": "Web",
@@ -11,12 +11,12 @@
       "lane": "Frameworks",
       "description": "Build, debug, modernize, or review ASP.NET Core applications with correct hosting, middleware, security, configuration, logging, and deployment patterns on current .NET.",
       "compatibility": "Requires an ASP.NET Core project or solution.",
-      "path": "catalog/Frameworks/ASP.NET-Core/skills/dotnet-aspnet-core/",
+      "path": "catalog/Frameworks/ASP.NET-Core/skills/aspnet-core/",
       "tokenCount": 1632,
       "package_prefix": "Microsoft.AspNetCore"
     },
     {
-      "name": "dotnet-aspire",
+      "name": "aspire",
       "title": ".NET Aspire",
       "version": "1.3.3",
       "category": "Cloud",
@@ -26,7 +26,7 @@
       "lane": "Frameworks",
       "description": "Build, upgrade, and operate .NET Aspire 13.2.x application hosts with current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, and Azure deployment patterns for distributed apps.",
       "compatibility": "Best for current Aspire 13.2.x tooling on .NET 10; use version-aware upgrade guidance for older 8.x or 9.x Aspire solutions.",
-      "path": "catalog/Frameworks/Aspire/skills/dotnet-aspire/",
+      "path": "catalog/Frameworks/Aspire/skills/aspire/",
       "tokenCount": 2313,
       "links": {
         "repository": "https://github.com/microsoft/aspire",
@@ -36,7 +36,7 @@
       "package_prefix": "Aspire"
     },
     {
-      "name": "dotnet-azure-functions",
+      "name": "azure-functions",
       "title": "Azure Functions for .NET",
       "version": "1.0.0",
       "category": "Cloud",
@@ -46,12 +46,12 @@
       "lane": "Frameworks",
       "description": "Build, review, or migrate Azure Functions in .NET with correct execution model, isolated worker setup, bindings, DI, and Durable Functions patterns.",
       "compatibility": "Requires an Azure Functions project or a migration plan for one.",
-      "path": "catalog/Frameworks/Azure-Functions/skills/dotnet-azure-functions/",
+      "path": "catalog/Frameworks/Azure-Functions/skills/azure-functions/",
       "tokenCount": 2132,
       "package_prefix": "Microsoft.Azure.Functions"
     },
     {
-      "name": "dotnet-blazor",
+      "name": "blazor",
       "title": "Blazor",
       "version": "1.0.0",
       "category": "Web",
@@ -61,7 +61,7 @@
       "lane": "Frameworks",
       "description": "Build and review Blazor applications across server, WebAssembly, web app, and hybrid scenarios with correct component design, state flow, rendering, and hosting choices.",
       "compatibility": "Requires Blazor project (.NET 6+, preferably .NET 8+ for unified model).",
-      "path": "catalog/Frameworks/Blazor/skills/dotnet-blazor/",
+      "path": "catalog/Frameworks/Blazor/skills/blazor/",
       "tokenCount": 1692,
       "links": {
         "repository": "https://github.com/dotnet/aspnetcore",
@@ -71,7 +71,7 @@
       "package_prefix": "Microsoft.AspNetCore.Components"
     },
     {
-      "name": "dotnet-entity-framework6",
+      "name": "entity-framework6",
       "title": "Entity Framework 6",
       "version": "1.0.1",
       "category": "Data",
@@ -81,12 +81,12 @@
       "lane": "Legacy frameworks",
       "description": "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. Use when working in an EF6 codebase or planning a data layer migration.",
       "compatibility": "Requires EF6 or a transition plan from EF6 to EF Core or modern .NET.",
-      "path": "catalog/Frameworks/Entity-Framework-6/skills/dotnet-entity-framework6/",
+      "path": "catalog/Frameworks/Entity-Framework-6/skills/entity-framework6/",
       "tokenCount": 844,
       "package_prefix": "EntityFramework"
     },
     {
-      "name": "dotnet-entity-framework-core",
+      "name": "entity-framework-core",
       "title": "Entity Framework Core",
       "version": "1.0.0",
       "category": "Data",
@@ -96,7 +96,7 @@
       "lane": "Frameworks",
       "description": "Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications.",
       "compatibility": "Requires EF Core 7+ (preferably 8/9 for latest features).",
-      "path": "catalog/Frameworks/Entity-Framework-Core/skills/dotnet-entity-framework-core/",
+      "path": "catalog/Frameworks/Entity-Framework-Core/skills/entity-framework-core/",
       "tokenCount": 1929,
       "links": {
         "repository": "https://github.com/dotnet/efcore",
@@ -106,7 +106,7 @@
       "package_prefix": "Microsoft.EntityFrameworkCore"
     },
     {
-      "name": "dotnet-maui",
+      "name": "maui",
       "title": ".NET MAUI",
       "version": "1.0.0",
       "category": "Cross-Platform UI",
@@ -116,12 +116,12 @@
       "lane": "Frameworks",
       "description": "Build, review, or migrate .NET MAUI applications across Android, iOS, macOS, and Windows with correct cross-platform UI, platform integration, and native packaging assumptions.",
       "compatibility": "Requires .NET MAUI workload (.NET 8+).",
-      "path": "catalog/Frameworks/MAUI/skills/dotnet-maui/",
+      "path": "catalog/Frameworks/MAUI/skills/maui/",
       "tokenCount": 2047,
       "package_prefix": "Microsoft.Maui"
     },
     {
-      "name": "dotnet-mlnet",
+      "name": "mlnet",
       "title": "ML.NET",
       "version": "1.0.0",
       "category": "AI",
@@ -131,12 +131,12 @@
       "lane": "Frameworks",
       "description": "Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations.",
       "compatibility": "Requires ML.NET, Model Builder, or ML.NET CLI scenarios.",
-      "path": "catalog/Frameworks/ML.NET/skills/dotnet-mlnet/",
+      "path": "catalog/Frameworks/ML.NET/skills/mlnet/",
       "tokenCount": 359,
       "package_prefix": "Microsoft.ML"
     },
     {
-      "name": "dotnet-microsoft-agent-framework",
+      "name": "microsoft-agent-framework",
       "title": "Microsoft Agent Framework",
       "version": "1.8.0",
       "category": "AI",
@@ -146,12 +146,12 @@
       "lane": "Frameworks",
       "description": "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails.",
       "compatibility": "Requires preview-era Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration.",
-      "path": "catalog/Frameworks/Microsoft-Agent-Framework/skills/dotnet-microsoft-agent-framework/",
+      "path": "catalog/Frameworks/Microsoft-Agent-Framework/skills/microsoft-agent-framework/",
       "tokenCount": 2538,
       "package_prefix": "Microsoft.Agents"
     },
     {
-      "name": "dotnet-minimal-apis",
+      "name": "minimal-apis",
       "title": "Minimal APIs",
       "version": "1.0.0",
       "category": "Web",
@@ -161,7 +161,7 @@
       "lane": "Frameworks",
       "description": "Design and implement Minimal APIs in ASP.NET Core using handler-first endpoints, route groups, filters, and lightweight composition suited to modern .NET services.",
       "compatibility": "Requires ASP.NET Core 6+, preferably .NET 8+ for full features.",
-      "path": "catalog/Frameworks/Minimal-APIs/skills/dotnet-minimal-apis/",
+      "path": "catalog/Frameworks/Minimal-APIs/skills/minimal-apis/",
       "tokenCount": 1848
     },
     {
@@ -203,7 +203,7 @@
       "package_prefix": "Microsoft.AspNetCore"
     },
     {
-      "name": "dotnet-maui-doctor",
+      "name": "maui-doctor",
       "title": ".NET MAUI Doctor",
       "version": "0.1.0",
       "category": "Cross-Platform UI",
@@ -213,11 +213,11 @@
       "lane": "Tooling",
       "description": "Diagnoses and fixes .NET MAUI development environment issues. Validates .NET SDK, workloads, Java JDK, Android SDK, Xcode, and Windows SDK. All version requirements discovered dynamically from NuGet WorkloadDependencies.json \u2014 never hardcoded. Use when: setting up MAUI development, build errors mentioning SDK/workload/JDK/Android, \"Android SDK not found\", \"Java version\" errors, \"Xcode not found\", environment verification after updates, or any MAUI toolchain issues. Do not use for: non-MAUI .NET projects, Xamarin.Forms apps, runtime app crashes unrelated to environment setup, or app store publishing issues. Works on macOS, Windows, and Linux.",
       "compatibility": "Requires a .NET MAUI project or solution.",
-      "path": "catalog/Frameworks/Official-DotNet-MAUI/skills/dotnet-maui-doctor/",
+      "path": "catalog/Frameworks/Official-DotNet-MAUI/skills/maui-doctor/",
       "tokenCount": 2299,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
@@ -236,7 +236,7 @@
       "tokenCount": 2024,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
@@ -255,7 +255,7 @@
       "tokenCount": 2776,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
@@ -274,7 +274,7 @@
       "tokenCount": 2911,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
@@ -293,7 +293,7 @@
       "tokenCount": 2232,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
@@ -312,7 +312,7 @@
       "tokenCount": 3129,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
@@ -331,7 +331,7 @@
       "tokenCount": 2811,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
@@ -350,12 +350,12 @@
       "tokenCount": 2295,
       "links": {
         "repository": "https://github.com/dotnet/skills",
-        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-maui"
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/maui"
       },
       "package_prefix": "Microsoft.Maui"
     },
     {
-      "name": "dotnet-orleans",
+      "name": "orleans",
       "title": "Microsoft Orleans",
       "version": "2.1.0",
       "category": "Distributed",
@@ -365,7 +365,7 @@
       "lane": "Frameworks",
       "description": "Build or review distributed .NET applications with Orleans grains, silos, persistence, streaming, reminders, placement, transactions, serialization, event sourcing, testing, and cloud-native hosting.",
       "compatibility": "Prefer current Orleans releases (10.x / 9.x) with `UseOrleans`, `IPersistentState<TState>`, `RegisterGrainTimer`, `[GenerateSerializer]`, modern providers, and production-grade clustering.",
-      "path": "catalog/Frameworks/Orleans/skills/dotnet-orleans/",
+      "path": "catalog/Frameworks/Orleans/skills/orleans/",
       "tokenCount": 3000,
       "links": {
         "repository": "https://github.com/dotnet/orleans",
@@ -375,7 +375,7 @@
       "package_prefix": "Microsoft.Orleans"
     },
     {
-      "name": "dotnet-semantic-kernel",
+      "name": "semantic-kernel",
       "title": "Semantic Kernel for .NET",
       "version": "1.0.0",
       "category": "AI",
@@ -385,7 +385,7 @@
       "lane": "Frameworks",
       "description": "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable.",
       "compatibility": "Requires Semantic Kernel 1.x packages (.NET 8+).",
-      "path": "catalog/Frameworks/Semantic-Kernel/skills/dotnet-semantic-kernel/",
+      "path": "catalog/Frameworks/Semantic-Kernel/skills/semantic-kernel/",
       "tokenCount": 1940,
       "links": {
         "repository": "https://github.com/microsoft/semantic-kernel",
@@ -395,7 +395,7 @@
       "package_prefix": "Microsoft.SemanticKernel"
     },
     {
-      "name": "dotnet-signalr",
+      "name": "signalr",
       "title": "SignalR",
       "version": "1.0.0",
       "category": "Web",
@@ -405,12 +405,12 @@
       "lane": "Frameworks",
       "description": "Implement or review SignalR hubs, streaming, reconnection, transport, and real-time delivery patterns in ASP.NET Core applications.",
       "compatibility": "Requires ASP.NET Core SignalR server or client code.",
-      "path": "catalog/Frameworks/SignalR/skills/dotnet-signalr/",
+      "path": "catalog/Frameworks/SignalR/skills/signalr/",
       "tokenCount": 2522,
       "package_prefix": "Microsoft.AspNetCore.SignalR"
     },
     {
-      "name": "dotnet-uno-platform",
+      "name": "uno-platform",
       "title": "Uno Platform",
       "version": "1.0.0",
       "category": "Cross-Platform UI",
@@ -420,12 +420,12 @@
       "lane": "Frameworks",
       "description": "Build cross-platform .NET applications with Uno Platform targeting WebAssembly, iOS, Android, macOS, Linux, and Windows from a single XAML/C# codebase.",
       "compatibility": "Requires Uno Platform SDK and workloads for target platforms.",
-      "path": "catalog/Frameworks/Uno-Platform/skills/dotnet-uno-platform/",
+      "path": "catalog/Frameworks/Uno-Platform/skills/uno-platform/",
       "tokenCount": 1729,
       "package_prefix": "Uno.WinUI"
     },
     {
-      "name": "dotnet-wcf",
+      "name": "wcf",
       "title": "Windows Communication Foundation",
       "version": "1.0.0",
       "category": "Legacy",
@@ -435,12 +435,12 @@
       "lane": "Legacy frameworks",
       "description": "Work on WCF services, clients, bindings, contracts, and migration decisions for SOAP and multi-transport service-oriented systems on .NET Framework or compatible stacks.",
       "compatibility": "Requires WCF or a concrete migration off WCF.",
-      "path": "catalog/Frameworks/WCF/skills/dotnet-wcf/",
+      "path": "catalog/Frameworks/WCF/skills/wcf/",
       "tokenCount": 396,
       "package_prefix": "System.ServiceModel"
     },
     {
-      "name": "dotnet-wpf",
+      "name": "wpf",
       "title": "WPF",
       "version": "1.0.0",
       "category": "Desktop",
@@ -450,12 +450,12 @@
       "lane": "Frameworks",
       "description": "Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions.",
       "compatibility": "Requires a WPF project on .NET or .NET Framework.",
-      "path": "catalog/Frameworks/WPF/skills/dotnet-wpf/",
+      "path": "catalog/Frameworks/WPF/skills/wpf/",
       "tokenCount": 2770,
       "package_prefix": "Microsoft.WindowsDesktop.App.WPF"
     },
     {
-      "name": "dotnet-web-api",
+      "name": "web-api",
       "title": "ASP.NET Core Web API",
       "version": "1.0.0",
       "category": "Web",
@@ -465,11 +465,11 @@
       "lane": "Frameworks",
       "description": "Build or maintain controller-based ASP.NET Core APIs when the project needs controller conventions, advanced model binding, validation extensions, OData, JsonPatch, or existing API patterns.",
       "compatibility": "Requires an ASP.NET Core API project that uses or should use controllers.",
-      "path": "catalog/Frameworks/Web-API/skills/dotnet-web-api/",
+      "path": "catalog/Frameworks/Web-API/skills/web-api/",
       "tokenCount": 1525
     },
     {
-      "name": "dotnet-winforms",
+      "name": "winforms",
       "title": "Windows Forms",
       "version": "1.0.1",
       "category": "Desktop",
@@ -479,12 +479,12 @@
       "lane": "Frameworks",
       "description": "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. Use when working on WinForms projects or migrating from .NET Framework.",
       "compatibility": "Requires a Windows Forms project on .NET or .NET Framework.",
-      "path": "catalog/Frameworks/WinForms/skills/dotnet-winforms/",
+      "path": "catalog/Frameworks/WinForms/skills/winforms/",
       "tokenCount": 894,
       "package_prefix": "Microsoft.WindowsDesktop.App.WindowsForms"
     },
     {
-      "name": "dotnet-winui",
+      "name": "winui",
       "title": "WinUI 3 and Windows App SDK",
       "version": "1.0.1",
       "category": "Desktop",
@@ -494,12 +494,12 @@
       "lane": "Frameworks",
       "description": "Build or review WinUI 3 applications with the Windows App SDK, including MVVM patterns, packaging decisions, navigation, theming, windowing, and interop boundaries with other .NET stacks. Use when building modern Windows-native desktop UI.",
       "compatibility": "Requires a WinUI 3, Windows App SDK, or MAUI-on-Windows integration scenario.",
-      "path": "catalog/Frameworks/WinUI/skills/dotnet-winui/",
+      "path": "catalog/Frameworks/WinUI/skills/winui/",
       "tokenCount": 937,
       "package_prefix": "Microsoft.WindowsAppSDK"
     },
     {
-      "name": "dotnet-worker-services",
+      "name": "worker-services",
       "title": ".NET Worker Services",
       "version": "1.0.0",
       "category": "Core",
@@ -509,14 +509,14 @@
       "lane": "Frameworks",
       "description": "Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons.",
       "compatibility": "Requires a worker, hosted service, or background-processing scenario.",
-      "path": "catalog/Frameworks/Worker-Services/skills/dotnet-worker-services/",
+      "path": "catalog/Frameworks/Worker-Services/skills/worker-services/",
       "tokenCount": 2705,
       "packages": [
         "Microsoft.Extensions.Hosting"
       ]
     },
     {
-      "name": "dotnet-workflow-foundation",
+      "name": "workflow-foundation",
       "title": "Windows Workflow Foundation",
       "version": "1.0.0",
       "category": "Legacy",
@@ -526,11 +526,11 @@
       "lane": "Legacy frameworks",
       "description": "Maintain or assess Workflow Foundation-based solutions on .NET Framework, especially where long-lived process logic or legacy designer artifacts still matter.",
       "compatibility": "Requires WF or a migration plan away from it.",
-      "path": "catalog/Frameworks/Workflow-Foundation/skills/dotnet-workflow-foundation/",
+      "path": "catalog/Frameworks/Workflow-Foundation/skills/workflow-foundation/",
       "tokenCount": 351
     },
     {
-      "name": "dotnet-grpc",
+      "name": "grpc",
       "title": "gRPC for .NET",
       "version": "1.0.0",
       "category": "Web",
@@ -540,12 +540,12 @@
       "lane": "Frameworks",
       "description": "Build or review gRPC services and clients in .NET with correct contract-first design, streaming behavior, transport assumptions, and backend service integration.",
       "compatibility": "Requires ASP.NET Core gRPC or gRPC client projects.",
-      "path": "catalog/Frameworks/gRPC/skills/dotnet-grpc/",
+      "path": "catalog/Frameworks/gRPC/skills/grpc/",
       "tokenCount": 3189,
       "package_prefix": "Grpc"
     },
     {
-      "name": "dotnet-archunitnet",
+      "name": "archunitnet",
       "title": "ArchUnitNET for .NET",
       "version": "1.0.0",
       "category": "Architecture",
@@ -555,7 +555,7 @@
       "lane": "Libraries",
       "description": "Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide.",
       "compatibility": "Requires a .NET test project; supports dedicated integrations for xUnit, xUnit v3, MSTest, TUnit, and others where available.",
-      "path": "catalog/Libraries/ArchUnitNET/skills/dotnet-archunitnet/",
+      "path": "catalog/Libraries/ArchUnitNET/skills/archunitnet/",
       "tokenCount": 903,
       "packages": [
         "ArchUnitNET",
@@ -565,7 +565,7 @@
       ]
     },
     {
-      "name": "dotnet-libvlc",
+      "name": "libvlc",
       "title": "LibVLC Skill",
       "version": "1.0.0",
       "category": "Desktop",
@@ -575,7 +575,7 @@
       "lane": "Libraries",
       "description": "Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding.",
       "compatibility": ".NET 6+, .NET Standard 2.0+, .NET Framework 4.6.1+",
-      "path": "catalog/Libraries/LibVLC/skills/dotnet-libvlc/",
+      "path": "catalog/Libraries/LibVLC/skills/libvlc/",
       "tokenCount": 583,
       "packages": [
         "LibVLCSharp",
@@ -583,7 +583,7 @@
       ]
     },
     {
-      "name": "dotnet-mcp",
+      "name": "mcp",
       "title": "MCP C# SDK for .NET",
       "version": "1.1.1",
       "category": "AI",
@@ -593,7 +593,7 @@
       "lane": "Libraries",
       "description": "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation.",
       "compatibility": "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.1.x SDK.",
-      "path": "catalog/Libraries/MCP/skills/dotnet-mcp/",
+      "path": "catalog/Libraries/MCP/skills/mcp/",
       "tokenCount": 2410,
       "packages": [
         "ModelContextProtocol",
@@ -601,7 +601,7 @@
       ]
     },
     {
-      "name": "dotnet-mvvm",
+      "name": "mvvm",
       "title": "MVVM Pattern for .NET",
       "version": "1.0.0",
       "category": "Cross-Platform UI",
@@ -611,11 +611,11 @@
       "lane": "Libraries",
       "description": "Implement the Model-View-ViewModel pattern in .NET applications with proper separation of concerns, data binding, commands, and testable ViewModels using MVVM Toolkit.",
       "compatibility": "Applies to WPF, MAUI, WinUI, Uno Platform, Avalonia, and Blazor projects.",
-      "path": "catalog/Libraries/MVVM-Toolkit/skills/dotnet-mvvm/",
+      "path": "catalog/Libraries/MVVM-Toolkit/skills/mvvm/",
       "tokenCount": 2312
     },
     {
-      "name": "dotnet-managedcode-communication",
+      "name": "managedcode-communication",
       "title": "ManagedCode.Communication",
       "version": "1.0.0",
       "category": "Core",
@@ -625,14 +625,14 @@
       "lane": "Libraries",
       "description": "Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow.",
       "compatibility": "Requires a .NET application, service layer, or API boundary that integrates ManagedCode.Communication.",
-      "path": "catalog/Libraries/ManagedCode-Communication/skills/dotnet-managedcode-communication/",
+      "path": "catalog/Libraries/ManagedCode-Communication/skills/managedcode-communication/",
       "tokenCount": 357,
       "packages": [
         "ManagedCode.Communication"
       ]
     },
     {
-      "name": "dotnet-managedcode-markitdown",
+      "name": "managedcode-markitdown",
       "title": "ManagedCode.MarkItDown",
       "version": "1.0.0",
       "category": "Data",
@@ -642,14 +642,14 @@
       "lane": "Libraries",
       "description": "Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.MarkItDown or evaluates document conversion into Markdown.",
-      "path": "catalog/Libraries/ManagedCode-MarkItDown/skills/dotnet-managedcode-markitdown/",
+      "path": "catalog/Libraries/ManagedCode-MarkItDown/skills/managedcode-markitdown/",
       "tokenCount": 356,
       "packages": [
         "ManagedCode.MarkItDown"
       ]
     },
     {
-      "name": "dotnet-managedcode-mimetypes",
+      "name": "managedcode-mimetypes",
       "title": "ManagedCode.MimeTypes",
       "version": "1.0.0",
       "category": "Core",
@@ -659,14 +659,14 @@
       "lane": "Libraries",
       "description": "Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.MimeTypes or evaluates MIME type mapping behavior.",
-      "path": "catalog/Libraries/ManagedCode-MimeTypes/skills/dotnet-managedcode-mimetypes/",
+      "path": "catalog/Libraries/ManagedCode-MimeTypes/skills/managedcode-mimetypes/",
       "tokenCount": 353,
       "packages": [
         "ManagedCode.MimeTypes"
       ]
     },
     {
-      "name": "dotnet-managedcode-orleans-graph",
+      "name": "managedcode-orleans-graph",
       "title": "ManagedCode.Orleans.Graph",
       "version": "1.0.1",
       "category": "Distributed",
@@ -676,14 +676,14 @@
       "lane": "Libraries",
       "description": "Integrate ManagedCode.Orleans.Graph into an Orleans-based .NET application for graph-oriented relationships, edge management, and traversal logic on top of Orleans grains. Use when the application models graph structures in a distributed Orleans system.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.Orleans.Graph or evaluates graph-style modeling with Orleans.",
-      "path": "catalog/Libraries/ManagedCode-Orleans-Graph/skills/dotnet-managedcode-orleans-graph/",
+      "path": "catalog/Libraries/ManagedCode-Orleans-Graph/skills/managedcode-orleans-graph/",
       "tokenCount": 802,
       "packages": [
         "ManagedCode.Orleans.Graph"
       ]
     },
     {
-      "name": "dotnet-managedcode-orleans-signalr",
+      "name": "managedcode-orleans-signalr",
       "title": "ManagedCode.Orleans.SignalR",
       "version": "1.0.0",
       "category": "Distributed",
@@ -693,7 +693,7 @@
       "lane": "Libraries",
       "description": "Use ManagedCode.Orleans.SignalR when a distributed .NET application needs Orleans-based coordination of SignalR real-time messaging, hub delivery, and grain-driven push flows.",
       "compatibility": "Requires a .NET application that combines Orleans and SignalR through ManagedCode.Orleans.SignalR.",
-      "path": "catalog/Libraries/ManagedCode-Orleans-SignalR/skills/dotnet-managedcode-orleans-signalr/",
+      "path": "catalog/Libraries/ManagedCode-Orleans-SignalR/skills/managedcode-orleans-signalr/",
       "tokenCount": 344,
       "packages": [
         "ManagedCode.Orleans.SignalR.Server",
@@ -701,7 +701,7 @@
       ]
     },
     {
-      "name": "dotnet-managedcode-storage",
+      "name": "managedcode-storage",
       "title": "ManagedCode.Storage",
       "version": "1.0.0",
       "category": "Data",
@@ -711,7 +711,7 @@
       "lane": "Libraries",
       "description": "Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept behind one library contract.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.Storage or evaluates it as a storage abstraction.",
-      "path": "catalog/Libraries/ManagedCode-Storage/skills/dotnet-managedcode-storage/",
+      "path": "catalog/Libraries/ManagedCode-Storage/skills/managedcode-storage/",
       "tokenCount": 393,
       "packages": [
         "ManagedCode.Storage.Core",
@@ -721,7 +721,7 @@
       ]
     },
     {
-      "name": "dotnet-microsoft-extensions",
+      "name": "microsoft-extensions",
       "title": "Microsoft.Extensions for .NET",
       "version": "1.0.0",
       "category": "Core",
@@ -731,12 +731,12 @@
       "lane": "Libraries",
       "description": "Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns.",
       "compatibility": "Relevant to console apps, workers, ASP.NET Core apps, functions, and reusable libraries.",
-      "path": "catalog/Libraries/Microsoft-Extensions/skills/dotnet-microsoft-extensions/",
+      "path": "catalog/Libraries/Microsoft-Extensions/skills/microsoft-extensions/",
       "tokenCount": 390,
       "package_prefix": "Microsoft.Extensions"
     },
     {
-      "name": "dotnet-microsoft-extensions-ai",
+      "name": "microsoft-extensions-ai",
       "title": "Microsoft.Extensions.AI",
       "version": "1.4.0",
       "category": "AI",
@@ -746,12 +746,12 @@
       "lane": "Libraries",
       "description": "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation.",
       "compatibility": "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration.",
-      "path": "catalog/Libraries/Microsoft-Extensions-AI/skills/dotnet-microsoft-extensions-ai/",
+      "path": "catalog/Libraries/Microsoft-Extensions-AI/skills/microsoft-extensions-ai/",
       "tokenCount": 2386,
       "package_prefix": "Microsoft.Extensions.AI"
     },
     {
-      "name": "dotnet-netarchtest",
+      "name": "netarchtest",
       "title": "NetArchTest",
       "version": "1.0.0",
       "category": "Architecture",
@@ -761,7 +761,7 @@
       "lane": "Libraries",
       "description": "Use the open-source free `NetArchTest.Rules` library for architecture rules in .NET unit tests. Use when a repo wants lightweight, fluent architecture assertions for namespaces, dependencies, or layering.",
       "compatibility": "Requires a .NET test project; works with any unit-test framework.",
-      "path": "catalog/Libraries/NetArchTest/skills/dotnet-netarchtest/",
+      "path": "catalog/Libraries/NetArchTest/skills/netarchtest/",
       "tokenCount": 835,
       "packages": [
         "NetArchTest.Rules",
@@ -788,7 +788,7 @@
       "package_prefix": "Microsoft.EntityFrameworkCore"
     },
     {
-      "name": "dotnet-sep",
+      "name": "sep",
       "title": "Sep for .NET separated values",
       "version": "1.0.0",
       "category": "Data",
@@ -798,14 +798,14 @@
       "lane": "Libraries",
       "description": "Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows.",
       "compatibility": "Requires a .NET project that can reference the `Sep` package and accept span/ref-struct row/column APIs for row-by-row processing.",
-      "path": "catalog/Libraries/Sep/skills/dotnet-sep/",
+      "path": "catalog/Libraries/Sep/skills/sep/",
       "tokenCount": 1244,
       "packages": [
         "Sep"
       ]
     },
     {
-      "name": "dotnet-architecture",
+      "name": "architecture",
       "title": ".NET Architecture",
       "version": "1.0.0",
       "category": "Core",
@@ -815,11 +815,11 @@
       "lane": "Architecture",
       "description": "Design or review .NET solution architecture across modular monoliths, clean architecture, vertical slices, microservices, DDD, CQRS, and cloud-native boundaries without over-engineering.",
       "compatibility": "Best when project structure, service boundaries, or long-term maintainability are in scope.",
-      "path": "catalog/Platform/Architecture/skills/dotnet-architecture/",
+      "path": "catalog/Platform/Architecture/skills/architecture/",
       "tokenCount": 434
     },
     {
-      "name": "dotnet-code-review",
+      "name": "code-review",
       "title": ".NET Code Review",
       "version": "1.0.0",
       "category": "Core",
@@ -829,7 +829,7 @@
       "lane": "Review",
       "description": "Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them.",
       "compatibility": "Works for application code, libraries, tests, tooling, and infrastructure changes.",
-      "path": "catalog/Platform/Code-Review/skills/dotnet-code-review/",
+      "path": "catalog/Platform/Code-Review/skills/code-review/",
       "tokenCount": 602
     },
     {
@@ -847,7 +847,7 @@
       "tokenCount": 1105
     },
     {
-      "name": "dotnet-legacy-aspnet",
+      "name": "legacy-aspnet",
       "title": "Legacy ASP.NET",
       "version": "1.0.0",
       "category": "Legacy",
@@ -857,11 +857,11 @@
       "lane": "Legacy frameworks",
       "description": "Maintain classic ASP.NET applications on .NET Framework, including Web Forms, older MVC, and legacy hosting patterns, while planning realistic modernization boundaries.",
       "compatibility": "Requires classic ASP.NET on .NET Framework.",
-      "path": "catalog/Platform/Legacy-ASP.NET/skills/dotnet-legacy-aspnet/",
+      "path": "catalog/Platform/Legacy-ASP.NET/skills/legacy-aspnet/",
       "tokenCount": 383
     },
     {
-      "name": "dotnet-mcaf",
+      "name": "mcaf",
       "title": "MCAF Adoption",
       "version": "1.2.1",
       "category": "Core",
@@ -871,11 +871,11 @@
       "lane": "Governance",
       "description": "Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. Use when bootstrapping or updating MCAF alongside the dotnet-skills catalog.",
       "compatibility": "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf/",
+      "path": "catalog/Platform/MCAF/skills/mcaf/",
       "tokenCount": 980
     },
     {
-      "name": "dotnet-mcaf-agile-delivery",
+      "name": "mcaf-agile-delivery",
       "title": "MCAF: Agile Delivery",
       "version": "1.0.0",
       "category": "Core",
@@ -885,11 +885,11 @@
       "lane": "Delivery Workflow",
       "description": "Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements.",
       "compatibility": "Requires repository access only when the repo stores delivery docs or governance guidance.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-agile-delivery/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-agile-delivery/",
       "tokenCount": 800
     },
     {
-      "name": "dotnet-mcaf-devex",
+      "name": "mcaf-devex",
       "title": "MCAF: Developer Experience",
       "version": "1.0.0",
       "category": "Core",
@@ -899,11 +899,11 @@
       "lane": "Delivery Workflow",
       "description": "Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into.",
       "compatibility": "Requires repository access; may update docs, task runners, devcontainer guidance, or local setup conventions.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-devex/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-devex/",
       "tokenCount": 832
     },
     {
-      "name": "dotnet-mcaf-documentation",
+      "name": "mcaf-documentation",
       "title": "MCAF: Documentation",
       "version": "1.0.0",
       "category": "Architecture",
@@ -913,11 +913,11 @@
       "lane": "Governance",
       "description": "Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. Use when a repo\u2019s docs are missing, stale, duplicated, or hard to navigate, or when adding new durable engineering guidance.",
       "compatibility": "Requires repository write access; updates docs and documentation structure.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-documentation/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-documentation/",
       "tokenCount": 794
     },
     {
-      "name": "dotnet-mcaf-feature-spec",
+      "name": "mcaf-feature-spec",
       "title": "MCAF: Feature Spec",
       "version": "1.0.0",
       "category": "Architecture",
@@ -927,11 +927,11 @@
       "lane": "Governance",
       "description": "Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. Use when the user asks for a feature spec, executable requirements, acceptance criteria, behaviour documentation, or a pre-implementation plan for non-trivial behaviour changes.",
       "compatibility": "Requires repository write access; produces Markdown docs with Mermaid diagrams and executable verification steps.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-feature-spec/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-feature-spec/",
       "tokenCount": 860
     },
     {
-      "name": "dotnet-mcaf-human-review-planning",
+      "name": "mcaf-human-review-planning",
       "title": "MCAF: Human Review Planning",
       "version": "1.0.0",
       "category": "Core",
@@ -941,11 +941,11 @@
       "lane": "Governance",
       "description": "Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the files a human should inspect first. Use when the codebase is too large to review line-by-line and you need a practical review sequence plus a prioritized file list.",
       "compatibility": "Requires repository read access; may write a `HUMAN_REVIEW_PLAN.md` file under docs, or to an exact docs path the user specifies, when the user asks for a saved review plan.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-human-review-planning/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-human-review-planning/",
       "tokenCount": 1201
     },
     {
-      "name": "dotnet-mcaf-ml-ai-delivery",
+      "name": "mcaf-ml-ai-delivery",
       "title": "MCAF: ML/AI Delivery",
       "version": "1.0.0",
       "category": "AI",
@@ -955,11 +955,11 @@
       "lane": "Delivery Workflow",
       "description": "Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. Use when the repo includes model training, inference, data science workflows, or ML-specific delivery planning.",
       "compatibility": "Requires repository access when ML/AI docs, experiments, or delivery guidance live in the repo.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-ml-ai-delivery/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-ml-ai-delivery/",
       "tokenCount": 904
     },
     {
-      "name": "dotnet-mcaf-nfr",
+      "name": "mcaf-nfr",
       "title": "MCAF: Non-Functional Requirements",
       "version": "1.0.0",
       "category": "Architecture",
@@ -969,11 +969,11 @@
       "lane": "Governance",
       "description": "Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. Use when a feature or architecture change needs explicit quality attributes and trade-offs.",
       "compatibility": "Requires repository access when NFRs are documented in feature docs, ADRs, or architecture docs.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-nfr/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-nfr/",
       "tokenCount": 844
     },
     {
-      "name": "dotnet-mcaf-source-control",
+      "name": "mcaf-source-control",
       "title": "MCAF: Source Control",
       "version": "1.0.0",
       "category": "Core",
@@ -983,11 +983,11 @@
       "lane": "Governance",
       "description": "Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. Use when bootstrapping a repo, tightening PR flow, or documenting branch and release policy.",
       "compatibility": "Requires repository access; may update contribution docs, AGENTS rules, or repository policy files.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-source-control/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-source-control/",
       "tokenCount": 800
     },
     {
-      "name": "dotnet-mcaf-ui-ux",
+      "name": "mcaf-ui-ux",
       "title": "MCAF: UI/UX",
       "version": "1.0.0",
       "category": "Cross-Platform UI",
@@ -997,11 +997,11 @@
       "lane": "Delivery Workflow",
       "description": "Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. Use when bootstrapping a UI project, choosing front-end stack, or tightening design and accessibility practices.",
       "compatibility": "Requires repository access when UI docs, component guidance, or design system rules live in the repo.",
-      "path": "catalog/Platform/MCAF/skills/dotnet-mcaf-ui-ux/",
+      "path": "catalog/Platform/MCAF/skills/mcaf-ui-ux/",
       "tokenCount": 773
     },
     {
-      "name": "dotnet-mixed-reality",
+      "name": "mixed-reality",
       "title": "Mixed Reality with .NET",
       "version": "1.0.0",
       "category": "Cross-Platform UI",
@@ -1011,7 +1011,7 @@
       "lane": "Frameworks",
       "description": "Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack.",
       "compatibility": "Best for HoloLens, MRTK, Unity+C#, and service integrations around mixed reality.",
-      "path": "catalog/Platform/Mixed-Reality/skills/dotnet-mixed-reality/",
+      "path": "catalog/Platform/Mixed-Reality/skills/mixed-reality/",
       "tokenCount": 478,
       "package_prefix": "Microsoft.MixedReality"
     },
@@ -1034,7 +1034,7 @@
       }
     },
     {
-      "name": "dotnet-pinvoke",
+      "name": "pinvoke",
       "title": ".NET P/Invoke",
       "version": "0.1.0",
       "category": "Core",
@@ -1044,7 +1044,7 @@
       "lane": "Interop",
       "description": "Correctly call native (C/C++) libraries from .NET using P/Invoke and LibraryImport. Covers function signatures, string marshalling, memory lifetime, SafeHandle, and cross-platform patterns. USE FOR: writing new P/Invoke or LibraryImport declarations, reviewing or debugging existing native interop code, wrapping a C or C++ library for use in .NET, diagnosing crashes, memory leaks, or corruption at the managed/native boundary. DO NOT USE FOR: COM interop, C++/CLI mixed-mode assemblies, or pure managed code with no native dependencies.",
       "compatibility": "Requires a .NET repository or solution.",
-      "path": "catalog/Platform/Official-DotNet/skills/dotnet-pinvoke/",
+      "path": "catalog/Platform/Official-DotNet/skills/pinvoke/",
       "tokenCount": 4612,
       "links": {
         "repository": "https://github.com/dotnet/skills",
@@ -1232,8 +1232,8 @@
       }
     },
     {
-      "name": "dotnet-aot-compat",
-      "title": "dotnet-aot-compat",
+      "name": "aot-compat",
+      "title": "aot-compat",
       "version": "0.1.0",
       "category": "Legacy",
       "type": "Platform",
@@ -1242,7 +1242,7 @@
       "lane": "Runtime upgrades",
       "description": "Make .NET projects compatible with Native AOT and trimming by systematically resolving IL trim/AOT analyzer warnings. USE FOR: making projects AOT-compatible, fixing trimming warnings, resolving IL warnings (IL2026, IL2070, IL2067, IL2072, IL3050), adding DynamicallyAccessedMembers annotations, enabling IsAotCompatible. DO NOT USE FOR: publishing native AOT binaries, optimizing binary size, replacing reflection-heavy libraries with alternatives. INVOKES: no tools \u2014 pure knowledge skill.",
       "compatibility": "Requires a .NET repository being migrated across framework, SDK, or compatibility changes.",
-      "path": "catalog/Platform/Official-DotNet-Upgrade/skills/dotnet-aot-compat/",
+      "path": "catalog/Platform/Official-DotNet-Upgrade/skills/aot-compat/",
       "tokenCount": 3905,
       "links": {
         "repository": "https://github.com/dotnet/skills",
@@ -1340,7 +1340,7 @@
       }
     },
     {
-      "name": "dotnet-project-setup",
+      "name": "project-setup",
       "title": ".NET Project Setup",
       "version": "1.0.0",
       "category": "Core",
@@ -1350,11 +1350,11 @@
       "lane": "Foundations",
       "description": "Create or reorganize .NET solutions with clean project boundaries, repeatable SDK settings, and a maintainable baseline for libraries, apps, tests, CI, and local development.",
       "compatibility": "Best for new repositories or structural refactors of existing .NET solutions.",
-      "path": "catalog/Platform/Project-Setup/skills/dotnet-project-setup/",
+      "path": "catalog/Platform/Project-Setup/skills/project-setup/",
       "tokenCount": 417
     },
     {
-      "name": "dotnet-coverlet",
+      "name": "coverlet",
       "title": "Coverlet for .NET",
       "version": "1.0.0",
       "category": "Testing",
@@ -1364,7 +1364,7 @@
       "lane": "Quality",
       "description": "Use the open-source free `coverlet` toolchain for .NET code coverage. Use when a repo needs line and branch coverage, collector versus MSBuild driver selection, or CI-safe coverage commands.",
       "compatibility": "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Testing/Coverlet/skills/dotnet-coverlet/",
+      "path": "catalog/Testing/Coverlet/skills/coverlet/",
       "tokenCount": 1081,
       "packages": [
         "coverlet.collector",
@@ -1372,7 +1372,7 @@
       ]
     },
     {
-      "name": "dotnet-mstest",
+      "name": "mstest",
       "title": "MSTest",
       "version": "1.0.0",
       "category": "Testing",
@@ -1382,7 +1382,7 @@
       "lane": "Frameworks",
       "description": "Write, run, or repair .NET tests that use MSTest. Use when a repo uses `MSTest.Sdk`, `MSTest`, `[TestClass]`, `[TestMethod]`, `DataRow`, or Microsoft.Testing.Platform-based MSTest execution.",
       "compatibility": "Requires a .NET solution or project with MSTest packages; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Testing/MSTest/skills/dotnet-mstest/",
+      "path": "catalog/Testing/MSTest/skills/mstest/",
       "tokenCount": 1130,
       "packages": [
         "MSTest",
@@ -1391,7 +1391,7 @@
       ]
     },
     {
-      "name": "dotnet-nunit",
+      "name": "nunit",
       "title": "NUnit Testing",
       "version": "1.0.0",
       "category": "Testing",
@@ -1401,7 +1401,7 @@
       "lane": "Frameworks",
       "description": "Write, run, or repair .NET tests that use NUnit. Use when a repo uses `NUnit`, `[Test]`, `[TestCase]`, `[TestFixture]`, or NUnit3TestAdapter for VSTest or Microsoft.Testing.Platform execution.",
       "compatibility": "Requires NUnit 3.x or 4.x packages and appropriate test adapter.",
-      "path": "catalog/Testing/NUnit/skills/dotnet-nunit/",
+      "path": "catalog/Testing/NUnit/skills/nunit/",
       "tokenCount": 2327,
       "packages": [
         "NUnit",
@@ -1485,7 +1485,7 @@
       }
     },
     {
-      "name": "dotnet-test-frameworks",
+      "name": "test-frameworks",
       "title": ".NET Test Framework Reference",
       "version": "0.1.0",
       "category": "Testing",
@@ -1495,7 +1495,7 @@
       "lane": "Foundations",
       "description": "Reference data for .NET test framework detection patterns, assertion APIs, skip annotations, setup/teardown methods, and common test smell indicators across MSTest, xUnit, NUnit, and TUnit. DO NOT USE directly \u2014 loaded by test analysis skills (test-anti-patterns, exp-test-smell-detection, exp-assertion-quality, exp-test-maintainability, exp-test-tagging) when they need framework-specific lookup tables.",
       "compatibility": "Requires a .NET test project or solution.",
-      "path": "catalog/Testing/Official-DotNet-Test/skills/dotnet-test-frameworks/",
+      "path": "catalog/Testing/Official-DotNet-Test/skills/test-frameworks/",
       "tokenCount": 1361,
       "links": {
         "repository": "https://github.com/dotnet/skills",
@@ -1726,7 +1726,7 @@
       "package_prefix": "MSTest"
     },
     {
-      "name": "dotnet-stryker",
+      "name": "stryker",
       "title": "Stryker.NET",
       "version": "1.0.0",
       "category": "Testing",
@@ -1736,14 +1736,14 @@
       "lane": "Mutation",
       "description": "Use the open-source free `Stryker.NET` mutation testing tool for .NET. Use when a repo needs to measure whether tests actually catch faults, especially in critical libraries or domains.",
       "compatibility": "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Testing/Stryker/skills/dotnet-stryker/",
+      "path": "catalog/Testing/Stryker/skills/stryker/",
       "tokenCount": 874,
       "packages": [
-        "dotnet-stryker"
+        "stryker"
       ]
     },
     {
-      "name": "dotnet-tunit",
+      "name": "tunit",
       "title": "TUnit",
       "version": "1.1.0",
       "category": "Testing",
@@ -1753,14 +1753,14 @@
       "lane": "Frameworks",
       "description": "Write, run, or repair .NET tests that use TUnit. Use when a repo uses `TUnit`, `TUnit.Playwright`, `[Test]`, `[Arguments]`, `ClassDataSource`, `SharedType.PerTestSession`, or Microsoft.Testing.Platform-based execution.",
       "compatibility": "Requires a .NET solution or project with TUnit packages; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Testing/TUnit/skills/dotnet-tunit/",
+      "path": "catalog/Testing/TUnit/skills/tunit/",
       "tokenCount": 1768,
       "packages": [
         "TUnit"
       ]
     },
     {
-      "name": "dotnet-xunit",
+      "name": "xunit",
       "title": "xUnit.net",
       "version": "1.0.0",
       "category": "Testing",
@@ -1770,7 +1770,7 @@
       "lane": "Frameworks",
       "description": "Write, run, or repair .NET tests that use xUnit. Use when a repo uses `xunit`, `xunit.v3`, `[Fact]`, `[Theory]`, or `xunit.runner.visualstudio`, and you need the right CLI, package, and runner guidance for xUnit on VSTest or Microsoft.Testing.Platform.",
       "compatibility": "Requires a .NET solution or project with xUnit packages; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Testing/xUnit/skills/dotnet-xunit/",
+      "path": "catalog/Testing/xUnit/skills/xunit/",
       "tokenCount": 1245,
       "packages": [
         "xunit",
@@ -1778,7 +1778,7 @@
       ]
     },
     {
-      "name": "dotnet-analyzer-config",
+      "name": "analyzer-config",
       "title": ".NET Analyzer Configuration",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1788,11 +1788,11 @@
       "lane": "Code Quality",
       "description": "Use a repo-root `.editorconfig` to configure free .NET analyzer and style rules. Use when a .NET repo needs rule severity, code-style options, section layout, or analyzer ownership made explicit. Nested `.editorconfig` files are allowed when they serve a clear subtree-specific purpose.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/Analyzer-Config/skills/dotnet-analyzer-config/",
+      "path": "catalog/Tools/Analyzer-Config/skills/analyzer-config/",
       "tokenCount": 1054
     },
     {
-      "name": "dotnet-asynkron-profiler",
+      "name": "asynkron-profiler",
       "title": "Asynkron.Profiler",
       "version": "1.0.0",
       "category": "Metrics",
@@ -1802,14 +1802,14 @@
       "lane": "Performance",
       "description": "Use the open-source free `Asynkron.Profiler` dotnet tool for CLI-first CPU, allocation, exception, contention, and heap profiling of .NET commands or existing trace artifacts.",
       "compatibility": "Requires the `asynkron-profiler` dotnet tool plus `dotnet-trace` and `dotnet-gcdump`; upstream guidance currently targets .NET SDK 10.x.",
-      "path": "catalog/Tools/Asynkron-Profiler/skills/dotnet-asynkron-profiler/",
+      "path": "catalog/Tools/Asynkron-Profiler/skills/asynkron-profiler/",
       "tokenCount": 1643,
       "packages": [
         "Asynkron.Profiler"
       ]
     },
     {
-      "name": "dotnet-biome",
+      "name": "biome",
       "title": "Biome for Frontend Assets in .NET Repositories",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1819,11 +1819,11 @@
       "lane": "Code Quality",
       "description": "Use Biome in .NET repositories that ship Node-based frontend assets and want a fast combined formatter-linter-import organizer for JavaScript, TypeScript, CSS, JSON, GraphQL, or HTML. Use when a repo prefers a modern all-in-one CLI over a larger ESLint plus Prettier style stack.",
       "compatibility": "Requires a .NET repository with frontend assets managed through Node or a standalone Biome binary workflow; keep ownership explicit versus ESLint, Stylelint, and webhint.",
-      "path": "catalog/Tools/Biome/skills/dotnet-biome/",
+      "path": "catalog/Tools/Biome/skills/biome/",
       "tokenCount": 1161
     },
     {
-      "name": "dotnet-csharpier",
+      "name": "csharpier",
       "title": "CSharpier for .NET",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1833,14 +1833,14 @@
       "lane": "Code Quality",
       "description": "Use the open-source free `CSharpier` formatter for C# and XML. Use when a .NET repo intentionally wants one opinionated formatter instead of a highly configurable `dotnet format`-driven style model.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/CSharpier/skills/dotnet-csharpier/",
+      "path": "catalog/Tools/CSharpier/skills/csharpier/",
       "tokenCount": 905,
       "packages": [
         "CSharpier"
       ]
     },
     {
-      "name": "dotnet-chous",
+      "name": "chous",
       "title": "Chous for Frontend File-Structure Linting in .NET Repositories",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1850,14 +1850,14 @@
       "lane": "Code Quality",
       "description": "Use Chous in .NET repositories that ship sizeable frontend codebases and want file-structure linting, naming convention enforcement, and folder-layout policy as a CLI gate. Use when the problem is frontend architecture drift in the file tree rather than semantic code issues inside the files.",
       "compatibility": "Requires a repository with a meaningful frontend file tree and Node-based tooling or `npx`; Chous complements code linters and does not replace ESLint, Stylelint, or runtime site audits.",
-      "path": "catalog/Tools/Chous/skills/dotnet-chous/",
+      "path": "catalog/Tools/Chous/skills/chous/",
       "tokenCount": 997,
       "packages": [
         "Chous"
       ]
     },
     {
-      "name": "dotnet-chrome-devtools-mcp",
+      "name": "chrome-devtools-mcp",
       "title": "Chrome DevTools MCP for .NET Repos",
       "version": "1.0.0",
       "category": "Web",
@@ -1867,7 +1867,7 @@
       "lane": "Foundations",
       "description": "Use Chrome DevTools MCP from .NET agents and .NET-focused repos to inspect, debug, and automate Chrome through an MCP client.",
       "compatibility": "Requires an MCP-capable .NET agent/app or repo with a browser-debugging workflow; Chrome DevTools MCP runs as an external Node-based server and needs Chrome or Chrome for Testing.",
-      "path": "catalog/Tools/Chrome-DevTools-MCP/skills/dotnet-chrome-devtools-mcp/",
+      "path": "catalog/Tools/Chrome-DevTools-MCP/skills/chrome-devtools-mcp/",
       "tokenCount": 1689,
       "links": {
         "repository": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
@@ -1878,7 +1878,7 @@
       ]
     },
     {
-      "name": "dotnet-code-analysis",
+      "name": "code-analysis",
       "title": ".NET Code Analysis",
       "version": "1.0.1",
       "category": "Code Quality",
@@ -1888,14 +1888,14 @@
       "lane": "Code Quality",
       "description": "Use the free built-in .NET SDK analyzers and analysis levels with gradual Roslyn warning promotion. Use when a .NET repo needs first-party code analysis, `EnableNETAnalyzers`, `AnalysisLevel`, or warning-as-error policy wired into build and CI.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/Code-Analysis/skills/dotnet-code-analysis/",
+      "path": "catalog/Tools/Code-Analysis/skills/code-analysis/",
       "tokenCount": 1888,
       "packages": [
         "Microsoft.CodeAnalysis.NetAnalyzers"
       ]
     },
     {
-      "name": "dotnet-codeql",
+      "name": "codeql",
       "title": "CodeQL for .NET",
       "version": "1.0.0",
       "category": "Metrics",
@@ -1905,11 +1905,11 @@
       "lane": "Static Analysis",
       "description": "Use the open-source CodeQL ecosystem for .NET security analysis. Use when a repo needs CodeQL query packs, CLI-based analysis on open source codebases, or GitHub Action setup with explicit licensing caveats for private repositories.",
       "compatibility": "Requires a GitHub-based or CLI-based CodeQL workflow; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/CodeQL/skills/dotnet-codeql/",
+      "path": "catalog/Tools/CodeQL/skills/codeql/",
       "tokenCount": 883
     },
     {
-      "name": "dotnet-complexity",
+      "name": "complexity",
       "title": ".NET Complexity Review",
       "version": "1.0.0",
       "category": "Metrics",
@@ -1919,11 +1919,11 @@
       "lane": "Observability",
       "description": "Use free built-in .NET maintainability analyzers and code metrics configuration to find overly complex methods and coupled code. Use when a repo needs cyclomatic complexity checks, maintainability thresholds, or complexity-driven refactoring gates.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/Complexity/skills/dotnet-complexity/",
+      "path": "catalog/Tools/Complexity/skills/complexity/",
       "tokenCount": 1017
     },
     {
-      "name": "dotnet-eslint",
+      "name": "eslint",
       "title": "ESLint for Frontend Assets in .NET Repositories",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1933,11 +1933,11 @@
       "lane": "Code Quality",
       "description": "Use ESLint in .NET repositories that ship JavaScript, TypeScript, React, or other Node-based frontend assets. Use when a repo needs a configurable CLI lint gate for frontend correctness, import hygiene, unsafe patterns, or framework-specific rules.",
       "compatibility": "Requires a .NET repository with Node-based frontend assets such as `package.json`, `ClientApp/`, `src/`, or separate web frontend folders.",
-      "path": "catalog/Tools/ESLint/skills/dotnet-eslint/",
+      "path": "catalog/Tools/ESLint/skills/eslint/",
       "tokenCount": 1166
     },
     {
-      "name": "dotnet-format",
+      "name": "format",
       "title": "dotnet format",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1947,11 +1947,11 @@
       "lane": "Code Quality",
       "description": "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. Use when a .NET repo needs formatting commands, `--verify-no-changes` CI checks, or `.editorconfig`-driven code style enforcement.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/Format/skills/dotnet-format/",
+      "path": "catalog/Tools/Format/skills/format/",
       "tokenCount": 962
     },
     {
-      "name": "dotnet-graphify-dotnet",
+      "name": "graphify-dotnet",
       "title": "graphify-dotnet",
       "version": "1.0.0",
       "category": "Architecture",
@@ -1961,14 +1961,14 @@
       "lane": "Analysis",
       "description": "Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships.",
       "compatibility": "Requires the `graphify-dotnet` global tool and a .NET 10 SDK; AST-only extraction works with zero model setup, while semantic enrichment needs Azure OpenAI, Ollama, or GitHub Copilot SDK.",
-      "path": "catalog/Tools/Graphify/skills/dotnet-graphify-dotnet/",
+      "path": "catalog/Tools/Graphify/skills/graphify-dotnet/",
       "tokenCount": 1676,
       "packages": [
         "Graphify.Dotnet"
       ]
     },
     {
-      "name": "dotnet-htmlhint",
+      "name": "htmlhint",
       "title": "HTMLHint for Static HTML in .NET Repositories",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1978,11 +1978,11 @@
       "lane": "Code Quality",
       "description": "Use HTMLHint in .NET repositories that ship static HTML output or standalone frontend templates. Use when a repo needs a focused CLI lint gate for DOM structure, invalid attributes, and basic HTML correctness checks on static pages.",
       "compatibility": "Requires a .NET repository with static HTML assets or generated frontend output; use on rendered output rather than raw Razor or Blazor source files.",
-      "path": "catalog/Tools/HTMLHint/skills/dotnet-htmlhint/",
+      "path": "catalog/Tools/HTMLHint/skills/htmlhint/",
       "tokenCount": 1056
     },
     {
-      "name": "dotnet-metalint",
+      "name": "metalint",
       "title": "Metalint for Aggregated Frontend Linting in .NET Repositories",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -1992,11 +1992,11 @@
       "lane": "Code Quality",
       "description": "Use Metalint in .NET repositories that ship Node-based frontend assets and want one CLI entrypoint over several underlying linters. Use when a repo wants to orchestrate ESLint, Stylelint, HTMLHint, and related frontend checks from a single checked-in `.metalint/` configuration.",
       "compatibility": "Requires a .NET repository with a Node-based frontend and multiple underlying linters; Metalint is an orchestrator, not a replacement for the actual linter configs it delegates to.",
-      "path": "catalog/Tools/Metalint/skills/dotnet-metalint/",
+      "path": "catalog/Tools/Metalint/skills/metalint/",
       "tokenCount": 1084
     },
     {
-      "name": "dotnet-meziantou-analyzer",
+      "name": "meziantou-analyzer",
       "title": "Meziantou.Analyzer",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2006,14 +2006,14 @@
       "lane": "Code Quality",
       "description": "Use the open-source free `Meziantou.Analyzer` package for design, usage, security, performance, and style rules in .NET. Use when a repo wants broader analyzer coverage with a single NuGet package.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/Meziantou-Analyzer/skills/dotnet-meziantou-analyzer/",
+      "path": "catalog/Tools/Meziantou-Analyzer/skills/meziantou-analyzer/",
       "tokenCount": 885,
       "packages": [
         "Meziantou.Analyzer"
       ]
     },
     {
-      "name": "dotnet-modern-csharp",
+      "name": "modern-csharp",
       "title": "Modern C# for .NET",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2023,7 +2023,7 @@
       "lane": "Foundations",
       "description": "Write modern, version-aware C# for .NET repositories. Use when choosing language features across C# versions, especially C# 13 and C# 14, while staying compatible with the repo's target framework and `LangVersion`.",
       "compatibility": "Requires a C# or .NET repository; respects explicit `LangVersion` and target framework settings.",
-      "path": "catalog/Tools/Modern-CSharp/skills/dotnet-modern-csharp/",
+      "path": "catalog/Tools/Modern-CSharp/skills/modern-csharp/",
       "tokenCount": 1186
     },
     {
@@ -2099,7 +2099,7 @@
       }
     },
     {
-      "name": "dotnet-trace-collect",
+      "name": "trace-collect",
       "title": ".NET Trace Collect",
       "version": "0.1.0",
       "category": "Metrics",
@@ -2109,7 +2109,7 @@
       "lane": "Performance",
       "description": "Guide developers through capturing diagnostic artifacts to diagnose production .NET performance issues. Use when the user needs help choosing diagnostic tools, collecting performance data, or understanding tool trade-offs across different environments (Windows/Linux, .NET Framework/modern .NET, container/non-container).",
       "compatibility": "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work.",
-      "path": "catalog/Tools/Official-DotNet-Diagnostics/skills/dotnet-trace-collect/",
+      "path": "catalog/Tools/Official-DotNet-Diagnostics/skills/trace-collect/",
       "tokenCount": 5569,
       "links": {
         "repository": "https://github.com/dotnet/skills",
@@ -2495,7 +2495,7 @@
       }
     },
     {
-      "name": "dotnet-profiling",
+      "name": "profiling",
       "title": ".NET Profiling",
       "version": "1.0.0",
       "category": "Metrics",
@@ -2505,11 +2505,11 @@
       "lane": "Performance",
       "description": "Use the free official .NET diagnostics CLI tools for profiling and runtime investigation in .NET repositories. Use when a repo needs CPU tracing, live counters, GC and allocation investigation, exception or contention tracing, heap snapshots, or startup diagnostics without GUI-only tooling.",
       "compatibility": "Requires a .NET app or process to inspect; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/Profiling/skills/dotnet-profiling/",
+      "path": "catalog/Tools/Profiling/skills/profiling/",
       "tokenCount": 1342
     },
     {
-      "name": "dotnet-quality-ci",
+      "name": "quality-ci",
       "title": ".NET Quality CI",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2519,11 +2519,11 @@
       "lane": "Code Quality",
       "description": "Set up or refine open-source .NET code-quality gates for CI: formatting, `.editorconfig`, SDK analyzers, third-party analyzers, coverage, mutation testing, architecture tests, and security scanning. Use when a .NET repo needs an explicit quality stack in `AGENTS.md`, docs, or pipeline YAML.",
       "compatibility": "Requires a .NET solution or project; may update `AGENTS.md`, CI workflows, a repo-root `.editorconfig`, `Directory.Build.props`, or analyzer package references.",
-      "path": "catalog/Tools/Quality-CI/skills/dotnet-quality-ci/",
+      "path": "catalog/Tools/Quality-CI/skills/quality-ci/",
       "tokenCount": 1577
     },
     {
-      "name": "dotnet-quickdup",
+      "name": "quickdup",
       "title": "QuickDup for .NET",
       "version": "1.0.0",
       "category": "Metrics",
@@ -2533,14 +2533,14 @@
       "lane": "Observability",
       "description": "Use the open-source free `QuickDup` clone detector for .NET repositories. Use when a repo needs duplicate C# code discovery, structural clone detection, DRY refactoring candidates, or repeatable duplication scans in local workflows and CI.",
       "compatibility": "Requires a repository with C# source files; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/QuickDup/skills/dotnet-quickdup/",
+      "path": "catalog/Tools/QuickDup/skills/quickdup/",
       "tokenCount": 1318,
       "packages": [
         "QuickDup"
       ]
     },
     {
-      "name": "dotnet-resharper-clt",
+      "name": "resharper-clt",
       "title": "ReSharper Command Line Tools",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2550,11 +2550,11 @@
       "lane": "Code Quality",
       "description": "Use the free official JetBrains ReSharper Command Line Tools for .NET repositories. Use when a repo wants powerful `jb inspectcode` inspections, `jb cleanupcode` cleanup profiles, solution-level `.DotSettings` enforcement, or a stronger CLI quality gate for C# than the default SDK analyzers alone.",
       "compatibility": "Requires a .NET solution or project; works best when the repo keeps shared ReSharper settings in solution `.DotSettings` files and records exact commands in `AGENTS.md`.",
-      "path": "catalog/Tools/ReSharper-CLT/skills/dotnet-resharper-clt/",
+      "path": "catalog/Tools/ReSharper-CLT/skills/resharper-clt/",
       "tokenCount": 1345
     },
     {
-      "name": "dotnet-reportgenerator",
+      "name": "reportgenerator",
       "title": "ReportGenerator for .NET",
       "version": "1.0.0",
       "category": "Testing",
@@ -2564,14 +2564,14 @@
       "lane": "Quality",
       "description": "Use the open-source free `ReportGenerator` tool for turning .NET coverage outputs into HTML, Markdown, Cobertura, badges, and merged reports. Use when raw coverage files are not readable enough for CI or human review.",
       "compatibility": "Requires coverage artifacts such as Cobertura, OpenCover, or lcov; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/ReportGenerator/skills/dotnet-reportgenerator/",
+      "path": "catalog/Tools/ReportGenerator/skills/reportgenerator/",
       "tokenCount": 920,
       "packages": [
         "ReportGenerator"
       ]
     },
     {
-      "name": "dotnet-roslynator",
+      "name": "roslynator",
       "title": "Roslynator",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2581,7 +2581,7 @@
       "lane": "Code Quality",
       "description": "Use the open-source free `Roslynator` analyzer packages and optional CLI for .NET. Use when a repo wants broad C# static analysis, auto-fix flows, dead-code detection, optional CLI checks, or extra rules beyond the SDK analyzers.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/Roslynator/skills/dotnet-roslynator/",
+      "path": "catalog/Tools/Roslynator/skills/roslynator/",
       "tokenCount": 1172,
       "links": {
         "repository": "https://github.com/dotnet/roslynator",
@@ -2595,7 +2595,7 @@
       ]
     },
     {
-      "name": "dotnet-sonarjs",
+      "name": "sonarjs",
       "title": "SonarJS Rules for Frontend Assets in .NET Repositories",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2605,11 +2605,11 @@
       "lane": "Code Quality",
       "description": "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. Use when the repo wants `eslint-plugin-sonarjs` locally or already runs SonarQube or SonarCloud in CI.",
       "compatibility": "Requires a .NET repository with JS or TS frontend assets; local developer loops normally use `eslint-plugin-sonarjs`, while full SonarQube or SonarCloud analysis should follow the repo's existing scanner pipeline and documented licensing posture.",
-      "path": "catalog/Tools/SonarJS/skills/dotnet-sonarjs/",
+      "path": "catalog/Tools/SonarJS/skills/sonarjs/",
       "tokenCount": 1265
     },
     {
-      "name": "dotnet-stylecop-analyzers",
+      "name": "stylecop-analyzers",
       "title": "StyleCop Analyzers",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2619,14 +2619,14 @@
       "lane": "Code Quality",
       "description": "Use the open-source free `StyleCop.Analyzers` package for naming, layout, documentation, and style rules in .NET projects. Use when a repo wants stricter style conventions than the SDK analyzers alone provide.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/StyleCop-Analyzers/skills/dotnet-stylecop-analyzers/",
+      "path": "catalog/Tools/StyleCop-Analyzers/skills/stylecop-analyzers/",
       "tokenCount": 947,
       "packages": [
         "StyleCop.Analyzers"
       ]
     },
     {
-      "name": "dotnet-stylelint",
+      "name": "stylelint",
       "title": "Stylelint for Stylesheets in .NET Repositories",
       "version": "1.1.1",
       "category": "Code Quality",
@@ -2636,11 +2636,11 @@
       "lane": "Code Quality",
       "description": "Use Stylelint in .NET repositories that ship CSS, SCSS, or other stylesheet assets alongside web frontends. Use when a repo needs a dedicated CLI lint gate for selectors, properties, duplicate styles, naming conventions, or design-system rule enforcement.",
       "compatibility": "Requires a .NET repository with stylesheet assets such as `wwwroot/`, `ClientApp/`, `src/`, or other frontend folders managed with Node tooling.",
-      "path": "catalog/Tools/Stylelint/skills/dotnet-stylelint/",
+      "path": "catalog/Tools/Stylelint/skills/stylelint/",
       "tokenCount": 1420
     },
     {
-      "name": "dotnet-cloc",
+      "name": "cloc",
       "title": "CLOC for .NET Repositories",
       "version": "1.0.0",
       "category": "Metrics",
@@ -2650,11 +2650,11 @@
       "lane": "Observability",
       "description": "Use the open-source free `cloc` tool for line-count, language-mix, and diff statistics in .NET repositories. Use when a repo needs C# and solution footprint metrics, branch-to-branch LOC comparison, or repeatable code-size reporting in local workflows and CI.",
       "compatibility": "Requires a repository with .NET source files or a Git checkout; respects the repo's `AGENTS.md` commands first.",
-      "path": "catalog/Tools/cloc/skills/dotnet-cloc/",
+      "path": "catalog/Tools/cloc/skills/cloc/",
       "tokenCount": 1390
     },
     {
-      "name": "dotnet-webhint",
+      "name": "webhint",
       "title": "webhint for Browser-Facing Frontends in .NET Repositories",
       "version": "1.0.0",
       "category": "Code Quality",
@@ -2664,7 +2664,7 @@
       "lane": "Code Quality",
       "description": "Use webhint in .NET repositories that ship browser-facing frontends. Use when a repo needs CLI audits for accessibility, performance, security headers, PWA signals, SEO, or runtime page quality against a served site or built frontend output.",
       "compatibility": "Requires a .NET repository with a browser-facing site or frontend build output; works best against a reachable local or deployed URL and a checked-in `.hintrc`.",
-      "path": "catalog/Tools/webhint/skills/dotnet-webhint/",
+      "path": "catalog/Tools/webhint/skills/webhint/",
       "tokenCount": 1104
     }
   ],
@@ -2679,9 +2679,9 @@
       "sourceCategory": "",
       "skills": [
         "dotnet",
-        "dotnet-project-setup",
-        "dotnet-modern-csharp",
-        "dotnet-microsoft-extensions"
+        "project-setup",
+        "modern-csharp",
+        "microsoft-extensions"
       ]
     },
     {
@@ -2693,14 +2693,14 @@
       "lane": "Code Quality",
       "sourceCategory": "",
       "skills": [
-        "dotnet-quality-ci",
-        "dotnet-format",
-        "dotnet-csharpier",
-        "dotnet-roslynator",
-        "dotnet-meziantou-analyzer",
-        "dotnet-stylecop-analyzers",
-        "dotnet-analyzer-config",
-        "dotnet-code-analysis"
+        "quality-ci",
+        "format",
+        "csharpier",
+        "roslynator",
+        "meziantou-analyzer",
+        "stylecop-analyzers",
+        "analyzer-config",
+        "code-analysis"
       ]
     },
     {
@@ -2712,12 +2712,12 @@
       "lane": "Code Quality",
       "sourceCategory": "",
       "skills": [
-        "dotnet-biome",
-        "dotnet-eslint",
-        "dotnet-stylelint",
-        "dotnet-htmlhint",
-        "dotnet-webhint",
-        "dotnet-sonarjs"
+        "biome",
+        "eslint",
+        "stylelint",
+        "htmlhint",
+        "webhint",
+        "sonarjs"
       ]
     },
     {
@@ -2729,10 +2729,10 @@
       "lane": "Architecture",
       "sourceCategory": "",
       "skills": [
-        "dotnet-architecture",
-        "dotnet-netarchtest",
-        "dotnet-archunitnet",
-        "dotnet-graphify-dotnet"
+        "architecture",
+        "netarchtest",
+        "archunitnet",
+        "graphify-dotnet"
       ]
     },
     {
@@ -2744,11 +2744,11 @@
       "lane": "Foundations",
       "sourceCategory": "",
       "skills": [
-        "dotnet-test-frameworks",
+        "test-frameworks",
         "run-tests",
         "coverage-analysis",
-        "dotnet-coverlet",
-        "dotnet-reportgenerator",
+        "coverlet",
+        "reportgenerator",
         "test-anti-patterns"
       ]
     },
@@ -2761,13 +2761,13 @@
       "lane": "Frameworks",
       "sourceCategory": "",
       "skills": [
-        "dotnet-test-frameworks",
+        "test-frameworks",
         "run-tests",
         "coverage-analysis",
-        "dotnet-coverlet",
-        "dotnet-reportgenerator",
+        "coverlet",
+        "reportgenerator",
         "test-anti-patterns",
-        "dotnet-xunit"
+        "xunit"
       ]
     },
     {
@@ -2779,13 +2779,13 @@
       "lane": "Frameworks",
       "sourceCategory": "",
       "skills": [
-        "dotnet-test-frameworks",
+        "test-frameworks",
         "run-tests",
         "coverage-analysis",
-        "dotnet-coverlet",
-        "dotnet-reportgenerator",
+        "coverlet",
+        "reportgenerator",
         "test-anti-patterns",
-        "dotnet-nunit"
+        "nunit"
       ]
     },
     {
@@ -2797,13 +2797,13 @@
       "lane": "Frameworks",
       "sourceCategory": "",
       "skills": [
-        "dotnet-test-frameworks",
+        "test-frameworks",
         "run-tests",
         "coverage-analysis",
-        "dotnet-coverlet",
-        "dotnet-reportgenerator",
+        "coverlet",
+        "reportgenerator",
         "test-anti-patterns",
-        "dotnet-mstest",
+        "mstest",
         "writing-mstest-tests"
       ]
     },
@@ -2816,13 +2816,13 @@
       "lane": "Frameworks",
       "sourceCategory": "",
       "skills": [
-        "dotnet-test-frameworks",
+        "test-frameworks",
         "run-tests",
         "coverage-analysis",
-        "dotnet-coverlet",
-        "dotnet-reportgenerator",
+        "coverlet",
+        "reportgenerator",
         "test-anti-patterns",
-        "dotnet-tunit"
+        "tunit"
       ]
     },
     {
@@ -2850,7 +2850,7 @@
       "lane": "Runtime upgrades",
       "sourceCategory": "",
       "skills": [
-        "dotnet-aot-compat",
+        "aot-compat",
         "migrate-dotnet8-to-dotnet9",
         "migrate-dotnet9-to-dotnet10",
         "migrate-dotnet10-to-dotnet11",
@@ -2867,16 +2867,16 @@
       "lane": "Governance",
       "sourceCategory": "",
       "skills": [
-        "dotnet-mcaf",
-        "dotnet-mcaf-agile-delivery",
-        "dotnet-mcaf-devex",
-        "dotnet-mcaf-documentation",
-        "dotnet-mcaf-feature-spec",
-        "dotnet-mcaf-human-review-planning",
-        "dotnet-mcaf-ml-ai-delivery",
-        "dotnet-mcaf-nfr",
-        "dotnet-mcaf-source-control",
-        "dotnet-mcaf-ui-ux"
+        "mcaf",
+        "mcaf-agile-delivery",
+        "mcaf-devex",
+        "mcaf-documentation",
+        "mcaf-feature-spec",
+        "mcaf-human-review-planning",
+        "mcaf-ml-ai-delivery",
+        "mcaf-nfr",
+        "mcaf-source-control",
+        "mcaf-ui-ux"
       ]
     },
     {
@@ -2888,9 +2888,9 @@
       "lane": "Frameworks",
       "sourceCategory": "",
       "skills": [
-        "dotnet-orleans",
-        "dotnet-managedcode-orleans-graph",
-        "dotnet-managedcode-orleans-signalr"
+        "orleans",
+        "managedcode-orleans-graph",
+        "managedcode-orleans-signalr"
       ]
     }
   ]

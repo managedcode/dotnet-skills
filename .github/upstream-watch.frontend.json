@@ -4,21 +4,21 @@
       "id": "eslint-release",
       "source": "https://github.com/eslint/eslint",
       "skills": [
-        "dotnet-eslint"
+        "eslint"
       ]
     },
     {
       "id": "stylelint-release",
       "source": "https://github.com/stylelint/stylelint",
       "skills": [
-        "dotnet-stylelint"
+        "stylelint"
       ]
     },
     {
       "id": "htmlhint-release",
       "source": "https://github.com/htmlhint/HTMLHint",
       "skills": [
-        "dotnet-htmlhint"
+        "htmlhint"
       ]
     },
     {
@@ -26,14 +26,14 @@
       "source": "https://github.com/webhintio/hint",
       "match_tag_regex": "^hint-v",
       "skills": [
-        "dotnet-webhint"
+        "webhint"
       ]
     },
     {
       "id": "biome-release",
       "source": "https://github.com/biomejs/biome",
       "skills": [
-        "dotnet-biome"
+        "biome"
       ]
     },
     {
@@ -41,28 +41,28 @@
       "source": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
       "match_tag_regex": "^chrome-devtools-mcp-v",
       "skills": [
-        "dotnet-chrome-devtools-mcp"
+        "chrome-devtools-mcp"
       ]
     },
     {
       "id": "sonarjs-release",
       "source": "https://github.com/SonarSource/SonarJS",
       "skills": [
-        "dotnet-sonarjs"
+        "sonarjs"
       ]
     },
     {
       "id": "metalint-release",
       "source": "https://github.com/regseb/metalint",
       "skills": [
-        "dotnet-metalint"
+        "metalint"
       ]
     },
     {
       "id": "chous-release",
       "source": "https://github.com/cheezone/chous",
       "skills": [
-        "dotnet-chous"
+        "chous"
       ]
     }
   ],

@@ -4,12 +4,12 @@ description: AI-focused orchestration agent for Microsoft Agent Framework, Micro
 tools: Read, Edit, Glob, Grep, Bash
 model: inherit
 skills:
-  - dotnet-semantic-kernel
-  - dotnet-microsoft-agent-framework
-  - dotnet-microsoft-extensions-ai
-  - dotnet-mcp
-  - dotnet-mlnet
-  - dotnet-mixed-reality
+  - semantic-kernel
+  - microsoft-agent-framework
+  - microsoft-extensions-ai
+  - mcp
+  - mlnet
+  - mixed-reality
 ---
 
 # .NET AI
@@ -43,25 +43,25 @@ This is a grouped top-level agent for an AI-focused slice of the catalog. Framew
 ```mermaid
 flowchart LR
   A[".NET AI task"] --> B{"Need only model access, embeddings, tools, or evaluation?"}
-  B -->|Yes| C["Route to `dotnet-microsoft-extensions-ai`"]
+  B -->|Yes| C["Route to `microsoft-extensions-ai`"]
   B -->|No| D{"Need threads, workflows, multi-agent behavior, or hosted protocols?"}
-  D -->|Yes| E["Route to `dotnet-microsoft-agent-framework`"]
+  D -->|Yes| E["Route to `microsoft-agent-framework`"]
   C --> F{"Does the app still need orchestration later?"}
   F -->|Yes| G["Use both skills together"]
   D -->|No| H{"Is the core issue MCP, Semantic Kernel, or ML?"}
-  H -->|MCP| I["Route to `dotnet-mcp`"]
-  H -->|Semantic Kernel| J["Route to `dotnet-semantic-kernel`"]
-  H -->|ML lifecycle| K["Route to `dotnet-mlnet`"]
+  H -->|MCP| I["Route to `mcp`"]
+  H -->|Semantic Kernel| J["Route to `semantic-kernel`"]
+  H -->|ML lifecycle| K["Route to `mlnet`"]
 ```
 
 ## Skill Routing
 
-- Combined app architecture using provider abstraction plus orchestration: `dotnet-microsoft-extensions-ai` and `dotnet-microsoft-agent-framework`
-- Provider abstraction, chat, embeddings, structured output, evaluation, and vector search: `dotnet-microsoft-extensions-ai`
-- Agent orchestration, `AgentThread`, workflows, durable agents, remote hosting, A2A, and AG-UI: `dotnet-microsoft-agent-framework`
-- Semantic Kernel apps, plugins, and kernel-specific composition: `dotnet-semantic-kernel`
-- MCP protocol and tool-boundary work: `dotnet-mcp`
-- Classic ML pipelines and model training: `dotnet-mlnet`
+- Combined app architecture using provider abstraction plus orchestration: `microsoft-extensions-ai` and `microsoft-agent-framework`
+- Provider abstraction, chat, embeddings, structured output, evaluation, and vector search: `microsoft-extensions-ai`
+- Agent orchestration, `AgentThread`, workflows, durable agents, remote hosting, A2A, and AG-UI: `microsoft-agent-framework`
+- Semantic Kernel apps, plugins, and kernel-specific composition: `semantic-kernel`
+- MCP protocol and tool-boundary work: `mcp`
+- Classic ML pipelines and model training: `mlnet`
 
 ## Deliver
 

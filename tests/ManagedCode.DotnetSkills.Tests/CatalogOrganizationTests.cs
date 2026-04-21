@@ -9,39 +9,39 @@ public sealed class CatalogOrganizationTests
     {
         var catalog = TestCatalog.Load();
 
-        AssertSkill(catalog, "dotnet-format", ".NET Quality", "Code Quality");
-        AssertSkill(catalog, "dotnet-modern-csharp", ".NET Foundations", "Foundations");
-        AssertSkill(catalog, "dotnet-project-setup", ".NET Foundations", "Foundations");
-        AssertSkill(catalog, "dotnet-eslint", "Frontend Quality", "Code Quality");
-        AssertSkill(catalog, "dotnet-aspnet-core", "Web", "Frameworks");
-        AssertSkill(catalog, "dotnet-aspire", "Aspire", "Frameworks");
-        AssertSkill(catalog, "dotnet-azure-functions", "Azure Functions", "Frameworks");
-        AssertSkill(catalog, "dotnet-worker-services", "Background Workers", "Frameworks");
-        AssertSkill(catalog, "dotnet-maui", "Mobile & Device", "Frameworks");
-        AssertSkill(catalog, "dotnet-maui-doctor", "Mobile & Device", "Tooling");
+        AssertSkill(catalog, "format", ".NET Quality", "Code Quality");
+        AssertSkill(catalog, "modern-csharp", ".NET Foundations", "Foundations");
+        AssertSkill(catalog, "project-setup", ".NET Foundations", "Foundations");
+        AssertSkill(catalog, "eslint", "Frontend Quality", "Code Quality");
+        AssertSkill(catalog, "aspnet-core", "Web", "Frameworks");
+        AssertSkill(catalog, "aspire", "Aspire", "Frameworks");
+        AssertSkill(catalog, "azure-functions", "Azure Functions", "Frameworks");
+        AssertSkill(catalog, "worker-services", "Background Workers", "Frameworks");
+        AssertSkill(catalog, "maui", "Mobile & Device", "Frameworks");
+        AssertSkill(catalog, "maui-doctor", "Mobile & Device", "Tooling");
         AssertSkill(catalog, "android-tombstone-symbolication", "Diagnostics & Metrics", "Crash Analysis");
         AssertSkill(catalog, "dump-collect", "Diagnostics & Metrics", "Crash Analysis");
-        AssertSkill(catalog, "dotnet-mixed-reality", "XR & Spatial", "Frameworks");
-        AssertSkill(catalog, "dotnet-uno-platform", "Desktop & UI", "Frameworks");
-        AssertSkill(catalog, "dotnet-xunit", "Testing", "Frameworks");
+        AssertSkill(catalog, "mixed-reality", "XR & Spatial", "Frameworks");
+        AssertSkill(catalog, "uno-platform", "Desktop & UI", "Frameworks");
+        AssertSkill(catalog, "xunit", "Testing", "Frameworks");
         AssertSkill(catalog, "code-testing-agent", "Testing Research", "Automation");
-        AssertSkill(catalog, "dotnet-stryker", "Testing Research", "Mutation");
+        AssertSkill(catalog, "stryker", "Testing Research", "Mutation");
         AssertSkill(catalog, "exp-test-gap-analysis", "Testing Research", "Experimental");
         AssertSkill(catalog, "csharp-scripts", ".NET Foundations", "Tooling");
         AssertSkill(catalog, "msbuild-modernization", "MSBuild", "Build Pipelines");
         AssertSkill(catalog, "convert-to-cpm", "NuGet & Publishing", "Package Management");
         AssertSkill(catalog, "template-authoring", "Templates & Scaffolding", "Project & Templates");
         AssertSkill(catalog, "analyzing-dotnet-performance", "Diagnostics & Metrics", "Performance");
-        AssertSkill(catalog, "dotnet-cloc", "Diagnostics & Metrics", "Observability");
-        AssertSkill(catalog, "dotnet-complexity", ".NET Quality", "Code Quality");
-        AssertSkill(catalog, "dotnet-codeql", "Diagnostics & Metrics", "Static Analysis");
+        AssertSkill(catalog, "cloc", "Diagnostics & Metrics", "Observability");
+        AssertSkill(catalog, "complexity", ".NET Quality", "Code Quality");
+        AssertSkill(catalog, "codeql", "Diagnostics & Metrics", "Static Analysis");
         AssertSkill(catalog, "mtp-hot-reload", "Upgrades & Migration", "Testing migrations");
         AssertSkill(catalog, "migrate-xunit-to-xunit-v3", "Upgrades & Migration", "Testing migrations");
-        AssertSkill(catalog, "dotnet-legacy-aspnet", "Legacy", "Legacy frameworks");
-        AssertSkill(catalog, "dotnet-architecture", "Architecture", "Architecture");
-        AssertSkill(catalog, "dotnet-mcaf", "Governance & Delivery", "Governance");
-        AssertSkill(catalog, "dotnet-code-review", "Governance & Delivery", "Review");
-        var aspire = catalog.Skills.Single(entry => string.Equals(entry.Name, "dotnet-aspire", StringComparison.Ordinal));
+        AssertSkill(catalog, "legacy-aspnet", "Legacy", "Legacy frameworks");
+        AssertSkill(catalog, "architecture", "Architecture", "Architecture");
+        AssertSkill(catalog, "mcaf", "Governance & Delivery", "Governance");
+        AssertSkill(catalog, "code-review", "Governance & Delivery", "Review");
+        var aspire = catalog.Skills.Single(entry => string.Equals(entry.Name, "aspire", StringComparison.Ordinal));
         Assert.True(aspire.TokenCount > 0);
     }
 
@@ -50,17 +50,17 @@ public sealed class CatalogOrganizationTests
     {
         var catalog = TestCatalog.Load();
 
-        var dotnetQuality = catalog.Packages.Single(package => string.Equals(package.Name, "dotnet-quality", StringComparison.Ordinal));
+        var dotnetQuality = catalog.Packages.Single(package => string.Equals(package.Name, "quality", StringComparison.Ordinal));
         var frontendQuality = catalog.Packages.Single(package => string.Equals(package.Name, "frontend-quality", StringComparison.Ordinal));
         var testingBase = catalog.Packages.Single(package => string.Equals(package.Name, "testing-base", StringComparison.Ordinal));
         var testingMigrations = catalog.Packages.Single(package => string.Equals(package.Name, "testing-migrations", StringComparison.Ordinal));
         var mcaf = catalog.Packages.Single(package => string.Equals(package.Name, "mcaf", StringComparison.Ordinal));
-        var dotnetBase = catalog.Packages.Single(package => string.Equals(package.Name, "dotnet-base", StringComparison.Ordinal));
+        var dotnetBase = catalog.Packages.Single(package => string.Equals(package.Name, "foundations", StringComparison.Ordinal));
 
         Assert.Equal(".NET Quality", dotnetQuality.Stack);
         Assert.Equal("Code Quality", dotnetQuality.Lane);
-        Assert.DoesNotContain(dotnetQuality.Skills, skill => string.Equals(skill, "dotnet-eslint", StringComparison.OrdinalIgnoreCase));
-        Assert.Contains(dotnetQuality.Skills, skill => string.Equals(skill, "dotnet-complexity", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(dotnetQuality.Skills, skill => string.Equals(skill, "eslint", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(dotnetQuality.Skills, skill => string.Equals(skill, "complexity", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(dotnetQuality.Skills, skill => string.Equals(skill, "crap-score", StringComparison.OrdinalIgnoreCase));
 
         Assert.Equal(".NET Foundations", dotnetBase.Stack);
@@ -68,7 +68,7 @@ public sealed class CatalogOrganizationTests
 
         Assert.Equal("Frontend Quality", frontendQuality.Stack);
         Assert.Equal("Code Quality", frontendQuality.Lane);
-        Assert.DoesNotContain(frontendQuality.Skills, skill => string.Equals(skill, "dotnet-format", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(frontendQuality.Skills, skill => string.Equals(skill, "format", StringComparison.OrdinalIgnoreCase));
 
         Assert.All(
             testingBase.Skills,
@@ -86,9 +86,9 @@ public sealed class CatalogOrganizationTests
         Assert.Equal("Upgrades & Migration", testingMigrations.Stack);
         Assert.Equal("Governance & Delivery", mcaf.Stack);
         var orleans = catalog.Packages.Single(package => string.Equals(package.Name, "orleans", StringComparison.Ordinal));
-        Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "dotnet-worker-services", StringComparison.OrdinalIgnoreCase));
-        Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "dotnet-aspire", StringComparison.OrdinalIgnoreCase));
-        Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "dotnet-signalr", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "worker-services", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "aspire", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "signalr", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(catalog.Packages, package => string.Equals(package.Kind, "category", StringComparison.OrdinalIgnoreCase));
     }
 

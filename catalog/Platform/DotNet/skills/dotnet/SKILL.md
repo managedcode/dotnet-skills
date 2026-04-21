@@ -23,20 +23,20 @@ compatibility: "Requires a .NET repository, solution, or project tree."
    - test framework and runner
    - analyzers, formatters, coverage, and CI quality gates
 2. Route to the narrowest platform skill as soon as the stack is known:
-   - Web: `dotnet-aspnet-core`, `dotnet-minimal-apis`, `dotnet-web-api`, `dotnet-blazor`, `dotnet-signalr`, `dotnet-grpc`
-   - Cloud and hosting: `dotnet-aspire`, `dotnet-azure-functions`, `dotnet-worker-services`
-   - Desktop and client: `dotnet-maui`, `dotnet-wpf`, `dotnet-winforms`, `dotnet-winui`
-   - Data and distributed: `dotnet-entity-framework-core`, `dotnet-entity-framework6`, `dotnet-orleans`
-   - AI and agentic: `dotnet-semantic-kernel`, `dotnet-microsoft-extensions-ai`, `dotnet-microsoft-agent-framework`, `dotnet-mlnet`, `dotnet-mixed-reality`
-   - Legacy: `dotnet-legacy-aspnet`, `dotnet-wcf`, `dotnet-workflow-foundation`
+   - Web: `aspnet-core`, `minimal-apis`, `web-api`, `blazor`, `signalr`, `grpc`
+   - Cloud and hosting: `aspire`, `azure-functions`, `worker-services`
+   - Desktop and client: `maui`, `wpf`, `winforms`, `winui`
+   - Data and distributed: `entity-framework-core`, `entity-framework6`, `orleans`
+   - AI and agentic: `semantic-kernel`, `microsoft-extensions-ai`, `microsoft-agent-framework`, `mlnet`, `mixed-reality`
+   - Legacy: `legacy-aspnet`, `wcf`, `workflow-foundation`
 3. Route cross-cutting work to the companion skill instead of keeping it inside generic `.NET` advice:
-   - project bootstrap or repo shape: `dotnet-project-setup`, `dotnet-architecture`
-   - frontend asset analysis in mixed `.NET` plus Node repos: `dotnet-eslint`, `dotnet-stylelint`, `dotnet-htmlhint`, `dotnet-webhint`, `dotnet-biome`, `dotnet-sonarjs`, `dotnet-metalint`, `dotnet-chous`
-   - code review: `dotnet-code-review`
-   - language features: `dotnet-modern-csharp`
-   - testing: `dotnet-tunit`, `dotnet-xunit`, `dotnet-mstest`
-   - format, analyzers, coverage, and CI: `dotnet-format`, `dotnet-code-analysis`, `dotnet-quality-ci`, `dotnet-coverlet`, `dotnet-reportgenerator`
-   - maintainability and architecture rules: `dotnet-complexity`, `dotnet-netarchtest`, `dotnet-archunitnet`
+   - project bootstrap or repo shape: `project-setup`, `architecture`
+   - frontend asset analysis in mixed `.NET` plus Node repos: `eslint`, `stylelint`, `htmlhint`, `webhint`, `biome`, `sonarjs`, `metalint`, `chous`
+   - code review: `code-review`
+   - language features: `modern-csharp`
+   - testing: `tunit`, `xunit`, `mstest`
+   - format, analyzers, coverage, and CI: `format`, `code-analysis`, `quality-ci`, `coverlet`, `reportgenerator`
+   - maintainability and architecture rules: `complexity`, `netarchtest`, `archunitnet`
 4. If more than one specialized skill applies, prefer the one closest to the user-visible behavior first, then pull in the quality or tooling skill second.
 5. Do not stop at this skill once a narrower match exists. This skill should classify and hand off, not become a generic dumping ground.
 6. After code changes, validate with the repository's actual build, test, and quality workflow instead of generic `.NET` commands.
@@ -44,9 +44,9 @@ compatibility: "Requires a .NET repository, solution, or project tree."
 ## Routing Heuristics
 
 - If the repo contains `Microsoft.NET.Sdk.Web`, start from a web skill, not generic `.NET`.
-- If the repo contains Blazor, Razor Components, or `.razor` pages, prefer `dotnet-blazor`.
+- If the repo contains Blazor, Razor Components, or `.razor` pages, prefer `blazor`.
 - If the repo contains `package.json`, frontend lint configs, or browser-facing asset pipelines inside the `.NET` solution, prefer the dedicated frontend analysis skills instead of generic `.NET`.
-- If the repo contains Orleans grains or silo hosting, prefer `dotnet-orleans`.
+- If the repo contains Orleans grains or silo hosting, prefer `orleans`.
 - If the repo is mostly analyzers, CI, or coverage work, prefer the quality skill directly.
 - If the user asks about “which skill should I use?”, answer with the narrowest matching skill and explain why in one short sentence.
 - If no narrower skill matches, keep the work here and stay explicit about the missing specialization.

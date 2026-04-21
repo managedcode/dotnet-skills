@@ -195,17 +195,7 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
         string requestedSkill,
         out SkillEntry skill)
     {
-        if (available.TryGetValue(requestedSkill, out skill!))
-        {
-            return true;
-        }
-
-        if (!requestedSkill.StartsWith("dotnet-", StringComparison.OrdinalIgnoreCase))
-        {
-            return available.TryGetValue($"dotnet-{requestedSkill}", out skill!);
-        }
-
-        return false;
+        return available.TryGetValue(requestedSkill, out skill!);
     }
 
     private static bool TryResolvePackage(
@@ -235,7 +225,7 @@ internal sealed class SkillInstaller(SkillCatalogPackage catalog)
 
         if (collectionName.StartsWith(".NET ", StringComparison.OrdinalIgnoreCase))
         {
-            yield return NormalizeCollectionKey($"dotnet {collectionName[".NET ".Length..]}");
+            yield return NormalizeCollectionKey(collectionName[".NET ".Length..]);
         }
     }
 

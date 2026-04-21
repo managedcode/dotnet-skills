@@ -23,7 +23,7 @@ class UpstreamWatchIssueTests(unittest.TestCase):
                 "kind": "http_document",
                 "name": f"Watch {index:03d}",
                 "url": f"https://example.com/{index:03d}",
-                "skills": ["dotnet-microsoft-agent-framework"],
+                "skills": ["microsoft-agent-framework"],
                 "notes": "Review the linked skill when the upstream documentation changes.",
             }
             for index in range(count)
@@ -45,8 +45,8 @@ class UpstreamWatchIssueTests(unittest.TestCase):
         pending_watches = self.build_pending_watches(30)
 
         body = UPSTREAM_WATCH.issue_body(
-            issue_key="dotnet-microsoft-agent-framework",
-            issue_name="dotnet-microsoft-agent-framework",
+            issue_key="microsoft-agent-framework",
+            issue_name="microsoft-agent-framework",
             skills=[f"skill-{index:02d}" for index in range(20)],
             pending_watches=pending_watches,
             watch_index=watch_index,
@@ -69,9 +69,9 @@ class UpstreamWatchIssueTests(unittest.TestCase):
         pending_watches = self.build_pending_watches(3)
 
         body = UPSTREAM_WATCH.issue_body(
-            issue_key="dotnet-microsoft-agent-framework",
-            issue_name="dotnet-microsoft-agent-framework",
-            skills=["dotnet-microsoft-agent-framework"],
+            issue_key="microsoft-agent-framework",
+            issue_name="microsoft-agent-framework",
+            skills=["microsoft-agent-framework"],
             pending_watches=pending_watches,
             watch_index=watch_index,
         )
@@ -84,8 +84,8 @@ class UpstreamWatchIssueTests(unittest.TestCase):
 
         self.assertIsNotNone(parsed)
         issue_key, skills, restored_pending_watches = parsed
-        self.assertEqual(issue_key, "dotnet-microsoft-agent-framework")
-        self.assertEqual(skills, ["dotnet-microsoft-agent-framework"])
+        self.assertEqual(issue_key, "microsoft-agent-framework")
+        self.assertEqual(skills, ["microsoft-agent-framework"])
         self.assertEqual(set(restored_pending_watches), set(pending_watches))
         self.assertEqual(restored_pending_watches["watch-000"]["value"], "value-000")
 
@@ -111,9 +111,9 @@ class UpstreamWatchIssueTests(unittest.TestCase):
                 repo="managedcode/dotnet-skills",
                 token="token",
                 labels=["upstream-update", "automation"],
-                issue_key="dotnet-microsoft-agent-framework",
-                configured_issue_name="dotnet-microsoft-agent-framework",
-                fallback_skills=["dotnet-microsoft-agent-framework"],
+                issue_key="microsoft-agent-framework",
+                configured_issue_name="microsoft-agent-framework",
+                fallback_skills=["microsoft-agent-framework"],
                 changed_watches={watch_id: watch_index[watch_id] for watch_id in pending_watches},
                 new_snapshots=pending_watches,
                 watch_index=watch_index,

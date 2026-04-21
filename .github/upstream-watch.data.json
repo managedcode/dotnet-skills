@@ -4,30 +4,30 @@
       "id": "efcore-release",
       "source": "https://github.com/dotnet/efcore",
       "skills": [
-        "dotnet-entity-framework-core",
-        "dotnet-entity-framework6"
+        "entity-framework-core",
+        "entity-framework6"
       ]
     },
     {
       "id": "orleans-release",
       "source": "https://github.com/dotnet/orleans",
       "skills": [
-        "dotnet-orleans",
-        "dotnet-aspire"
+        "orleans",
+        "aspire"
       ]
     },
     {
       "id": "aspire-release",
       "source": "https://github.com/dotnet/aspire",
       "skills": [
-        "dotnet-aspire"
+        "aspire"
       ]
     },
     {
       "id": "communitytoolkit-aspire-release",
       "source": "https://github.com/CommunityToolkit/Aspire",
       "skills": [
-        "dotnet-aspire"
+        "aspire"
       ]
     },
     {
@@ -35,7 +35,7 @@
       "source": "https://github.com/Azure/azure-functions-dotnet-worker",
       "match_tag_regex": "^\\d+\\.\\d+\\.\\d+$",
       "skills": [
-        "dotnet-azure-functions"
+        "azure-functions"
       ]
     }
   ],
@@ -44,29 +44,29 @@
       "id": "ef-compare-docs",
       "source": "https://learn.microsoft.com/ef/efcore-and-ef6/",
       "skills": [
-        "dotnet-entity-framework-core",
-        "dotnet-entity-framework6"
+        "entity-framework-core",
+        "entity-framework6"
       ]
     },
     {
       "id": "aspire-docs",
       "source": "https://aspire.dev/",
       "skills": [
-        "dotnet-aspire"
+        "aspire"
       ]
     },
     {
       "id": "aspire-community-toolkit-docs",
       "source": "https://raw.githubusercontent.com/CommunityToolkit/Aspire/main/README.md",
       "skills": [
-        "dotnet-aspire"
+        "aspire"
       ]
     },
     {
       "id": "orleans-docs",
       "source": "https://learn.microsoft.com/dotnet/orleans/",
       "skills": [
-        "dotnet-orleans"
+        "orleans"
       ]
     }
   ]
