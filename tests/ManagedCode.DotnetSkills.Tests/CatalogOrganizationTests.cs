@@ -18,7 +18,7 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "azure-functions", "Azure Functions", "Frameworks");
         AssertSkill(catalog, "worker-services", "Background Workers", "Frameworks");
         AssertSkill(catalog, "maui", "Mobile & Device", "Frameworks");
-        AssertSkill(catalog, "maui-doctor", "Mobile & Device", "Tooling");
+        AssertSkill(catalog, "dotnet-maui-doctor", "Mobile & Device", "Tooling");
         AssertSkill(catalog, "android-tombstone-symbolication", "Diagnostics & Metrics", "Crash Analysis");
         AssertSkill(catalog, "dump-collect", "Diagnostics & Metrics", "Crash Analysis");
         AssertSkill(catalog, "mixed-reality", "XR & Spatial", "Frameworks");
@@ -28,6 +28,7 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "stryker", "Testing Research", "Mutation");
         AssertSkill(catalog, "exp-test-gap-analysis", "Testing Research", "Experimental");
         AssertSkill(catalog, "csharp-scripts", ".NET Foundations", "Tooling");
+        AssertSkill(catalog, "dotnet-pinvoke", ".NET Foundations", "Interop");
         AssertSkill(catalog, "msbuild-modernization", "MSBuild", "Build Pipelines");
         AssertSkill(catalog, "convert-to-cpm", "NuGet & Publishing", "Package Management");
         AssertSkill(catalog, "template-authoring", "Templates & Scaffolding", "Project & Templates");

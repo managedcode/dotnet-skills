@@ -1,6 +1,7 @@
 ---
-name: trace-collect
+name: dotnet-trace-collect
 description: Guide developers through capturing diagnostic artifacts to diagnose production .NET performance issues. Use when the user needs help choosing diagnostic tools, collecting performance data, or understanding tool trade-offs across different environments (Windows/Linux, .NET Framework/modern .NET, container/non-container).
+license: MIT
 ---
 
 # .NET Trace Collect
@@ -57,12 +58,12 @@ Select tools based on the environment using the priority rules below. Once a too
 | Environment | Reference file(s) |
 |-------------|-------------------|
 | Windows + modern .NET + admin | `references/perfview.md` |
-| Windows + modern .NET, no admin | `references/trace-collect.md` |
+| Windows + modern .NET, no admin | `references/dotnet-trace-collect.md` |
 | Windows + .NET Framework | `references/perfview.md` |
 | Linux + .NET 10+ + root | `references/dotnet-trace-collect-linux.md` |
-| Linux + pre-.NET 10 | `references/trace-collect.md` |
+| Linux + pre-.NET 10 | `references/dotnet-trace-collect.md` |
 | Linux + native stacks needed | `references/perfcollect.md` |
-| Container/K8s (console access) | `references/trace-collect.md` (or `dotnet-trace-collect-linux.md`) |
+| Container/K8s (console access) | `references/dotnet-trace-collect.md` (or `dotnet-trace-collect-linux.md`) |
 | Container/K8s (no console) | `references/dotnet-monitor.md` |
 
 #### Quick decision matrix (first-pass triage)

@@ -8,5 +8,15 @@
       ]
     }
   ],
-  "documentation": []
+  "documentation": [
+    {
+      "id": "pvanalyze-readme-docs",
+      "name": "pvanalyze README",
+      "source": "https://raw.githubusercontent.com/adityamandaleeka/pvanalyze/main/README.md",
+      "skills": [
+        "pvanalyze"
+      ],
+      "notes": "Review the pvanalyze skill when the upstream README changes."
+    }
+  ]
 }

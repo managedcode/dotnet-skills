@@ -1,6 +1,7 @@
 ---
 name: msbuild-antipatterns
 description: "Catalog of MSBuild anti-patterns with detection rules and fix recipes. Only activate in MSBuild/.NET build context. USE FOR: reviewing, auditing, or cleaning up .csproj, .vbproj, .fsproj, .props, .targets, or .proj files. Each anti-pattern has a symptom, explanation, and concrete BAD→GOOD transformation. Covers Exec-instead-of-built-in-task, unquoted conditions, hardcoded paths, restating SDK defaults, scattered package versions, and more. DO NOT USE FOR: non-MSBuild build systems (npm, Maven, CMake, etc.), project migration to SDK-style (use msbuild-modernization)."
+license: MIT
 ---
 
 # MSBuild Anti-Pattern Catalog
@@ -151,6 +152,8 @@ Use this catalog when scanning project files for improvements.
 ```
 
 **Exception**: Non-SDK-style (legacy) projects require explicit file includes. If migrating, see `msbuild-modernization` skill.
+
+**Exception (F# / `.fsproj`)**: F# compilation is order-dependent — the compiler processes `<Compile Include>` items sequentially and a file can only reference types/modules declared in files listed above it. `.fsproj` files must therefore list every source file explicitly, in dependency order (utility/leaf modules at the top, the entry point such as `Program.fs` at the bottom). If a `.fsi` signature file is used, it must appear **immediately before** its companion `.fs` implementation file.
 
 ---
 

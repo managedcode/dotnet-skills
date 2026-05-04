@@ -346,6 +346,7 @@ internal static class CatalogOrganization
     {
         return string.Equals(package, "Official-DotNet-Upgrade", StringComparison.OrdinalIgnoreCase)
             || string.Equals(name, "aot-compat", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, "dotnet-aot-compat", StringComparison.OrdinalIgnoreCase)
             || name.Contains("migrate-", StringComparison.OrdinalIgnoreCase)
             || name.Contains("migration", StringComparison.OrdinalIgnoreCase)
             || string.Equals(name, "mtp-hot-reload", StringComparison.OrdinalIgnoreCase);
@@ -489,7 +490,8 @@ internal static class CatalogOrganization
             return "Tooling";
         }
 
-        if (string.Equals(name, "pinvoke", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(name, "pinvoke", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, "dotnet-pinvoke", StringComparison.OrdinalIgnoreCase))
         {
             return "Interop";
         }
@@ -595,7 +597,8 @@ internal static class CatalogOrganization
         }
 
         if (string.Equals(package, "Official-DotNet-Upgrade", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(name, "aot-compat", StringComparison.OrdinalIgnoreCase))
+            || string.Equals(name, "aot-compat", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, "dotnet-aot-compat", StringComparison.OrdinalIgnoreCase))
         {
             return "Runtime upgrades";
         }

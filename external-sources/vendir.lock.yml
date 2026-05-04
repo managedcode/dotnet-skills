@@ -5,5 +5,5 @@ directories:
     contents:
       - path: dotnet-skills
         git:
-          sha: f46275e64e0f8a82ab0187d0c1f3be273e89de7a
-          commitTitle: Add evaluation tests for test-migration and test-quality-auditor agents (#543)
+          sha: 22575b2ac0094de25490e7336ebad8bb1b4daef8
+          commitTitle: Update SDK to .NET 11 preview in global.json (#603)

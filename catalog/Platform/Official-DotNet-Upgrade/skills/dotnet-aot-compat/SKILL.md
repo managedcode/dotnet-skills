@@ -1,5 +1,5 @@
 ---
-name: aot-compat
+name: dotnet-aot-compat
 description: >
   Make .NET projects compatible with Native AOT and trimming by systematically
   resolving IL trim/AOT analyzer warnings. USE FOR: making projects AOT-compatible,
@@ -8,9 +8,10 @@ description: >
   DO NOT USE FOR: publishing native AOT binaries, optimizing binary size, replacing
   reflection-heavy libraries with alternatives.
   INVOKES: no tools — pure knowledge skill.
+license: MIT
 ---
 
-# aot-compat
+# dotnet-aot-compat
 
 Make .NET projects compatible with Native AOT and trimming by systematically resolving all IL trim/AOT analyzer warnings.
 

@@ -1,5 +1,5 @@
 ---
-name: pinvoke
+name: dotnet-pinvoke
 description: >
   Correctly call native (C/C++) libraries from .NET using P/Invoke and LibraryImport.
   Covers function signatures, string marshalling, memory lifetime, SafeHandle, and
@@ -9,6 +9,7 @@ description: >
   crashes, memory leaks, or corruption at the managed/native boundary.
   DO NOT USE FOR: COM interop, C++/CLI mixed-mode assemblies, or pure managed code with
   no native dependencies.
+license: MIT
 ---
 
 # .NET P/Invoke

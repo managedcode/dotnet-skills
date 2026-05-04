@@ -87,7 +87,7 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Foundations",
         "skills": [
-            "test-frameworks",
+            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -103,7 +103,7 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "test-frameworks",
+            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -120,7 +120,7 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "test-frameworks",
+            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -137,7 +137,7 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "test-frameworks",
+            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -155,7 +155,7 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "test-frameworks",
+            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -187,7 +187,7 @@ CURATED_BUNDLES = [
         "stack": "Upgrades & Migration",
         "lane": "Runtime upgrades",
         "skills": [
-            "aot-compat",
+            "dotnet-aot-compat",
             "migrate-dotnet8-to-dotnet9",
             "migrate-dotnet9-to-dotnet10",
             "migrate-dotnet10-to-dotnet11",
@@ -440,7 +440,7 @@ def is_migration_skill(package: str, name: str) -> bool:
     lowered = name.lower()
     return (
         package == "Official-DotNet-Upgrade"
-        or name == "aot-compat"
+        or name in {"aot-compat", "dotnet-aot-compat"}
         or "migrate-" in lowered
         or "migration" in lowered
         or name == "mtp-hot-reload"
@@ -549,7 +549,7 @@ def is_diagnostics_skill(package: str, category: str, name: str) -> bool:
 def resolve_dotnet_lane(skill_type: str, package: str, category: str, name: str) -> str:
     if name == "csharp-scripts":
         return "Tooling"
-    if name == "pinvoke":
+    if name in {"pinvoke", "dotnet-pinvoke"}:
         return "Interop"
     lane = resolve_entity_lane(skill_type)
     return "Libraries" if lane == "Libraries" else "Foundations"
@@ -606,7 +606,7 @@ def resolve_migration_lane(package: str, name: str) -> str:
     lowered = name.lower()
     if any(token in lowered for token in ("mstest", "xunit", "vstest", "mtp")):
         return "Testing migrations"
-    if package == "Official-DotNet-Upgrade" or name == "aot-compat":
+    if package == "Official-DotNet-Upgrade" or name in {"aot-compat", "dotnet-aot-compat"}:
         return "Runtime upgrades"
     return "Migration"
 

@@ -1,0 +1,9 @@
+{
+  "name": "pvanalyze",
+  "title": "pvanalyze",
+  "description": "Cross-platform command-line analysis for .NET .nettrace performance artifacts.",
+  "links": {
+    "repository": "https://github.com/adityamandaleeka/pvanalyze",
+    "docs": "https://github.com/adityamandaleeka/pvanalyze#readme"
+  }
+}

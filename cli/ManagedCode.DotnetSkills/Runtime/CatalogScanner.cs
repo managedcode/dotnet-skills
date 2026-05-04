@@ -81,7 +81,7 @@ internal static class CatalogScanner
             "Testing",
             "Foundations",
             [
-                "test-frameworks",
+                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -96,7 +96,7 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "test-frameworks",
+                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -112,7 +112,7 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "test-frameworks",
+                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -128,7 +128,7 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "test-frameworks",
+                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -145,7 +145,7 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "test-frameworks",
+                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -175,7 +175,7 @@ internal static class CatalogScanner
             "Upgrades & Migration",
             "Runtime upgrades",
             [
-                "aot-compat",
+                "dotnet-aot-compat",
                 "migrate-dotnet8-to-dotnet9",
                 "migrate-dotnet9-to-dotnet10",
                 "migrate-dotnet10-to-dotnet11",

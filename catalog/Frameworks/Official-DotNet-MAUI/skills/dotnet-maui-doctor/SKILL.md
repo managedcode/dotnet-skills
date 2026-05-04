@@ -1,5 +1,5 @@
 ---
-name: maui-doctor
+name: dotnet-maui-doctor
 description: >-
   Diagnoses and fixes .NET MAUI development environment issues. Validates .NET SDK,
   workloads, Java JDK, Android SDK, Xcode, and Windows SDK. All version requirements
@@ -9,6 +9,7 @@ description: >-
   after updates, or any MAUI toolchain issues. Do not use for: non-MAUI .NET projects,
   Xamarin.Forms apps, runtime app crashes unrelated to environment setup, or app store
   publishing issues. Works on macOS, Windows, and Linux.
+license: MIT
 ---
 
 # .NET MAUI Doctor
