@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   pull_request:
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -36,7 +41,7 @@ jobs:
           echo "$PWD/.tools" >> "$GITHUB_PATH"
 
       - name: Validate automation scripts
-        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_catalog_definitions.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/import_external_catalog_sources.py scripts/upstream_watch.py scripts/waza_skill_quality.py
+        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_catalog_definitions.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/import_external_catalog_sources.py scripts/upstream_watch.py scripts/waza_skill_quality.py scripts/waza_github_issue.py
 
       - name: Run automation regression tests
         run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
@@ -67,6 +72,12 @@ jobs:
         with:
           name: waza-skill-quality
           path: artifacts/waza-skill-quality/
+
+      - name: Create or update Waza skill quality issue
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/waza_github_issue.py
 
       - name: Validate upstream watch JSON
         run: |

@@ -75,6 +75,7 @@ Update this file when the user gives:
 Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do this again" as strong signals that a durable rule should likely be captured here.
 
 - Waza is a repository CI quality-check dependency for evaluating catalog skill quality. Do not add Waza as a catalog skill, package, tool entry, install bundle, or public catalog surface.
+- When Waza CI finds catalog skill-quality warnings, the workflow should create or update a GitHub issue with the concrete findings instead of relying only on workflow logs.
 
 - The repo is moving away from the repo-authored `dotnet-*` skill-id namespace. Prefer clean canonical skill ids without the `dotnet-` prefix for repo-authored skills, and when renaming public skill ids, do a clean cutover instead of keeping backward-compatible legacy aliases unless the user explicitly asks for a compatibility bridge.
 
