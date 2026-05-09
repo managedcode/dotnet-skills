@@ -1,6 +1,6 @@
 ---
 name: mcaf-ml-ai-delivery
-description: "Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. Use when the repo includes model training, inference, data science workflows, or ML-specific delivery planning."
+description: "Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. USE FOR: the repo contains model training, inference, experimentation, or data-science workflow; ML work needs explicit process, testing, or responsible-AI guidance; delivery. DO NOT USE FOR: generic software delivery with no ML or data-science component; loading all ML references when only one stage is active. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository access when ML/AI docs, experiments, or delivery guidance live in the repo."
 ---
 
@@ -86,8 +86,8 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/ml-ai-projects.md` first
-- open `references/data-exploration.md`, `references/feasibility-studies.md`, `references/ml-fundamentals-checklist.md`, `references/model-experimentation.md`, `references/testing-data-science-and-mlops-code.md`, `references/responsible-ai.md`, or `references/ml-model-checklist.md` only when that stage is active
+- read [references/ml-ai-projects.md](references/ml-ai-projects.md) first
+- open [references/data-exploration.md](references/data-exploration.md), [references/feasibility-studies.md](references/feasibility-studies.md), [references/ml-fundamentals-checklist.md](references/ml-fundamentals-checklist.md), [references/model-experimentation.md](references/model-experimentation.md), [references/testing-data-science-and-mlops-code.md](references/testing-data-science-and-mlops-code.md), [references/responsible-ai.md](references/responsible-ai.md), or [references/ml-model-checklist.md](references/ml-model-checklist.md) only when that stage is active
 
 ## Example Requests
 

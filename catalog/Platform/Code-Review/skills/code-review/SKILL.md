@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: "Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them."
+description: "Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them. USE FOR: reviewing a pull request or patch in a .NET repository; checking for behavioral regressions, API misuse, or missing tests; auditing architectural or framework-specific. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Works for application code, libraries, tests, tooling, and infrastructure changes."
 ---
 

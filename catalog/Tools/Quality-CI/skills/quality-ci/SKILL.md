@@ -1,6 +1,6 @@
 ---
 name: quality-ci
-description: "Set up or refine open-source .NET code-quality gates for CI: formatting, `.editorconfig`, SDK analyzers, third-party analyzers, coverage, mutation testing, architecture tests, and security scanning. Use when a .NET repo needs an explicit quality stack in `AGENTS.md`, docs, or pipeline YAML."
+description: "Set up or refine open-source .NET code-quality gates for CI: formatting, `.editorconfig`, SDK analyzers, third-party analyzers, coverage, mutation testing, architecture tests, and security scanning. USE FOR: .NET quality gates in CI; analyzer, coverage, mutation, and architecture-test choices; standardizing `.editorconfig`, `dotnet format`, and warning policy. DO NOT USE FOR: non-.NET repositories; generic CI/CD guidance with no .NET quality stack decisions. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET solution or project; may update `AGENTS.md`, CI workflows, a repo-root `.editorconfig`, `Directory.Build.props`, or analyzer package references."
 ---
 
@@ -142,10 +142,10 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/editorconfig-and-ci.md`
-- `references/quality-toolchain.md`
-- `references/workflows.md`
-- `references/checklist.md`
+- [references/editorconfig-and-ci.md](references/editorconfig-and-ci.md)
+- [references/quality-toolchain.md](references/quality-toolchain.md)
+- [references/workflows.md](references/workflows.md)
+- [references/checklist.md](references/checklist.md)
 
 ## Example Requests
 

@@ -1,6 +1,6 @@
 ---
 name: mvvm
-description: "Implement the Model-View-ViewModel pattern in .NET applications with proper separation of concerns, data binding, commands, and testable ViewModels using MVVM Toolkit."
+description: "Implement the Model-View-ViewModel pattern in .NET applications with proper separation of concerns, data binding, commands, and testable ViewModels using MVVM Toolkit. USE FOR: implementing UI separation with Model-View-ViewModel; using MVVM Toolkit (CommunityToolkit.Mvvm) for ViewModels; designing testable UI architecture. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Applies to WPF, MAUI, WinUI, Uno Platform, Avalonia, and Blazor projects."
 ---
 

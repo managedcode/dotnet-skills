@@ -1,6 +1,6 @@
 ---
 name: mcaf-devex
-description: "Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into."
+description: "Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into. USE FOR: the repo is hard to run, test, debug, or onboard into; local setup differs too much across contributors; the inner loop is slow or undocumented. DO NOT USE FOR: production deployment or pipeline policy; pure documentation cleanup with no developer workflow impact. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository access; may update docs, task runners, devcontainer guidance, or local setup conventions."
 ---
 
@@ -91,8 +91,8 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/developer-experience.md` first
-- open `references/onboarding-guide-template.md` only when relevant
+- read [references/developer-experience.md](references/developer-experience.md) first
+- open [references/onboarding-guide-template.md](references/onboarding-guide-template.md) only when relevant
 
 ## Example Requests
 

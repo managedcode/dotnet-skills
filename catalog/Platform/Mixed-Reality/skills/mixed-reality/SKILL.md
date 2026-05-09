@@ -1,6 +1,6 @@
 ---
 name: mixed-reality
-description: "Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack."
+description: "Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack. USE FOR: building or integrating mixed-reality solutions with C#; working on HoloLens, MRTK, Azure mixed-reality services, or OpenXR-related code; reviewing how .NET services. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Best for HoloLens, MRTK, Unity+C#, and service integrations around mixed reality."
 ---
 

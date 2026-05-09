@@ -1,6 +1,6 @@
 ---
 name: chrome-devtools-mcp
-description: "Use Chrome DevTools MCP from .NET agents and .NET-focused repos to inspect, debug, and automate Chrome through an MCP client."
+description: "Use Chrome DevTools MCP from .NET agents and .NET-focused repos to inspect, debug, and automate Chrome through an MCP client. USE FOR: the repo needs browser-level debugging for ASP.NET Core, Blazor, WebAssembly, or any .NET app with a web UI; the user wants an MCP server that can inspect console. DO NOT USE FOR: pure .NET code analysis, unit testing, or NuGet/package management; static HTML linting alone. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires an MCP-capable .NET agent/app or repo with a browser-debugging workflow; Chrome DevTools MCP runs as an external Node-based server and needs Chrome or Chrome for Testing."
 ---
 

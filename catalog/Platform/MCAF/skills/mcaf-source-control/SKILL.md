@@ -1,6 +1,6 @@
 ---
 name: mcaf-source-control
-description: "Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. Use when bootstrapping a repo, tightening PR flow, or documenting branch and release policy."
+description: "Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. USE FOR: bootstrapping source-control policy; tightening branch, merge, or PR rules; documenting commit or release hygiene. DO NOT USE FOR: CI/CD workflow design with no source-control policy change; one-off git commands that do not alter repo policy. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository access; may update contribution docs, AGENTS rules, or repository policy files."
 ---
 
@@ -87,8 +87,8 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/source-control.md` first
-- open `references/naming-branches.md` only when the task is specifically about branch naming
+- read [references/source-control.md](references/source-control.md) first
+- open [references/naming-branches.md](references/naming-branches.md) only when the task is specifically about branch naming
 
 ## Example Requests
 

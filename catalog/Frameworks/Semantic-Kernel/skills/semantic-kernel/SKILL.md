@@ -1,6 +1,6 @@
 ---
 name: semantic-kernel
-description: "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable."
+description: "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable. USE FOR: adding AI-driven prompts, plugins, or orchestration to a .NET app; reviewing kernel construction, service registration, or plugin usage; building function-calling. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires Semantic Kernel 1.x packages (.NET 8+)."
 ---
 

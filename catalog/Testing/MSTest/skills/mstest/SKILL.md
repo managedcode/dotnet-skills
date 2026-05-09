@@ -1,6 +1,6 @@
 ---
 name: mstest
-description: "Write, run, or repair .NET tests that use MSTest. Use when a repo uses `MSTest.Sdk`, `MSTest`, `[TestClass]`, `[TestMethod]`, `DataRow`, or Microsoft.Testing.Platform-based MSTest execution."
+description: "Write, run, or repair .NET tests that use MSTest. Use when a repo uses `MSTest.Sdk`, `MSTest`, `[TestClass]`, `[TestMethod]`, `DataRow`, or Microsoft.Testing.Platform-based MSTest execution. USE FOR: the repo uses MSTest; you need to add, run, debug, or repair MSTest tests; the repo is moving between VSTest and Microsoft.Testing.Platform. DO NOT USE FOR: xUnit projects; TUnit projects. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET solution or project with MSTest packages; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -106,9 +106,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/mstest.md`
-- `references/patterns.md`
-- `references/anti-patterns.md`
+- [references/mstest.md](references/mstest.md)
+- [references/patterns.md](references/patterns.md)
+- [references/anti-patterns.md](references/anti-patterns.md)
 
 ## Example Requests
 

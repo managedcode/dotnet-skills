@@ -1,6 +1,6 @@
 ---
 name: graphify-dotnet
-description: "Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships."
+description: "Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships. USE FOR: graphify commands; graph JSON, HTML, SVG, Cypher, Markdown, and Obsidian exports; repository map and architecture snapshot generation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires the `graphify-dotnet` global tool and a .NET 10 SDK; AST-only extraction works with zero model setup, while semantic enrichment needs Azure OpenAI, Ollama, or GitHub Copilot SDK."
 ---
 
@@ -159,5 +159,5 @@ export GRAPHIFY__CopilotSdk__ModelId=gpt-4.1
 
 ## Load References
 
-- `references/source-map.md` - upstream repository and docs map with direct links to the README, CLI docs, provider setup guides, sample project, and export-format docs
-- `references/usage-and-operations.md` - practical commands, provider setup patterns, export selection, watch-mode behavior, troubleshooting, and benchmark caveats
+- [references/source-map.md](references/source-map.md) - upstream repository and docs map with direct links to the README, CLI docs, provider setup guides, sample project, and export-format docs
+- [references/usage-and-operations.md](references/usage-and-operations.md) - practical commands, provider setup patterns, export selection, watch-mode behavior, troubleshooting, and benchmark caveats

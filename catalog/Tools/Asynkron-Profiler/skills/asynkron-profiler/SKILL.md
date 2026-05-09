@@ -1,6 +1,6 @@
 ---
 name: asynkron-profiler
-description: "Use the open-source free `Asynkron.Profiler` dotnet tool for CLI-first CPU, allocation, exception, contention, and heap profiling of .NET commands or existing trace artifacts."
+description: "Use the open-source free `Asynkron.Profiler` dotnet tool for CLI-first CPU, allocation, exception, contention, and heap profiling of .NET commands or existing trace artifacts. USE FOR: Asynkron.Profiler setup; automation-friendly profiling output; CPU, allocation, exception, contention, and heap investigation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires the `asynkron-profiler` dotnet tool plus `dotnet-trace` and `dotnet-gcdump`; upstream guidance currently targets .NET SDK 10.x."
 ---
 

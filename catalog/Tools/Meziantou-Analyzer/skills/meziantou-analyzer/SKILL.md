@@ -1,6 +1,6 @@
 ---
 name: meziantou-analyzer
-description: "Use the open-source free `Meziantou.Analyzer` package for design, usage, security, performance, and style rules in .NET. Use when a repo wants broader analyzer coverage with a single NuGet package."
+description: "Use the open-source free `Meziantou.Analyzer` package for design, usage, security, performance, and style rules in .NET. Use when a repo wants broader analyzer coverage with a single NuGet package. USE FOR: the repo uses or wants Meziantou.Analyzer; the team wants one analyzer pack that covers design, usage, security, performance, and style. DO NOT USE FOR: repos that already enforce an overlapping analyzer baseline and do not want extra diagnostics; formatting-only work. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -93,9 +93,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/meziantou-analyzer.md`
-- `references/rules.md`
-- `references/config.md`
+- [references/meziantou-analyzer.md](references/meziantou-analyzer.md)
+- [references/rules.md](references/rules.md)
+- [references/config.md](references/config.md)
 
 ## Example Requests
 

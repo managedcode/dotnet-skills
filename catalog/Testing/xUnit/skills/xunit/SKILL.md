@@ -1,6 +1,6 @@
 ---
 name: xunit
-description: "Write, run, or repair .NET tests that use xUnit. Use when a repo uses `xunit`, `xunit.v3`, `[Fact]`, `[Theory]`, or `xunit.runner.visualstudio`, and you need the right CLI, package, and runner guidance for xUnit on VSTest or Microsoft.Testing.Platform."
+description: "Write, run, or repair .NET tests that use xUnit with the right package, CLI, and runner guidance. USE FOR: xUnit v2 or xUnit v3 projects; adding, running, debugging, or repairing xUnit tests; choosing between VSTest and Microsoft.Testing.Platform. DO NOT USE FOR: TUnit projects; MSTest projects. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET solution or project with xUnit packages; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -113,9 +113,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/xunit.md`
-- `references/patterns.md`
-- `references/anti-patterns.md`
+- [references/xunit.md](references/xunit.md)
+- [references/patterns.md](references/patterns.md)
+- [references/anti-patterns.md](references/anti-patterns.md)
 
 ## Example Requests
 

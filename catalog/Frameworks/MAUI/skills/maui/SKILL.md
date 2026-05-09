@@ -1,6 +1,6 @@
 ---
 name: maui
-description: "Build, review, or migrate .NET MAUI applications across Android, iOS, macOS, and Windows with correct cross-platform UI, platform integration, and native packaging assumptions."
+description: "Build, review, or migrate .NET MAUI applications across Android, iOS, macOS, and Windows with correct cross-platform UI, platform integration, and native packaging assumptions. USE FOR: working on cross-platform mobile or desktop UI in .NET MAUI; integrating device capabilities, navigation, or platform-specific code; migrating Xamarin.Forms or aligning. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires .NET MAUI workload (.NET 8+)."
 ---
 

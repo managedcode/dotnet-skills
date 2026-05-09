@@ -1,6 +1,6 @@
 ---
 name: webhint
-description: "Use webhint in .NET repositories that ship browser-facing frontends. Use when a repo needs CLI audits for accessibility, performance, security headers, PWA signals, SEO, or runtime page quality against a served site or built frontend output."
+description: "Use webhint in .NET repositories that ship browser-facing frontends. Use when a repo needs CLI audits for accessibility, performance, security headers, PWA signals, SEO, or runtime page quality against a. USE FOR: the repo ships a browser-facing site and the user asks about accessibility, performance, SEO, security headers, or page quality; the repo has .hintrc, hint scripts, or a. DO NOT USE FOR: JavaScript or TypeScript semantic linting; route that to eslint or biome; stylesheet-only linting; route that to stylelint. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository with a browser-facing site or frontend build output; works best against a reachable local or deployed URL and a checked-in `.hintrc`."
 ---
 

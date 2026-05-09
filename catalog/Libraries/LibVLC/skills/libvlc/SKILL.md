@@ -1,6 +1,6 @@
 ---
 name: libvlc
-description: Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding.
+description: "Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding. USE FOR: LibVLC Skill implementation, review, migration, debugging, or documentation work. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: .NET 6+, .NET Standard 2.0+, .NET Framework 4.6.1+
 ---
 
@@ -21,6 +21,20 @@ When generating code, **ask the user which version they target** if not already 
 ## Reference
 
 For complete API signatures, code examples, language bindings, platform integration, streaming recipes, troubleshooting, and migration guidance, see [libvlc-skill.md](libvlc-skill.md).
+
+## Workflow
+
+1. Confirm whether the target is libvlc 3.x or 4.x, then choose APIs and bindings that match that version.
+2. Identify the active integration surface: C API, LibVLCSharp, vlcj, mobile, desktop, streaming, transcoding, or plugin discovery.
+3. Load [libvlc-skill.md](libvlc-skill.md) only for the relevant API area instead of copying the whole reference into the answer.
+4. Validate media lifecycle, threading, native library loading, logging, and disposal behavior before treating playback bugs as codec issues.
+
+## Validate
+
+- the libvlc major version is explicit
+- native libraries and plugins are discoverable in the target runtime
+- event callbacks do not block libvlc worker threads
+- media, player, and instance objects are disposed in the correct order
 
 Sections in the reference:
 - **§1** Architecture Overview — pipeline, object model, single-instance rule

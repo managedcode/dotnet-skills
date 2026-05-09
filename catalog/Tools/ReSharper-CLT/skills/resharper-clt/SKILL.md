@@ -1,6 +1,6 @@
 ---
 name: resharper-clt
-description: "Use the free official JetBrains ReSharper Command Line Tools for .NET repositories. Use when a repo wants powerful `jb inspectcode` inspections, `jb cleanupcode` cleanup profiles, solution-level `.DotSettings` enforcement, or a stronger CLI quality gate for C# than the default SDK analyzers alone."
+description: "Use the free official JetBrains ReSharper Command Line Tools for .NET repositories. USE FOR: `jb inspectcode`; `jb cleanupcode`; stronger C# inspections, cleanup profiles, and CI-friendly JetBrains analysis. DO NOT USE FOR: replacing tests with inspection output; ad-hoc formatting-only work when the repo intentionally standardizes on another formatter. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET solution or project; works best when the repo keeps shared ReSharper settings in solution `.DotSettings` files and records exact commands in `AGENTS.md`."
 ---
 
@@ -119,9 +119,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/resharper-clt.md`
-- `references/commands.md`
-- `references/config.md`
+- [references/resharper-clt.md](references/resharper-clt.md)
+- [references/commands.md](references/commands.md)
+- [references/config.md](references/config.md)
 
 ## Example Requests
 

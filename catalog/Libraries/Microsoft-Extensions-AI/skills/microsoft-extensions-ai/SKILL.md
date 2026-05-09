@@ -1,6 +1,6 @@
 ---
 name: microsoft-extensions-ai
-description: "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation."
+description: "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation. USE FOR: building or reviewing .NET code that uses Microsoft.Extensions.AI, Microsoft.Extensions.AI.Abstractions, IChatClient, IEmbeddingGenerator, ChatOptions, or AIFunction;. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration."
 ---
 

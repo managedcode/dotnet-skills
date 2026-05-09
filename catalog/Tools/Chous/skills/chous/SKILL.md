@@ -1,6 +1,6 @@
 ---
 name: chous
-description: "Use Chous in .NET repositories that ship sizeable frontend codebases and want file-structure linting, naming convention enforcement, and folder-layout policy as a CLI gate. Use when the problem is frontend architecture drift in the file tree rather than semantic code issues inside the files."
+description: "Use Chous in .NET repositories that ship sizeable frontend codebases and want file-structure linting, naming convention enforcement, and folder-layout policy as a CLI gate. USE FOR: growing frontend trees; naming, folder, or file-placement policy; CI checks for frontend layout drift. DO NOT USE FOR: semantic code bugs, type errors, or framework API misuse; CSS, HTML, or JS rule enforcement inside files. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a repository with a meaningful frontend file tree and Node-based tooling or `npx`; Chous complements code linters and does not replace ESLint, Stylelint, or runtime site audits."
 ---
 

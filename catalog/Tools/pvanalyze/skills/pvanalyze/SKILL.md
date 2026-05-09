@@ -1,6 +1,6 @@
 ---
 name: pvanalyze
-description: "Use `pvanalyze` to inspect existing .NET `.nettrace` files from the command line, including GC, JIT, CPU stacks, allocation, DATAS, events, exceptions, timeline, and call-tree analysis with JSON or SpeedScope output for automation."
+description: "Use `pvanalyze` to inspect existing .NET `.nettrace` files from the command line, including GC, JIT, CPU stacks, allocation, DATAS, events, exceptions, timeline, and call-tree analysis with JSON or SpeedScope. USE FOR: the user mentions pvanalyze, PerfView-style CLI trace analysis, or cross-platform .nettrace inspection; the task starts from an existing .nettrace file and needs. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires .NET 8 or later to run `pvanalyze`; trace collection usually requires `dotnet-trace`. Some scenarios require traces captured with verbose runtime providers or .NET 9+ DATAS events."
 ---
 

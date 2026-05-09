@@ -387,6 +387,6 @@ dotnet test --filter "Category!=Integration"
 
 ## Sources
 
-- [xUnit.net Theory Data](https://xunit.net/docs/getting-started/v3/theory-data)
+- [xUnit.net v3 Getting Started](https://xunit.net/docs/getting-started/v3/getting-started)
 - [xUnit.net Shared Context](https://xunit.net/docs/shared-context)
 - [NSubstitute Documentation](https://nsubstitute.github.io/help/getting-started/)

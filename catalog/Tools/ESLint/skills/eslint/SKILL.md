@@ -1,6 +1,6 @@
 ---
 name: eslint
-description: "Use ESLint in .NET repositories that ship JavaScript, TypeScript, React, or other Node-based frontend assets. Use when a repo needs a configurable CLI lint gate for frontend correctness, import hygiene, unsafe patterns, or framework-specific rules."
+description: "Use ESLint in .NET repositories that ship JavaScript, TypeScript, React, or other Node-based frontend assets. USE FOR: the repo has package.json, eslint.config.*, .eslintrc*, tsconfig.json, or JS/TS/React frontend files; the user asks for JavaScript or TypeScript linting, React rule. DO NOT USE FOR: CSS ownership by itself; route that to stylelint; HTML-only checks on static output; route that to htmlhint. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository with Node-based frontend assets such as `package.json`, `ClientApp/`, `src/`, or separate web frontend folders."
 ---
 

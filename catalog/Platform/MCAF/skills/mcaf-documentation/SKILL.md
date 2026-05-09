@@ -1,6 +1,6 @@
 ---
 name: mcaf-documentation
-description: "Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. Use when a repo’s docs are missing, stale, duplicated, or hard to navigate, or when adding new durable engineering guidance."
+description: "Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. USE FOR: docs are missing, stale, duplicated, or hard to navigate; a repo needs a cleaner source-of-truth structure; durable engineering guidance needs to be added without. DO NOT USE FOR: writing a specific feature spec or ADR when that skill already fits; dumping large template content into public pages. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository write access; updates docs and documentation structure."
 ---
 
@@ -87,7 +87,7 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/documentation.md` for structure and documentation-quality guidance
+- read [references/documentation.md](references/documentation.md) for structure and documentation-quality guidance
 
 ## Example Requests
 

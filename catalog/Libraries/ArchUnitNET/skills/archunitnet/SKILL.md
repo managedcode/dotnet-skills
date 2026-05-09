@@ -1,6 +1,6 @@
 ---
 name: archunitnet
-description: "Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide."
+description: "Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide. USE FOR: the repo uses or wants ArchUnitNET; architecture testing needs richer modeling than simple dependency checks. DO NOT USE FOR: the lightest possible architecture rule checks. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET test project; supports dedicated integrations for xUnit, xUnit v3, MSTest, TUnit, and others where available."
 ---
 
@@ -93,9 +93,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/archunitnet.md`
-- `references/patterns.md`
-- `references/examples.md`
+- [references/archunitnet.md](references/archunitnet.md)
+- [references/patterns.md](references/patterns.md)
+- [references/examples.md](references/examples.md)
 
 ## Example Requests
 

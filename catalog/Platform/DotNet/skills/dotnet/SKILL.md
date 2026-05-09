@@ -1,6 +1,6 @@
 ---
 name: dotnet
-description: "Primary router skill for broad .NET work. Classify the repo by app model and cross-cutting concern first, then switch to the narrowest matching .NET skill instead of staying at a generic layer."
+description: "Primary router skill for broad .NET work. Classify the repo by app model and cross-cutting concern first, then switch to the narrowest matching .NET skill instead of staying at a generic layer. USE FOR: general .NET requests without a narrower framework; C# implementation, debugging, review, or refactoring; routing to framework and tooling skills. DO NOT USE FOR: unrelated stacks; tasks already covered by a narrower .NET skill. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository, solution, or project tree."
 ---
 
@@ -69,5 +69,5 @@ compatibility: "Requires a .NET repository, solution, or project tree."
 
 ### References
 
-- [`references/routing.md`](references/routing.md) - Decision tree for routing tasks to specialized .NET skills, including app model classification and cross-cutting concern handling.
-- [`references/detection.md`](references/detection.md) - Project detection patterns for identifying SDK types, target frameworks, workloads, language versions, and app models.
+- [references/routing.md](references/routing.md) - Decision tree for routing tasks to specialized .NET skills, including app model classification and cross-cutting concern handling.
+- [references/detection.md](references/detection.md) - Project detection patterns for identifying SDK types, target frameworks, workloads, language versions, and app models.

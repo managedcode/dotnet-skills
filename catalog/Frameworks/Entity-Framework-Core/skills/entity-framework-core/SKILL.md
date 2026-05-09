@@ -1,6 +1,6 @@
 ---
 name: entity-framework-core
-description: "Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications."
+description: "Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications. USE FOR: DbContext, migrations, model configuration, EF queries, tracking, loading, performance, transactions, and EF6 migration decisions. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires EF Core 7+ (preferably 8/9 for latest features)."
 ---
 

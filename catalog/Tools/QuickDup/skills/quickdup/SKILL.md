@@ -1,6 +1,6 @@
 ---
 name: quickdup
-description: "Use the open-source free `QuickDup` clone detector for .NET repositories. Use when a repo needs duplicate C# code discovery, structural clone detection, DRY refactoring candidates, or repeatable duplication scans in local workflows and CI."
+description: "Use the open-source free `QuickDup` clone detector for .NET repositories. Use when a repo needs duplicate C# code discovery, structural clone detection, DRY refactoring candidates, or repeatable duplication. USE FOR: the repo wants QuickDup; the team needs repeatable duplicate-code scans for C#; the user asks about DRY cleanup, copy-paste detection, clone detection, or duplicate. DO NOT USE FOR: formatting-only work; repos that intentionally use a different clone detector and do not want overlap. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a repository with C# source files; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -121,9 +121,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/commands.md`
-- `references/examples.md`
-- `references/quickdup.md`
+- [references/commands.md](references/commands.md)
+- [references/examples.md](references/examples.md)
+- [references/quickdup.md](references/quickdup.md)
 
 ## Example Requests
 

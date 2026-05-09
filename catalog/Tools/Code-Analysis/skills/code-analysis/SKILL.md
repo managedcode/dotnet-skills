@@ -1,6 +1,6 @@
 ---
 name: code-analysis
-description: "Use the free built-in .NET SDK analyzers and analysis levels with gradual Roslyn warning promotion. Use when a .NET repo needs first-party code analysis, `EnableNETAnalyzers`, `AnalysisLevel`, or warning-as-error policy wired into build and CI."
+description: "Use the free built-in .NET SDK analyzers and analysis levels with gradual Roslyn warning promotion. USE FOR: the repo wants first-party .NET analyzers; CI should fail on analyzer warnings; the team needs AnalysisLevel or AnalysisMode guidance. DO NOT USE FOR: third-party analyzer selection by itself; formatting-only work. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -177,9 +177,9 @@ Never skip the ask step. The user decides the pace.
 
 ## Load References
 
-- `references/rules.md`
-- `references/config.md`
-- `references/code-analysis.md`
+- [references/rules.md](references/rules.md)
+- [references/config.md](references/config.md)
+- [references/code-analysis.md](references/code-analysis.md)
 
 ## Example Requests
 

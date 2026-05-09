@@ -1,6 +1,6 @@
 ---
 name: netarchtest
-description: "Use the open-source free `NetArchTest.Rules` library for architecture rules in .NET unit tests. Use when a repo wants lightweight, fluent architecture assertions for namespaces, dependencies, or layering."
+description: "Use the open-source free `NetArchTest.Rules` library for architecture rules in .NET unit tests. Use when a repo wants lightweight, fluent architecture assertions for namespaces, dependencies, or layering. USE FOR: the repo uses or wants NetArchTest.Rules; architecture rules should be enforced in automated tests. DO NOT USE FOR: very rich architecture modeling that needs a heavier DSL. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET test project; works with any unit-test framework."
 ---
 
@@ -95,9 +95,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/patterns.md`
-- `references/examples.md`
-- `references/netarchtest.md`
+- [references/patterns.md](references/patterns.md)
+- [references/examples.md](references/examples.md)
+- [references/netarchtest.md](references/netarchtest.md)
 
 ## Example Requests
 

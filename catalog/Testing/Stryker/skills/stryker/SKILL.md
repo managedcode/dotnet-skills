@@ -1,6 +1,6 @@
 ---
 name: stryker
-description: "Use the open-source free `Stryker.NET` mutation testing tool for .NET. Use when a repo needs to measure whether tests actually catch faults, especially in critical libraries or domains."
+description: "Use the open-source free `Stryker.NET` mutation testing tool for .NET. Use when a repo needs to measure whether tests actually catch faults, especially in critical libraries or domains. USE FOR: the repo uses or wants Stryker.NET; mutation testing is needed for high-risk code. DO NOT USE FOR: every PR path by default in a large repo; simple coverage collection. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -96,9 +96,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/stryker.md`
-- `references/commands.md`
-- `references/patterns.md`
+- [references/stryker.md](references/stryker.md)
+- [references/commands.md](references/commands.md)
+- [references/patterns.md](references/patterns.md)
 
 ## Example Requests
 

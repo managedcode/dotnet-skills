@@ -1,6 +1,6 @@
 ---
 name: reportgenerator
-description: "Use the open-source free `ReportGenerator` tool for turning .NET coverage outputs into HTML, Markdown, Cobertura, badges, and merged reports. Use when raw coverage files are not readable enough for CI or human review."
+description: "Use the open-source free `ReportGenerator` tool for turning .NET coverage outputs into HTML, Markdown, Cobertura, badges, and merged reports. USE FOR: the repo uses or wants ReportGenerator; CI needs human-readable coverage reports; multiple coverage files must be merged. DO NOT USE FOR: raw coverage collection with no reporting need. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires coverage artifacts such as Cobertura, OpenCover, or lcov; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -101,9 +101,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/reportgenerator.md`
-- `references/commands.md`
-- `references/formats.md`
+- [references/reportgenerator.md](references/reportgenerator.md)
+- [references/commands.md](references/commands.md)
+- [references/formats.md](references/formats.md)
 
 ## Example Requests
 

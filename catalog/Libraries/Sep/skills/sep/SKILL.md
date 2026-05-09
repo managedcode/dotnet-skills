@@ -1,6 +1,6 @@
 ---
 name: sep
-description: "Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows."
+description: "Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows. USE FOR: delimited data needs are performance-sensitive and allocation-aware; project needs explicit control over separator inference, escaping, trimming, and header behavior;. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET project that can reference the `Sep` package and accept span/ref-struct row/column APIs for row-by-row processing."
 ---
 

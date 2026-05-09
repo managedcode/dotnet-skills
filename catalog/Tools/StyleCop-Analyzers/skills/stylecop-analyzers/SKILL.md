@@ -1,6 +1,6 @@
 ---
 name: stylecop-analyzers
-description: "Use the open-source free `StyleCop.Analyzers` package for naming, layout, documentation, and style rules in .NET projects. Use when a repo wants stricter style conventions than the SDK analyzers alone provide."
+description: "Use the open-source free `StyleCop.Analyzers` package for naming, layout, documentation, and style rules in .NET projects. Use when a repo wants stricter style conventions than the SDK analyzers alone provide. USE FOR: the repo wants StyleCop.Analyzers; naming, layout, or documentation style needs stronger enforcement; the team needs stylecop.json guidance. DO NOT USE FOR: repos that intentionally rely only on SDK analyzers; repos where StyleCop overlaps too heavily with an existing style package and no. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -97,9 +97,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/stylecop-analyzers.md`
-- `references/rules.md`
-- `references/config.md`
+- [references/stylecop-analyzers.md](references/stylecop-analyzers.md)
+- [references/rules.md](references/rules.md)
+- [references/config.md](references/config.md)
 
 ## Example Requests
 

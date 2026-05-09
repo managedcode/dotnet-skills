@@ -1,6 +1,6 @@
 ---
 name: aspire
-description: "Build, upgrade, and operate .NET Aspire 13.2.x application hosts with current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, and Azure deployment patterns for distributed apps."
+description: "Build, upgrade, and operate .NET Aspire 13.2.x application hosts with current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, and Azure deployment patterns for distributed apps. USE FOR: Aspire.AppHost.Sdk, Aspire.Hosting.*, DistributedApplication.CreateBuilder, WithReference, WaitFor, AddProject, AddRedis, AddPostgres, aspire run, aspire init, aspire. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Best for current Aspire 13.2.x tooling on .NET 10; use version-aware upgrade guidance for older 8.x or 9.x Aspire solutions."
 ---
 

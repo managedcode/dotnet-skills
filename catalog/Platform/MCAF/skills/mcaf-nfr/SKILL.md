@@ -1,6 +1,6 @@
 ---
 name: mcaf-nfr
-description: "Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. Use when a feature or architecture change needs explicit quality attributes and trade-offs."
+description: "Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. USE FOR: feature or architecture changes needing measurable quality attributes; vague quality goals that need concrete constraints; docs, ADRs, and tests that must align on NFRs. DO NOT USE FOR: generic architecture or feature writing with no quality-attribute decision; loading all NFR references at once. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository access when NFRs are documented in feature docs, ADRs, or architecture docs."
 ---
 
@@ -87,6 +87,20 @@ For setup-only requests with no execution, return `status: configured` and exact
 ## Load References
 
 - pick only the exact file for the active NFR: accessibility, reliability, performance, scalability, compliance, maintainability, and so on
+- [references/accessibility.md](references/accessibility.md)
+- [references/availability.md](references/availability.md)
+- [references/capacity.md](references/capacity.md)
+- [references/compliance.md](references/compliance.md)
+- [references/data-integrity.md](references/data-integrity.md)
+- [references/disaster-recovery.md](references/disaster-recovery.md)
+- [references/internationalization.md](references/internationalization.md)
+- [references/interoperability.md](references/interoperability.md)
+- [references/maintainability.md](references/maintainability.md)
+- [references/performance.md](references/performance.md)
+- [references/portability.md](references/portability.md)
+- [references/reliability.md](references/reliability.md)
+- [references/scalability.md](references/scalability.md)
+- [references/usability.md](references/usability.md)
 
 ## Example Requests
 

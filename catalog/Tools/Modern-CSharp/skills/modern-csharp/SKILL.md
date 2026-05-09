@@ -1,6 +1,6 @@
 ---
 name: modern-csharp
-description: "Write modern, version-aware C# for .NET repositories. Use when choosing language features across C# versions, especially C# 13 and C# 14, while staying compatible with the repo's target framework and `LangVersion`."
+description: "Write modern, version-aware C# for .NET repositories while staying compatible with the repo's target framework and language-version policy. USE FOR: modern idiomatic C# code; language-version compatibility decisions; upgrading or reviewing C# feature usage across versions. DO NOT USE FOR: non-C# .NET languages such as F# or VB; analyzer-only or formatter-only setup with no language feature choice. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a C# or .NET repository; respects explicit `LangVersion` and target framework settings."
 ---
 
@@ -108,9 +108,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/patterns.md`
-- `references/migration.md`
-- `references/csharp-modern-features.md`
+- [references/patterns.md](references/patterns.md)
+- [references/migration.md](references/migration.md)
+- [references/csharp-modern-features.md](references/csharp-modern-features.md)
 
 ## Example Requests
 

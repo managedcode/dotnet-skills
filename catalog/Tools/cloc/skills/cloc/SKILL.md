@@ -1,6 +1,6 @@
 ---
 name: cloc
-description: "Use the open-source free `cloc` tool for line-count, language-mix, and diff statistics in .NET repositories. Use when a repo needs C# and solution footprint metrics, branch-to-branch LOC comparison, or repeatable code-size reporting in local workflows and CI."
+description: "Use the open-source free `cloc` tool for line-count, language-mix, and diff statistics in .NET repositories. USE FOR: repeatable LOC reports; language-mix or branch-diff statistics; codebase size and solution-composition measurements. DO NOT USE FOR: judging developer productivity from raw LOC; replacing behavioral verification, architecture review, or complexity analysis. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a repository with .NET source files or a Git checkout; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -130,9 +130,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/commands.md`
-- `references/examples.md`
-- `references/cloc.md`
+- [references/commands.md](references/commands.md)
+- [references/examples.md](references/examples.md)
+- [references/cloc.md](references/cloc.md)
 
 ## Example Requests
 

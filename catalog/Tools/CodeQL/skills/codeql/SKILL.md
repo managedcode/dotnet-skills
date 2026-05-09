@@ -1,6 +1,6 @@
 ---
 name: codeql
-description: "Use the open-source CodeQL ecosystem for .NET security analysis. Use when a repo needs CodeQL query packs, CLI-based analysis on open source codebases, or GitHub Action setup with explicit licensing caveats for private repositories."
+description: "Use the open-source CodeQL ecosystem for .NET security analysis. Use when a repo needs CodeQL query packs, CLI-based analysis on open source codebases, or GitHub Action setup with explicit licensing caveats. USE FOR: the repo uses or wants CodeQL for .NET security analysis; GitHub code scanning is part of the CI plan. DO NOT USE FOR: teams that need a tool with no private-repo licensing caveat. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a GitHub-based or CLI-based CodeQL workflow; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -92,9 +92,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/codeql.md`
-- `references/queries.md`
-- `references/workflow.md`
+- [references/codeql.md](references/codeql.md)
+- [references/queries.md](references/queries.md)
+- [references/workflow.md](references/workflow.md)
 
 ## Example Requests
 

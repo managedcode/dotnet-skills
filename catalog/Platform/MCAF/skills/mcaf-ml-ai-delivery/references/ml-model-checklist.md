@@ -54,7 +54,6 @@ Some questions to ask when comparing to a baseline:
 Resources:
 
 - ["How To Get Baseline Results And Why They Matter" article](https://machinelearningmastery.com/how-to-get-baseline-results-and-why-they-matter/)
-- ["Always start with a stupid model, no exceptions." article](https://blog.insightdatascience.com/always-start-with-a-stupid-model-no-exceptions-3a22314b9aaa)
 
 ### Are Machine Learning Performance Metrics Defined for Both Training and Scoring?
 

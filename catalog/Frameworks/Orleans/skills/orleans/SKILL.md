@@ -1,7 +1,7 @@
 ---
 name: orleans
-description: "Build or review distributed .NET applications with Orleans grains, silos, persistence, streaming, reminders, placement, transactions, serialization, event sourcing, testing, and cloud-native hosting."
-compatibility: "Prefer current Orleans releases (10.x / 9.x) with `UseOrleans`, `IPersistentState<TState>`, `RegisterGrainTimer`, `[GenerateSerializer]`, modern providers, and production-grade clustering."
+description: "Build or review distributed .NET applications with Orleans grains, silos, persistence, streaming, reminders, placement, transactions, serialization, event sourcing, testing, and cloud-native hosting. USE FOR: Orleans grains, silos, clients, persistence, streams, reminders, placement, serialization, testing, and Aspire hosting. DO NOT USE FOR: unrelated stacks; generic distributed-system advice with no Orleans code or design decision. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
+compatibility: "Prefer current Orleans releases (10.x / 9.x) with `UseOrleans`, typed persistent state, `RegisterGrainTimer`, `[GenerateSerializer]`, modern providers, and production-grade clustering."
 ---
 
 # Microsoft Orleans
@@ -155,19 +155,19 @@ flowchart LR
 
 Open only what you need. Each reference is topic-focused for token economy:
 
-- references/official-docs-index.md — full Orleans documentation map with direct links to the official Learn tree
-- references/grains.md — grain modeling, persistence, event sourcing, reminders, transactions, versioning links
-- references/grain-api.md — grain identity, placement, lifecycle, reentrancy, cancellation API details with code
-- references/persistence-api.md — IPersistentState API, provider configuration, event sourcing, transactions with code
-- references/streaming-api.md — streams, broadcast channels, observers, IAsyncEnumerable patterns with code
-- references/serialization-api.md — GenerateSerializer, Id, Alias, surrogates, copier, immutability details
-- references/hosting.md — clients, Aspire, configuration, observability, dashboard, deployment links
-- references/configuration-api.md — silo/client config, GC tuning, deployment targets, observability setup with code
-- references/implementation.md — runtime internals, testing, load balancing, messaging guarantees
-- references/testing-patterns.md — practical Orleans test harness selection with `InProcessTestCluster`, shared AppHost fixtures, `WebApplicationFactory`, SignalR, and Playwright
-- references/patterns.md — grain, persistence, streaming, coordination, and performance patterns with code
-- references/anti-patterns.md — blocking calls, unbounded state, chatty grains, bottlenecks, deadlocks with code
-- references/examples.md — quickstarts, samples browser entries, and official Orleans example hubs
+- [references/official-docs-index.md](references/official-docs-index.md) — full Orleans documentation map with direct links to the official Learn tree
+- [references/grains.md](references/grains.md) — grain modeling, persistence, event sourcing, reminders, transactions, versioning links
+- [references/grain-api.md](references/grain-api.md) — grain identity, placement, lifecycle, reentrancy, cancellation API details with code
+- [references/persistence-api.md](references/persistence-api.md) — IPersistentState API, provider configuration, event sourcing, transactions with code
+- [references/streaming-api.md](references/streaming-api.md) — streams, broadcast channels, observers, IAsyncEnumerable patterns with code
+- [references/serialization-api.md](references/serialization-api.md) — GenerateSerializer, Id, Alias, surrogates, copier, immutability details
+- [references/hosting.md](references/hosting.md) — clients, Aspire, configuration, observability, dashboard, deployment links
+- [references/configuration-api.md](references/configuration-api.md) — silo/client config, GC tuning, deployment targets, observability setup with code
+- [references/implementation.md](references/implementation.md) — runtime internals, testing, load balancing, messaging guarantees
+- [references/testing-patterns.md](references/testing-patterns.md) — practical Orleans test harness selection with `InProcessTestCluster`, shared AppHost fixtures, `WebApplicationFactory`, SignalR, and Playwright
+- [references/patterns.md](references/patterns.md) — grain, persistence, streaming, coordination, and performance patterns with code
+- [references/anti-patterns.md](references/anti-patterns.md) — blocking calls, unbounded state, chatty grains, bottlenecks, deadlocks with code
+- [references/examples.md](references/examples.md) — quickstarts, samples browser entries, and official Orleans example hubs
 
 Official sources:
 

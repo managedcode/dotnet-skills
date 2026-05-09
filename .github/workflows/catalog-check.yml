@@ -7,6 +7,8 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      WAZA_VERSION: v0.31.0
 
     steps:
       - name: Check out repository
@@ -23,8 +25,18 @@ jobs:
           curl -fsSL https://carvel.dev/install.sh | K14SIO_INSTALL_BIN_DIR="$PWD/.tools" bash
           echo "$PWD/.tools" >> "$GITHUB_PATH"
 
+      - name: Install Waza CI checker
+        run: |
+          mkdir -p .tools
+          curl -fsSL -o .tools/waza-linux-amd64 "https://github.com/microsoft/waza/releases/download/${WAZA_VERSION}/waza-linux-amd64"
+          curl -fsSL -o .tools/waza-checksums.txt "https://github.com/microsoft/waza/releases/download/${WAZA_VERSION}/checksums.txt"
+          (cd .tools && grep 'waza-linux-amd64' waza-checksums.txt | sha256sum -c --status)
+          mv .tools/waza-linux-amd64 .tools/waza
+          chmod +x .tools/waza
+          echo "$PWD/.tools" >> "$GITHUB_PATH"
+
       - name: Validate automation scripts
-        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_catalog_definitions.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/import_external_catalog_sources.py scripts/upstream_watch.py
+        run: python3 -m py_compile scripts/generate_catalog.py scripts/generate_catalog_definitions.py scripts/generate_agent_catalog.py scripts/generate_release_notes.py scripts/import_external_catalog_sources.py scripts/upstream_watch.py scripts/waza_skill_quality.py
 
       - name: Run automation regression tests
         run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
@@ -43,8 +55,18 @@ jobs:
           python3 scripts/generate_catalog.py --validate-only
           python3 scripts/generate_agent_catalog.py --validate-only
 
+      - name: Run Waza skill quality report
+        run: python3 scripts/waza_skill_quality.py
+
       - name: Validate upstream watch config
         run: python3 scripts/upstream_watch.py --validate-config
+
+      - name: Upload Waza skill quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: waza-skill-quality
+          path: artifacts/waza-skill-quality/
 
       - name: Validate upstream watch JSON
         run: |

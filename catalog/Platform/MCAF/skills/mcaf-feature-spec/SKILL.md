@@ -1,6 +1,6 @@
 ---
 name: mcaf-feature-spec
-description: "Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. Use when the user asks for a feature spec, executable requirements, acceptance criteria, behaviour documentation, or a pre-implementation plan for non-trivial behaviour changes."
+description: "Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. USE FOR: add or change non-trivial behaviour; behaviour is under-specified and engineers are guessing; tests need a stable behavioural source of truth. DO NOT USE FOR: architecture decisions that need alternatives and trade-offs; tiny typo or cosmetic-only changes with no behavioural impact. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository write access; produces Markdown docs with Mermaid diagrams and executable verification steps."
 ---
 
@@ -38,7 +38,7 @@ compatibility: "Requires repository write access; produces Markdown docs with Me
 ## Workflow
 
 1. Define scope first: in scope, out of scope, boundaries touched.
-2. If the feature doc is missing, scaffold from `references/feature-template.md`.
+2. If the feature doc is missing, scaffold from [references/feature-template.md](references/feature-template.md).
 3. Keep the spec executable:
    - numbered rules
    - main flow
@@ -93,7 +93,7 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- use `references/feature-template.md` only for scaffolding
+- use [references/feature-template.md](references/feature-template.md) only for scaffolding
 
 ## Example Requests
 

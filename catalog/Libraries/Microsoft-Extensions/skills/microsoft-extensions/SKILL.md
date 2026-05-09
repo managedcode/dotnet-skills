@@ -1,6 +1,6 @@
 ---
 name: microsoft-extensions
-description: "Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns."
+description: "Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns. USE FOR: wiring dependency injection, configuration, logging, or options; introducing Generic Host patterns into non-web .NET apps; cleaning up service registration, typed HTTP. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Relevant to console apps, workers, ASP.NET Core apps, functions, and reusable libraries."
 ---
 

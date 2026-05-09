@@ -1,6 +1,6 @@
 ---
 name: wpf
-description: "Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions."
+description: "Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions. USE FOR: working on WPF UI, MVVM, binding, commands, or desktop modernization; migrating WPF from .NET Framework to .NET; integrating newer Windows capabilities into a WPF app. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a WPF project on .NET or .NET Framework."
 ---
 

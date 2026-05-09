@@ -1,6 +1,6 @@
 ---
 name: signalr
-description: "Implement or review SignalR hubs, streaming, reconnection, transport, and real-time delivery patterns in ASP.NET Core applications."
+description: "Implement or review SignalR hubs, streaming, reconnection, transport, and real-time delivery patterns in ASP.NET Core applications. USE FOR: building chat, notification, collaboration, or live-update features; debugging hub lifetime, connection state, or transport issues; deciding whether SignalR or another. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires ASP.NET Core SignalR server or client code."
 ---
 

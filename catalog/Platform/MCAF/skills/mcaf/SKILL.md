@@ -1,6 +1,6 @@
 ---
 name: mcaf
-description: "Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. Use when bootstrapping or updating MCAF alongside the dotnet-skills catalog."
+description: "Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. USE FOR: bootstrapping MCAF in a new or existing repository that also contains .NET work; updating root or project-local AGENTS.md files to follow a durable repo workflow;. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work."
 ---
 
@@ -21,7 +21,7 @@ compatibility: "Best for repositories that want MCAF governance and also use dot
    - public MCAF skills: `https://mcaf.managed-code.com/skills`
 2. Place root `AGENTS.md` at the repository or solution root.
 3. Add project-local `AGENTS.md` only when the solution has multiple projects with genuinely different local rules.
-4. Install MCAF governance skills (`mcaf-*`) for process areas and implementation-focused catalog skills for framework work. Check `references/skill-map.md` for overlap before adding duplicate surfaces.
+4. Install MCAF governance skills (`mcaf-*`) for process areas and implementation-focused catalog skills for framework work. Check [references/skill-map.md](references/skill-map.md) for overlap before adding duplicate surfaces.
 5. Route to the narrowest MCAF skill once the governance concern is clear:
 
    | Concern | Skill |
@@ -83,5 +83,5 @@ flowchart LR
 
 ## References
 
-- references/adoption.md - canonical MCAF entry points, bootstrap rules, and the local-mirror boundary between governance and implementation skills
-- references/skill-map.md - MCAF catalog map with overlap-vs-new split for precise routing
+- [references/adoption.md](references/adoption.md) - canonical MCAF entry points, bootstrap rules, and the local-mirror boundary between governance and implementation skills
+- [references/skill-map.md](references/skill-map.md) - MCAF catalog map with overlap-vs-new split for precise routing

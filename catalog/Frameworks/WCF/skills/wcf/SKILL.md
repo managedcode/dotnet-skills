@@ -1,6 +1,6 @@
 ---
 name: wcf
-description: "Work on WCF services, clients, bindings, contracts, and migration decisions for SOAP and multi-transport service-oriented systems on .NET Framework or compatible stacks."
+description: "Work on WCF services, clients, bindings, contracts, and migration decisions for SOAP and multi-transport service-oriented systems on .NET Framework or compatible stacks. USE FOR: working on WCF services, bindings, or clients; deciding whether a service should stay WCF or move to modern HTTP APIs; reviewing transport, security, or interoperability. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires WCF or a concrete migration off WCF."
 ---
 

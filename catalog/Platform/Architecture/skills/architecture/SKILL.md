@@ -1,6 +1,6 @@
 ---
 name: architecture
-description: "Design or review .NET solution architecture across modular monoliths, clean architecture, vertical slices, microservices, DDD, CQRS, and cloud-native boundaries without over-engineering."
+description: "Design or review .NET solution architecture across modular monoliths, clean architecture, vertical slices, microservices, DDD, CQRS, and cloud-native boundaries without over-engineering. USE FOR: .NET architecture choices; layer and domain boundary review; service decomposition; clean architecture, vertical slice, DDD, CQRS, and modular monolith decisions. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Best when project structure, service boundaries, or long-term maintainability are in scope."
 ---
 

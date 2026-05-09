@@ -1,6 +1,6 @@
 ---
 name: complexity
-description: "Use free built-in .NET maintainability analyzers and code metrics configuration to find overly complex methods and coupled code. Use when a repo needs cyclomatic complexity checks, maintainability thresholds, or complexity-driven refactoring gates."
+description: "Use free built-in .NET maintainability analyzers and code metrics configuration to find overly complex methods and coupled code. USE FOR: the team wants to find overly complex methods; cyclomatic complexity thresholds are needed in CI; maintainability metrics or coupling thresholds need to be configured. DO NOT USE FOR: formatting-only work; generic analyzer setup with no complexity policy change. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -102,9 +102,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/complexity.md`
-- `references/metrics.md`
-- `references/config.md`
+- [references/complexity.md](references/complexity.md)
+- [references/metrics.md](references/metrics.md)
+- [references/config.md](references/config.md)
 
 ## Example Requests
 

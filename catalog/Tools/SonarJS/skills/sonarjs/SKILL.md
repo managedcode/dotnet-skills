@@ -1,6 +1,6 @@
 ---
 name: sonarjs
-description: "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. Use when the repo wants `eslint-plugin-sonarjs` locally or already runs SonarQube or SonarCloud in CI."
+description: "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. USE FOR: SonarQube, SonarCloud, or eslint-plugin-sonarjs setups; frontend code smells; cognitive complexity and deeper bug-risk rules. DO NOT USE FOR: lightweight base lint setups with no extra smell or complexity rules; teams that reject Sonar tooling. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository with JS or TS frontend assets; local developer loops normally use `eslint-plugin-sonarjs`, while full SonarQube or SonarCloud analysis should follow the repo's existing scanner pipeline and documented licensing posture."
 ---
 

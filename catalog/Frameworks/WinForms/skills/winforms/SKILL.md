@@ -1,6 +1,6 @@
 ---
 name: winforms
-description: "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. Use when working on WinForms projects or migrating from .NET Framework."
+description: "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. USE FOR: working on Windows Forms UI, event-driven workflows, or classic LOB applications; migrating WinForms from .NET Framework to modern .NET; cleaning up oversized form code. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a Windows Forms project on .NET or .NET Framework."
 ---
 
@@ -51,7 +51,7 @@ compatibility: "Requires a Windows Forms project on .NET or .NET Framework."
    using var sp = services.BuildServiceProvider();
    Application.Run(sp.GetRequiredService<MainForm>());
    ```
-4. **Use data binding** via `BindingSource` and `INotifyPropertyChanged` instead of manual control population. See references/patterns.md for complete binding patterns.
+4. **Use data binding** via `BindingSource` and `INotifyPropertyChanged` instead of manual control population. See [references/patterns.md](references/patterns.md) for complete binding patterns.
 5. **Use async/await** for I/O operations — disable controls during loading, use `Progress<T>` for progress reporting. Never block the UI thread.
 6. **Validate with `ErrorProvider`** and the `Validating` event. Call `ValidateChildren()` before save operations.
 7. **Modernize incrementally** — prefer better structure over big-bang rewrites. Use .NET 8+ features (button commands, stock icons) when available.
@@ -91,5 +91,5 @@ flowchart LR
 
 ## References
 
-- references/patterns.md - WinForms architectural patterns (MVP, MVVM, Passive View), data binding, validation, form communication, threading, DI setup, and .NET 8+ features
-- references/migration.md - step-by-step migration from .NET Framework to modern .NET, common issues, deployment options, and gradual migration strategies
+- [references/patterns.md](references/patterns.md) - WinForms architectural patterns (MVP, MVVM, Passive View), data binding, validation, form communication, threading, DI setup, and .NET 8+ features
+- [references/migration.md](references/migration.md) - step-by-step migration from .NET Framework to modern .NET, common issues, deployment options, and gradual migration strategies

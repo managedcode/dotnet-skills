@@ -1,6 +1,6 @@
 ---
 name: managedcode-orleans-signalr
-description: "Use ManagedCode.Orleans.SignalR when a distributed .NET application needs Orleans-based coordination of SignalR real-time messaging, hub delivery, and grain-driven push flows."
+description: "Use ManagedCode.Orleans.SignalR when a distributed .NET application needs Orleans-based coordination of SignalR real-time messaging, hub delivery, and grain-driven push flows. USE FOR: integrating ManagedCode.Orleans.SignalR into a real-time distributed application; coordinating SignalR delivery from Orleans grains; reviewing grain-to-hub push flows. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET application that combines Orleans and SignalR through ManagedCode.Orleans.SignalR."
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: stylelint
-description: "Use Stylelint in .NET repositories that ship CSS, SCSS, or other stylesheet assets alongside web frontends. Use when a repo needs a dedicated CLI lint gate for selectors, properties, duplicate styles, naming conventions, or design-system rule enforcement."
+description: "Use Stylelint in .NET repositories that ship CSS, SCSS, or other stylesheet assets alongside web frontends. USE FOR: stylelint.config.*, .stylelintrc*, CSS or SCSS assets; CSS linting; duplicate style cleanup and naming-convention checks. DO NOT USE FOR: JavaScript or TypeScript lint ownership; runtime accessibility, performance, SEO, or header checks. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository with stylesheet assets such as `wwwroot/`, `ClientApp/`, `src/`, or other frontend folders managed with Node tooling."
 ---
 
@@ -75,7 +75,7 @@ compatibility: "Requires a .NET repository with stylesheet assets such as `wwwro
 ## Official Sources
 
 - [Stylelint 17.8.0 release notes](https://github.com/stylelint/stylelint/releases/tag/17.8.0)
-- `references/release-notes.md`
+- [references/release-notes.md](references/release-notes.md)
 
 ## Deliver
 

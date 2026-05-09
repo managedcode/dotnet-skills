@@ -1,6 +1,6 @@
 ---
 name: legacy-aspnet
-description: "Maintain classic ASP.NET applications on .NET Framework, including Web Forms, older MVC, and legacy hosting patterns, while planning realistic modernization boundaries."
+description: "Maintain classic ASP.NET applications on .NET Framework, including Web Forms, older MVC, and legacy hosting patterns, while planning realistic modernization boundaries. USE FOR: working in Web Forms, legacy MVC, or classic ASP.NET applications; reviewing old IIS-centric configuration and lifecycle behavior; planning migration toward ASP.NET Core. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires classic ASP.NET on .NET Framework."
 ---
 

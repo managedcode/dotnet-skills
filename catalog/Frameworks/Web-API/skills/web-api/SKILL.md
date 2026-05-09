@@ -1,6 +1,6 @@
 ---
 name: web-api
-description: "Build or maintain controller-based ASP.NET Core APIs when the project needs controller conventions, advanced model binding, validation extensions, OData, JsonPatch, or existing API patterns."
+description: "Build or maintain controller-based ASP.NET Core APIs when the project needs controller conventions, advanced model binding, validation extensions, OData, JsonPatch, or existing API patterns. USE FOR: working on controller-based APIs in ASP.NET Core; needing controller-specific extensibility or conventions; migrating or reviewing existing API controllers and filters. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires an ASP.NET Core API project that uses or should use controllers."
 ---
 

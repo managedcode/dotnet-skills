@@ -1,6 +1,6 @@
 ---
 name: managedcode-communication
-description: "Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow."
+description: "Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow. USE FOR: integrating ManagedCode.Communication into services or APIs; replacing exception-driven result handling with explicit results; reviewing service boundaries that return. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET application, service layer, or API boundary that integrates ManagedCode.Communication."
 ---
 

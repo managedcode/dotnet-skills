@@ -1,6 +1,6 @@
 ---
 name: managedcode-mimetypes
-description: "Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses."
+description: "Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses. USE FOR: integrating ManagedCode.MimeTypes into upload or download flows; mapping file extensions to content types in APIs or background processing; reviewing content-type. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET application that integrates ManagedCode.MimeTypes or evaluates MIME type mapping behavior."
 ---
 

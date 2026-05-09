@@ -1,6 +1,6 @@
 ---
 name: aspnet-core
-description: "Build, debug, modernize, or review ASP.NET Core applications with correct hosting, middleware, security, configuration, logging, and deployment patterns on current .NET."
+description: "Build, debug, modernize, or review ASP.NET Core applications with correct hosting, middleware, security, configuration, logging, and deployment patterns on current .NET. USE FOR: working on ASP.NET Core apps, services, or middleware; changing auth, routing, configuration, hosting, or deployment behavior; deciding between ASP.NET Core sub-stacks. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires an ASP.NET Core project or solution."
 ---
 

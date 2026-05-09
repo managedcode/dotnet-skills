@@ -1,6 +1,6 @@
 ---
 name: worker-services
-description: "Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons."
+description: "Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons. USE FOR: background services; scheduled workers; hosted services; worker extraction; graceful shutdown, health checks, and service hosting review. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a worker, hosted service, or background-processing scenario."
 ---
 

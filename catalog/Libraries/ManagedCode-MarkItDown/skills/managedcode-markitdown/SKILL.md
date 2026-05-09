@@ -1,6 +1,6 @@
 ---
 name: managedcode-markitdown
-description: "Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows."
+description: "Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows. USE FOR: ManagedCode.MarkItDown integration; document ingestion flows; Office or rich-text conversion to Markdown; indexing and summarization pipelines. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET application that integrates ManagedCode.MarkItDown or evaluates document conversion into Markdown."
 ---
 

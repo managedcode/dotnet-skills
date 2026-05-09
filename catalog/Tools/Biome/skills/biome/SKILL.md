@@ -1,6 +1,6 @@
 ---
 name: biome
-description: "Use Biome in .NET repositories that ship Node-based frontend assets and want a fast combined formatter-linter-import organizer for JavaScript, TypeScript, CSS, JSON, GraphQL, or HTML. Use when a repo prefers a modern all-in-one CLI over a larger ESLint plus Prettier style stack."
+description: "Use Biome in .NET repositories that ship Node-based frontend assets and want a fast combined formatter-linter-import organizer for JavaScript, TypeScript, CSS, JSON, GraphQL, or HTML. USE FOR: biome.json or @biomejs/biome setup; fast frontend formatting and linting; replacing overlapping frontend style tools deliberately. DO NOT USE FOR: ESLint-only plugin coverage; runtime site audits such as headers, accessibility, or browser behavior. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository with frontend assets managed through Node or a standalone Biome binary workflow; keep ownership explicit versus ESLint, Stylelint, and webhint."
 ---
 

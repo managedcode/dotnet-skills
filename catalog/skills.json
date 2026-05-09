@@ -9,10 +9,10 @@
       "package": "ASP.NET-Core",
       "stack": "Web",
       "lane": "Frameworks",
-      "description": "Build, debug, modernize, or review ASP.NET Core applications with correct hosting, middleware, security, configuration, logging, and deployment patterns on current .NET.",
+      "description": "Build, debug, modernize, or review ASP.NET Core applications with correct hosting, middleware, security, configuration, logging, and deployment patterns on current .NET. USE FOR: working on ASP.NET Core apps, services, or middleware; changing auth, routing, configuration, hosting, or deployment behavior; deciding between ASP.NET Core sub-stacks. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires an ASP.NET Core project or solution.",
       "path": "catalog/Frameworks/ASP.NET-Core/skills/aspnet-core/",
-      "tokenCount": 1616,
+      "tokenCount": 1701,
       "package_prefix": "Microsoft.AspNetCore"
     },
     {
@@ -24,10 +24,10 @@
       "package": "Aspire",
       "stack": "Aspire",
       "lane": "Frameworks",
-      "description": "Build, upgrade, and operate .NET Aspire 13.2.x application hosts with current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, and Azure deployment patterns for distributed apps.",
+      "description": "Build, upgrade, and operate .NET Aspire 13.2.x application hosts with current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, and Azure deployment patterns for distributed apps. USE FOR: Aspire.AppHost.Sdk, Aspire.Hosting.*, DistributedApplication.CreateBuilder, WithReference, WaitFor, AddProject, AddRedis, AddPostgres, aspire run, aspire init, aspire. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Best for current Aspire 13.2.x tooling on .NET 10; use version-aware upgrade guidance for older 8.x or 9.x Aspire solutions.",
       "path": "catalog/Frameworks/Aspire/skills/aspire/",
-      "tokenCount": 2309,
+      "tokenCount": 2398,
       "links": {
         "repository": "https://github.com/microsoft/aspire",
         "docs": "https://learn.microsoft.com/en-us/dotnet/aspire/",
@@ -44,10 +44,10 @@
       "package": "Azure-Functions",
       "stack": "Azure Functions",
       "lane": "Frameworks",
-      "description": "Build, review, or migrate Azure Functions in .NET with correct execution model, isolated worker setup, bindings, DI, and Durable Functions patterns.",
+      "description": "Build, review, or migrate Azure Functions in .NET with correct execution model, isolated worker setup, bindings, DI, and Durable Functions patterns. USE FOR: working on Azure Functions in .NET; migrating from the in-process model to the isolated worker model; adding Durable Functions, bindings, or host configuration. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires an Azure Functions project or a migration plan for one.",
       "path": "catalog/Frameworks/Azure-Functions/skills/azure-functions/",
-      "tokenCount": 2129,
+      "tokenCount": 2210,
       "package_prefix": "Microsoft.Azure.Functions"
     },
     {
@@ -59,10 +59,10 @@
       "package": "Blazor",
       "stack": "Web",
       "lane": "Frameworks",
-      "description": "Build and review Blazor applications across server, WebAssembly, web app, and hybrid scenarios with correct component design, state flow, rendering, and hosting choices.",
+      "description": "Build and review Blazor applications across server, WebAssembly, web app, and hybrid scenarios with correct component design, state flow, rendering, and hosting choices. USE FOR: building interactive web UIs with C# instead of JavaScript; choosing between Server, WebAssembly, or Auto render modes; designing component hierarchies and state. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires Blazor project (.NET 6+, preferably .NET 8+ for unified model).",
       "path": "catalog/Frameworks/Blazor/skills/blazor/",
-      "tokenCount": 1690,
+      "tokenCount": 1774,
       "links": {
         "repository": "https://github.com/dotnet/aspnetcore",
         "docs": "https://learn.microsoft.com/en-us/aspnet/core/blazor/",
@@ -79,10 +79,10 @@
       "package": "Entity-Framework-6",
       "stack": "Legacy",
       "lane": "Legacy frameworks",
-      "description": "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. Use when working in an EF6 codebase or planning a data layer migration.",
+      "description": "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. USE FOR: EF6 codebases; runtime versus ORM migration decisions; EDMX, code-first, ObjectContext, and legacy data-access review. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires EF6 or a transition plan from EF6 to EF Core or modern .NET.",
       "path": "catalog/Frameworks/Entity-Framework-6/skills/entity-framework6/",
-      "tokenCount": 841,
+      "tokenCount": 930,
       "package_prefix": "EntityFramework"
     },
     {
@@ -94,10 +94,10 @@
       "package": "Entity-Framework-Core",
       "stack": "Data",
       "lane": "Frameworks",
-      "description": "Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications.",
+      "description": "Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications. USE FOR: DbContext, migrations, model configuration, EF queries, tracking, loading, performance, transactions, and EF6 migration decisions. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires EF Core 7+ (preferably 8/9 for latest features).",
       "path": "catalog/Frameworks/Entity-Framework-Core/skills/entity-framework-core/",
-      "tokenCount": 1926,
+      "tokenCount": 2002,
       "links": {
         "repository": "https://github.com/dotnet/efcore",
         "docs": "https://learn.microsoft.com/en-us/ef/core/",
@@ -114,10 +114,10 @@
       "package": "MAUI",
       "stack": "Mobile & Device",
       "lane": "Frameworks",
-      "description": "Build, review, or migrate .NET MAUI applications across Android, iOS, macOS, and Windows with correct cross-platform UI, platform integration, and native packaging assumptions.",
+      "description": "Build, review, or migrate .NET MAUI applications across Android, iOS, macOS, and Windows with correct cross-platform UI, platform integration, and native packaging assumptions. USE FOR: working on cross-platform mobile or desktop UI in .NET MAUI; integrating device capabilities, navigation, or platform-specific code; migrating Xamarin.Forms or aligning. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires .NET MAUI workload (.NET 8+).",
       "path": "catalog/Frameworks/MAUI/skills/maui/",
-      "tokenCount": 2045,
+      "tokenCount": 2127,
       "package_prefix": "Microsoft.Maui"
     },
     {
@@ -129,10 +129,10 @@
       "package": "ML.NET",
       "stack": "AI & Agents",
       "lane": "Frameworks",
-      "description": "Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations.",
+      "description": "Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations. USE FOR: ML.NET integration; local model training or retraining; inference pipelines, model loading, evaluation, and deployment review. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires ML.NET, Model Builder, or ML.NET CLI scenarios.",
       "path": "catalog/Frameworks/ML.NET/skills/mlnet/",
-      "tokenCount": 356,
+      "tokenCount": 430,
       "package_prefix": "Microsoft.ML"
     },
     {
@@ -144,10 +144,10 @@
       "package": "Microsoft-Agent-Framework",
       "stack": "AI & Agents",
       "lane": "Frameworks",
-      "description": "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails.",
+      "description": "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails. USE FOR: building or reviewing .NET code that uses Microsoft.Agents.*, Microsoft.Extensions.AI, AIAgent, AgentThread, AgentSession, or Agent Framework hosting packages; choosing. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires preview-era Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration.",
       "path": "catalog/Frameworks/Microsoft-Agent-Framework/skills/microsoft-agent-framework/",
-      "tokenCount": 2535,
+      "tokenCount": 2622,
       "package_prefix": "Microsoft.Agents"
     },
     {
@@ -159,10 +159,10 @@
       "package": "Minimal-APIs",
       "stack": "Web",
       "lane": "Frameworks",
-      "description": "Design and implement Minimal APIs in ASP.NET Core using handler-first endpoints, route groups, filters, and lightweight composition suited to modern .NET services.",
+      "description": "Design and implement Minimal APIs in ASP.NET Core using handler-first endpoints, route groups, filters, and lightweight composition suited to modern .NET services. USE FOR: building new HTTP APIs in ASP.NET Core; creating lightweight microservices; choosing between Minimal APIs and controllers. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires ASP.NET Core 6+, preferably .NET 8+ for full features.",
       "path": "catalog/Frameworks/Minimal-APIs/skills/minimal-apis/",
-      "tokenCount": 1845
+      "tokenCount": 1917
     },
     {
       "name": "configuring-opentelemetry-dotnet",
@@ -363,10 +363,10 @@
       "package": "Orleans",
       "stack": "Distributed",
       "lane": "Frameworks",
-      "description": "Build or review distributed .NET applications with Orleans grains, silos, persistence, streaming, reminders, placement, transactions, serialization, event sourcing, testing, and cloud-native hosting.",
-      "compatibility": "Prefer current Orleans releases (10.x / 9.x) with `UseOrleans`, `IPersistentState<TState>`, `RegisterGrainTimer`, `[GenerateSerializer]`, modern providers, and production-grade clustering.",
+      "description": "Build or review distributed .NET applications with Orleans grains, silos, persistence, streaming, reminders, placement, transactions, serialization, event sourcing, testing, and cloud-native hosting. USE FOR: Orleans grains, silos, clients, persistence, streams, reminders, placement, serialization, testing, and Aspire hosting. DO NOT USE FOR: unrelated stacks; generic distributed-system advice with no Orleans code or design decision. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
+      "compatibility": "Prefer current Orleans releases (10.x / 9.x) with `UseOrleans`, typed persistent state, `RegisterGrainTimer`, `[GenerateSerializer]`, modern providers, and production-grade clustering.",
       "path": "catalog/Frameworks/Orleans/skills/orleans/",
-      "tokenCount": 2998,
+      "tokenCount": 3174,
       "links": {
         "repository": "https://github.com/dotnet/orleans",
         "docs": "https://learn.microsoft.com/en-us/dotnet/orleans/",
@@ -383,10 +383,10 @@
       "package": "Semantic-Kernel",
       "stack": "AI & Agents",
       "lane": "Frameworks",
-      "description": "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable.",
+      "description": "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable. USE FOR: adding AI-driven prompts, plugins, or orchestration to a .NET app; reviewing kernel construction, service registration, or plugin usage; building function-calling. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires Semantic Kernel 1.x packages (.NET 8+).",
       "path": "catalog/Frameworks/Semantic-Kernel/skills/semantic-kernel/",
-      "tokenCount": 1935,
+      "tokenCount": 2018,
       "links": {
         "repository": "https://github.com/microsoft/semantic-kernel",
         "docs": "https://learn.microsoft.com/en-us/semantic-kernel/",
@@ -403,10 +403,10 @@
       "package": "SignalR",
       "stack": "Web",
       "lane": "Frameworks",
-      "description": "Implement or review SignalR hubs, streaming, reconnection, transport, and real-time delivery patterns in ASP.NET Core applications.",
+      "description": "Implement or review SignalR hubs, streaming, reconnection, transport, and real-time delivery patterns in ASP.NET Core applications. USE FOR: building chat, notification, collaboration, or live-update features; debugging hub lifetime, connection state, or transport issues; deciding whether SignalR or another. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires ASP.NET Core SignalR server or client code.",
       "path": "catalog/Frameworks/SignalR/skills/signalr/",
-      "tokenCount": 2519,
+      "tokenCount": 2600,
       "package_prefix": "Microsoft.AspNetCore.SignalR"
     },
     {
@@ -418,10 +418,10 @@
       "package": "Uno-Platform",
       "stack": "Desktop & UI",
       "lane": "Frameworks",
-      "description": "Build cross-platform .NET applications with Uno Platform targeting WebAssembly, iOS, Android, macOS, Linux, and Windows from a single XAML/C# codebase.",
+      "description": "Build cross-platform .NET applications with Uno Platform targeting WebAssembly, iOS, Android, macOS, Linux, and Windows from a single XAML/C# codebase. USE FOR: building cross-platform apps from a single C# and XAML codebase; targeting WebAssembly, iOS, Android, macOS, Linux, and Windows simultaneously; migrating WPF or UWP. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires Uno Platform SDK and workloads for target platforms.",
       "path": "catalog/Frameworks/Uno-Platform/skills/uno-platform/",
-      "tokenCount": 1726,
+      "tokenCount": 1820,
       "package_prefix": "Uno.WinUI"
     },
     {
@@ -433,10 +433,10 @@
       "package": "WCF",
       "stack": "Legacy",
       "lane": "Legacy frameworks",
-      "description": "Work on WCF services, clients, bindings, contracts, and migration decisions for SOAP and multi-transport service-oriented systems on .NET Framework or compatible stacks.",
+      "description": "Work on WCF services, clients, bindings, contracts, and migration decisions for SOAP and multi-transport service-oriented systems on .NET Framework or compatible stacks. USE FOR: working on WCF services, bindings, or clients; deciding whether a service should stay WCF or move to modern HTTP APIs; reviewing transport, security, or interoperability. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires WCF or a concrete migration off WCF.",
       "path": "catalog/Frameworks/WCF/skills/wcf/",
-      "tokenCount": 394,
+      "tokenCount": 479,
       "package_prefix": "System.ServiceModel"
     },
     {
@@ -448,10 +448,10 @@
       "package": "WPF",
       "stack": "Desktop & UI",
       "lane": "Frameworks",
-      "description": "Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions.",
+      "description": "Build and modernize WPF applications on .NET with correct XAML, data binding, commands, threading, styling, and Windows desktop migration decisions. USE FOR: working on WPF UI, MVVM, binding, commands, or desktop modernization; migrating WPF from .NET Framework to .NET; integrating newer Windows capabilities into a WPF app. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a WPF project on .NET or .NET Framework.",
       "path": "catalog/Frameworks/WPF/skills/wpf/",
-      "tokenCount": 2768,
+      "tokenCount": 2857,
       "package_prefix": "Microsoft.WindowsDesktop.App.WPF"
     },
     {
@@ -463,10 +463,10 @@
       "package": "Web-API",
       "stack": "Web",
       "lane": "Frameworks",
-      "description": "Build or maintain controller-based ASP.NET Core APIs when the project needs controller conventions, advanced model binding, validation extensions, OData, JsonPatch, or existing API patterns.",
+      "description": "Build or maintain controller-based ASP.NET Core APIs when the project needs controller conventions, advanced model binding, validation extensions, OData, JsonPatch, or existing API patterns. USE FOR: working on controller-based APIs in ASP.NET Core; needing controller-specific extensibility or conventions; migrating or reviewing existing API controllers and filters. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires an ASP.NET Core API project that uses or should use controllers.",
       "path": "catalog/Frameworks/Web-API/skills/web-api/",
-      "tokenCount": 1520
+      "tokenCount": 1598
     },
     {
       "name": "winforms",
@@ -477,10 +477,10 @@
       "package": "WinForms",
       "stack": "Desktop & UI",
       "lane": "Frameworks",
-      "description": "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. Use when working on WinForms projects or migrating from .NET Framework.",
+      "description": "Build, maintain, or modernize Windows Forms applications with practical guidance on designer-driven UI, event handling, data binding, MVP separation, and migration to modern .NET. USE FOR: working on Windows Forms UI, event-driven workflows, or classic LOB applications; migrating WinForms from .NET Framework to modern .NET; cleaning up oversized form code. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a Windows Forms project on .NET or .NET Framework.",
       "path": "catalog/Frameworks/WinForms/skills/winforms/",
-      "tokenCount": 892,
+      "tokenCount": 986,
       "package_prefix": "Microsoft.WindowsDesktop.App.WindowsForms"
     },
     {
@@ -492,10 +492,10 @@
       "package": "WinUI",
       "stack": "Desktop & UI",
       "lane": "Frameworks",
-      "description": "Build or review WinUI 3 applications with the Windows App SDK, including MVVM patterns, packaging decisions, navigation, theming, windowing, and interop boundaries with other .NET stacks. Use when building modern Windows-native desktop UI.",
+      "description": "Build or review WinUI 3 applications with the Windows App SDK, including MVVM patterns, packaging decisions, navigation, theming, windowing, and interop boundaries with other .NET stacks. USE FOR: building native modern Windows desktop UI on WinUI 3; integrating Windows App SDK features into a .NET app; deciding between WinUI, WPF, WinForms, and MAUI for Windows. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a WinUI 3, Windows App SDK, or MAUI-on-Windows integration scenario.",
       "path": "catalog/Frameworks/WinUI/skills/winui/",
-      "tokenCount": 935,
+      "tokenCount": 1042,
       "package_prefix": "Microsoft.WindowsAppSDK"
     },
     {
@@ -507,10 +507,10 @@
       "package": "Worker-Services",
       "stack": "Background Workers",
       "lane": "Frameworks",
-      "description": "Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons.",
+      "description": "Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons. USE FOR: background services; scheduled workers; hosted services; worker extraction; graceful shutdown, health checks, and service hosting review. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a worker, hosted service, or background-processing scenario.",
       "path": "catalog/Frameworks/Worker-Services/skills/worker-services/",
-      "tokenCount": 2703,
+      "tokenCount": 2777,
       "packages": [
         "Microsoft.Extensions.Hosting"
       ]
@@ -524,10 +524,10 @@
       "package": "Workflow-Foundation",
       "stack": "Legacy",
       "lane": "Legacy frameworks",
-      "description": "Maintain or assess Workflow Foundation-based solutions on .NET Framework, especially where long-lived process logic or legacy designer artifacts still matter.",
+      "description": "Maintain or assess Workflow Foundation-based solutions on .NET Framework, especially where long-lived process logic or legacy designer artifacts still matter. USE FOR: WF activities and workflows; designer-backed process logic; long-lived workflow state and persistence; keep, isolate, or replace decisions. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires WF or a migration plan away from it.",
       "path": "catalog/Frameworks/Workflow-Foundation/skills/workflow-foundation/",
-      "tokenCount": 348
+      "tokenCount": 424
     },
     {
       "name": "grpc",
@@ -538,10 +538,10 @@
       "package": "gRPC",
       "stack": "Web",
       "lane": "Frameworks",
-      "description": "Build or review gRPC services and clients in .NET with correct contract-first design, streaming behavior, transport assumptions, and backend service integration.",
+      "description": "Build or review gRPC services and clients in .NET. USE FOR: ASP.NET Core gRPC, protobuf contracts, unary or streaming RPC, gRPC client factory, interceptors, deadlines, cancellation, channel reuse, backend service integration. DO NOT USE FOR: broad browser-facing APIs without gRPC-Web tradeoff review, SignalR realtime hubs, plain REST APIs. INVOKES: dotnet build/test and focused service or client smoke checks when code changes.",
       "compatibility": "Requires ASP.NET Core gRPC or gRPC client projects.",
       "path": "catalog/Frameworks/gRPC/skills/grpc/",
-      "tokenCount": 3186,
+      "tokenCount": 1050,
       "package_prefix": "Grpc"
     },
     {
@@ -553,10 +553,10 @@
       "package": "ArchUnitNET",
       "stack": "Architecture",
       "lane": "Libraries",
-      "description": "Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide.",
+      "description": "Use the open-source free `ArchUnitNET` library for architecture rules in .NET tests. Use when a repo needs richer architecture assertions than lightweight fluent rule libraries usually provide. USE FOR: the repo uses or wants ArchUnitNET; architecture testing needs richer modeling than simple dependency checks. DO NOT USE FOR: the lightest possible architecture rule checks. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET test project; supports dedicated integrations for xUnit, xUnit v3, MSTest, TUnit, and others where available.",
       "path": "catalog/Libraries/ArchUnitNET/skills/archunitnet/",
-      "tokenCount": 900,
+      "tokenCount": 982,
       "packages": [
         "ArchUnitNET",
         "ArchUnitNET.xUnit",
@@ -573,10 +573,10 @@
       "package": "LibVLC",
       "stack": "Desktop & UI",
       "lane": "Libraries",
-      "description": "Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding.",
+      "description": "Expert knowledge of the libvlc C API (3.x and 4.x), the multimedia framework behind VLC media player. Use when helping with LibVLC or LibVLCSharp for media playback, streaming, or transcoding. USE FOR: LibVLC Skill implementation, review, migration, debugging, or documentation work. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": ".NET 6+, .NET Standard 2.0+, .NET Framework 4.6.1+",
       "path": "catalog/Libraries/LibVLC/skills/libvlc/",
-      "tokenCount": 581,
+      "tokenCount": 824,
       "packages": [
         "LibVLCSharp",
         "VideoLAN.LibVLC.Windows"
@@ -591,10 +591,10 @@
       "package": "MCP",
       "stack": "AI & Agents",
       "lane": "Libraries",
-      "description": "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation.",
+      "description": "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. USE FOR: .NET MCP servers or clients; stdio versus HTTP transport choices; tools, resources, prompts, completions, and capability negotiation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.1.x SDK.",
       "path": "catalog/Libraries/MCP/skills/mcp/",
-      "tokenCount": 2400,
+      "tokenCount": 2478,
       "packages": [
         "ModelContextProtocol",
         "ModelContextProtocol.AspNetCore"
@@ -609,10 +609,10 @@
       "package": "MVVM-Toolkit",
       "stack": "Desktop & UI",
       "lane": "Libraries",
-      "description": "Implement the Model-View-ViewModel pattern in .NET applications with proper separation of concerns, data binding, commands, and testable ViewModels using MVVM Toolkit.",
+      "description": "Implement the Model-View-ViewModel pattern in .NET applications with proper separation of concerns, data binding, commands, and testable ViewModels using MVVM Toolkit. USE FOR: implementing UI separation with Model-View-ViewModel; using MVVM Toolkit (CommunityToolkit.Mvvm) for ViewModels; designing testable UI architecture. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Applies to WPF, MAUI, WinUI, Uno Platform, Avalonia, and Blazor projects.",
       "path": "catalog/Libraries/MVVM-Toolkit/skills/mvvm/",
-      "tokenCount": 2309
+      "tokenCount": 2392
     },
     {
       "name": "managedcode-communication",
@@ -623,10 +623,10 @@
       "package": "ManagedCode-Communication",
       "stack": ".NET Foundations",
       "lane": "Libraries",
-      "description": "Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow.",
+      "description": "Use ManagedCode.Communication when a .NET application needs explicit result objects, structured errors, and predictable service or API boundaries instead of exception-driven control flow. USE FOR: integrating ManagedCode.Communication into services or APIs; replacing exception-driven result handling with explicit results; reviewing service boundaries that return. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET application, service layer, or API boundary that integrates ManagedCode.Communication.",
       "path": "catalog/Libraries/ManagedCode-Communication/skills/managedcode-communication/",
-      "tokenCount": 355,
+      "tokenCount": 432,
       "packages": [
         "ManagedCode.Communication"
       ]
@@ -640,10 +640,10 @@
       "package": "ManagedCode-MarkItDown",
       "stack": "Data",
       "lane": "Libraries",
-      "description": "Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows.",
+      "description": "Use ManagedCode.MarkItDown when a .NET application needs deterministic document-to-Markdown conversion for ingestion, indexing, summarization, or content-processing workflows. USE FOR: ManagedCode.MarkItDown integration; document ingestion flows; Office or rich-text conversion to Markdown; indexing and summarization pipelines. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.MarkItDown or evaluates document conversion into Markdown.",
       "path": "catalog/Libraries/ManagedCode-MarkItDown/skills/managedcode-markitdown/",
-      "tokenCount": 354,
+      "tokenCount": 430,
       "packages": [
         "ManagedCode.MarkItDown"
       ]
@@ -657,10 +657,10 @@
       "package": "ManagedCode-MimeTypes",
       "stack": ".NET Foundations",
       "lane": "Libraries",
-      "description": "Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses.",
+      "description": "Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses. USE FOR: integrating ManagedCode.MimeTypes into upload or download flows; mapping file extensions to content types in APIs or background processing; reviewing content-type. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.MimeTypes or evaluates MIME type mapping behavior.",
       "path": "catalog/Libraries/ManagedCode-MimeTypes/skills/managedcode-mimetypes/",
-      "tokenCount": 351,
+      "tokenCount": 430,
       "packages": [
         "ManagedCode.MimeTypes"
       ]
@@ -674,10 +674,10 @@
       "package": "ManagedCode-Orleans-Graph",
       "stack": "Distributed",
       "lane": "Libraries",
-      "description": "Integrate ManagedCode.Orleans.Graph into an Orleans-based .NET application for graph-oriented relationships, edge management, and traversal logic on top of Orleans grains. Use when the application models graph structures in a distributed Orleans system.",
+      "description": "Integrate ManagedCode.Orleans.Graph into an Orleans-based .NET application for graph-oriented relationships, edge management, and traversal logic on top of Orleans grains. USE FOR: ManagedCode.Orleans.Graph integration; graph relationships, edges, and traversal behavior; reviewing Orleans graph modeling choices. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.Orleans.Graph or evaluates graph-style modeling with Orleans.",
       "path": "catalog/Libraries/ManagedCode-Orleans-Graph/skills/managedcode-orleans-graph/",
-      "tokenCount": 800,
+      "tokenCount": 860,
       "packages": [
         "ManagedCode.Orleans.Graph"
       ]
@@ -691,10 +691,10 @@
       "package": "ManagedCode-Orleans-SignalR",
       "stack": "Distributed",
       "lane": "Libraries",
-      "description": "Use ManagedCode.Orleans.SignalR when a distributed .NET application needs Orleans-based coordination of SignalR real-time messaging, hub delivery, and grain-driven push flows.",
+      "description": "Use ManagedCode.Orleans.SignalR when a distributed .NET application needs Orleans-based coordination of SignalR real-time messaging, hub delivery, and grain-driven push flows. USE FOR: integrating ManagedCode.Orleans.SignalR into a real-time distributed application; coordinating SignalR delivery from Orleans grains; reviewing grain-to-hub push flows. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET application that combines Orleans and SignalR through ManagedCode.Orleans.SignalR.",
       "path": "catalog/Libraries/ManagedCode-Orleans-SignalR/skills/managedcode-orleans-signalr/",
-      "tokenCount": 342,
+      "tokenCount": 423,
       "packages": [
         "ManagedCode.Orleans.SignalR.Server",
         "ManagedCode.Orleans.SignalR.Client"
@@ -709,10 +709,10 @@
       "package": "ManagedCode-Storage",
       "stack": "Data",
       "lane": "Libraries",
-      "description": "Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept behind one library contract.",
+      "description": "Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept. USE FOR: integrating ManagedCode.Storage into a .NET application; reviewing how a project abstracts file or object storage; deciding whether to centralize storage provider. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.Storage or evaluates it as a storage abstraction.",
       "path": "catalog/Libraries/ManagedCode-Storage/skills/managedcode-storage/",
-      "tokenCount": 391,
+      "tokenCount": 466,
       "packages": [
         "ManagedCode.Storage.Core",
         "ManagedCode.Storage.Azure",
@@ -729,10 +729,10 @@
       "package": "Microsoft-Extensions",
       "stack": ".NET Foundations",
       "lane": "Libraries",
-      "description": "Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns.",
+      "description": "Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns. USE FOR: wiring dependency injection, configuration, logging, or options; introducing Generic Host patterns into non-web .NET apps; cleaning up service registration, typed HTTP. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Relevant to console apps, workers, ASP.NET Core apps, functions, and reusable libraries.",
       "path": "catalog/Libraries/Microsoft-Extensions/skills/microsoft-extensions/",
-      "tokenCount": 387,
+      "tokenCount": 468,
       "package_prefix": "Microsoft.Extensions"
     },
     {
@@ -744,10 +744,10 @@
       "package": "Microsoft-Extensions-AI",
       "stack": "AI & Agents",
       "lane": "Libraries",
-      "description": "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation.",
+      "description": "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation. USE FOR: building or reviewing .NET code that uses Microsoft.Extensions.AI, Microsoft.Extensions.AI.Abstractions, IChatClient, IEmbeddingGenerator, ChatOptions, or AIFunction;. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration.",
       "path": "catalog/Libraries/Microsoft-Extensions-AI/skills/microsoft-extensions-ai/",
-      "tokenCount": 2377,
+      "tokenCount": 2465,
       "package_prefix": "Microsoft.Extensions.AI"
     },
     {
@@ -759,10 +759,10 @@
       "package": "NetArchTest",
       "stack": "Architecture",
       "lane": "Libraries",
-      "description": "Use the open-source free `NetArchTest.Rules` library for architecture rules in .NET unit tests. Use when a repo wants lightweight, fluent architecture assertions for namespaces, dependencies, or layering.",
+      "description": "Use the open-source free `NetArchTest.Rules` library for architecture rules in .NET unit tests. Use when a repo wants lightweight, fluent architecture assertions for namespaces, dependencies, or layering. USE FOR: the repo uses or wants NetArchTest.Rules; architecture rules should be enforced in automated tests. DO NOT USE FOR: very rich architecture modeling that needs a heavier DSL. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET test project; works with any unit-test framework.",
       "path": "catalog/Libraries/NetArchTest/skills/netarchtest/",
-      "tokenCount": 833,
+      "tokenCount": 917,
       "packages": [
         "NetArchTest.Rules",
         "NetArchTest.eNhancedEdition"
@@ -796,10 +796,10 @@
       "package": "Sep",
       "stack": "Data",
       "lane": "Libraries",
-      "description": "Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows.",
+      "description": "Use Sep for high-performance separated-value parsing and writing in .NET, including delimiter inference, explicit parser/writer options, and low-allocation row/column workflows. USE FOR: delimited data needs are performance-sensitive and allocation-aware; project needs explicit control over separator inference, escaping, trimming, and header behavior;. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET project that can reference the `Sep` package and accept span/ref-struct row/column APIs for row-by-row processing.",
       "path": "catalog/Libraries/Sep/skills/sep/",
-      "tokenCount": 1241,
+      "tokenCount": 1319,
       "packages": [
         "Sep"
       ]
@@ -813,10 +813,10 @@
       "package": "Architecture",
       "stack": "Architecture",
       "lane": "Architecture",
-      "description": "Design or review .NET solution architecture across modular monoliths, clean architecture, vertical slices, microservices, DDD, CQRS, and cloud-native boundaries without over-engineering.",
+      "description": "Design or review .NET solution architecture across modular monoliths, clean architecture, vertical slices, microservices, DDD, CQRS, and cloud-native boundaries without over-engineering. USE FOR: .NET architecture choices; layer and domain boundary review; service decomposition; clean architecture, vertical slice, DDD, CQRS, and modular monolith decisions. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Best when project structure, service boundaries, or long-term maintainability are in scope.",
       "path": "catalog/Platform/Architecture/skills/architecture/",
-      "tokenCount": 428
+      "tokenCount": 511
     },
     {
       "name": "code-review",
@@ -827,10 +827,10 @@
       "package": "Code-Review",
       "stack": "Governance & Delivery",
       "lane": "Review",
-      "description": "Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them.",
+      "description": "Review .NET changes for bugs, regressions, architectural drift, missing tests, incorrect async or disposal behavior, and platform-specific pitfalls before you approve or merge them. USE FOR: reviewing a pull request or patch in a .NET repository; checking for behavioral regressions, API misuse, or missing tests; auditing architectural or framework-specific. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Works for application code, libraries, tests, tooling, and infrastructure changes.",
       "path": "catalog/Platform/Code-Review/skills/code-review/",
-      "tokenCount": 600
+      "tokenCount": 682
     },
     {
       "name": "dotnet",
@@ -841,10 +841,10 @@
       "package": "DotNet",
       "stack": ".NET Foundations",
       "lane": "Foundations",
-      "description": "Primary router skill for broad .NET work. Classify the repo by app model and cross-cutting concern first, then switch to the narrowest matching .NET skill instead of staying at a generic layer.",
+      "description": "Primary router skill for broad .NET work. Classify the repo by app model and cross-cutting concern first, then switch to the narrowest matching .NET skill instead of staying at a generic layer. USE FOR: general .NET requests without a narrower framework; C# implementation, debugging, review, or refactoring; routing to framework and tooling skills. DO NOT USE FOR: unrelated stacks; tasks already covered by a narrower .NET skill. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository, solution, or project tree.",
       "path": "catalog/Platform/DotNet/skills/dotnet/",
-      "tokenCount": 991
+      "tokenCount": 1070
     },
     {
       "name": "legacy-aspnet",
@@ -855,10 +855,10 @@
       "package": "Legacy-ASP.NET",
       "stack": "Legacy",
       "lane": "Legacy frameworks",
-      "description": "Maintain classic ASP.NET applications on .NET Framework, including Web Forms, older MVC, and legacy hosting patterns, while planning realistic modernization boundaries.",
+      "description": "Maintain classic ASP.NET applications on .NET Framework, including Web Forms, older MVC, and legacy hosting patterns, while planning realistic modernization boundaries. USE FOR: working in Web Forms, legacy MVC, or classic ASP.NET applications; reviewing old IIS-centric configuration and lifecycle behavior; planning migration toward ASP.NET Core. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires classic ASP.NET on .NET Framework.",
       "path": "catalog/Platform/Legacy-ASP.NET/skills/legacy-aspnet/",
-      "tokenCount": 375
+      "tokenCount": 456
     },
     {
       "name": "mcaf",
@@ -869,10 +869,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Governance",
-      "description": "Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. Use when bootstrapping or updating MCAF alongside the dotnet-skills catalog.",
+      "description": "Adopt MCAF governance in a .NET repository with the right AGENTS.md layout, repo-native docs, skill installation, verification rules, and non-trivial task workflow. USE FOR: bootstrapping MCAF in a new or existing repository that also contains .NET work; updating root or project-local AGENTS.md files to follow a durable repo workflow;. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Best for repositories that want MCAF governance and also use dotnet-skills for actual .NET implementation work.",
       "path": "catalog/Platform/MCAF/skills/mcaf/",
-      "tokenCount": 946
+      "tokenCount": 1035
     },
     {
       "name": "mcaf-agile-delivery",
@@ -883,10 +883,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Delivery Workflow",
-      "description": "Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements.",
+      "description": "Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements. USE FOR: the team needs backlog, ceremony, role, or feedback-loop rules; delivery process is vague, too heavy, or living only in chat; recurring team pain needs to become durable. DO NOT USE FOR: repo governance that belongs in AGENTS.md; feature planning for one specific feature doc. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository access only when the repo stores delivery docs or governance guidance.",
       "path": "catalog/Platform/MCAF/skills/mcaf-agile-delivery/",
-      "tokenCount": 798
+      "tokenCount": 901
     },
     {
       "name": "mcaf-devex",
@@ -897,10 +897,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Delivery Workflow",
-      "description": "Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into.",
+      "description": "Apply MCAF developer-experience guidance for onboarding, F5 contract, cross-platform tasks, local inner loop, and reproducible setup. Use when the repo is hard to run, debug, test, or onboard into. USE FOR: the repo is hard to run, test, debug, or onboard into; local setup differs too much across contributors; the inner loop is slow or undocumented. DO NOT USE FOR: production deployment or pipeline policy; pure documentation cleanup with no developer workflow impact. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository access; may update docs, task runners, devcontainer guidance, or local setup conventions.",
       "path": "catalog/Platform/MCAF/skills/mcaf-devex/",
-      "tokenCount": 830
+      "tokenCount": 928
     },
     {
       "name": "mcaf-documentation",
@@ -911,10 +911,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Governance",
-      "description": "Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. Use when a repo\u2019s docs are missing, stale, duplicated, or hard to navigate, or when adding new durable engineering guidance.",
+      "description": "Apply MCAF documentation guidance for docs structure, navigation, source-of-truth placement, and writing quality. USE FOR: docs are missing, stale, duplicated, or hard to navigate; a repo needs a cleaner source-of-truth structure; durable engineering guidance needs to be added without. DO NOT USE FOR: writing a specific feature spec or ADR when that skill already fits; dumping large template content into public pages. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository write access; updates docs and documentation structure.",
       "path": "catalog/Platform/MCAF/skills/mcaf-documentation/",
-      "tokenCount": 792
+      "tokenCount": 863
     },
     {
       "name": "mcaf-feature-spec",
@@ -925,10 +925,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Governance",
-      "description": "Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. Use when the user asks for a feature spec, executable requirements, acceptance criteria, behaviour documentation, or a pre-implementation plan for non-trivial behaviour changes.",
+      "description": "Apply MCAF feature-spec guidance to create or update a feature spec under `docs/Features/` with business rules, user flows, system behaviour, verification, and Definition of Done. USE FOR: add or change non-trivial behaviour; behaviour is under-specified and engineers are guessing; tests need a stable behavioural source of truth. DO NOT USE FOR: architecture decisions that need alternatives and trade-offs; tiny typo or cosmetic-only changes with no behavioural impact. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository write access; produces Markdown docs with Mermaid diagrams and executable verification steps.",
       "path": "catalog/Platform/MCAF/skills/mcaf-feature-spec/",
-      "tokenCount": 858
+      "tokenCount": 923
     },
     {
       "name": "mcaf-human-review-planning",
@@ -939,10 +939,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Governance",
-      "description": "Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the files a human should inspect first. Use when the codebase is too large to review line-by-line and you need a practical review sequence plus a prioritized file list.",
+      "description": "Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the. USE FOR: a large AI-generated code drop needs a human review plan; the reviewer cannot inspect every line and needs prioritization; the user asks which files are highest risk. DO NOT USE FOR: normal small pull-request review; automated bug finding without creating a human review sequence. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository read access; may write a `HUMAN_REVIEW_PLAN.md` file under docs, or to an exact docs path the user specifies, when the user asks for a saved review plan.",
       "path": "catalog/Platform/MCAF/skills/mcaf-human-review-planning/",
-      "tokenCount": 1199
+      "tokenCount": 1267
     },
     {
       "name": "mcaf-ml-ai-delivery",
@@ -953,10 +953,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Delivery Workflow",
-      "description": "Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. Use when the repo includes model training, inference, data science workflows, or ML-specific delivery planning.",
+      "description": "Apply MCAF ML/AI delivery guidance for data exploration, feasibility, experimentation, testing, responsible AI, and operating ML systems. USE FOR: the repo contains model training, inference, experimentation, or data-science workflow; ML work needs explicit process, testing, or responsible-AI guidance; delivery. DO NOT USE FOR: generic software delivery with no ML or data-science component; loading all ML references when only one stage is active. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository access when ML/AI docs, experiments, or delivery guidance live in the repo.",
       "path": "catalog/Platform/MCAF/skills/mcaf-ml-ai-delivery/",
-      "tokenCount": 902
+      "tokenCount": 1041
     },
     {
       "name": "mcaf-nfr",
@@ -967,10 +967,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Governance",
-      "description": "Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. Use when a feature or architecture change needs explicit quality attributes and trade-offs.",
+      "description": "Apply MCAF non-functional-requirements guidance to capture or refine explicit quality attributes such as accessibility, reliability, scalability, maintainability, performance, and compliance. USE FOR: feature or architecture changes needing measurable quality attributes; vague quality goals that need concrete constraints; docs, ADRs, and tests that must align on NFRs. DO NOT USE FOR: generic architecture or feature writing with no quality-attribute decision; loading all NFR references at once. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository access when NFRs are documented in feature docs, ADRs, or architecture docs.",
       "path": "catalog/Platform/MCAF/skills/mcaf-nfr/",
-      "tokenCount": 842
+      "tokenCount": 1107
     },
     {
       "name": "mcaf-source-control",
@@ -981,10 +981,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Governance",
-      "description": "Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. Use when bootstrapping a repo, tightening PR flow, or documenting branch and release policy.",
+      "description": "Apply MCAF source-control guidance for repository structure, branch naming, merge strategy, commit hygiene, and secrets-in-git discipline. USE FOR: bootstrapping source-control policy; tightening branch, merge, or PR rules; documenting commit or release hygiene. DO NOT USE FOR: CI/CD workflow design with no source-control policy change; one-off git commands that do not alter repo policy. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository access; may update contribution docs, AGENTS rules, or repository policy files.",
       "path": "catalog/Platform/MCAF/skills/mcaf-source-control/",
-      "tokenCount": 798
+      "tokenCount": 873
     },
     {
       "name": "mcaf-ui-ux",
@@ -995,10 +995,10 @@
       "package": "MCAF",
       "stack": "Governance & Delivery",
       "lane": "Delivery Workflow",
-      "description": "Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. Use when bootstrapping a UI project, choosing front-end stack, or tightening design and accessibility practices.",
+      "description": "Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. USE FOR: bootstrapping a UI project; choosing front-end stack or design-system direction; tightening accessibility or design-to-development collaboration. DO NOT USE FOR: pure backend or infrastructure work; vague visual taste debates with no delivery consequence. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires repository access when UI docs, component guidance, or design system rules live in the repo.",
       "path": "catalog/Platform/MCAF/skills/mcaf-ui-ux/",
-      "tokenCount": 771
+      "tokenCount": 840
     },
     {
       "name": "mixed-reality",
@@ -1009,10 +1009,10 @@
       "package": "Mixed-Reality",
       "stack": "XR & Spatial",
       "lane": "Frameworks",
-      "description": "Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack.",
+      "description": "Work on C# and .NET-adjacent mixed-reality solutions around HoloLens, MRTK, OpenXR, Azure services, and integration boundaries where .NET participates in the stack. USE FOR: building or integrating mixed-reality solutions with C#; working on HoloLens, MRTK, Azure mixed-reality services, or OpenXR-related code; reviewing how .NET services. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Best for HoloLens, MRTK, Unity+C#, and service integrations around mixed reality.",
       "path": "catalog/Platform/Mixed-Reality/skills/mixed-reality/",
-      "tokenCount": 475,
+      "tokenCount": 564,
       "package_prefix": "Microsoft.MixedReality"
     },
     {
@@ -1348,10 +1348,10 @@
       "package": "Project-Setup",
       "stack": ".NET Foundations",
       "lane": "Foundations",
-      "description": "Create or reorganize .NET solutions with clean project boundaries, repeatable SDK settings, and a maintainable baseline for libraries, apps, tests, CI, and local development.",
+      "description": "Create or reorganize .NET solutions with clean project boundaries, repeatable SDK settings, and a maintainable baseline for libraries, apps, tests, CI, and local development. USE FOR: creating a new .NET solution or restructuring an existing one; setting up Directory.Build.props, shared package management, or repo-wide defaults; defining project. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Best for new repositories or structural refactors of existing .NET solutions.",
       "path": "catalog/Platform/Project-Setup/skills/project-setup/",
-      "tokenCount": 415
+      "tokenCount": 496
     },
     {
       "name": "coverlet",
@@ -1362,10 +1362,10 @@
       "package": "Coverlet",
       "stack": "Testing",
       "lane": "Quality",
-      "description": "Use the open-source free `coverlet` toolchain for .NET code coverage. Use when a repo needs line and branch coverage, collector versus MSBuild driver selection, or CI-safe coverage commands.",
+      "description": "Use the open-source free `coverlet` toolchain for .NET code coverage. Use when a repo needs line and branch coverage, collector versus MSBuild driver selection, or CI-safe coverage commands. USE FOR: coverlet setup; CI line or branch coverage; choosing between collector and MSBuild drivers. DO NOT USE FOR: coverage report rendering by itself; repos that intentionally use a different coverage engine. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Testing/Coverlet/skills/coverlet/",
-      "tokenCount": 1079,
+      "tokenCount": 1167,
       "packages": [
         "coverlet.collector",
         "coverlet.msbuild"
@@ -1380,10 +1380,10 @@
       "package": "MSTest",
       "stack": "Testing",
       "lane": "Frameworks",
-      "description": "Write, run, or repair .NET tests that use MSTest. Use when a repo uses `MSTest.Sdk`, `MSTest`, `[TestClass]`, `[TestMethod]`, `DataRow`, or Microsoft.Testing.Platform-based MSTest execution.",
+      "description": "Write, run, or repair .NET tests that use MSTest. Use when a repo uses `MSTest.Sdk`, `MSTest`, `[TestClass]`, `[TestMethod]`, `DataRow`, or Microsoft.Testing.Platform-based MSTest execution. USE FOR: the repo uses MSTest; you need to add, run, debug, or repair MSTest tests; the repo is moving between VSTest and Microsoft.Testing.Platform. DO NOT USE FOR: xUnit projects; TUnit projects. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET solution or project with MSTest packages; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Testing/MSTest/skills/mstest/",
-      "tokenCount": 1128,
+      "tokenCount": 1227,
       "packages": [
         "MSTest",
         "MSTest.TestFramework",
@@ -1399,10 +1399,10 @@
       "package": "NUnit",
       "stack": "Testing",
       "lane": "Frameworks",
-      "description": "Write, run, or repair .NET tests that use NUnit. Use when a repo uses `NUnit`, `[Test]`, `[TestCase]`, `[TestFixture]`, or NUnit3TestAdapter for VSTest or Microsoft.Testing.Platform execution.",
+      "description": "Write, run, or repair .NET tests that use NUnit. Use when a repo uses `NUnit`, `[Test]`, `[TestCase]`, `[TestFixture]`, or NUnit3TestAdapter for VSTest or Microsoft.Testing.Platform execution. USE FOR: writing or reviewing NUnit tests; using [Test], [TestCase], [TestFixture], [SetUp], [TearDown] attributes; configuring NUnit3TestAdapter or NUnit.Analyzers. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires NUnit 3.x or 4.x packages and appropriate test adapter.",
       "path": "catalog/Testing/NUnit/skills/nunit/",
-      "tokenCount": 2325,
+      "tokenCount": 2543,
       "packages": [
         "NUnit",
         "NUnit3TestAdapter"
@@ -1752,10 +1752,10 @@
       "package": "Stryker",
       "stack": "Testing Research",
       "lane": "Mutation",
-      "description": "Use the open-source free `Stryker.NET` mutation testing tool for .NET. Use when a repo needs to measure whether tests actually catch faults, especially in critical libraries or domains.",
+      "description": "Use the open-source free `Stryker.NET` mutation testing tool for .NET. Use when a repo needs to measure whether tests actually catch faults, especially in critical libraries or domains. USE FOR: the repo uses or wants Stryker.NET; mutation testing is needed for high-risk code. DO NOT USE FOR: every PR path by default in a large repo; simple coverage collection. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Testing/Stryker/skills/stryker/",
-      "tokenCount": 870,
+      "tokenCount": 958,
       "packages": [
         "stryker"
       ]
@@ -1769,10 +1769,10 @@
       "package": "TUnit",
       "stack": "Testing",
       "lane": "Frameworks",
-      "description": "Write, run, or repair .NET tests that use TUnit. Use when a repo uses `TUnit`, `TUnit.Playwright`, `[Test]`, `[Arguments]`, `ClassDataSource`, `SharedType.PerTestSession`, or Microsoft.Testing.Platform-based execution.",
+      "description": "Write, run, or repair .NET tests that use TUnit. Use when a repo uses `TUnit`, `TUnit.Playwright`, `[Test]`, `[Arguments]`, `ClassDataSource`, `SharedType.PerTestSession`, or Microsoft.Testing.Platform-based. USE FOR: the repo uses TUnit; you need to add, run, debug, or repair TUnit tests; the repo uses Microsoft.Testing.Platform-based test execution. DO NOT USE FOR: xUnit projects; MSTest projects. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET solution or project with TUnit packages; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Testing/TUnit/skills/tunit/",
-      "tokenCount": 1766,
+      "tokenCount": 1871,
       "packages": [
         "TUnit"
       ]
@@ -1786,10 +1786,10 @@
       "package": "xUnit",
       "stack": "Testing",
       "lane": "Frameworks",
-      "description": "Write, run, or repair .NET tests that use xUnit. Use when a repo uses `xunit`, `xunit.v3`, `[Fact]`, `[Theory]`, or `xunit.runner.visualstudio`, and you need the right CLI, package, and runner guidance for xUnit on VSTest or Microsoft.Testing.Platform.",
+      "description": "Write, run, or repair .NET tests that use xUnit with the right package, CLI, and runner guidance. USE FOR: xUnit v2 or xUnit v3 projects; adding, running, debugging, or repairing xUnit tests; choosing between VSTest and Microsoft.Testing.Platform. DO NOT USE FOR: TUnit projects; MSTest projects. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET solution or project with xUnit packages; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Testing/xUnit/skills/xunit/",
-      "tokenCount": 1243,
+      "tokenCount": 1295,
       "packages": [
         "xunit",
         "xunit.v3"
@@ -1804,10 +1804,10 @@
       "package": "Analyzer-Config",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use a repo-root `.editorconfig` to configure free .NET analyzer and style rules. Use when a .NET repo needs rule severity, code-style options, section layout, or analyzer ownership made explicit. Nested `.editorconfig` files are allowed when they serve a clear subtree-specific purpose.",
+      "description": "Use a repo-root `.editorconfig` to configure free .NET analyzer and style rules. Use when a .NET repo needs rule severity, code-style options, section layout, or analyzer ownership made explicit. USE FOR: the repo needs a root .editorconfig; analyzer severity and style ownership are unclear; the team wants one source of truth for rule configuration. DO NOT USE FOR: choosing analyzers with no config change; formatting-only execution with no config ownership question. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/Analyzer-Config/skills/analyzer-config/",
-      "tokenCount": 1051
+      "tokenCount": 1132
     },
     {
       "name": "asynkron-profiler",
@@ -1818,10 +1818,10 @@
       "package": "Asynkron-Profiler",
       "stack": "Diagnostics & Metrics",
       "lane": "Performance",
-      "description": "Use the open-source free `Asynkron.Profiler` dotnet tool for CLI-first CPU, allocation, exception, contention, and heap profiling of .NET commands or existing trace artifacts.",
+      "description": "Use the open-source free `Asynkron.Profiler` dotnet tool for CLI-first CPU, allocation, exception, contention, and heap profiling of .NET commands or existing trace artifacts. USE FOR: Asynkron.Profiler setup; automation-friendly profiling output; CPU, allocation, exception, contention, and heap investigation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires the `asynkron-profiler` dotnet tool plus `dotnet-trace` and `dotnet-gcdump`; upstream guidance currently targets .NET SDK 10.x.",
       "path": "catalog/Tools/Asynkron-Profiler/skills/asynkron-profiler/",
-      "tokenCount": 1635,
+      "tokenCount": 1711,
       "packages": [
         "Asynkron.Profiler"
       ]
@@ -1835,10 +1835,10 @@
       "package": "Biome",
       "stack": "Frontend Quality",
       "lane": "Code Quality",
-      "description": "Use Biome in .NET repositories that ship Node-based frontend assets and want a fast combined formatter-linter-import organizer for JavaScript, TypeScript, CSS, JSON, GraphQL, or HTML. Use when a repo prefers a modern all-in-one CLI over a larger ESLint plus Prettier style stack.",
+      "description": "Use Biome in .NET repositories that ship Node-based frontend assets and want a fast combined formatter-linter-import organizer for JavaScript, TypeScript, CSS, JSON, GraphQL, or HTML. USE FOR: biome.json or @biomejs/biome setup; fast frontend formatting and linting; replacing overlapping frontend style tools deliberately. DO NOT USE FOR: ESLint-only plugin coverage; runtime site audits such as headers, accessibility, or browser behavior. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with frontend assets managed through Node or a standalone Biome binary workflow; keep ownership explicit versus ESLint, Stylelint, and webhint.",
       "path": "catalog/Tools/Biome/skills/biome/",
-      "tokenCount": 1156
+      "tokenCount": 1216
     },
     {
       "name": "csharpier",
@@ -1849,10 +1849,10 @@
       "package": "CSharpier",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use the open-source free `CSharpier` formatter for C# and XML. Use when a .NET repo intentionally wants one opinionated formatter instead of a highly configurable `dotnet format`-driven style model.",
+      "description": "Use the open-source free `CSharpier` formatter for C# and XML. Use when a .NET repo intentionally wants one opinionated formatter instead of a highly configurable `dotnet format`-driven style model. USE FOR: the repo uses or wants CSharpier; the team prefers an opinionated formatter over many configurable style knobs. DO NOT USE FOR: repos that already standardized on dotnet format as the only formatter. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/CSharpier/skills/csharpier/",
-      "tokenCount": 903,
+      "tokenCount": 991,
       "packages": [
         "CSharpier"
       ]
@@ -1866,10 +1866,10 @@
       "package": "Chous",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use Chous in .NET repositories that ship sizeable frontend codebases and want file-structure linting, naming convention enforcement, and folder-layout policy as a CLI gate. Use when the problem is frontend architecture drift in the file tree rather than semantic code issues inside the files.",
+      "description": "Use Chous in .NET repositories that ship sizeable frontend codebases and want file-structure linting, naming convention enforcement, and folder-layout policy as a CLI gate. USE FOR: growing frontend trees; naming, folder, or file-placement policy; CI checks for frontend layout drift. DO NOT USE FOR: semantic code bugs, type errors, or framework API misuse; CSS, HTML, or JS rule enforcement inside files. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a repository with a meaningful frontend file tree and Node-based tooling or `npx`; Chous complements code linters and does not replace ESLint, Stylelint, or runtime site audits.",
       "path": "catalog/Tools/Chous/skills/chous/",
-      "tokenCount": 995,
+      "tokenCount": 1055,
       "packages": [
         "Chous"
       ]
@@ -1883,10 +1883,10 @@
       "package": "Chrome-DevTools-MCP",
       "stack": "Web",
       "lane": "Foundations",
-      "description": "Use Chrome DevTools MCP from .NET agents and .NET-focused repos to inspect, debug, and automate Chrome through an MCP client.",
+      "description": "Use Chrome DevTools MCP from .NET agents and .NET-focused repos to inspect, debug, and automate Chrome through an MCP client. USE FOR: the repo needs browser-level debugging for ASP.NET Core, Blazor, WebAssembly, or any .NET app with a web UI; the user wants an MCP server that can inspect console. DO NOT USE FOR: pure .NET code analysis, unit testing, or NuGet/package management; static HTML linting alone. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires an MCP-capable .NET agent/app or repo with a browser-debugging workflow; Chrome DevTools MCP runs as an external Node-based server and needs Chrome or Chrome for Testing.",
       "path": "catalog/Tools/Chrome-DevTools-MCP/skills/chrome-devtools-mcp/",
-      "tokenCount": 1686,
+      "tokenCount": 1783,
       "links": {
         "repository": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
         "docs": "https://github.com/ChromeDevTools/chrome-devtools-mcp#readme"
@@ -1904,10 +1904,10 @@
       "package": "Code-Analysis",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use the free built-in .NET SDK analyzers and analysis levels with gradual Roslyn warning promotion. Use when a .NET repo needs first-party code analysis, `EnableNETAnalyzers`, `AnalysisLevel`, or warning-as-error policy wired into build and CI.",
+      "description": "Use the free built-in .NET SDK analyzers and analysis levels with gradual Roslyn warning promotion. USE FOR: the repo wants first-party .NET analyzers; CI should fail on analyzer warnings; the team needs AnalysisLevel or AnalysisMode guidance. DO NOT USE FOR: third-party analyzer selection by itself; formatting-only work. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/Code-Analysis/skills/code-analysis/",
-      "tokenCount": 1886,
+      "tokenCount": 1943,
       "packages": [
         "Microsoft.CodeAnalysis.NetAnalyzers"
       ]
@@ -1921,10 +1921,10 @@
       "package": "CodeQL",
       "stack": "Diagnostics & Metrics",
       "lane": "Static Analysis",
-      "description": "Use the open-source CodeQL ecosystem for .NET security analysis. Use when a repo needs CodeQL query packs, CLI-based analysis on open source codebases, or GitHub Action setup with explicit licensing caveats for private repositories.",
+      "description": "Use the open-source CodeQL ecosystem for .NET security analysis. Use when a repo needs CodeQL query packs, CLI-based analysis on open source codebases, or GitHub Action setup with explicit licensing caveats. USE FOR: the repo uses or wants CodeQL for .NET security analysis; GitHub code scanning is part of the CI plan. DO NOT USE FOR: teams that need a tool with no private-repo licensing caveat. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a GitHub-based or CLI-based CodeQL workflow; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/CodeQL/skills/codeql/",
-      "tokenCount": 881
+      "tokenCount": 969
     },
     {
       "name": "complexity",
@@ -1935,10 +1935,10 @@
       "package": "Complexity",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use free built-in .NET maintainability analyzers and code metrics configuration to find overly complex methods and coupled code. Use when a repo needs cyclomatic complexity checks, maintainability thresholds, or complexity-driven refactoring gates.",
+      "description": "Use free built-in .NET maintainability analyzers and code metrics configuration to find overly complex methods and coupled code. USE FOR: the team wants to find overly complex methods; cyclomatic complexity thresholds are needed in CI; maintainability metrics or coupling thresholds need to be configured. DO NOT USE FOR: formatting-only work; generic analyzer setup with no complexity policy change. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/Complexity/skills/complexity/",
-      "tokenCount": 1013
+      "tokenCount": 1087
     },
     {
       "name": "eslint",
@@ -1949,10 +1949,10 @@
       "package": "ESLint",
       "stack": "Frontend Quality",
       "lane": "Code Quality",
-      "description": "Use ESLint in .NET repositories that ship JavaScript, TypeScript, React, or other Node-based frontend assets. Use when a repo needs a configurable CLI lint gate for frontend correctness, import hygiene, unsafe patterns, or framework-specific rules.",
+      "description": "Use ESLint in .NET repositories that ship JavaScript, TypeScript, React, or other Node-based frontend assets. USE FOR: the repo has package.json, eslint.config.*, .eslintrc*, tsconfig.json, or JS/TS/React frontend files; the user asks for JavaScript or TypeScript linting, React rule. DO NOT USE FOR: CSS ownership by itself; route that to stylelint; HTML-only checks on static output; route that to htmlhint. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with Node-based frontend assets such as `package.json`, `ClientApp/`, `src/`, or separate web frontend folders.",
       "path": "catalog/Tools/ESLint/skills/eslint/",
-      "tokenCount": 1160
+      "tokenCount": 1240
     },
     {
       "name": "format",
@@ -1963,10 +1963,10 @@
       "package": "Format",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. Use when a .NET repo needs formatting commands, `--verify-no-changes` CI checks, or `.editorconfig`-driven code style enforcement.",
+      "description": "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. USE FOR: the repo uses dotnet format; you need a CI-safe formatting check for .NET; the repo wants .editorconfig-driven style enforcement. DO NOT USE FOR: repositories that intentionally use CSharpier as the only formatter; analyzer strategy with no formatting command change. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/Format/skills/format/",
-      "tokenCount": 958
+      "tokenCount": 1042
     },
     {
       "name": "graphify-dotnet",
@@ -1977,10 +1977,10 @@
       "package": "Graphify",
       "stack": "Architecture",
       "lane": "Analysis",
-      "description": "Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships.",
+      "description": "Use `graphify-dotnet` to generate codebase knowledge graphs, architecture snapshots, and exportable repository maps from .NET or polyglot source trees, with optional AI-enriched semantic relationships. USE FOR: graphify commands; graph JSON, HTML, SVG, Cypher, Markdown, and Obsidian exports; repository map and architecture snapshot generation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires the `graphify-dotnet` global tool and a .NET 10 SDK; AST-only extraction works with zero model setup, while semantic enrichment needs Azure OpenAI, Ollama, or GitHub Copilot SDK.",
       "path": "catalog/Tools/Graphify/skills/graphify-dotnet/",
-      "tokenCount": 1673,
+      "tokenCount": 1766,
       "packages": [
         "Graphify.Dotnet"
       ]
@@ -1994,10 +1994,10 @@
       "package": "HTMLHint",
       "stack": "Frontend Quality",
       "lane": "Code Quality",
-      "description": "Use HTMLHint in .NET repositories that ship static HTML output or standalone frontend templates. Use when a repo needs a focused CLI lint gate for DOM structure, invalid attributes, and basic HTML correctness checks on static pages.",
+      "description": "Use HTMLHint in .NET repositories that ship static HTML output or standalone frontend templates. USE FOR: static HTML files; generated frontend output; standalone templates under wwwroot, dist, or other web folders; HTML structure checks. DO NOT USE FOR: raw .cshtml or .razor source with server-side directives; JavaScript or TypeScript linting. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with static HTML assets or generated frontend output; use on rendered output rather than raw Razor or Blazor source files.",
       "path": "catalog/Tools/HTMLHint/skills/htmlhint/",
-      "tokenCount": 1050
+      "tokenCount": 1109
     },
     {
       "name": "metalint",
@@ -2008,10 +2008,10 @@
       "package": "Metalint",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use Metalint in .NET repositories that ship Node-based frontend assets and want one CLI entrypoint over several underlying linters. Use when a repo wants to orchestrate ESLint, Stylelint, HTMLHint, and related frontend checks from a single checked-in `.metalint/` configuration.",
+      "description": "Use Metalint in .NET repositories that ship Node-based frontend assets and want one CLI entrypoint over several underlying linters. USE FOR: unified frontend lint commands; combined ESLint, Stylelint, HTMLHint, or similar checks; CI orchestration over multiple frontend linters. DO NOT USE FOR: simple repos where Biome already covers the required surface; teams that have not decided which underlying linters own each file type. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with a Node-based frontend and multiple underlying linters; Metalint is an orchestrator, not a replacement for the actual linter configs it delegates to.",
       "path": "catalog/Tools/Metalint/skills/metalint/",
-      "tokenCount": 1082
+      "tokenCount": 1140
     },
     {
       "name": "meziantou-analyzer",
@@ -2022,10 +2022,10 @@
       "package": "Meziantou-Analyzer",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use the open-source free `Meziantou.Analyzer` package for design, usage, security, performance, and style rules in .NET. Use when a repo wants broader analyzer coverage with a single NuGet package.",
+      "description": "Use the open-source free `Meziantou.Analyzer` package for design, usage, security, performance, and style rules in .NET. Use when a repo wants broader analyzer coverage with a single NuGet package. USE FOR: the repo uses or wants Meziantou.Analyzer; the team wants one analyzer pack that covers design, usage, security, performance, and style. DO NOT USE FOR: repos that already enforce an overlapping analyzer baseline and do not want extra diagnostics; formatting-only work. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/Meziantou-Analyzer/skills/meziantou-analyzer/",
-      "tokenCount": 882,
+      "tokenCount": 988,
       "packages": [
         "Meziantou.Analyzer"
       ]
@@ -2039,10 +2039,10 @@
       "package": "Modern-CSharp",
       "stack": ".NET Foundations",
       "lane": "Foundations",
-      "description": "Write modern, version-aware C# for .NET repositories. Use when choosing language features across C# versions, especially C# 13 and C# 14, while staying compatible with the repo's target framework and `LangVersion`.",
+      "description": "Write modern, version-aware C# for .NET repositories while staying compatible with the repo's target framework and language-version policy. USE FOR: modern idiomatic C# code; language-version compatibility decisions; upgrading or reviewing C# feature usage across versions. DO NOT USE FOR: non-C# .NET languages such as F# or VB; analyzer-only or formatter-only setup with no language feature choice. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a C# or .NET repository; respects explicit `LangVersion` and target framework settings.",
       "path": "catalog/Tools/Modern-CSharp/skills/modern-csharp/",
-      "tokenCount": 1179
+      "tokenCount": 1260
     },
     {
       "name": "analyzing-dotnet-performance",
@@ -2521,10 +2521,10 @@
       "package": "Profiling",
       "stack": "Diagnostics & Metrics",
       "lane": "Performance",
-      "description": "Use the free official .NET diagnostics CLI tools for profiling and runtime investigation in .NET repositories. Use when a repo needs CPU tracing, live counters, GC and allocation investigation, exception or contention tracing, heap snapshots, or startup diagnostics without GUI-only tooling.",
+      "description": "Use the free official .NET diagnostics CLI tools for profiling and runtime investigation in .NET repositories. USE FOR: the repo needs performance or runtime profiling for a .NET application; the user asks about slow code, high CPU, GC pressure, allocation growth, exception storms, lock. DO NOT USE FOR: replacing realistic performance tests or load tests with ad-hoc tracing alone; production heap collection when the pause risk has not been. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET app or process to inspect; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/Profiling/skills/profiling/",
-      "tokenCount": 1338
+      "tokenCount": 1420
     },
     {
       "name": "quality-ci",
@@ -2535,10 +2535,10 @@
       "package": "Quality-CI",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Set up or refine open-source .NET code-quality gates for CI: formatting, `.editorconfig`, SDK analyzers, third-party analyzers, coverage, mutation testing, architecture tests, and security scanning. Use when a .NET repo needs an explicit quality stack in `AGENTS.md`, docs, or pipeline YAML.",
+      "description": "Set up or refine open-source .NET code-quality gates for CI: formatting, `.editorconfig`, SDK analyzers, third-party analyzers, coverage, mutation testing, architecture tests, and security scanning. USE FOR: .NET quality gates in CI; analyzer, coverage, mutation, and architecture-test choices; standardizing `.editorconfig`, `dotnet format`, and warning policy. DO NOT USE FOR: non-.NET repositories; generic CI/CD guidance with no .NET quality stack decisions. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET solution or project; may update `AGENTS.md`, CI workflows, a repo-root `.editorconfig`, `Directory.Build.props`, or analyzer package references.",
       "path": "catalog/Tools/Quality-CI/skills/quality-ci/",
-      "tokenCount": 1535
+      "tokenCount": 1624
     },
     {
       "name": "quickdup",
@@ -2549,10 +2549,10 @@
       "package": "QuickDup",
       "stack": "Diagnostics & Metrics",
       "lane": "Observability",
-      "description": "Use the open-source free `QuickDup` clone detector for .NET repositories. Use when a repo needs duplicate C# code discovery, structural clone detection, DRY refactoring candidates, or repeatable duplication scans in local workflows and CI.",
+      "description": "Use the open-source free `QuickDup` clone detector for .NET repositories. Use when a repo needs duplicate C# code discovery, structural clone detection, DRY refactoring candidates, or repeatable duplication. USE FOR: the repo wants QuickDup; the team needs repeatable duplicate-code scans for C#; the user asks about DRY cleanup, copy-paste detection, clone detection, or duplicate. DO NOT USE FOR: formatting-only work; repos that intentionally use a different clone detector and do not want overlap. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a repository with C# source files; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/QuickDup/skills/quickdup/",
-      "tokenCount": 1315,
+      "tokenCount": 1417,
       "packages": [
         "QuickDup"
       ]
@@ -2566,10 +2566,10 @@
       "package": "ReSharper-CLT",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use the free official JetBrains ReSharper Command Line Tools for .NET repositories. Use when a repo wants powerful `jb inspectcode` inspections, `jb cleanupcode` cleanup profiles, solution-level `.DotSettings` enforcement, or a stronger CLI quality gate for C# than the default SDK analyzers alone.",
+      "description": "Use the free official JetBrains ReSharper Command Line Tools for .NET repositories. USE FOR: `jb inspectcode`; `jb cleanupcode`; stronger C# inspections, cleanup profiles, and CI-friendly JetBrains analysis. DO NOT USE FOR: replacing tests with inspection output; ad-hoc formatting-only work when the repo intentionally standardizes on another formatter. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET solution or project; works best when the repo keeps shared ReSharper settings in solution `.DotSettings` files and records exact commands in `AGENTS.md`.",
       "path": "catalog/Tools/ReSharper-CLT/skills/resharper-clt/",
-      "tokenCount": 1342
+      "tokenCount": 1399
     },
     {
       "name": "reportgenerator",
@@ -2580,10 +2580,10 @@
       "package": "ReportGenerator",
       "stack": "Testing",
       "lane": "Quality",
-      "description": "Use the open-source free `ReportGenerator` tool for turning .NET coverage outputs into HTML, Markdown, Cobertura, badges, and merged reports. Use when raw coverage files are not readable enough for CI or human review.",
+      "description": "Use the open-source free `ReportGenerator` tool for turning .NET coverage outputs into HTML, Markdown, Cobertura, badges, and merged reports. USE FOR: the repo uses or wants ReportGenerator; CI needs human-readable coverage reports; multiple coverage files must be merged. DO NOT USE FOR: raw coverage collection with no reporting need. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires coverage artifacts such as Cobertura, OpenCover, or lcov; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/ReportGenerator/skills/reportgenerator/",
-      "tokenCount": 918,
+      "tokenCount": 986,
       "packages": [
         "ReportGenerator"
       ]
@@ -2597,10 +2597,10 @@
       "package": "Roslynator",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use the open-source free `Roslynator` analyzer packages and optional CLI for .NET. Use when a repo wants broad C# static analysis, auto-fix flows, dead-code detection, optional CLI checks, or extra rules beyond the SDK analyzers.",
+      "description": "Use the open-source free `Roslynator` analyzer packages and optional CLI for .NET. USE FOR: Roslynator.Analyzers setup; Roslynator CLI checks or cleanup; C# linting, static analysis, and code-fix automation. DO NOT USE FOR: overlapping analyzer packs with no consolidation plan; formatting-only work owned by another formatter. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/Roslynator/skills/roslynator/",
-      "tokenCount": 1169,
+      "tokenCount": 1236,
       "links": {
         "repository": "https://github.com/dotnet/roslynator",
         "docs": "https://josefpihrt.github.io/docs/roslynator/",
@@ -2621,10 +2621,10 @@
       "package": "SonarJS",
       "stack": "Frontend Quality",
       "lane": "Code Quality",
-      "description": "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. Use when the repo wants `eslint-plugin-sonarjs` locally or already runs SonarQube or SonarCloud in CI.",
+      "description": "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. USE FOR: SonarQube, SonarCloud, or eslint-plugin-sonarjs setups; frontend code smells; cognitive complexity and deeper bug-risk rules. DO NOT USE FOR: lightweight base lint setups with no extra smell or complexity rules; teams that reject Sonar tooling. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with JS or TS frontend assets; local developer loops normally use `eslint-plugin-sonarjs`, while full SonarQube or SonarCloud analysis should follow the repo's existing scanner pipeline and documented licensing posture.",
       "path": "catalog/Tools/SonarJS/skills/sonarjs/",
-      "tokenCount": 1262
+      "tokenCount": 1321
     },
     {
       "name": "stylecop-analyzers",
@@ -2635,10 +2635,10 @@
       "package": "StyleCop-Analyzers",
       "stack": ".NET Quality",
       "lane": "Code Quality",
-      "description": "Use the open-source free `StyleCop.Analyzers` package for naming, layout, documentation, and style rules in .NET projects. Use when a repo wants stricter style conventions than the SDK analyzers alone provide.",
+      "description": "Use the open-source free `StyleCop.Analyzers` package for naming, layout, documentation, and style rules in .NET projects. Use when a repo wants stricter style conventions than the SDK analyzers alone provide. USE FOR: the repo wants StyleCop.Analyzers; naming, layout, or documentation style needs stronger enforcement; the team needs stylecop.json guidance. DO NOT USE FOR: repos that intentionally rely only on SDK analyzers; repos where StyleCop overlaps too heavily with an existing style package and no. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/StyleCop-Analyzers/skills/stylecop-analyzers/",
-      "tokenCount": 945,
+      "tokenCount": 1053,
       "packages": [
         "StyleCop.Analyzers"
       ]
@@ -2652,10 +2652,10 @@
       "package": "Stylelint",
       "stack": "Frontend Quality",
       "lane": "Code Quality",
-      "description": "Use Stylelint in .NET repositories that ship CSS, SCSS, or other stylesheet assets alongside web frontends. Use when a repo needs a dedicated CLI lint gate for selectors, properties, duplicate styles, naming conventions, or design-system rule enforcement.",
+      "description": "Use Stylelint in .NET repositories that ship CSS, SCSS, or other stylesheet assets alongside web frontends. USE FOR: stylelint.config.*, .stylelintrc*, CSS or SCSS assets; CSS linting; duplicate style cleanup and naming-convention checks. DO NOT USE FOR: JavaScript or TypeScript lint ownership; runtime accessibility, performance, SEO, or header checks. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with stylesheet assets such as `wwwroot/`, `ClientApp/`, `src/`, or other frontend folders managed with Node tooling.",
       "path": "catalog/Tools/Stylelint/skills/stylelint/",
-      "tokenCount": 1412
+      "tokenCount": 1478
     },
     {
       "name": "cloc",
@@ -2666,10 +2666,10 @@
       "package": "cloc",
       "stack": "Diagnostics & Metrics",
       "lane": "Observability",
-      "description": "Use the open-source free `cloc` tool for line-count, language-mix, and diff statistics in .NET repositories. Use when a repo needs C# and solution footprint metrics, branch-to-branch LOC comparison, or repeatable code-size reporting in local workflows and CI.",
+      "description": "Use the open-source free `cloc` tool for line-count, language-mix, and diff statistics in .NET repositories. USE FOR: repeatable LOC reports; language-mix or branch-diff statistics; codebase size and solution-composition measurements. DO NOT USE FOR: judging developer productivity from raw LOC; replacing behavioral verification, architecture review, or complexity analysis. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a repository with .NET source files or a Git checkout; respects the repo's `AGENTS.md` commands first.",
       "path": "catalog/Tools/cloc/skills/cloc/",
-      "tokenCount": 1388
+      "tokenCount": 1450
     },
     {
       "name": "pvanalyze",
@@ -2680,10 +2680,10 @@
       "package": "pvanalyze",
       "stack": "Diagnostics & Metrics",
       "lane": "Performance",
-      "description": "Use `pvanalyze` to inspect existing .NET `.nettrace` files from the command line, including GC, JIT, CPU stacks, allocation, DATAS, events, exceptions, timeline, and call-tree analysis with JSON or SpeedScope output for automation.",
+      "description": "Use `pvanalyze` to inspect existing .NET `.nettrace` files from the command line, including GC, JIT, CPU stacks, allocation, DATAS, events, exceptions, timeline, and call-tree analysis with JSON or SpeedScope. USE FOR: the user mentions pvanalyze, PerfView-style CLI trace analysis, or cross-platform .nettrace inspection; the task starts from an existing .nettrace file and needs. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires .NET 8 or later to run `pvanalyze`; trace collection usually requires `dotnet-trace`. Some scenarios require traces captured with verbose runtime providers or .NET 9+ DATAS events.",
       "path": "catalog/Tools/pvanalyze/skills/pvanalyze/",
-      "tokenCount": 1768,
+      "tokenCount": 1851,
       "links": {
         "repository": "https://github.com/adityamandaleeka/pvanalyze",
         "docs": "https://github.com/adityamandaleeka/pvanalyze#readme"
@@ -2701,10 +2701,10 @@
       "package": "webhint",
       "stack": "Frontend Quality",
       "lane": "Code Quality",
-      "description": "Use webhint in .NET repositories that ship browser-facing frontends. Use when a repo needs CLI audits for accessibility, performance, security headers, PWA signals, SEO, or runtime page quality against a served site or built frontend output.",
+      "description": "Use webhint in .NET repositories that ship browser-facing frontends. Use when a repo needs CLI audits for accessibility, performance, security headers, PWA signals, SEO, or runtime page quality against a. USE FOR: the repo ships a browser-facing site and the user asks about accessibility, performance, SEO, security headers, or page quality; the repo has .hintrc, hint scripts, or a. DO NOT USE FOR: JavaScript or TypeScript semantic linting; route that to eslint or biome; stylesheet-only linting; route that to stylelint. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with a browser-facing site or frontend build output; works best against a reachable local or deployed URL and a checked-in `.hintrc`.",
       "path": "catalog/Tools/webhint/skills/webhint/",
-      "tokenCount": 1094
+      "tokenCount": 1192
     }
   ],
   "bundles": [

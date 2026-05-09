@@ -1,6 +1,6 @@
 ---
 name: entity-framework6
-description: "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. Use when working in an EF6 codebase or planning a data layer migration."
+description: "Maintain or migrate EF6-based applications with realistic guidance on what to keep, what to modernize, and when EF Core is or is not the right next step. USE FOR: EF6 codebases; runtime versus ORM migration decisions; EDMX, code-first, ObjectContext, and legacy data-access review. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires EF6 or a transition plan from EF6 to EF Core or modern .NET."
 ---
 
@@ -34,12 +34,12 @@ compatibility: "Requires EF6 or a transition plan from EF6 to EF Core or modern 
    | EF6 → EF Core | Clean data layer, no EDMX, minimal stored-procedure mapping |
 
 3. **For maintenance work** — keep EF6 stable:
-   - use repository + unit of work patterns to isolate data access (see references/patterns.md)
+   - use repository + unit of work patterns to isolate data access (see [references/patterns.md](references/patterns.md))
    - prefer `DbContext` over `ObjectContext` for new code
    - use `AsNoTracking()` for read-only queries
    - configure concurrency tokens with `[ConcurrencyCheck]` or `IsRowVersion()`
 4. **For migration work** — validate each slice:
-   - map EF6 features to EF Core equivalents (see references/migration.md)
+   - map EF6 features to EF Core equivalents (see [references/migration.md](references/migration.md))
    - migrate one bounded context at a time, not the entire data layer
    - run integration tests against the real database provider, not InMemory
    - verify: `dotnet ef migrations add` succeeds, queries produce equivalent results, lazy loading behavior matches expectations
@@ -74,5 +74,5 @@ flowchart LR
 
 ## References
 
-- references/migration.md - decision framework, migration approaches, EF6-to-EF Core feature mapping, and common pitfalls
-- references/patterns.md - repository and unit of work patterns, query optimization, concurrency handling, auditing, and testing strategies for EF6 codebases
+- [references/migration.md](references/migration.md) - decision framework, migration approaches, EF6-to-EF Core feature mapping, and common pitfalls
+- [references/patterns.md](references/patterns.md) - repository and unit of work patterns, query optimization, concurrency handling, auditing, and testing strategies for EF6 codebases

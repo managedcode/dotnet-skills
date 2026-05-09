@@ -1,0 +1,10 @@
+tokens:
+  warningThreshold: 3500
+  fallbackLimit: 5000
+  limits:
+    defaults:
+      "catalog/**/SKILL.md": 5000
+      "catalog/**/AGENT.md": 3000
+      "catalog/**/references/**/*.md": 5000
+      "agents/**/AGENT.md": 3000
+      "*.md": 3000

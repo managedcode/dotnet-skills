@@ -1,6 +1,6 @@
 ---
 name: uno-platform
-description: "Build cross-platform .NET applications with Uno Platform targeting WebAssembly, iOS, Android, macOS, Linux, and Windows from a single XAML/C# codebase."
+description: "Build cross-platform .NET applications with Uno Platform targeting WebAssembly, iOS, Android, macOS, Linux, and Windows from a single XAML/C# codebase. USE FOR: building cross-platform apps from a single C# and XAML codebase; targeting WebAssembly, iOS, Android, macOS, Linux, and Windows simultaneously; migrating WPF or UWP. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires Uno Platform SDK and workloads for target platforms."
 ---
 
@@ -17,7 +17,7 @@ compatibility: "Requires Uno Platform SDK and workloads for target platforms."
 ## Documentation
 
 - [Uno Platform Overview](https://platform.uno/docs/articles/intro.html)
-- [Getting Started](https://platform.uno/docs/articles/getting-started.html)
+- [Getting Started](https://platform.uno/docs/articles/get-started.html?tabs=windows)
 - [Using Uno Platform with WinUI](https://platform.uno/docs/articles/winui-doc-links.html)
 - [Platform-Specific Code](https://platform.uno/docs/articles/platform-specific-xaml.html)
 - [MVUX Pattern](https://platform.uno/docs/articles/external/uno.extensions/doc/Overview/Mvux/Overview.html)

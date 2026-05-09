@@ -1,6 +1,6 @@
 ---
 name: workflow-foundation
-description: "Maintain or assess Workflow Foundation-based solutions on .NET Framework, especially where long-lived process logic or legacy designer artifacts still matter."
+description: "Maintain or assess Workflow Foundation-based solutions on .NET Framework, especially where long-lived process logic or legacy designer artifacts still matter. USE FOR: WF activities and workflows; designer-backed process logic; long-lived workflow state and persistence; keep, isolate, or replace decisions. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires WF or a migration plan away from it."
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: mcaf-agile-delivery
-description: "Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements."
+description: "Apply MCAF agile-delivery guidance for backlog quality, roles, ceremonies, and engineering feedback. Use when defining how the team plans, tracks work, and turns feedback into durable improvements. USE FOR: the team needs backlog, ceremony, role, or feedback-loop rules; delivery process is vague, too heavy, or living only in chat; recurring team pain needs to become durable. DO NOT USE FOR: repo governance that belongs in AGENTS.md; feature planning for one specific feature doc. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository access only when the repo stores delivery docs or governance guidance."
 ---
 
@@ -90,8 +90,8 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/agile-delivery.md` first
-- open `references/roles.md` only for a narrower topic
+- read [references/agile-delivery.md](references/agile-delivery.md) first
+- open [references/roles.md](references/roles.md) only for a narrower topic
 
 ## Example Requests
 

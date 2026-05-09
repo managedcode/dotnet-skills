@@ -1,6 +1,6 @@
 ---
 name: coverlet
-description: "Use the open-source free `coverlet` toolchain for .NET code coverage. Use when a repo needs line and branch coverage, collector versus MSBuild driver selection, or CI-safe coverage commands."
+description: "Use the open-source free `coverlet` toolchain for .NET code coverage. Use when a repo needs line and branch coverage, collector versus MSBuild driver selection, or CI-safe coverage commands. USE FOR: coverlet setup; CI line or branch coverage; choosing between collector and MSBuild drivers. DO NOT USE FOR: coverage report rendering by itself; repos that intentionally use a different coverage engine. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET test project or solution; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -104,9 +104,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/commands.md`
-- `references/patterns.md`
-- `references/coverlet.md`
+- [references/commands.md](references/commands.md)
+- [references/patterns.md](references/patterns.md)
+- [references/coverlet.md](references/coverlet.md)
 
 ## Example Requests
 

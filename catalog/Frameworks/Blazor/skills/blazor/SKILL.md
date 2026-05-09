@@ -1,6 +1,6 @@
 ---
 name: blazor
-description: "Build and review Blazor applications across server, WebAssembly, web app, and hybrid scenarios with correct component design, state flow, rendering, and hosting choices."
+description: "Build and review Blazor applications across server, WebAssembly, web app, and hybrid scenarios with correct component design, state flow, rendering, and hosting choices. USE FOR: building interactive web UIs with C# instead of JavaScript; choosing between Server, WebAssembly, or Auto render modes; designing component hierarchies and state. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires Blazor project (.NET 6+, preferably .NET 8+ for unified model)."
 ---
 

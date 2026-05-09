@@ -1,6 +1,6 @@
 ---
 name: managedcode-storage
-description: "Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept behind one library contract."
+description: "Use ManagedCode.Storage when a .NET application needs a provider-agnostic storage abstraction with explicit configuration, container selection, upload and download flows, and backend-specific integration kept. USE FOR: integrating ManagedCode.Storage into a .NET application; reviewing how a project abstracts file or object storage; deciding whether to centralize storage provider. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET application that integrates ManagedCode.Storage or evaluates it as a storage abstraction."
 ---
 

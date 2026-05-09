@@ -1,6 +1,6 @@
 ---
 name: htmlhint
-description: "Use HTMLHint in .NET repositories that ship static HTML output or standalone frontend templates. Use when a repo needs a focused CLI lint gate for DOM structure, invalid attributes, and basic HTML correctness checks on static pages."
+description: "Use HTMLHint in .NET repositories that ship static HTML output or standalone frontend templates. USE FOR: static HTML files; generated frontend output; standalone templates under wwwroot, dist, or other web folders; HTML structure checks. DO NOT USE FOR: raw .cshtml or .razor source with server-side directives; JavaScript or TypeScript linting. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository with static HTML assets or generated frontend output; use on rendered output rather than raw Razor or Blazor source files."
 ---
 

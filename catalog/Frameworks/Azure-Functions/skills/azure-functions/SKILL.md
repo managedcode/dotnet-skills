@@ -1,6 +1,6 @@
 ---
 name: azure-functions
-description: "Build, review, or migrate Azure Functions in .NET with correct execution model, isolated worker setup, bindings, DI, and Durable Functions patterns."
+description: "Build, review, or migrate Azure Functions in .NET with correct execution model, isolated worker setup, bindings, DI, and Durable Functions patterns. USE FOR: working on Azure Functions in .NET; migrating from the in-process model to the isolated worker model; adding Durable Functions, bindings, or host configuration. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires an Azure Functions project or a migration plan for one."
 ---
 

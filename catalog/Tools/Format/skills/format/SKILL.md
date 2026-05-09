@@ -1,6 +1,6 @@
 ---
 name: format
-description: "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. Use when a .NET repo needs formatting commands, `--verify-no-changes` CI checks, or `.editorconfig`-driven code style enforcement."
+description: "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. USE FOR: the repo uses dotnet format; you need a CI-safe formatting check for .NET; the repo wants .editorconfig-driven style enforcement. DO NOT USE FOR: repositories that intentionally use CSharpier as the only formatter; analyzer strategy with no formatting command change. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -99,9 +99,10 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/format.md`
-- `references/commands.md`
-- `references/config.md`
+- [references/format.md](references/format.md)
+- [references/dotnet-format.md](references/dotnet-format.md)
+- [references/commands.md](references/commands.md)
+- [references/config.md](references/config.md)
 
 ## Example Requests
 

@@ -1,6 +1,6 @@
 ---
 name: profiling
-description: "Use the free official .NET diagnostics CLI tools for profiling and runtime investigation in .NET repositories. Use when a repo needs CPU tracing, live counters, GC and allocation investigation, exception or contention tracing, heap snapshots, or startup diagnostics without GUI-only tooling."
+description: "Use the free official .NET diagnostics CLI tools for profiling and runtime investigation in .NET repositories. USE FOR: the repo needs performance or runtime profiling for a .NET application; the user asks about slow code, high CPU, GC pressure, allocation growth, exception storms, lock. DO NOT USE FOR: replacing realistic performance tests or load tests with ad-hoc tracing alone; production heap collection when the pause risk has not been. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET app or process to inspect; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -122,9 +122,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/commands.md`
-- `references/patterns.md`
-- `references/profiling.md`
+- [references/commands.md](references/commands.md)
+- [references/patterns.md](references/patterns.md)
+- [references/profiling.md](references/profiling.md)
 
 ## Example Requests
 

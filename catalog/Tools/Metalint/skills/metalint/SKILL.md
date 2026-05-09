@@ -1,6 +1,6 @@
 ---
 name: metalint
-description: "Use Metalint in .NET repositories that ship Node-based frontend assets and want one CLI entrypoint over several underlying linters. Use when a repo wants to orchestrate ESLint, Stylelint, HTMLHint, and related frontend checks from a single checked-in `.metalint/` configuration."
+description: "Use Metalint in .NET repositories that ship Node-based frontend assets and want one CLI entrypoint over several underlying linters. USE FOR: unified frontend lint commands; combined ESLint, Stylelint, HTMLHint, or similar checks; CI orchestration over multiple frontend linters. DO NOT USE FOR: simple repos where Biome already covers the required surface; teams that have not decided which underlying linters own each file type. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET repository with a Node-based frontend and multiple underlying linters; Metalint is an orchestrator, not a replacement for the actual linter configs it delegates to."
 ---
 

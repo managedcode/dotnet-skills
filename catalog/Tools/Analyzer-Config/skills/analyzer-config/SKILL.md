@@ -1,6 +1,6 @@
 ---
 name: analyzer-config
-description: "Use a repo-root `.editorconfig` to configure free .NET analyzer and style rules. Use when a .NET repo needs rule severity, code-style options, section layout, or analyzer ownership made explicit. Nested `.editorconfig` files are allowed when they serve a clear subtree-specific purpose."
+description: "Use a repo-root `.editorconfig` to configure free .NET analyzer and style rules. Use when a .NET repo needs rule severity, code-style options, section layout, or analyzer ownership made explicit. USE FOR: the repo needs a root .editorconfig; analyzer severity and style ownership are unclear; the team wants one source of truth for rule configuration. DO NOT USE FOR: choosing analyzers with no config change; formatting-only execution with no config ownership question. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -101,9 +101,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/analyzer-config.md`
-- `references/template.md`
-- `references/rules.md`
+- [references/analyzer-config.md](references/analyzer-config.md)
+- [references/template.md](references/template.md)
+- [references/rules.md](references/rules.md)
 
 ## Example Requests
 

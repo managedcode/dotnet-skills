@@ -1,6 +1,6 @@
 ---
 name: tunit
-description: "Write, run, or repair .NET tests that use TUnit. Use when a repo uses `TUnit`, `TUnit.Playwright`, `[Test]`, `[Arguments]`, `ClassDataSource`, `SharedType.PerTestSession`, or Microsoft.Testing.Platform-based execution."
+description: "Write, run, or repair .NET tests that use TUnit. Use when a repo uses `TUnit`, `TUnit.Playwright`, `[Test]`, `[Arguments]`, `ClassDataSource`, `SharedType.PerTestSession`, or Microsoft.Testing.Platform-based. USE FOR: the repo uses TUnit; you need to add, run, debug, or repair TUnit tests; the repo uses Microsoft.Testing.Platform-based test execution. DO NOT USE FOR: xUnit projects; MSTest projects. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET solution or project with TUnit packages; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -130,10 +130,10 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/patterns.md`
-- `references/migration.md`
-- `references/tunit.md`
-- `references/integration-testing.md`
+- [references/patterns.md](references/patterns.md)
+- [references/migration.md](references/migration.md)
+- [references/tunit.md](references/tunit.md)
+- [references/integration-testing.md](references/integration-testing.md)
 
 ## Running Tests
 
@@ -159,7 +159,7 @@ dotnet test MySolution.sln -- --coverage --coverage-output coverage.cobertura.xm
 dotnet run --project tests/MyProject.Tests/MyProject.Tests.csproj -- --help
 ```
 
-Filter syntax: `/<Assembly>/<Namespace>/<Class>/<Test>` with `*` wildcards. See `references/patterns.md` for full examples.
+Filter syntax: `/<Assembly>/<Namespace>/<Class>/<Test>` with `*` wildcards. See [references/patterns.md](references/patterns.md) for full examples.
 
 ## Example Requests
 

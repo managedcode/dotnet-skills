@@ -1,6 +1,6 @@
 ---
 name: mcaf-human-review-planning
-description: "Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the files a human should inspect first. Use when the codebase is too large to review line-by-line and you need a practical review sequence plus a prioritized file list."
+description: "Apply MCAF human-review-planning guidance for a large AI-generated code drop by reading the target area, tracing the natural user and system flows, identifying the riskiest boundaries, and prioritizing the. USE FOR: a large AI-generated code drop needs a human review plan; the reviewer cannot inspect every line and needs prioritization; the user asks which files are highest risk. DO NOT USE FOR: normal small pull-request review; automated bug finding without creating a human review sequence. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository read access; may write a `HUMAN_REVIEW_PLAN.md` file under docs, or to an exact docs path the user specifies, when the user asks for a saved review plan."
 ---
 
@@ -112,8 +112,8 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/review-plan-format.md` for the output shape
-- read `references/risk-signals.md` when deciding what deserves human attention first
+- read [references/review-plan-format.md](references/review-plan-format.md) for the output shape
+- read [references/risk-signals.md](references/risk-signals.md) when deciding what deserves human attention first
 
 ## Example Requests
 

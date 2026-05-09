@@ -1,6 +1,6 @@
 ---
 name: minimal-apis
-description: "Design and implement Minimal APIs in ASP.NET Core using handler-first endpoints, route groups, filters, and lightweight composition suited to modern .NET services."
+description: "Design and implement Minimal APIs in ASP.NET Core using handler-first endpoints, route groups, filters, and lightweight composition suited to modern .NET services. USE FOR: building new HTTP APIs in ASP.NET Core; creating lightweight microservices; choosing between Minimal APIs and controllers. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires ASP.NET Core 6+, preferably .NET 8+ for full features."
 ---
 

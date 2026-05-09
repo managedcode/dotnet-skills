@@ -1,6 +1,6 @@
 ---
 name: mlnet
-description: "Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations."
+description: "Use ML.NET to train, evaluate, or integrate machine-learning models into .NET applications with realistic data preparation, inference, and deployment expectations. USE FOR: ML.NET integration; local model training or retraining; inference pipelines, model loading, evaluation, and deployment review. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires ML.NET, Model Builder, or ML.NET CLI scenarios."
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: roslynator
-description: "Use the open-source free `Roslynator` analyzer packages and optional CLI for .NET. Use when a repo wants broad C# static analysis, auto-fix flows, dead-code detection, optional CLI checks, or extra rules beyond the SDK analyzers."
+description: "Use the open-source free `Roslynator` analyzer packages and optional CLI for .NET. USE FOR: Roslynator.Analyzers setup; Roslynator CLI checks or cleanup; C# linting, static analysis, and code-fix automation. DO NOT USE FOR: overlapping analyzer packs with no consolidation plan; formatting-only work owned by another formatter. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -112,9 +112,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/rules.md`
-- `references/config.md`
-- `references/roslynator.md`
+- [references/rules.md](references/rules.md)
+- [references/config.md](references/config.md)
+- [references/roslynator.md](references/roslynator.md)
 
 ## Example Requests
 

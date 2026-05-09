@@ -1,6 +1,6 @@
 ---
 name: mcp
-description: "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation."
+description: "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. USE FOR: .NET MCP servers or clients; stdio versus HTTP transport choices; tools, resources, prompts, completions, and capability negotiation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.1.x SDK."
 ---
 
@@ -37,8 +37,8 @@ compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol
 
 Load only what the task needs:
 
-- [`references/patterns.md`](references/patterns.md) - current server/client patterns, transports, capabilities, filters, and chat-client integration
-- [`references/security.md`](references/security.md) - safe error handling, auth boundaries, stdio logging hygiene, and defensive tool/resource patterns
+- [references/patterns.md](references/patterns.md) - current server/client patterns, transports, capabilities, filters, and chat-client integration
+- [references/security.md](references/security.md) - safe error handling, auth boundaries, stdio logging hygiene, and defensive tool/resource patterns
 
 ## Package Selection
 

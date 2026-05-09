@@ -1,6 +1,6 @@
 ---
 name: mcaf-ui-ux
-description: "Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. Use when bootstrapping a UI project, choosing front-end stack, or tightening design and accessibility practices."
+description: "Apply MCAF UI/UX guidance for design systems, accessibility, front-end technology selection, and design-to-development collaboration. USE FOR: bootstrapping a UI project; choosing front-end stack or design-system direction; tightening accessibility or design-to-development collaboration. DO NOT USE FOR: pure backend or infrastructure work; vague visual taste debates with no delivery consequence. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires repository access when UI docs, component guidance, or design system rules live in the repo."
 ---
 
@@ -85,8 +85,8 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- read `references/ui-ux.md` first
-- open `references/recommended-technologies.md` when the active question is front-end stack or tech selection
+- read [references/ui-ux.md](references/ui-ux.md) first
+- open [references/recommended-technologies.md](references/recommended-technologies.md) when the active question is front-end stack or tech selection
 
 ## Example Requests
 

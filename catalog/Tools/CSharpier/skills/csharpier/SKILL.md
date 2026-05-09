@@ -1,6 +1,6 @@
 ---
 name: csharpier
-description: "Use the open-source free `CSharpier` formatter for C# and XML. Use when a .NET repo intentionally wants one opinionated formatter instead of a highly configurable `dotnet format`-driven style model."
+description: "Use the open-source free `CSharpier` formatter for C# and XML. Use when a .NET repo intentionally wants one opinionated formatter instead of a highly configurable `dotnet format`-driven style model. USE FOR: the repo uses or wants CSharpier; the team prefers an opinionated formatter over many configurable style knobs. DO NOT USE FOR: repos that already standardized on dotnet format as the only formatter. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
 ---
 
@@ -96,9 +96,9 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Load References
 
-- `references/commands.md`
-- `references/config.md`
-- `references/csharpier.md`
+- [references/commands.md](references/commands.md)
+- [references/config.md](references/config.md)
+- [references/csharpier.md](references/csharpier.md)
 
 ## Example Requests
 
