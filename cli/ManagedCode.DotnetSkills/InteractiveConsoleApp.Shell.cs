@@ -21,6 +21,7 @@ using ManagedCode.DotnetSkills.Runtime;
 using SharpConsoleUI;
 using SharpConsoleUI.Builders;
 using SharpConsoleUI.Controls;
+using SharpConsoleUI.Core;
 using SharpConsoleUI.Drivers;
 using SharpConsoleUI.Helpers;
 using SharpConsoleUI.Layout;
@@ -313,6 +314,7 @@ internal sealed partial class InteractiveConsoleApp
         _activePanel = panel;
         _currentPage = action;
         AttachSessionEvents();
+        ClearStickyStatus();
         switch (action)
         {
             case HomeAction.BrowseSkills: BuildSkillBrowserPage(ws, panel); break;
@@ -343,6 +345,7 @@ internal sealed partial class InteractiveConsoleApp
         _activePanel = panel;
         _currentPage = null;
         AttachSessionEvents();
+        ClearStickyStatus();
         panel.ClearContents();
 
         var layout = ResolveSkillLayout();
@@ -574,15 +577,19 @@ internal sealed partial class InteractiveConsoleApp
             ("Install into current target", () =>
             {
                 var summary = SafeGet(() => new SkillInstaller(skillCatalog).Install(new[] { skill }, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
-                Toast(summary is null
-                    ? $"Install failed for {ToAlias(skill.Name)}"
-                    : $"{ToAlias(skill.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                if (summary is null)
+                    Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
+                else
+                    Toast($"{ToAlias(skill.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped", NotificationSeverity.Success);
                 BuildSkillBrowserPage(ws, owner);
             }),
             ("Force reinstall", () =>
             {
                 var summary = SafeGet(() => new SkillInstaller(skillCatalog).Install(new[] { skill }, ResolveSkillLayout(), force: true), default(SkillInstallSummary));
-                Toast(summary is null ? $"Install failed for {ToAlias(skill.Name)}" : $"{ToAlias(skill.Name)}: reinstalled ({summary.InstalledCount} written)");
+                if (summary is null)
+                    Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
+                else
+                    Toast($"{ToAlias(skill.Name)}: reinstalled ({summary.InstalledCount} written)", NotificationSeverity.Success);
                 BuildSkillBrowserPage(ws, owner);
             }));
     }
@@ -637,7 +644,7 @@ internal sealed partial class InteractiveConsoleApp
                 .OnClick((_, _) =>
                 {
                     var summaryText = UpdateSkillRecords(outdated);
-                    Toast(summaryText);
+                    Toast(summaryText, summaryText.Contains("failed", StringComparison.OrdinalIgnoreCase) ? NotificationSeverity.Danger : NotificationSeverity.Success);
                     BuildInstalledPage(ws, panel);
                 }).Build());
         }
@@ -648,7 +655,7 @@ internal sealed partial class InteractiveConsoleApp
                 () =>
                 {
                     var summary = SafeGet(() => new SkillInstaller(skillCatalog).Remove(installed.Select(r => r.Skill).ToArray(), layout), default(SkillRemoveSummary));
-                    Toast(summary is null ? "Remove failed" : $"Removed {summary.RemovedCount} skill(s)");
+                    ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {summary.RemovedCount} skill(s)");
                     BuildInstalledPage(ws, panel);
                 })).Build());
     }
@@ -672,20 +679,21 @@ internal sealed partial class InteractiveConsoleApp
         {
             buttons.Add(($"Update to {record.Skill.Version}", () =>
             {
-                Toast(UpdateSkillRecords(new[] { record }));
+                var msg = UpdateSkillRecords(new[] { record });
+                Toast(msg, msg.Contains("failed", StringComparison.OrdinalIgnoreCase) ? NotificationSeverity.Danger : NotificationSeverity.Success);
                 BuildInstalledPage(ws, owner);
             }));
         }
         buttons.Add(("Reinstall (force)", () =>
         {
             var summary = SafeGet(() => new SkillInstaller(skillCatalog).Install(new[] { record.Skill }, ResolveSkillLayout(), force: true), default(SkillInstallSummary));
-            Toast(summary is null ? "Reinstall failed" : $"{ToAlias(record.Skill.Name)}: reinstalled");
+            ToastResult(summary, "Reinstall failed", $"{ToAlias(record.Skill.Name)}: reinstalled");
             BuildInstalledPage(ws, owner);
         }));
         buttons.Add(("Remove", () => ConfirmModal(ws, $"Remove {ToAlias(record.Skill.Name)}?", $"Deletes the skill directory from {ResolveSkillLayout().PrimaryRoot.FullName}.", () =>
         {
             var summary = SafeGet(() => new SkillInstaller(skillCatalog).Remove(new[] { record.Skill }, ResolveSkillLayout()), default(SkillRemoveSummary));
-            Toast(summary is null ? "Remove failed" : $"Removed {ToAlias(record.Skill.Name)}");
+            ToastResult(summary, "Remove failed", $"Removed {ToAlias(record.Skill.Name)}");
             BuildInstalledPage(ws, owner);
         })));
 
@@ -751,7 +759,7 @@ internal sealed partial class InteractiveConsoleApp
                     {
                         var skills = SafeGet(() => new SkillInstaller(skillCatalog).SelectSkillsFromCollections(new[] { view.Collection }), Array.Empty<SkillEntry>());
                         var summary = skills.Count == 0 ? null : SafeGet(() => new SkillInstaller(skillCatalog).Install(skills, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
-                        Toast(summary is null ? $"Could not install collection {view.Collection}" : $"{view.Collection}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                        ToastResult(summary, $"Could not install collection {view.Collection}", summary is null ? string.Empty : $"{view.Collection}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
                         BuildCollectionsPage(ws, panel);
                     });
             }
@@ -820,7 +828,7 @@ internal sealed partial class InteractiveConsoleApp
             {
                 var skills = SafeGet(() => new SkillInstaller(skillCatalog).SelectSkillsFromPackages(new[] { package.Name }), Array.Empty<SkillEntry>());
                 var summary = skills.Count == 0 ? null : SafeGet(() => new SkillInstaller(skillCatalog).Install(skills, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
-                Toast(summary is null ? $"Could not install bundle {package.Name}" : $"{package.Name}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                ToastResult(summary, $"Could not install bundle {package.Name}", summary is null ? string.Empty : $"{package.Name}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
                 BuildBundlesPage(ws, owner, primaryOnly);
             }));
     }
@@ -918,11 +926,11 @@ internal sealed partial class InteractiveConsoleApp
                 var detected = SafeGet(() => AgentInstallTarget.ResolveAllDetected(Session.ProjectDirectory, Session.Scope), Array.Empty<AgentInstallLayout>());
                 if (detected.Count == 0)
                 {
-                    Toast("No native agent directories detected");
+                    Toast("No native agent directories detected", NotificationSeverity.Warning);
                     return;
                 }
                 var summary2 = SafeGet(() => new AgentInstaller(agentCatalog).InstallToMultiple(agentCatalog.Agents, detected, force: false), default(AgentInstallSummary));
-                Toast(summary2 is null ? "Install failed" : $"Installed {summary2.InstalledCount} agent file(s) across {detected.Count} platform(s)");
+                ToastResult(summary2, "Install failed", summary2 is null ? string.Empty : $"Installed {summary2.InstalledCount} agent file(s) across {detected.Count} platform(s)");
                 BuildAgentsPage(ws, panel);
             }).Build());
     }
@@ -945,13 +953,13 @@ internal sealed partial class InteractiveConsoleApp
             buttons.Add(("Install into current target", () =>
             {
                 var summary = SafeGet(() => new AgentInstaller(agentCatalog).Install(new[] { agent }, layout, force: false), default(AgentInstallSummary));
-                Toast(summary is null ? "Install failed" : $"{ToAlias(agent.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                ToastResult(summary, "Install failed", summary is null ? string.Empty : $"{ToAlias(agent.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
                 BuildAgentsPage(ws, owner);
             }));
             buttons.Add(("Remove from current target", () =>
             {
                 var summary = SafeGet(() => new AgentInstaller(agentCatalog).Remove(new[] { agent }, layout), default(AgentRemoveSummary));
-                Toast(summary is null ? "Remove failed" : $"Removed {ToAlias(agent.Name)} ({summary.RemovedCount} file(s))");
+                ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {ToAlias(agent.Name)} ({summary.RemovedCount} file(s))");
                 BuildAgentsPage(ws, owner);
             }));
         }
@@ -1022,7 +1030,7 @@ internal sealed partial class InteractiveConsoleApp
                 // otherwise be reported as skipped and stay outdated.
                 var isOutdated = installedByName.TryGetValue(recommendation.Skill.Name, out var existing) && !existing.IsCurrent;
                 var summary2 = SafeGet(() => new SkillInstaller(skillCatalog).Install(new[] { recommendation.Skill }, ResolveSkillLayout(), force: isOutdated), default(SkillInstallSummary));
-                Toast(summary2 is null ? $"Install failed for {ToAlias(recommendation.Skill.Name)}" : $"{ToAlias(recommendation.Skill.Name)}: {summary2.InstalledCount} written, {summary2.SkippedExisting.Count} skipped");
+                ToastResult(summary2, $"Install failed for {ToAlias(recommendation.Skill.Name)}", summary2 is null ? string.Empty : $"{ToAlias(recommendation.Skill.Name)}: {summary2.InstalledCount} written, {summary2.SkippedExisting.Count} skipped");
                 BuildProjectPage(ws, panel);
             }
         });
@@ -1052,7 +1060,8 @@ internal sealed partial class InteractiveConsoleApp
                     var updateSummary = outdatedSkills.Length == 0 ? default : SafeGet(() => installer2.Install(outdatedSkills, skillLayout, force: true), default(SkillInstallSummary));
                     var installedCount = (newSummary?.InstalledCount ?? 0) + (updateSummary?.InstalledCount ?? 0);
                     var skippedCount = (newSummary?.SkippedExisting.Count ?? 0) + (updateSummary?.SkippedExisting.Count ?? 0);
-                    Toast(installedCount == 0 && skippedCount == 0 ? "Install failed" : $"Installed {installedCount}, skipped {skippedCount}");
+                    var failed = installedCount == 0 && skippedCount == 0;
+                    Toast(failed ? "Install failed" : $"Installed {installedCount}, skipped {skippedCount}", failed ? NotificationSeverity.Danger : NotificationSeverity.Success);
                     BuildProjectPage(ws, panel);
                 }).Build());
         }
@@ -1136,7 +1145,7 @@ internal sealed partial class InteractiveConsoleApp
             .OnClick((_, _) => ConfirmModal(ws, "Remove all installed skills?", $"Deletes every catalog skill directory under {layout.PrimaryRoot.FullName}.", () =>
             {
                 var summary = SafeGet(() => new SkillInstaller(skillCatalog).Remove(installed.Select(r => r.Skill).ToArray(), layout), default(SkillRemoveSummary));
-                Toast(summary is null ? "Remove failed" : $"Removed {summary.RemovedCount} skill(s)");
+                ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {summary.RemovedCount} skill(s)");
                 BuildRemoveAllPage(ws, panel);
             })).Build());
     }
@@ -1167,7 +1176,8 @@ internal sealed partial class InteractiveConsoleApp
         panel.AddControl(Controls.Button($"Update all {outdated.Length} skill(s)")
             .OnClick((_, _) =>
             {
-                Toast(UpdateSkillRecords(outdated));
+                var msg = UpdateSkillRecords(outdated);
+                Toast(msg, msg.Contains("failed", StringComparison.OrdinalIgnoreCase) ? NotificationSeverity.Danger : NotificationSeverity.Success);
                 BuildUpdateAllPage(ws, panel);
             }).Build());
     }
@@ -1204,30 +1214,30 @@ internal sealed partial class InteractiveConsoleApp
                     ChooseEnumModal(ws, "Install platform", Enum.GetValues<AgentPlatform>(), Session.Agent, value =>
                     {
                         Session.Agent = value;
-                        Toast($"Platform set to {value}");
-                        BuildSettingsPage(ws, panel);
+                        Toast($"Platform set to {value}", NotificationSeverity.Success);
+                        // The AgentChanged event from Commit 1's live-state plumbing will rebuild
+                        // the page; no explicit BuildSettingsPage call needed.
                     });
                     break;
                 case "scope":
                     ChooseEnumModal(ws, "Install scope", Enum.GetValues<InstallScope>(), Session.Scope, value =>
                     {
                         Session.Scope = value;
-                        Toast($"Scope set to {value}");
-                        BuildSettingsPage(ws, panel);
+                        Toast($"Scope set to {value}", NotificationSeverity.Success);
                     });
                     break;
                 case "refresh":
                     try
                     {
-                        Toast("Refreshing catalog…");
+                        Toast("Refreshing catalog…", NotificationSeverity.Info);
                         LoadCatalogsAsync(refreshCatalog: true).GetAwaiter().GetResult();
-                        Toast($"Catalog refreshed: {skillCatalog.CatalogVersion} ({skillCatalog.Skills.Count} skills)");
+                        Toast($"Catalog refreshed: {skillCatalog.CatalogVersion} ({skillCatalog.Skills.Count} skills)", NotificationSeverity.Success);
+                        Session.RaiseSnapshotChanged();
                     }
                     catch (Exception exception)
                     {
-                        Toast($"Refresh failed: {exception.Message}");
+                        Toast($"Refresh failed: {exception.Message}", NotificationSeverity.Danger);
                     }
-                    BuildSettingsPage(ws, panel);
                     break;
             }
         });
@@ -1462,12 +1472,51 @@ internal sealed partial class InteractiveConsoleApp
         }
     }
 
-    private void Toast(string message)
+    /// <summary>
+    /// Shows a transient notification. Info/Success render only as a sliding card; Warning/Danger
+    /// also leave a sticky line in the bottom status bar until the next page change so the user
+    /// has time to read it. Default severity is Info.
+    /// </summary>
+    private void Toast(string message, NotificationSeverity? severity = null)
     {
+        if (string.IsNullOrEmpty(message)) { ClearStickyStatus(); return; }
+
+        var sev = severity ?? NotificationSeverity.Info;
+        _ws?.NotificationStateService.ShowNotification(title: string.Empty, message, sev);
+
         if (_statusMessage is not null)
         {
-            _statusMessage.Label = string.IsNullOrEmpty(message) ? string.Empty : $"[grey70]{Escape(message)}[/]";
+            if (sev == NotificationSeverity.Warning)
+            {
+                _statusMessage.Label = $"[yellow]⚠ {Escape(message)}[/]";
+            }
+            else if (sev == NotificationSeverity.Danger)
+            {
+                _statusMessage.Label = $"[red]✘ {Escape(message)}[/]";
+            }
+            else
+            {
+                // Info / Success / None — the slide-in card carries the feedback; keep the bar quiet.
+                _statusMessage.Label = string.Empty;
+            }
         }
+    }
+
+    private void ClearStickyStatus()
+    {
+        if (_statusMessage is not null) _statusMessage.Label = string.Empty;
+    }
+
+    /// <summary>
+    /// Convenience for "install/remove" callers: a null result is treated as a failure (rendered
+    /// as a red toast with sticky status); a non-null result is success (transient green toast).
+    /// </summary>
+    private void ToastResult(object? result, string failureMessage, string successMessage)
+    {
+        if (result is null)
+            Toast(failureMessage, NotificationSeverity.Danger);
+        else
+            Toast(successMessage, NotificationSeverity.Success);
     }
 
     private async Task ClockLoopAsync(Window window, CancellationToken cancellationToken)
@@ -1495,13 +1544,13 @@ internal sealed partial class InteractiveConsoleApp
     {
         try
         {
-            Toast("Refreshing catalog…");
+            Toast("Refreshing catalog…", NotificationSeverity.Info);
             LoadCatalogsAsync(refreshCatalog: true).GetAwaiter().GetResult();
-            Toast($"Catalog refreshed: {skillCatalog.CatalogVersion} ({skillCatalog.Skills.Count} skills)");
+            Toast($"Catalog refreshed: {skillCatalog.CatalogVersion} ({skillCatalog.Skills.Count} skills)", NotificationSeverity.Success);
         }
         catch (Exception exception)
         {
-            Toast($"Refresh failed: {exception.Message}");
+            Toast($"Refresh failed: {exception.Message}", NotificationSeverity.Danger);
         }
 
         // RaiseSnapshotChanged fires the AttachSessionEvents handler which calls
@@ -1518,11 +1567,12 @@ internal sealed partial class InteractiveConsoleApp
             .ToArray();
         if (outdated.Length == 0)
         {
-            Toast("No outdated skills in this target");
+            Toast("No outdated skills in this target", NotificationSeverity.Warning);
             return;
         }
 
-        Toast(UpdateSkillRecords(outdated));
+        var msg = UpdateSkillRecords(outdated);
+        Toast(msg, msg.Contains("failed", StringComparison.OrdinalIgnoreCase) ? NotificationSeverity.Danger : NotificationSeverity.Success);
         RebuildActivePage();
     }
 
@@ -1537,14 +1587,14 @@ internal sealed partial class InteractiveConsoleApp
         var installed = SafeGet(() => new SkillInstaller(skillCatalog).GetInstalledSkills(layout), Array.Empty<InstalledSkillRecord>());
         if (installed.Count == 0)
         {
-            Toast("Nothing to remove in this target");
+            Toast("Nothing to remove in this target", NotificationSeverity.Warning);
             return;
         }
 
         ConfirmModal(_ws, "Remove all installed skills?", $"Deletes every catalog skill from {layout.PrimaryRoot.FullName}.", () =>
         {
             var summary = SafeGet(() => new SkillInstaller(skillCatalog).Remove(installed.Select(record => record.Skill).ToArray(), layout), default(SkillRemoveSummary));
-            Toast(summary is null ? "Remove failed" : $"Removed {summary.RemovedCount} skill(s)");
+            ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {summary.RemovedCount} skill(s)");
             RebuildActivePage();
         });
     }
@@ -1554,7 +1604,7 @@ internal sealed partial class InteractiveConsoleApp
         var scan = SafeGet(() => new ProjectSkillRecommender(skillCatalog).Analyze(Session.ProjectDirectory), null);
         if (scan is null)
         {
-            Toast("Project scan failed");
+            Toast("Project scan failed", NotificationSeverity.Danger);
             return;
         }
 
@@ -1573,7 +1623,7 @@ internal sealed partial class InteractiveConsoleApp
             .ToArray();
         if (newSkills.Length == 0 && outdatedSkills.Length == 0)
         {
-            Toast("No new recommended skills to install");
+            Toast("No new recommended skills to install", NotificationSeverity.Warning);
             return;
         }
 
@@ -1583,7 +1633,8 @@ internal sealed partial class InteractiveConsoleApp
         var updateSummary = outdatedSkills.Length == 0 ? default : SafeGet(() => installer.Install(outdatedSkills, layout, force: true), default(SkillInstallSummary));
         var installedCount = (newSummary?.InstalledCount ?? 0) + (updateSummary?.InstalledCount ?? 0);
         var skippedCount = (newSummary?.SkippedExisting.Count ?? 0) + (updateSummary?.SkippedExisting.Count ?? 0);
-        Toast(installedCount == 0 && skippedCount == 0 ? "Install failed" : $"Installed {installedCount}, skipped {skippedCount}");
+        var failed = installedCount == 0 && skippedCount == 0;
+        Toast(failed ? "Install failed" : $"Installed {installedCount}, skipped {skippedCount}", failed ? NotificationSeverity.Danger : NotificationSeverity.Success);
         RebuildActivePage();
     }
 
