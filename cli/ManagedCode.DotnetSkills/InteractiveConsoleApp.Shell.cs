@@ -243,6 +243,18 @@ internal sealed partial class InteractiveConsoleApp
     }
 
     /// <summary>
+    /// Navigates to a HomeAction page without going through the NavigationView rail — used by
+    /// the clickable Home metric cards and the command palette. The rail's visual selection
+    /// state won't follow, but the content panel rebuilds and status bars update.
+    /// </summary>
+    private void NavigateTo(HomeAction action)
+    {
+        if (_ws is null || _activePanel is null) return;
+        BuildActionPage(_ws, _activePanel, action);
+        RebuildStatusBar(action);
+    }
+
+    /// <summary>
     /// Replaces any prior session-event subscriptions with a fresh one bound to the active page,
     /// so flipping Session.Scope/Agent/Project from anywhere refreshes the open page in place.
     /// Must be called at the top of every page builder.
@@ -363,12 +375,13 @@ internal sealed partial class InteractiveConsoleApp
         // catalog telemetry — five native metric cards laid out by HorizontalGrid (responsive flex).
         var installedAccent = installed.Count > 0 ? AccentGreen : AccentGrey;
         var outdatedAccent = outdated == 0 ? AccentGreen : AccentYellow;
+        // Cards are clickable navigation targets — click "outdated" to jump to Installed, etc.
         var telemetryGrid = Controls.HorizontalGrid()
-            .Column(col => col.Flex(1).Add(BuildMetricCard("skills", skillCatalog.Skills.Count.ToString(), "in catalog", AccentDeepSkyBlue)))
-            .Column(col => col.Flex(1).Add(BuildMetricCard("bundles", GetPrimaryBundles().Count.ToString(), "focused", AccentTurquoise)))
-            .Column(col => col.Flex(1).Add(BuildMetricCard("installed", $"{installed.Count}/{skillCatalog.Skills.Count}", "in current target", installedAccent)))
-            .Column(col => col.Flex(1).Add(BuildMetricCard("outdated", outdated.ToString(), outdated == 0 ? "all current" : "need update", outdatedAccent)))
-            .Column(col => col.Flex(1).Add(BuildMetricCard("agents", agentCatalog.Agents.Count.ToString(), "orchestration", AccentMediumPurple)))
+            .Column(col => col.Flex(1).Add(BuildMetricCard("skills", skillCatalog.Skills.Count.ToString(), "in catalog", AccentDeepSkyBlue, () => NavigateTo(HomeAction.BrowseSkills))))
+            .Column(col => col.Flex(1).Add(BuildMetricCard("bundles", GetPrimaryBundles().Count.ToString(), "focused", AccentTurquoise, () => NavigateTo(HomeAction.BrowseBundles))))
+            .Column(col => col.Flex(1).Add(BuildMetricCard("installed", $"{installed.Count}/{skillCatalog.Skills.Count}", "in current target", installedAccent, () => NavigateTo(HomeAction.ManageInstalled))))
+            .Column(col => col.Flex(1).Add(BuildMetricCard("outdated", outdated.ToString(), outdated == 0 ? "all current" : "need update", outdatedAccent, () => NavigateTo(HomeAction.ManageInstalled))))
+            .Column(col => col.Flex(1).Add(BuildMetricCard("agents", agentCatalog.Agents.Count.ToString(), "orchestration", AccentMediumPurple, () => NavigateTo(HomeAction.BrowseAgents))))
             .Build();
         panel.AddControl(telemetryGrid);
 
@@ -417,13 +430,15 @@ internal sealed partial class InteractiveConsoleApp
     /// A native metric card: three stacked lines (title accent, value bold, detail grey) inside
     /// a rounded PanelControl with an accent border. Used in HorizontalGrid columns.
     /// </summary>
-    private static PanelControl BuildMetricCard(string title, string value, string detail, Color accent)
+    /// <param name="onClick">Optional click handler — when non-null, the card becomes a
+    /// navigation target via its MouseClick event.</param>
+    private static PanelControl BuildMetricCard(string title, string value, string detail, Color accent, Action? onClick = null)
     {
         // Multi-line markup body — PanelControl splits on \n and wraps each line.
         var body = string.Join("\n",
             $"[bold]{Escape(value)}[/]",
             $"[grey50]{Escape(detail)}[/]");
-        return Controls.Panel()
+        var card = Controls.Panel()
             .WithHeader($"[bold]{Escape(title)}[/]")
             .WithBorderStyle(BorderStyle.Rounded)
             .WithBorderColor(accent)
@@ -431,6 +446,11 @@ internal sealed partial class InteractiveConsoleApp
             .WithContent(body)
             .WithAlignment(HorizontalAlignment.Stretch)
             .Build();
+        if (onClick is not null)
+        {
+            card.MouseClick += (_, _) => onClick();
+        }
+        return card;
     }
 
     /// <summary>
@@ -1201,47 +1221,46 @@ internal sealed partial class InteractiveConsoleApp
             ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
             ("build", ToolVersionInfo.IsDevelopmentBuild ? "[grey50]local development[/]" : "[green]published[/]")));
 
-        var list = StyledList("Settings (Enter to change)")
-            .MaxVisibleItems(8);
-        list.AddItem($"Platform: {Session.Agent}", "platform");
-        list.AddItem($"Install scope: {Session.Scope}", "scope");
-        list.AddItem("Refresh catalog now", "refresh");
-        list.OnItemActivated((_, item) =>
-        {
-            switch (item.Tag as string)
+        // Inline form: native dropdowns (change-on-pick, no modal) for Platform/Scope,
+        // a plain Button for catalog refresh. SelectedIndexChanged fires only on user
+        // interaction (DropdownBuilder attaches the handler AFTER SelectedIndex is set),
+        // so no guard flag is needed against the initial-paint pulse.
+        var platformValues = Enum.GetValues<AgentPlatform>();
+        var platformDropdown = Controls.Dropdown("Platform")
+            .AddItems(platformValues.Select(v => v.ToString()).ToArray())
+            .SelectedIndex(Array.IndexOf(platformValues, Session.Agent))
+            .OnSelectionChanged((_, idx) =>
             {
-                case "platform":
-                    ChooseEnumModal(ws, "Install platform", Enum.GetValues<AgentPlatform>(), Session.Agent, value =>
-                    {
-                        Session.Agent = value;
-                        Toast($"Platform set to {value}", NotificationSeverity.Success);
-                        // The AgentChanged event from Commit 1's live-state plumbing will rebuild
-                        // the page; no explicit BuildSettingsPage call needed.
-                    });
-                    break;
-                case "scope":
-                    ChooseEnumModal(ws, "Install scope", Enum.GetValues<InstallScope>(), Session.Scope, value =>
-                    {
-                        Session.Scope = value;
-                        Toast($"Scope set to {value}", NotificationSeverity.Success);
-                    });
-                    break;
-                case "refresh":
-                    try
-                    {
-                        Toast("Refreshing catalog…", NotificationSeverity.Info);
-                        LoadCatalogsAsync(refreshCatalog: true).GetAwaiter().GetResult();
-                        Toast($"Catalog refreshed: {skillCatalog.CatalogVersion} ({skillCatalog.Skills.Count} skills)", NotificationSeverity.Success);
-                        Session.RaiseSnapshotChanged();
-                    }
-                    catch (Exception exception)
-                    {
-                        Toast($"Refresh failed: {exception.Message}", NotificationSeverity.Danger);
-                    }
-                    break;
-            }
-        });
-        panel.AddControl(list.Build());
+                if (idx < 0 || idx >= platformValues.Length) return;
+                var chosen = platformValues[idx];
+                if (chosen.Equals(Session.Agent)) return;
+                Session.Agent = chosen;
+                Toast($"Platform set to {chosen}", NotificationSeverity.Success);
+            })
+            .Build();
+
+        var scopeValues = Enum.GetValues<InstallScope>();
+        var scopeDropdown = Controls.Dropdown("Scope")
+            .AddItems(scopeValues.Select(v => v.ToString()).ToArray())
+            .SelectedIndex(Array.IndexOf(scopeValues, Session.Scope))
+            .OnSelectionChanged((_, idx) =>
+            {
+                if (idx < 0 || idx >= scopeValues.Length) return;
+                var chosen = scopeValues[idx];
+                if (chosen.Equals(Session.Scope)) return;
+                Session.Scope = chosen;
+                Toast($"Scope set to {chosen}", NotificationSeverity.Success);
+            })
+            .Build();
+
+        panel.AddControl(BuildSectionPanel("install target", "[grey50]Platform and scope control where skills and agents are written. Changes take effect immediately.[/]", AccentDeepSkyBlue));
+        panel.AddControl(platformDropdown);
+        panel.AddControl(scopeDropdown);
+
+        panel.AddControl(BuildSectionPanel("catalog", "[grey50]Pull the latest catalog from upstream.[/]", AccentTurquoise));
+        panel.AddControl(Controls.Button("Refresh catalog now")
+            .OnClick((_, _) => RefreshCatalogFromUi())
+            .Build());
     }
 
     // -------------------------------------------------------------------------
