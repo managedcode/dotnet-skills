@@ -71,6 +71,16 @@ internal sealed partial class InteractiveConsoleApp
     // build resets this so subscriptions don't leak across page switches.
     private Action? _detachSessionEvents;
 
+    // List-page filter active across rebuilds; cleared on page switch. Bound to the `/` overlay.
+    private string _searchFilter = string.Empty;
+
+    // Currently selected collection in the master-detail Collections page (Commit 4).
+    private CollectionCatalogView? _selectedCollection;
+
+    // First-click arms the inline two-stage install button on Collections detail (Commit 4);
+    // second click commits. Cleared every time the selected collection changes.
+    private bool _collectionInstallArmed;
+
     private static readonly Color[] SectionPalette =
     {
         new(120, 180, 255),
@@ -283,16 +293,30 @@ internal sealed partial class InteractiveConsoleApp
     private void HandleGlobalKey(KeyPressedEventArgs e)
     {
         var key = e.KeyInfo;
+
+        // Esc clears an active search filter first, then ends the session.
         if (key.Key == ConsoleKey.Escape)
         {
-            // Root window: Esc ends the session rather than dismissing the window.
+            if (!string.IsNullOrEmpty(_searchFilter))
+            {
+                _searchFilter = string.Empty;
+                RebuildActivePage();
+                e.Handled = true;
+                return;
+            }
             _ws?.Shutdown(0);
             e.Handled = true;
             return;
         }
 
+        // Plain `/` opens the search overlay on any list-bearing page (no modifier required).
         if ((key.Modifiers & ConsoleModifiers.Control) == 0)
         {
+            if (key.KeyChar == '/' && IsListBearingPage(_currentPage))
+            {
+                ShowSearchOverlay();
+                e.Handled = true;
+            }
             return;
         }
 
@@ -314,8 +338,20 @@ internal sealed partial class InteractiveConsoleApp
                 RemoveAllFromUi();
                 e.Handled = true;
                 break;
+            case ConsoleKey.P:
+                if (_ws is not null) ShowCommandPalette(_ws);
+                e.Handled = true;
+                break;
         }
     }
+
+    private static bool IsListBearingPage(HomeAction? page) => page is
+        HomeAction.BrowseSkills or
+        HomeAction.ManageInstalled or
+        HomeAction.BrowseCollections or
+        HomeAction.BrowseBundles or
+        HomeAction.BrowsePackages or
+        HomeAction.BrowseAgents;
 
     // -------------------------------------------------------------------------
     // Page dispatch
@@ -323,6 +359,14 @@ internal sealed partial class InteractiveConsoleApp
 
     private void BuildActionPage(ConsoleWindowSystem ws, ScrollablePanelControl panel, HomeAction action)
     {
+        // Page-switch clears transient filters (search + Collections detail selection) so each
+        // page lands in a clean state. Use NavigateTo if you need to preserve filter context.
+        if (_currentPage != action)
+        {
+            _searchFilter = string.Empty;
+            _selectedCollection = null;
+            _collectionInstallArmed = false;
+        }
         _activePanel = panel;
         _currentPage = action;
         AttachSessionEvents();
@@ -354,6 +398,12 @@ internal sealed partial class InteractiveConsoleApp
 
     private void BuildHomePage(ConsoleWindowSystem ws, ScrollablePanelControl panel)
     {
+        if (_currentPage != null)
+        {
+            _searchFilter = string.Empty;
+            _selectedCollection = null;
+            _collectionInstallArmed = false;
+        }
         _activePanel = panel;
         _currentPage = null;
         AttachSessionEvents();
@@ -547,22 +597,30 @@ internal sealed partial class InteractiveConsoleApp
             .ThenBy(skill => skill.Name, StringComparer.Ordinal)
             .ToArray();
 
+        var filtered = available.Where(s => MatchesFilter(s.Name, s.Stack, s.Lane)).ToArray();
+
         panel.AddControl(BuildPropertyPanel("skill browser", AccentTurquoise,
             ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
             ("target", $"[grey50]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
-            ("available", available.Length.ToString()),
+            ("available", $"{filtered.Length}/{available.Length}"),
             ("installed", $"{installed.Count}/{skillCatalog.Skills.Count}")));
+        AddSearchChip(panel);
 
         if (available.Length == 0)
         {
             panel.AddControl(BuildNotePanel("available", "[grey50]Every catalog skill is already installed in this target.[/]", AccentDeepSkyBlue));
             return;
         }
+        if (filtered.Length == 0)
+        {
+            panel.AddControl(BuildNotePanel("available", $"[grey50]No skills match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            return;
+        }
 
         var list = StyledList("Available skills (Enter for details)")
             .MaxVisibleItems(16)
             .WithScrollbarVisibility(ScrollbarVisibility.Auto);
-        foreach (var skill in available)
+        foreach (var skill in filtered)
         {
             // ListControl parses item text as markup; BuildSkillChoiceLabel produces plain
             // text containing bracketed stack/lane like "[.NET Foundations / ...]". Escape so
@@ -629,22 +687,30 @@ internal sealed partial class InteractiveConsoleApp
             .ToArray();
         var outdated = installed.Where(record => !record.IsCurrent).ToArray();
 
+        var filtered = installed.Where(r => MatchesFilter(r.Skill.Name, r.Skill.Stack, r.Skill.Lane)).ToArray();
+
         panel.AddControl(BuildPropertyPanel("installed skills", AccentGreen,
             ("target", $"[grey50]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
-            ("installed", installed.Length.ToString()),
+            ("installed", string.IsNullOrEmpty(_searchFilter) ? installed.Length.ToString() : $"{filtered.Length}/{installed.Length}"),
             ("outdated", outdated.Length == 0 ? "[green]0[/]" : $"[yellow]{outdated.Length}[/]"),
             ("tokens", FormatTokenCount(installed.Sum(record => record.Skill.TokenCount)))));
+        AddSearchChip(panel);
 
         if (installed.Length == 0)
         {
             panel.AddControl(BuildNotePanel("installed", "[grey50]No catalog skills are installed in this target yet. Visit the Skills page to add some.[/]", AccentDeepSkyBlue));
             return;
         }
+        if (filtered.Length == 0)
+        {
+            panel.AddControl(BuildNotePanel("installed", $"[grey50]No installed skills match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            return;
+        }
 
         var list = StyledList("Installed skills (Enter for details)")
             .MaxVisibleItems(14)
             .WithScrollbarVisibility(ScrollbarVisibility.Auto);
-        foreach (var record in installed)
+        foreach (var record in filtered)
         {
             // Escape: the label contains "[stack / lane]" which would otherwise be parsed as markup.
             list.AddItem((record.IsCurrent ? "✓ " : "↻ ") + Escape(BuildInstalledSkillChoiceLabel(record)), record);
@@ -743,48 +809,118 @@ internal sealed partial class InteractiveConsoleApp
             .OrderBy(view => CatalogOrganization.GetStackRank(view.Collection))
             .ThenBy(view => view.Collection, StringComparer.Ordinal)
             .ToArray();
+        var filtered = views.Where(v => MatchesFilter(v.Collection)).ToArray();
 
         panel.AddControl(BuildPropertyPanel("collection browser", AccentDeepSkyBlue,
             ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
-            ("collections", views.Length.ToString()),
+            ("collections", string.IsNullOrEmpty(_searchFilter) ? views.Length.ToString() : $"{filtered.Length}/{views.Length}"),
             ("skills", skillCatalog.Skills.Count.ToString()),
             ("installed", $"{installed.Count}/{skillCatalog.Skills.Count}")));
+        AddSearchChip(panel);
 
         if (views.Length == 0)
         {
             panel.AddControl(BuildNotePanel("collections", "[grey50]No collections in this catalog version.[/]", AccentDeepSkyBlue));
             return;
         }
-
-        var collectionCards = views.Select(view => BuildBulletPanel(
-            view.Collection, AccentDeepSkyBlue,
-            $"[grey50]lanes[/] {view.Lanes.Count}  [grey50]skills[/] {view.InstalledCount}/{view.SkillCount}  [grey50]tokens[/] {FormatTokenCount(view.TokenCount)}",
-            $"[grey]{Escape(string.Join(", ", view.Lanes.Take(6).Select(lane => lane.Lane)))}[/]")).ToList();
-        panel.AddControl(BuildCardGrid(collectionCards, maxColumns: 2));
-
-        var list = StyledList("Collections (Enter to install the whole collection)")
-            .MaxVisibleItems(14)
-            .WithScrollbarVisibility(ScrollbarVisibility.Auto);
-        foreach (var view in views)
+        if (filtered.Length == 0)
         {
-            list.AddItem(Escape(BuildCollectionChoiceLabel(view)), view);
+            panel.AddControl(BuildNotePanel("collections", $"[grey50]No collections match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            return;
         }
-        list.OnItemActivated((_, item) =>
+
+        // Master-detail layout. Left column lists collections; right column shows the detail of
+        // _selectedCollection. Clicking a left-list row updates only the right pane in place —
+        // no modal, no full-page rebuild. The right pane is a ScrollablePanel so the detail can
+        // grow with the collection's lane list.
+        if (_selectedCollection is null
+            || !filtered.Any(v => string.Equals(v.Collection, _selectedCollection.Collection, StringComparison.OrdinalIgnoreCase)))
         {
-            if (item.Tag is CollectionCatalogView view)
+            _selectedCollection = filtered[0];
+            _collectionInstallArmed = false;
+        }
+
+        // Build the detail pane as a standalone ScrollablePanelControl so we can update it
+        // independently of the left list when the user changes selection.
+        var rightPane = new ScrollablePanelControl
+        {
+            ShowScrollbar = true,
+            VerticalScrollMode = ScrollMode.Scroll,
+            EnableMouseWheel = true,
+        };
+
+        var grid = Controls.HorizontalGrid()
+            .Column(col =>
             {
-                ConfirmModal(ws, $"Install collection {view.Collection}?",
-                    $"Installs all {view.SkillCount} skill(s) from this collection into {ResolveSkillLayout().PrimaryRoot.FullName}.",
-                    () =>
+                col.Flex(1);
+                var list = StyledList("Collections")
+                    .MaxVisibleItems(20)
+                    .WithScrollbarVisibility(ScrollbarVisibility.Auto);
+                foreach (var view in filtered)
+                {
+                    list.AddItem(Escape(BuildCollectionChoiceLabel(view)), view);
+                }
+                list.OnItemActivated((_, item) =>
+                {
+                    if (item.Tag is CollectionCatalogView v)
                     {
-                        var skills = SafeGet(() => new SkillInstaller(skillCatalog).SelectSkillsFromCollections(new[] { view.Collection }), Array.Empty<SkillEntry>());
-                        var summary = skills.Count == 0 ? null : SafeGet(() => new SkillInstaller(skillCatalog).Install(skills, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
-                        ToastResult(summary, $"Could not install collection {view.Collection}", summary is null ? string.Empty : $"{view.Collection}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
-                        BuildCollectionsPage(ws, panel);
-                    });
-            }
-        });
-        panel.AddControl(list.Build());
+                        _selectedCollection = v;
+                        _collectionInstallArmed = false;
+                        BuildCollectionDetail(rightPane, v);
+                    }
+                });
+                col.Add(list.Build());
+            })
+            .Column(col =>
+            {
+                col.Flex(2).Add(rightPane);
+            })
+            .Build();
+
+        panel.AddControl(grid);
+        BuildCollectionDetail(rightPane, _selectedCollection!);
+    }
+
+    /// <summary>
+    /// Renders the right pane of the Collections master-detail view: stats, lanes, and an inline
+    /// two-stage install button (first click arms, second commits — satisfies AGENTS.md's
+    /// "install overview before confirmation" rule without a modal).
+    /// </summary>
+    private void BuildCollectionDetail(ScrollablePanelControl pane, CollectionCatalogView view)
+    {
+        pane.ClearContents();
+        pane.AddControl(BuildPropertyPanel(view.Collection, AccentDeepSkyBlue,
+            ("collection", Escape(view.Collection)),
+            ("lanes", view.Lanes.Count.ToString()),
+            ("skills", $"{view.InstalledCount}/{view.SkillCount}"),
+            ("tokens", FormatTokenCount(view.TokenCount))));
+
+        if (view.Lanes.Count > 0)
+        {
+            pane.AddControl(BuildBulletPanel("lanes", AccentTurquoise,
+                view.Lanes.Select(lane => $"[grey50]·[/] [grey]{Escape(lane.Lane)}[/] [grey50]({lane.InstalledCount}/{lane.Skills.Count} skills, {FormatTokenCount(lane.TokenCount)} tokens)[/]").ToArray()));
+        }
+
+        var armed = _collectionInstallArmed;
+        var label = armed
+            ? $"Click again to install all {view.SkillCount} skill(s)"
+            : $"Install collection ({view.SkillCount} skill(s))";
+        pane.AddControl(Controls.Button(label)
+            .OnClick((_, _) =>
+            {
+                if (!_collectionInstallArmed)
+                {
+                    _collectionInstallArmed = true;
+                    Toast($"Click again to confirm installing {view.SkillCount} skill(s)", NotificationSeverity.Warning);
+                    BuildCollectionDetail(pane, view);
+                    return;
+                }
+                var skills = SafeGet(() => new SkillInstaller(skillCatalog).SelectSkillsFromCollections(new[] { view.Collection }), Array.Empty<SkillEntry>());
+                var summary = skills.Count == 0 ? null : SafeGet(() => new SkillInstaller(skillCatalog).Install(skills, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
+                ToastResult(summary, $"Could not install collection {view.Collection}", summary is null ? string.Empty : $"{view.Collection}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                _collectionInstallArmed = false;
+                if (_ws is not null && _activePanel is not null) BuildCollectionsPage(_ws, _activePanel);
+            }).Build());
     }
 
     // -------------------------------------------------------------------------
@@ -802,21 +938,29 @@ internal sealed partial class InteractiveConsoleApp
         var title = primaryOnly ? "focused bundles" : "catalog packages";
         var skillTokens = skillCatalog.Skills.ToDictionary(skill => skill.Name, skill => skill.TokenCount, StringComparer.OrdinalIgnoreCase);
 
+        var filtered = packages.Where(p => MatchesFilter(p.Name, p.Title)).ToArray();
+
         panel.AddControl(BuildPropertyPanel(title, AccentDeepSkyBlue,
             ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
-            (primaryOnly ? "bundles" : "packages", packages.Length.ToString()),
+            (primaryOnly ? "bundles" : "packages", string.IsNullOrEmpty(_searchFilter) ? packages.Length.ToString() : $"{filtered.Length}/{packages.Length}"),
             ("skills covered", skillCatalog.Skills.Count.ToString())));
+        AddSearchChip(panel);
 
         if (packages.Length == 0)
         {
             panel.AddControl(BuildNotePanel(title, "[grey50]Nothing available in this catalog version.[/]", AccentDeepSkyBlue));
             return;
         }
+        if (filtered.Length == 0)
+        {
+            panel.AddControl(BuildNotePanel(title, $"[grey50]No bundles match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            return;
+        }
 
         var list = StyledList($"{(primaryOnly ? "Bundles" : "Packages")} (Enter for details)")
             .MaxVisibleItems(16)
             .WithScrollbarVisibility(ScrollbarVisibility.Auto);
-        foreach (var package in packages)
+        foreach (var package in filtered)
         {
             var tokenCount = package.Skills.Sum(name => skillTokens.TryGetValue(name, out var value) ? value : 0);
             list.AddItem($"{Escape(package.Name)}  [dim]({package.Skills.Count} skills, {FormatTokenCount(tokenCount)} tokens)[/]", package);
@@ -862,21 +1006,29 @@ internal sealed partial class InteractiveConsoleApp
         panel.ClearContents();
 
         var signals = SafeGet(BuildPackageSignals, Array.Empty<PackageSignalView>());
+        var filtered = signals.Where(s => MatchesFilter(s.Signal, s.Skill.Name, s.Skill.Stack, s.Skill.Lane)).ToArray();
+
         panel.AddControl(BuildPropertyPanel("package signals", AccentTurquoise,
             ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
-            ("signals", signals.Count.ToString()),
+            ("signals", string.IsNullOrEmpty(_searchFilter) ? signals.Count.ToString() : $"{filtered.Length}/{signals.Count}"),
             ("skills covered", signals.Select(s => s.Skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString())));
+        AddSearchChip(panel);
 
         if (signals.Count == 0)
         {
             panel.AddControl(BuildNotePanel("packages", "[grey50]No NuGet package or prefix signals are present in this catalog version.[/]", AccentDeepSkyBlue));
             return;
         }
+        if (filtered.Length == 0)
+        {
+            panel.AddControl(BuildNotePanel("packages", $"[grey50]No signals match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            return;
+        }
 
         var list = StyledList("Package signals (Enter to inspect linked skill)")
             .MaxVisibleItems(16)
             .WithScrollbarVisibility(ScrollbarVisibility.Auto);
-        foreach (var signal in signals)
+        foreach (var signal in filtered)
         {
             // ListControl renders item text as markup — escape the whole plain-text label.
             list.AddItem(Escape($"{signal.Signal} [{signal.Kind}] -> {ToAlias(signal.Skill.Name)} [{signal.Skill.Stack} / {signal.Skill.Lane}] ({FormatTokenCount(signal.Skill.TokenCount)} tokens)"), signal);
@@ -905,22 +1057,31 @@ internal sealed partial class InteractiveConsoleApp
             ? Array.Empty<InstalledAgentRecord>()
             : SafeGet(() => installer.GetInstalledAgents(layout), Array.Empty<InstalledAgentRecord>());
 
+        var allAgents = agentCatalog.Agents.OrderBy(a => a.Name, StringComparer.Ordinal).ToArray();
+        var filteredAgents = allAgents.Where(a => MatchesFilter(a.Name, a.Description)).ToArray();
+
         panel.AddControl(BuildPropertyPanel("orchestration agents", AccentMediumPurple,
-            ("agents", agentCatalog.Agents.Count.ToString()),
+            ("agents", string.IsNullOrEmpty(_searchFilter) ? agentCatalog.Agents.Count.ToString() : $"{filteredAgents.Length}/{agentCatalog.Agents.Count}"),
             ("platform", Escape(Session.Agent.ToString())),
             ("target", layout is null ? $"[red]{Escape(layoutError ?? "unresolved")}[/]" : $"[grey50]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
             ("installed", layout is null ? "[grey]-[/]" : $"{installed.Count}/{agentCatalog.Agents.Count}")));
+        AddSearchChip(panel);
 
         if (agentCatalog.Agents.Count == 0)
         {
             panel.AddControl(BuildNotePanel("agents", "[grey50]No agents available in the catalog.[/]", AccentDeepSkyBlue));
             return;
         }
+        if (filteredAgents.Length == 0)
+        {
+            panel.AddControl(BuildNotePanel("agents", $"[grey50]No agents match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            return;
+        }
 
         var list = StyledList("Agents (Enter for details)")
             .MaxVisibleItems(14)
             .WithScrollbarVisibility(ScrollbarVisibility.Auto);
-        foreach (var agent in agentCatalog.Agents.OrderBy(a => a.Name, StringComparer.Ordinal))
+        foreach (var agent in filteredAgents)
         {
             var isInstalled = installed.Any(i => string.Equals(i.Agent.Name, agent.Name, StringComparison.OrdinalIgnoreCase));
             list.AddItem($"{(isInstalled ? "✓ " : "○ ")}{Escape(ToAlias(agent.Name))}  [dim]{Escape(CompactDescription(agent.Description))}[/]", agent);
@@ -1407,6 +1568,196 @@ internal sealed partial class InteractiveConsoleApp
             .BuildAndShow();
     }
 
+    /// <summary>
+    /// Opens a small modal hosting a PromptControl. Pressing Enter sets the active page's
+    /// _searchFilter and rebuilds it. Esc dismisses without changing the filter. Triggered by
+    /// `/` from any list-bearing page.
+    /// </summary>
+    private void ShowSearchOverlay()
+    {
+        if (_ws is null) return;
+        Window? modal = null;
+
+        void Close()
+        {
+            if (modal is not null) _ws.CloseWindow(modal);
+        }
+
+        var prompt = Controls.Prompt($"  /  ")
+            .UnfocusOnEnter(false)
+            .OnEntered((_, query) =>
+            {
+                _searchFilter = (query ?? string.Empty).Trim();
+                Close();
+                RebuildActivePage();
+            })
+            .Build();
+
+        var hint = new MarkupControl(new List<string>
+        {
+            "[grey50]Type to filter the current list. [bold]Enter[/] applies, [bold]Esc[/] cancels.[/]",
+            string.IsNullOrEmpty(_searchFilter) ? string.Empty : $"[grey50]current:[/] [yellow]{Escape(_searchFilter)}[/]",
+        });
+
+        modal = new WindowBuilder(_ws)
+            .WithTitle("search")
+            .WithSize(Math.Clamp(SafeConsole(() => Console.WindowWidth, 100) - 20, 50, 80), 9)
+            .Centered()
+            .AsModal()
+            .Minimizable(false)
+            .Maximizable(false)
+            .WithBorderStyle(BorderStyle.Rounded)
+            .WithBorderColor(AccentYellow)
+            .OnKeyPressed((_, e) =>
+            {
+                if (e.KeyInfo.Key == ConsoleKey.Escape)
+                {
+                    Close();
+                    e.Handled = true;
+                }
+            })
+            .AddControl(hint)
+            .AddControl(prompt)
+            .BuildAndShow();
+    }
+
+    /// <summary>
+    /// Global command palette (Ctrl+P). Opens a centered modal hosting a PromptControl + a
+    /// ListControl pre-populated with every catalog skill, bundle, and agent. Enter on the prompt
+    /// filters the list; Enter on the list activates the entry (skill/bundle/agent detail modal).
+    /// </summary>
+    private void ShowCommandPalette(ConsoleWindowSystem ws)
+    {
+        Window? modal = null;
+        var allEntries = BuildPaletteEntries();
+
+        void Close()
+        {
+            if (modal is not null) ws.CloseWindow(modal);
+        }
+
+        var listControl = StyledList(null).MaxVisibleItems(14).WithScrollbarVisibility(ScrollbarVisibility.Auto).Build();
+        listControl.ItemActivated += (_, item) =>
+        {
+            if (item.Tag is PaletteEntry entry)
+            {
+                Close();
+                entry.Activate();
+            }
+        };
+        void FillList(string filter)
+        {
+            listControl.ClearItems();
+            var f = filter.Trim();
+            var matches = string.IsNullOrEmpty(f)
+                ? allEntries
+                : allEntries.Where(e => e.SearchHaystack.Contains(f, StringComparison.OrdinalIgnoreCase)).ToArray();
+            foreach (var entry in matches.Take(80))
+            {
+                listControl.AddItem(new ListItem($"[{entry.AccentMarkup}]{entry.IconLabel}[/]  {Escape(entry.Label)}  [grey50]{Escape(entry.Detail)}[/]") { Tag = entry });
+            }
+        }
+
+        FillList(string.Empty);
+
+        var prompt = Controls.Prompt("  >  ")
+            .UnfocusOnEnter(false)
+            .OnEntered((_, query) =>
+            {
+                FillList(query ?? string.Empty);
+            })
+            .Build();
+
+        modal = new WindowBuilder(ws)
+            .WithTitle("command palette · Esc to close")
+            .WithSize(Math.Clamp(SafeConsole(() => Console.WindowWidth, 120) - 10, 64, 100), 22)
+            .Centered()
+            .AsModal()
+            .Minimizable(false)
+            .Maximizable(false)
+            .WithBorderStyle(BorderStyle.Rounded)
+            .WithBorderColor(AccentDeepSkyBlue)
+            .OnKeyPressed((_, e) =>
+            {
+                if (e.KeyInfo.Key == ConsoleKey.Escape)
+                {
+                    Close();
+                    e.Handled = true;
+                }
+            })
+            .AddControl(prompt)
+            .AddControl(listControl)
+            .BuildAndShow();
+    }
+
+    /// <summary>
+    /// Builds the union of every searchable entry — skills, bundles, agents, settings actions —
+    /// used to populate the command palette. Each entry knows how to activate itself.
+    /// </summary>
+    private IReadOnlyList<PaletteEntry> BuildPaletteEntries()
+    {
+        var entries = new List<PaletteEntry>();
+
+        foreach (var skill in skillCatalog.Skills)
+        {
+            entries.Add(new PaletteEntry(
+                IconLabel: "◇ skill",
+                AccentMarkup: "turquoise2",
+                Label: ToAlias(skill.Name),
+                Detail: $"{skill.Stack} / {skill.Lane}",
+                SearchHaystack: $"{skill.Name} {skill.Stack} {skill.Lane}",
+                Activate: () => { if (_ws is not null && _activePanel is not null) ShowSkillDetailModal(_ws, _activePanel, skill); }));
+        }
+
+        foreach (var bundle in skillCatalog.Packages)
+        {
+            var b = bundle;
+            entries.Add(new PaletteEntry(
+                IconLabel: "□ bundle",
+                AccentMarkup: "springgreen3",
+                Label: b.Name,
+                Detail: $"{b.Skills.Count} skill(s)",
+                SearchHaystack: $"{b.Name} {b.Title} bundle package",
+                Activate: () => { if (_ws is not null && _activePanel is not null) ShowBundleModal(_ws, _activePanel, b, primaryOnly: false); }));
+        }
+
+        foreach (var agent in agentCatalog.Agents)
+        {
+            var a = agent;
+            entries.Add(new PaletteEntry(
+                IconLabel: "△ agent",
+                AccentMarkup: "mediumpurple2",
+                Label: ToAlias(a.Name),
+                Detail: CompactDescription(a.Description),
+                SearchHaystack: $"{a.Name} agent orchestration {a.Description}",
+                Activate: () => { if (_ws is not null && _activePanel is not null) ShowAgentModal(_ws, _activePanel, a); }));
+        }
+
+        // Settings actions and page jumps.
+        entries.Add(new PaletteEntry("⚙ settings", "deepskyblue1", "Settings",                "open workspace settings", "settings platform scope refresh workspace",                    () => NavigateTo(HomeAction.Workspace)));
+        entries.Add(new PaletteEntry("↻ refresh",  "deepskyblue1", "Refresh catalog",          "pull the latest catalog",  "refresh catalog reload pull",                                   () => RefreshCatalogFromUi()));
+        entries.Add(new PaletteEntry("◈ home",     "deepskyblue1", "Home",                    "session and telemetry",    "home session telemetry",                                        () => { if (_ws is not null && _activePanel is not null) BuildHomePage(_ws, _activePanel); }));
+        entries.Add(new PaletteEntry("→ skills",   "turquoise2",   "Skills",                  "browse the catalog",       "skills browse catalog",                                         () => NavigateTo(HomeAction.BrowseSkills)));
+        entries.Add(new PaletteEntry("→ installed","green",        "Installed",               "manage installed skills",  "installed manage update remove",                                () => NavigateTo(HomeAction.ManageInstalled)));
+        entries.Add(new PaletteEntry("→ collections","deepskyblue1","Collections",            "browse collections",       "collections browse",                                            () => NavigateTo(HomeAction.BrowseCollections)));
+        entries.Add(new PaletteEntry("→ bundles",  "springgreen3", "Bundles",                 "focused bundles",          "bundles focused",                                               () => NavigateTo(HomeAction.BrowseBundles)));
+        entries.Add(new PaletteEntry("→ packages", "turquoise2",   "Packages",                "NuGet signals",            "packages nuget signals",                                        () => NavigateTo(HomeAction.BrowsePackages)));
+        entries.Add(new PaletteEntry("→ agents",   "mediumpurple2","Agents",                  "orchestration agents",     "agents orchestration",                                          () => NavigateTo(HomeAction.BrowseAgents)));
+        entries.Add(new PaletteEntry("→ project",  "deepskyblue1", "Project",                 "scan and install",         "project scan recommend",                                        () => NavigateTo(HomeAction.SyncProject)));
+        entries.Add(new PaletteEntry("→ analysis", "deepskyblue1", "Analysis",                "catalog analysis",         "analysis stats heaviest",                                       () => NavigateTo(HomeAction.Analysis)));
+        entries.Add(new PaletteEntry("→ about",    "grey",         "About",                   "version and surface map",  "about version",                                                 () => NavigateTo(HomeAction.About)));
+
+        return entries;
+    }
+
+    private sealed record PaletteEntry(
+        string IconLabel,
+        string AccentMarkup,
+        string Label,
+        string Detail,
+        string SearchHaystack,
+        Action Activate);
+
     private static ITheme BuildTheme() => new ModernGrayTheme
     {
         ListHoverBackgroundColor = SelectionBg,
@@ -1443,8 +1794,12 @@ internal sealed partial class InteractiveConsoleApp
             bar.ClearAll();
 
             bar.AddLeft("↑↓", "Move");
-            bar.AddLeft("←→", "Switch pane");
             bar.AddLeft("Enter", page is HomeAction.SyncProject ? "Install" : page is HomeAction.Workspace ? "Change" : "Open");
+            if (IsListBearingPage(page))
+            {
+                bar.AddLeft("/", "Search", ShowSearchOverlay);
+            }
+            bar.AddLeft("Ctrl+P", "Palette", () => { if (_ws is not null) ShowCommandPalette(_ws); });
             foreach (var (key, label, action) in PageShortcuts(page))
             {
                 bar.AddLeft(key, label, action);
@@ -1536,6 +1891,37 @@ internal sealed partial class InteractiveConsoleApp
             Toast(failureMessage, NotificationSeverity.Danger);
         else
             Toast(successMessage, NotificationSeverity.Success);
+    }
+
+    /// <summary>
+    /// Case-insensitive substring test against the current search filter. Empty filter matches
+    /// everything. Tokens (any of the supplied parts) are matched independently — a row is kept
+    /// if ANY token contains the filter so callers can pass name + collection + lane as separate
+    /// tokens and get the expected "OR" behavior.
+    /// </summary>
+    private bool MatchesFilter(params string?[] tokens)
+    {
+        if (string.IsNullOrWhiteSpace(_searchFilter)) return true;
+        var needle = _searchFilter;
+        foreach (var token in tokens)
+        {
+            if (token is not null && token.Contains(needle, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Renders a small "filter: …" chip at the top of a list-bearing page so the user knows
+    /// the visible list is filtered. Caller is responsible for only emitting it when filter is set.
+    /// </summary>
+    private void AddSearchChip(ScrollablePanelControl panel)
+    {
+        if (string.IsNullOrWhiteSpace(_searchFilter)) return;
+        panel.AddControl(BuildNotePanel(
+            "filter",
+            $"[yellow]matching “{Escape(_searchFilter)}”[/]  [grey50]· press[/] [bold]Esc[/] [grey50]to clear[/]",
+            AccentYellow));
     }
 
     private async Task ClockLoopAsync(Window window, CancellationToken cancellationToken)
