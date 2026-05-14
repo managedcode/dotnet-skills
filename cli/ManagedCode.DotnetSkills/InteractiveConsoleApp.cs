@@ -4,7 +4,7 @@ using SpectreConsole = Spectre.Console.AnsiConsole;
 
 namespace ManagedCode.DotnetSkills;
 
-internal sealed class InteractiveConsoleApp
+internal sealed partial class InteractiveConsoleApp
 {
     private readonly IInteractivePrompts prompts;
     private readonly Func<bool, string?, string?, bool, Task<SkillCatalogPackage>> loadSkillCatalogAsync;
@@ -46,7 +46,12 @@ internal sealed class InteractiveConsoleApp
 
     internal InteractiveSessionState Session { get; }
 
-    public async Task<int> RunAsync()
+    /// <summary>
+    /// Legacy prompt-first interactive shell (Spectre <see cref="Spectre.Console.SelectionPrompt{T}"/> based).
+    /// Retained as a fallback for non-interactive terminals; the default surface is the
+    /// SharpConsoleUI command center (see <c>InteractiveConsoleApp.Shell.cs</c>).
+    /// </summary>
+    public async Task<int> RunClassicShellAsync()
     {
         toolUpdateStatus = await getToolUpdateStatusAsync(cachePath);
         await LoadCatalogsAsync(refreshCatalog: false);
@@ -3713,13 +3718,74 @@ internal sealed class CommandCenterInteractivePrompts : IInteractivePrompts
 
 internal sealed class InteractiveSessionState
 {
-    public AgentPlatform Agent { get; set; }
+    private AgentPlatform _agent;
+    private InstallScope _scope;
+    private string? _projectDirectory;
+    private bool _suspend;
 
-    public InstallScope Scope { get; set; }
+    // Raised after the corresponding property changes to a new value. The shell
+    // subscribes from BuildActionPage/BuildHomePage to refresh the open page when
+    // session identity flips from anywhere (Settings, command palette, etc.).
+    public event Action? AgentChanged;
+    public event Action? ScopeChanged;
+    public event Action? ProjectChanged;
+    public event Action? SnapshotChanged;
 
-    public string? ProjectDirectory { get; set; }
+    public AgentPlatform Agent
+    {
+        get => _agent;
+        set
+        {
+            if (EqualityComparer<AgentPlatform>.Default.Equals(_agent, value)) return;
+            _agent = value;
+            if (!_suspend) AgentChanged?.Invoke();
+        }
+    }
+
+    public InstallScope Scope
+    {
+        get => _scope;
+        set
+        {
+            if (EqualityComparer<InstallScope>.Default.Equals(_scope, value)) return;
+            _scope = value;
+            if (!_suspend) ScopeChanged?.Invoke();
+        }
+    }
+
+    public string? ProjectDirectory
+    {
+        get => _projectDirectory;
+        set
+        {
+            if (string.Equals(_projectDirectory, value, StringComparison.Ordinal)) return;
+            _projectDirectory = value;
+            if (!_suspend) ProjectChanged?.Invoke();
+        }
+    }
 
     public bool BundledOnly { get; set; }
+
+    /// <summary>
+    /// Suspends Agent/Scope/Project events while <paramref name="action"/> runs, then fires
+    /// SnapshotChanged once at the end so callers get a single refresh signal.
+    /// </summary>
+    public void RunSuspended(Action action)
+    {
+        _suspend = true;
+        try { action(); }
+        finally
+        {
+            _suspend = false;
+            SnapshotChanged?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// Fires SnapshotChanged — used after operations (like catalog refresh) that change
+    /// session-relevant state without going through the individual setters.
+    /// </summary>
+    public void RaiseSnapshotChanged() => SnapshotChanged?.Invoke();
 }
 
 internal sealed record MenuOption<T>(string Label, T Value);
