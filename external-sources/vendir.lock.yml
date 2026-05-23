@@ -2,11 +2,10 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Fix migrate-vstest-to-mtp activation for `Handle exit code 8` scenario
-        (#648)...
-      sha: de0a97c551178951f6405740b9aaba5635381d44
+      commitTitle: Update binlog mcp name (#684)
+      sha: 0724ccf8ac485af4b6bf95b2489886cc33f170a3
       tags:
-      - skill-validator-nightly-22-gde0a97c
+      - skill-validator-nightly
     path: dotnet-skills
   path: upstreams
 kind: LockConfig

@@ -122,4 +122,6 @@ public sealed class ClassNameTests
 
 ## Skip Coverage Tools
 
-Do not configure or run code coverage measurement tools (coverlet, dotnet-coverage, XPlat Code Coverage). These tools have inconsistent cross-configuration behavior and waste significant time. Coverage is measured separately by the evaluation harness.
+Do not configure or run code coverage measurement tools (coverlet, dotnet-coverage, XPlat Code Coverage) by default. These tools have inconsistent cross-configuration behavior and waste significant time. Coverage is measured separately by the evaluation harness.
+
+**Exception**: if the user or evaluation harness explicitly requires a Cobertura/XML coverage artifact (e.g., they ask for `coverlet.collector` or a `--collect:"XPlat Code Coverage"` run), add the `coverlet.collector` PackageReference to the generated .NET test csproj so the harness's coverage command can produce output. Do not run the coverage command yourself; leave that to the validation step.
