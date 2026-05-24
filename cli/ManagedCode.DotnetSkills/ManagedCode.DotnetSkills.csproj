@@ -8,7 +8,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageId>dotnet-skills</PackageId>
     <ToolCommandName>dotnet-skills</ToolCommandName>
-    <VersionPrefix>0.0</VersionPrefix>
+    <VersionPrefix>0.1</VersionPrefix>
     <Version>$(VersionPrefix).0</Version>
     <Title>ManagedCode .NET Skills</Title>
     <Authors>ManagedCode</Authors>

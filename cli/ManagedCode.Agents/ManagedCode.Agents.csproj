@@ -11,7 +11,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageId>agents</PackageId>
     <ToolCommandName>agents</ToolCommandName>
-    <VersionPrefix>0.0</VersionPrefix>
+    <VersionPrefix>0.1</VersionPrefix>
     <Version>$(VersionPrefix).0</Version>
     <Title>ManagedCode Agents</Title>
     <Authors>ManagedCode</Authors>

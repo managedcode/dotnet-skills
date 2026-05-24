@@ -725,7 +725,7 @@ public sealed class SubmitOrderHandler(IOrderRepository orders) : IRequestHandle
 
 ## References
 
-- [Anemic Domain Model by Martin Fowler](https://martinfowler.com/bliki/AnemicDomainModel.html)
+- Anemic Domain Model by Martin Fowler
 - [Big Ball of Mud by Brian Foote and Joseph Yoder](http://www.laputan.org/mud/)
-- [Monolith First by Martin Fowler](https://martinfowler.com/bliki/MonolithFirst.html)
+- Monolith First by Martin Fowler
 - [Don't Start with Microservices by Sam Newman](https://samnewman.io/blog/2015/04/07/microservices-for-greenfield/)

@@ -679,5 +679,5 @@ public sealed class OrderFulfillmentSaga(
 - [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Vertical Slice Architecture by Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/)
 - [Domain-Driven Design Reference by Eric Evans](https://www.domainlanguage.com/ddd/reference/)
-- [CQRS by Martin Fowler](https://martinfowler.com/bliki/CQRS.html)
+- CQRS by Martin Fowler
 - [Microsoft .NET Application Architecture Guide](https://learn.microsoft.com/en-us/dotnet/architecture/)
