@@ -161,7 +161,7 @@ public sealed class SkillInstallerTests
 
         Assert.Contains(selected, skill => skill.Name == "code-testing-agent");
         Assert.Contains(selected, skill => skill.Name == "stryker");
-        Assert.Contains(selected, skill => skill.Name == "exp-test-gap-analysis");
+        Assert.Contains(selected, skill => skill.Name == "test-gap-analysis");
         Assert.DoesNotContain(selected, skill => skill.Name == "xunit");
         Assert.DoesNotContain(selected, skill => skill.Name == "coverlet");
         Assert.Equal(selected.Select(skill => skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count(), selected.Count);

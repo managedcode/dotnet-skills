@@ -2,11 +2,10 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Bump the github-actions-dependencies group across 1 directory with
-        3 updates (#631)...
-      sha: 4a4c424ee43f60354230389e96c39053307121d8
+      commitTitle: Update binlog mcp name (#684)
+      sha: 0724ccf8ac485af4b6bf95b2489886cc33f170a3
       tags:
-      - skill-validator-nightly-4-g4a4c424
+      - skill-validator-nightly
     path: dotnet-skills
   path: upstreams
 kind: LockConfig

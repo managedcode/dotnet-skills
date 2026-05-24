@@ -130,6 +130,23 @@ internal static class CatalogOrganization
         "Stryker",
     };
 
+    private static readonly HashSet<string> TestingResearchSkillNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "assertion-quality",
+        "code-testing-agent",
+        "exp-assertion-quality",
+        "exp-mock-usage-analysis",
+        "exp-test-gap-analysis",
+        "exp-test-maintainability",
+        "exp-test-smell-detection",
+        "exp-test-tagging",
+        "mock-usage-analysis",
+        "test-gap-analysis",
+        "test-maintainability",
+        "test-smell-detection",
+        "test-tagging",
+    };
+
     private static readonly HashSet<string> LegacyPackages = new(StringComparer.OrdinalIgnoreCase)
     {
         "Entity-Framework-6",
@@ -372,7 +389,7 @@ internal static class CatalogOrganization
 
     private static bool IsTestingResearchSkill(string package, string category, string name)
     {
-        return string.Equals(name, "code-testing-agent", StringComparison.OrdinalIgnoreCase)
+        return TestingResearchSkillNames.Contains(name)
             || string.Equals(package, "Stryker", StringComparison.OrdinalIgnoreCase)
             || string.Equals(package, "Official-DotNet-Experimental", StringComparison.OrdinalIgnoreCase)
                && string.Equals(category, "Testing", StringComparison.OrdinalIgnoreCase);

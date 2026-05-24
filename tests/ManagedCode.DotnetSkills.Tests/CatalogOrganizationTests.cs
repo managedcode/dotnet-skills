@@ -26,7 +26,7 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "xunit", "Testing", "Frameworks");
         AssertSkill(catalog, "code-testing-agent", "Testing Research", "Automation");
         AssertSkill(catalog, "stryker", "Testing Research", "Mutation");
-        AssertSkill(catalog, "exp-test-gap-analysis", "Testing Research", "Experimental");
+        AssertSkill(catalog, "test-gap-analysis", "Testing Research", "Experimental");
         AssertSkill(catalog, "csharp-scripts", ".NET Foundations", "Tooling");
         AssertSkill(catalog, "dotnet-pinvoke", ".NET Foundations", "Interop");
         AssertSkill(catalog, "msbuild-modernization", "MSBuild", "Build Pipelines");
