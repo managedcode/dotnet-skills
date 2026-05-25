@@ -53,6 +53,11 @@ internal sealed partial class InteractiveConsoleApp
     private static readonly Color AccentYellow = new(215, 175, 0);         // Spectre "yellow"
     private static readonly Color AccentGrey = new(135, 135, 135);         // Spectre "grey"
     private static readonly Color PanelBorderColor = new(70, 88, 116);     // matches the root window border
+    // Softer warm yellow for "outdated" row foreground — the saturated AccentYellow used to
+    // double as both the chart-severity yellow and the row-attention yellow, which made the
+    // Project confidence trio fight the Installed table for the user's eye. Desaturated so the
+    // row signal stays warm without dominating.
+    private static readonly Color OutdatedRowFg = new(200, 180, 80);
 
     // Live shell state for the dynamic status bar.
     private ConsoleWindowSystem? _ws;
@@ -148,8 +153,12 @@ internal sealed partial class InteractiveConsoleApp
             .WithNavWidth(30)
             .WithPaneHeader("[bold rgb(120,180,255)]  ◆  dotnet skills[/]")
             .WithPaneDisplayMode(NavigationViewDisplayMode.Auto)
-            .WithExpandedThreshold(96)
-            .WithCompactThreshold(54)
+            // Reserve full pane labels for genuinely wide terminals (≥160 cols). On
+            // 120–160-col terminals the rail goes Compact (icons + selected label only),
+            // giving the polished tables and graphs the horizontal space they need. Below
+            // 90 cols the rail collapses to Minimal (hidden, summon on hotkey).
+            .WithExpandedThreshold(160)
+            .WithCompactThreshold(90)
             .WithContentBorder(BorderStyle.Rounded)
             .WithContentBorderColor(new Color(70, 100, 150))
             .WithContentPadding(1, 0, 1, 0)
@@ -586,7 +595,14 @@ internal sealed partial class InteractiveConsoleApp
             }
         }
 
-        var toolbar = Controls.Toolbar().WithSpacing(2).WithAlignment(HorizontalAlignment.Center);
+        // Above-line gives a visual separator between the modal's data/property panels and the
+        // action toolbar — without it the buttons sit flush against the content and read as
+        // "more content" on first glance.
+        var toolbar = Controls.Toolbar()
+            .WithSpacing(2)
+            .WithAlignment(HorizontalAlignment.Center)
+            .WithAboveLine(true)
+            .WithAboveLineColor(new Color(70, 88, 116));
         foreach (var (label, onClick) in buttons)
         {
             var captured = onClick;

@@ -101,7 +101,7 @@ internal sealed partial class InteractiveConsoleApp
                 FormatTokenCount(record.Skill.TokenCount))
             {
                 Tag = record,
-                ForegroundColor = record.IsCurrent ? null : AccentYellow,
+                ForegroundColor = record.IsCurrent ? null : OutdatedRowFg,
             };
             table.AddRow(row);
         }
