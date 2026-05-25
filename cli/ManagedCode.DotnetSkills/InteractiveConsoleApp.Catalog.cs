@@ -442,6 +442,24 @@ internal sealed partial class InteractiveConsoleApp
             return;
         }
 
+        // Page toolbar at the top — "Install all into detected platforms" replaces the old
+        // bottom-of-page button so the bulk action is visible without scrolling. Disabled
+        // when no native agent directory resolved (the user must set the platform first).
+        var agentsToolbar = BuildPageToolbar(
+            ("Install all into detected platforms", layout is not null, () =>
+            {
+                var detected = SafeGet(() => AgentInstallTarget.ResolveAllDetected(Session.ProjectDirectory, Session.Scope), Array.Empty<AgentInstallLayout>());
+                if (detected.Count == 0)
+                {
+                    Toast("No native agent directories detected", NotificationSeverity.Warning);
+                    return;
+                }
+                var summary2 = SafeGet(() => new AgentInstaller(agentCatalog).InstallToMultiple(agentCatalog.Agents, detected, force: false), default(AgentInstallSummary));
+                ToastResult(summary2, "Install failed", summary2 is null ? string.Empty : $"Installed {summary2.InstalledCount} agent file(s) across {detected.Count} platform(s)");
+                BuildAgentsPage(ws, panel);
+            }));
+        if (agentsToolbar is not null) panel.AddControl(agentsToolbar);
+
         var table = Controls.Table()
             .WithTitle("Agents (Enter for details)")
             .AddColumn("Status", TextJustification.Center, width: 8)
@@ -476,22 +494,8 @@ internal sealed partial class InteractiveConsoleApp
         if (layout is null)
         {
             panel.AddControl(BuildNotePanel("note", "[yellow]No native agent directory resolved. Set the platform on the Settings page, or create one of .codex/.claude/.github/.gemini/.junie.[/]", AccentYellow));
-            return;
         }
-
-        panel.AddControl(Controls.Button("Install all agents into detected native directories")
-            .OnClick((_, _) =>
-            {
-                var detected = SafeGet(() => AgentInstallTarget.ResolveAllDetected(Session.ProjectDirectory, Session.Scope), Array.Empty<AgentInstallLayout>());
-                if (detected.Count == 0)
-                {
-                    Toast("No native agent directories detected", NotificationSeverity.Warning);
-                    return;
-                }
-                var summary2 = SafeGet(() => new AgentInstaller(agentCatalog).InstallToMultiple(agentCatalog.Agents, detected, force: false), default(AgentInstallSummary));
-                ToastResult(summary2, "Install failed", summary2 is null ? string.Empty : $"Installed {summary2.InstalledCount} agent file(s) across {detected.Count} platform(s)");
-                BuildAgentsPage(ws, panel);
-            }).Build());
+        // Bulk install lives in the page toolbar at the top.
     }
 
     private void ShowAgentModal(ConsoleWindowSystem ws, ScrollablePanelControl owner, AgentEntry agent)

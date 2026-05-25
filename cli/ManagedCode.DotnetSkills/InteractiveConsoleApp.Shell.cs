@@ -499,6 +499,29 @@ internal sealed partial class InteractiveConsoleApp
     }
 
     /// <summary>
+    /// Builds a page-level action toolbar — sits between the identity strip and the data table.
+    /// Each button is a bulk action (per-row actions stay in the modal). Buttons whose
+    /// <paramref name="entries"/> tuple has <c>Enabled = false</c> render as disabled, giving
+    /// the user a visual signal that the precondition isn't met (e.g. "Update all outdated"
+    /// disabled when nothing is outdated). Returns null when no entries are provided so the
+    /// caller can drop it without an empty bar.
+    /// </summary>
+    private static IWindowControl? BuildPageToolbar(params (string Label, bool Enabled, Action OnClick)[] entries)
+    {
+        if (entries is null || entries.Length == 0) return null;
+        var builder = Controls.Toolbar()
+            .WithSpacing(1)
+            .WithBelowLine(true);
+        foreach (var (label, enabled, onClick) in entries)
+        {
+            var btn = Controls.Button(label).OnClick((_, _) => onClick()).Build();
+            btn.IsEnabled = enabled;
+            builder.AddButton(btn);
+        }
+        return builder.Build();
+    }
+
+    /// <summary>
     /// Lays out a sequence of cards in a responsive HorizontalGrid with 1, 2, or 3 columns based
     /// on the current console width — the native equivalent of BuildRichCardGrid(maxColumns).
     /// Empty columns at the end of the last row are padded with blank MarkupControls so the cards

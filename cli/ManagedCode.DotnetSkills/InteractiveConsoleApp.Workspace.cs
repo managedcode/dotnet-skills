@@ -54,6 +54,27 @@ internal sealed partial class InteractiveConsoleApp
             return;
         }
 
+        // Page toolbar — bulk actions live at the top above the table so they're always on
+        // screen, not buried under a 16-row scrolling list. Update is disabled when nothing is
+        // outdated; the modal-on-Enter flow handles per-row Update/Reinstall/Remove.
+        var installedToolbar = BuildPageToolbar(
+            ($"Browse skills", true, () => NavigateTo(HomeAction.BrowseSkills)),
+            ($"Update all outdated ({outdated.Length})", outdated.Length > 0, () =>
+            {
+                var summaryText = UpdateSkillRecords(outdated);
+                Toast(summaryText, summaryText.Contains("failed", StringComparison.OrdinalIgnoreCase) ? NotificationSeverity.Danger : NotificationSeverity.Success);
+                BuildInstalledPage(ws, panel);
+            }),
+            ($"Remove all ({installed.Length})", installed.Length > 0, () => ConfirmModal(ws, "Remove all installed skills?",
+                $"This removes every catalog skill from {layout.PrimaryRoot.FullName}.",
+                () =>
+                {
+                    var summary = SafeGet(() => new SkillInstaller(skillCatalog).Remove(installed.Select(r => r.Skill).ToArray(), layout), default(SkillRemoveSummary));
+                    ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {summary.RemovedCount} skill(s)");
+                    BuildInstalledPage(ws, panel);
+                })));
+        if (installedToolbar is not null) panel.AddControl(installedToolbar);
+
         // Real sortable TableControl — columns can be sorted by clicking the header. Per-row
         // foreground color flags outdated rows yellow without needing markup escaping per cell.
         var table = Controls.Table()
@@ -94,27 +115,7 @@ internal sealed partial class InteractiveConsoleApp
             }
         });
         panel.AddControl(table.Build());
-
-        if (outdated.Length > 0)
-        {
-            panel.AddControl(Controls.Button($"Update all {outdated.Length} outdated skill(s)")
-                .OnClick((_, _) =>
-                {
-                    var summaryText = UpdateSkillRecords(outdated);
-                    Toast(summaryText, summaryText.Contains("failed", StringComparison.OrdinalIgnoreCase) ? NotificationSeverity.Danger : NotificationSeverity.Success);
-                    BuildInstalledPage(ws, panel);
-                }).Build());
-        }
-
-        panel.AddControl(Controls.Button($"Remove all {installed.Length} installed skill(s)")
-            .OnClick((_, _) => ConfirmModal(ws, "Remove all installed skills?",
-                $"This removes every catalog skill from {layout.PrimaryRoot.FullName}.",
-                () =>
-                {
-                    var summary = SafeGet(() => new SkillInstaller(skillCatalog).Remove(installed.Select(r => r.Skill).ToArray(), layout), default(SkillRemoveSummary));
-                    ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {summary.RemovedCount} skill(s)");
-                    BuildInstalledPage(ws, panel);
-                })).Build());
+        // Bulk actions live in the page toolbar at the top — no bottom-of-page Button stack.
     }
 
     private void ShowInstalledSkillModal(ConsoleWindowSystem ws, ScrollablePanelControl owner, InstalledSkillRecord record)
@@ -195,6 +196,38 @@ internal sealed partial class InteractiveConsoleApp
             return;
         }
 
+        // Split recommendations: new ones install with force=false, outdated ones need
+        // force=true so the existing skill directory is overwritten with the latest version.
+        // Computed before the toolbar so the "Install all" button can carry the count and a
+        // disabled state when there's nothing to install.
+        var newSkills = scan.Recommendations
+            .Where(r => !installedByName.ContainsKey(r.Skill.Name))
+            .Select(r => r.Skill)
+            .GroupBy(s => s.Name, StringComparer.OrdinalIgnoreCase).Select(g => g.First())
+            .ToArray();
+        var outdatedSkills = scan.Recommendations
+            .Where(r => installedByName.TryGetValue(r.Skill.Name, out var rec) && !rec.IsCurrent)
+            .Select(r => r.Skill)
+            .GroupBy(s => s.Name, StringComparer.OrdinalIgnoreCase).Select(g => g.First())
+            .ToArray();
+        var installable = newSkills.Concat(outdatedSkills).ToArray();
+
+        var projectToolbar = BuildPageToolbar(
+            ($"Install all recommended ({installable.Length})", installable.Length > 0, () =>
+            {
+                var skillLayout = ResolveSkillLayout();
+                var installer2 = new SkillInstaller(skillCatalog);
+                var newSummary = newSkills.Length == 0 ? default : SafeGet(() => installer2.Install(newSkills, skillLayout, force: false), default(SkillInstallSummary));
+                var updateSummary = outdatedSkills.Length == 0 ? default : SafeGet(() => installer2.Install(outdatedSkills, skillLayout, force: true), default(SkillInstallSummary));
+                var installedCount = (newSummary?.InstalledCount ?? 0) + (updateSummary?.InstalledCount ?? 0);
+                var skippedCount = (newSummary?.SkippedExisting.Count ?? 0) + (updateSummary?.SkippedExisting.Count ?? 0);
+                var failed = installedCount == 0 && skippedCount == 0;
+                Toast(failed ? "Install failed" : $"Installed {installedCount}, skipped {skippedCount}", failed ? NotificationSeverity.Danger : NotificationSeverity.Success);
+                BuildProjectPage(ws, panel);
+            }),
+            ("Browse installed", true, () => NavigateTo(HomeAction.ManageInstalled)));
+        if (projectToolbar is not null) panel.AddControl(projectToolbar);
+
         // Confidence cell renders as the same ●●● marker as the legacy list so the visual
         // grammar is preserved; the column itself is sortable, and the default sort
         // (Confidence desc) is applied via the row insertion order.
@@ -243,36 +276,7 @@ internal sealed partial class InteractiveConsoleApp
             }
         };
         panel.AddControl(builtTable);
-
-        // Split recommendations: new ones install with force=false, outdated ones need
-        // force=true so the existing skill directory is overwritten with the latest version.
-        var newSkills = scan.Recommendations
-            .Where(r => !installedByName.ContainsKey(r.Skill.Name))
-            .Select(r => r.Skill)
-            .GroupBy(s => s.Name, StringComparer.OrdinalIgnoreCase).Select(g => g.First())
-            .ToArray();
-        var outdatedSkills = scan.Recommendations
-            .Where(r => installedByName.TryGetValue(r.Skill.Name, out var rec) && !rec.IsCurrent)
-            .Select(r => r.Skill)
-            .GroupBy(s => s.Name, StringComparer.OrdinalIgnoreCase).Select(g => g.First())
-            .ToArray();
-        var installable = newSkills.Concat(outdatedSkills).ToArray();
-        if (installable.Length > 0)
-        {
-            panel.AddControl(Controls.Button($"Install all {installable.Length} recommended skill(s)")
-                .OnClick((_, _) =>
-                {
-                    var skillLayout = ResolveSkillLayout();
-                    var installer2 = new SkillInstaller(skillCatalog);
-                    var newSummary = newSkills.Length == 0 ? default : SafeGet(() => installer2.Install(newSkills, skillLayout, force: false), default(SkillInstallSummary));
-                    var updateSummary = outdatedSkills.Length == 0 ? default : SafeGet(() => installer2.Install(outdatedSkills, skillLayout, force: true), default(SkillInstallSummary));
-                    var installedCount = (newSummary?.InstalledCount ?? 0) + (updateSummary?.InstalledCount ?? 0);
-                    var skippedCount = (newSummary?.SkippedExisting.Count ?? 0) + (updateSummary?.SkippedExisting.Count ?? 0);
-                    var failed = installedCount == 0 && skippedCount == 0;
-                    Toast(failed ? "Install failed" : $"Installed {installedCount}, skipped {skippedCount}", failed ? NotificationSeverity.Danger : NotificationSeverity.Success);
-                    BuildProjectPage(ws, panel);
-                }).Build());
-        }
+        // Bulk install lives in the page toolbar at the top — no bottom-of-page button.
     }
 
     // -------------------------------------------------------------------------
