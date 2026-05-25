@@ -508,6 +508,69 @@ internal sealed partial class InteractiveConsoleApp
     }
 
     /// <summary>
+    /// Adds an identity strip plus a horizontal rule beneath it. The rule visually separates the
+    /// page header from the content below (table, graph, form) the same way the modal toolbar's
+    /// AboveLine separates verbs from content. Rule color follows the page accent so the strip
+    /// and rule read as a single composite header. Use this in page builders instead of calling
+    /// `panel.AddControl(BuildIdentityStrip(...))` directly.
+    /// </summary>
+    private static void AddIdentityStrip(ScrollablePanelControl panel, string title, Color accent, params (string Label, string Value)[] facts)
+    {
+        panel.AddControl(BuildIdentityStrip(title, accent, facts));
+        panel.AddControl(Controls.RuleBuilder()
+            .WithColor(accent)
+            .WithBorderStyle(BorderStyle.Single)
+            .Build());
+    }
+
+    /// <summary>
+    /// In-page section header: a blank spacer line followed by a titled rule. Replaces the
+    /// previous pattern of using `BuildSectionPanel(title, "", accent)` — a full rounded
+    /// PanelControl with an empty body — just to display a heading. Two rows instead of three,
+    /// and the heading reads as a rule with a caption rather than as an empty panel. The empty
+    /// line above gives the title visual breathing room and rhythm between sections.
+    /// Use between content blocks (e.g. above each chart on the Analysis page).
+    /// </summary>
+    private static void AddSectionHeader(ScrollablePanelControl panel, string title, Color accent)
+    {
+        // Empty spacer line above — a single-row blank MarkupControl gives the title rule room
+        // without needing margins. Cheap, predictable rhythm.
+        panel.AddControl(new MarkupControl(new List<string> { string.Empty }));
+        panel.AddControl(Controls.RuleBuilder()
+            .WithTitle(title)
+            .TitleLeft()
+            .WithColor(accent)
+            .WithBorderStyle(BorderStyle.Single)
+            .Build());
+    }
+
+    /// <summary>
+    /// Standard sortable rounded table with a left-aligned title and the accent border color.
+    /// TableControl defaults the title to centered; left-aligned reads better against the
+    /// left-aligned identity strip above and is consistent across the polished shell. Use this
+    /// instead of `Controls.Table().WithTitle(...).WithSorting().Rounded().WithBorderColor(...)`
+    /// boilerplate.
+    /// </summary>
+    private static TableControlBuilder BuildStyledTable(string title, Color accent) => Controls.Table()
+        .WithTitle(title, TextJustification.Left)
+        .WithSorting()
+        .Rounded()
+        .WithBorderColor(accent)
+        .StretchHorizontal();
+
+    /// <summary>
+    /// Configures a built TableControl with the polish-PR's standard runtime properties:
+    /// `TruncationFade = true` makes truncated cell text fade-to-background over the last 4
+    /// columns instead of clipping or showing an ASCII ellipsis. There's no builder method for
+    /// this property, so we set it after Build. Call once per table right after the Build site.
+    /// </summary>
+    private static TableControl ApplyStyledTableRuntime(TableControl table)
+    {
+        table.TruncationFade = true;
+        return table;
+    }
+
+    /// <summary>
     /// Builds a page-level action toolbar — sits between the identity strip and the data table.
     /// Each button is a bulk action (per-row actions stay in the modal). Buttons whose
     /// <paramref name="entries"/> tuple has <c>Enabled = false</c> render as disabled, giving

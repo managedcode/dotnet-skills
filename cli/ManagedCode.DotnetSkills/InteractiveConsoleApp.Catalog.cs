@@ -40,9 +40,9 @@ internal sealed partial class InteractiveConsoleApp
 
         var filtered = available.Where(s => MatchesFilter(s.Name, s.Stack, s.Lane)).ToArray();
 
-        panel.AddControl(BuildIdentityStrip("skill browser", AccentTurquoise,
+        AddIdentityStrip(panel, "skill browser", AccentTurquoise,
             ("available", $"{filtered.Length}/{available.Length}"),
-            ("installed", $"{installed.Count}/{skillCatalog.Skills.Count}")));
+            ("installed", $"{installed.Count}/{skillCatalog.Skills.Count}"));
         AddSearchChip(panel);
 
         if (available.Length == 0)
@@ -60,17 +60,13 @@ internal sealed partial class InteractiveConsoleApp
         // are columns instead of a single bracketed markup-salad row. Default sort matches the
         // legacy ListControl order: by collection rank then collection name then skill name,
         // already baked into the `available` ordering above.
-        var table = Controls.Table()
-            .WithTitle("Available skills (Enter for details)")
+        var table = BuildStyledTable("Available skills (Enter for details)", AccentTurquoise)
             .AddColumn("Collection")
             .AddColumn("Lane")
             .AddColumn("Skill")
             .AddColumn("Version", TextJustification.Right)
-            .AddColumn("Tokens", TextJustification.Right)
-            .WithSorting()
-            .Rounded()
-            .WithBorderColor(AccentTurquoise);
-        var builtTable = table.Build();
+            .AddColumn("Tokens", TextJustification.Right);
+        var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var skill in filtered)
         {
             builtTable.AddRow(new TableRow(
@@ -146,10 +142,10 @@ internal sealed partial class InteractiveConsoleApp
             .ToArray();
         var filtered = views.Where(v => MatchesFilter(v.Collection)).ToArray();
 
-        panel.AddControl(BuildIdentityStrip("collection browser", AccentDeepSkyBlue,
+        AddIdentityStrip(panel, "collection browser", AccentDeepSkyBlue,
             ("collections", string.IsNullOrEmpty(_searchFilter) ? views.Length.ToString() : $"{filtered.Length}/{views.Length}"),
             ("skills", skillCatalog.Skills.Count.ToString()),
-            ("installed", $"{installed.Count}/{skillCatalog.Skills.Count}")));
+            ("installed", $"{installed.Count}/{skillCatalog.Skills.Count}"));
         AddSearchChip(panel);
 
         if (views.Length == 0)
@@ -163,10 +159,10 @@ internal sealed partial class InteractiveConsoleApp
             return;
         }
 
-        // Master-detail layout. Left column lists collections; right column shows the detail of
-        // _selectedCollection. Clicking a left-list row updates only the right pane in place —
-        // no modal, no full-page rebuild. The right pane is a ScrollablePanel so the detail can
-        // grow with the collection's lane list.
+        // Master-detail layout. The left rail is now a 2-column sortable TableControl (matches
+        // the visual grammar of the rest of the polished shell — Skills, Bundles, Packages,
+        // Agents, Project all use TableControl). The right pane shows the detail of
+        // _selectedCollection and is rebuilt in place on selection change.
         if (_selectedCollection is null
             || !filtered.Any(v => string.Equals(v.Collection, _selectedCollection.Collection, StringComparison.OrdinalIgnoreCase)))
         {
@@ -174,8 +170,8 @@ internal sealed partial class InteractiveConsoleApp
             _collectionInstallArmed = false;
         }
 
-        // Build the detail pane as a standalone ScrollablePanelControl so we can update it
-        // independently of the left list when the user changes selection.
+        // Right pane = a ScrollablePanel so the detail (identity strip + per-lane BarGraph +
+        // Lanes table + install Toolbar) can grow without the splitter constraining it.
         var rightPane = new ScrollablePanelControl
         {
             ShowScrollbar = true,
@@ -183,64 +179,119 @@ internal sealed partial class InteractiveConsoleApp
             EnableMouseWheel = true,
         };
 
-        var grid = Controls.HorizontalGrid()
-            .Column(col =>
+        // Left rail — sortable 2-column table. SelectedRowItemChanged fires on row selection
+        // (keyboard or click) and gives us the actual TableRow so we can read Tag without
+        // worrying about display-vs-data index mapping under user sort.
+        var leftTable = ApplyStyledTableRuntime(BuildStyledTable("Collections", AccentDeepSkyBlue)
+            .AddColumn("Collection")
+            .AddColumn("Skills", TextJustification.Right)
+            .Build());
+        foreach (var view in filtered)
+        {
+            leftTable.AddRow(new TableRow(view.Collection, $"{view.InstalledCount}/{view.SkillCount}")
             {
-                col.Flex(1);
-                var list = StyledList("Collections")
-                    .MaxVisibleItems(20)
-                    .WithScrollbarVisibility(ScrollbarVisibility.Auto);
-                foreach (var view in filtered)
-                {
-                    list.AddItem(Escape(BuildCollectionChoiceLabel(view)), view);
-                }
-                list.OnItemActivated((_, item) =>
-                {
-                    if (item.Tag is CollectionCatalogView v)
-                    {
-                        _selectedCollection = v;
-                        _collectionInstallArmed = false;
-                        BuildCollectionDetail(rightPane, v);
-                    }
-                });
-                col.Add(list.Build());
-            })
-            .Column(col =>
+                Tag = view,
+            });
+        }
+        leftTable.SelectedRowItemChanged += (_, row) =>
+        {
+            if (row?.Tag is CollectionCatalogView v && !ReferenceEquals(v, _selectedCollection))
             {
-                col.Flex(2).Add(rightPane);
-            })
-            .Build();
+                _selectedCollection = v;
+                _collectionInstallArmed = false;
+                BuildCollectionDetail(rightPane, v);
+            }
+        };
 
+        // HorizontalGrid with WithSplitterAfter(0) — the grid hosts both columns AND the
+        // splitter control between them. The splitter is drag-resizable. SplitterControl is
+        // not a standalone container; it must live inside a HorizontalGrid between adjacent
+        // ColumnContainers, so `Controls.HorizontalGrid().Column(...).Column(...).WithSplitterAfter(0)`
+        // is the ergonomic builder for it.
+        var grid = Controls.HorizontalGrid()
+            .Column(col => col.Flex(1).Add(leftTable))
+            .Column(col => col.Flex(2).Add(rightPane))
+            .WithSplitterAfter(0)
+            .Build();
         panel.AddControl(grid);
+
         BuildCollectionDetail(rightPane, _selectedCollection!);
     }
 
     /// <summary>
-    /// Renders the right pane of the Collections master-detail view: stats, lanes, and an inline
-    /// two-stage install button (first click arms, second commits — satisfies AGENTS.md's
-    /// "install overview before confirmation" rule without a modal).
+    /// Renders the right pane of the Collections master-detail view. Layout (top to bottom):
+    /// identity strip, tokens-by-lane BarGraph stack (visual weight of each lane within the
+    /// collection — "cool" gradient, same vocabulary as the Analysis page), sortable Lanes
+    /// TableControl, and a single-button Toolbar that handles the two-stage inline install.
     /// </summary>
     private void BuildCollectionDetail(ScrollablePanelControl pane, CollectionCatalogView view)
     {
         pane.ClearContents();
-        pane.AddControl(BuildPropertyPanel(view.Collection, AccentDeepSkyBlue,
-            ("collection", Escape(view.Collection)),
+        AddIdentityStrip(pane, view.Collection, AccentDeepSkyBlue,
             ("lanes", view.Lanes.Count.ToString()),
             ("skills", $"{view.InstalledCount}/{view.SkillCount}"),
-            ("tokens", FormatTokenCount(view.TokenCount))));
+            ("tokens", FormatTokenCount(view.TokenCount)));
 
+        // BarGraph stack — one horizontal bar per lane, sized against the heaviest lane's tokens.
+        // Smooth "cool" gradient (blue → cyan) for magnitude. Lets the eye see which lanes carry
+        // the collection's weight without reading numbers. Mirrors the Analysis page's
+        // "tokens by skill" chart so the visual vocabulary is consistent across the shell.
         if (view.Lanes.Count > 0)
         {
-            pane.AddControl(BuildBulletPanel("lanes", AccentTurquoise,
-                view.Lanes.Select(lane => $"[grey50]·[/] [grey]{Escape(lane.Lane)}[/] [grey50]({lane.InstalledCount}/{lane.Skills.Count} skills, {FormatTokenCount(lane.TokenCount)} tokens)[/]").ToArray()));
+            var maxLaneTokens = view.Lanes.Max(l => l.TokenCount);
+            var laneChart = new ScrollablePanelControl
+            {
+                ShowScrollbar = false,
+                EnableMouseWheel = false,
+            };
+            foreach (var lane in view.Lanes)
+            {
+                laneChart.AddControl(Controls.BarGraph()
+                    .WithLabel(lane.Lane)
+                    .WithLabelWidth(20)
+                    .WithValue(lane.TokenCount)
+                    .WithMaxValue(maxLaneTokens == 0 ? 1 : maxLaneTokens)
+                    .WithValueFormat("N0")
+                    .ShowValue(true)
+                    .WithSmoothGradient("cool")
+                    .Build());
+            }
+            AddSectionHeader(pane, "tokens by lane", AccentDeepSkyBlue);
+            pane.AddControl(laneChart);
         }
 
+        // Lanes table — sortable, columns match the lane's logical dimensions.
+        if (view.Lanes.Count > 0)
+        {
+            var lanesTable = ApplyStyledTableRuntime(BuildStyledTable("Lanes", AccentTurquoise)
+                .AddColumn("Lane")
+                .AddColumn("Skills", TextJustification.Right)
+                .AddColumn("Installed", TextJustification.Right)
+                .AddColumn("Tokens", TextJustification.Right)
+                .Build());
+            foreach (var lane in view.Lanes)
+            {
+                lanesTable.AddRow(new TableRow(
+                    lane.Lane,
+                    lane.Skills.Count.ToString(),
+                    $"{lane.InstalledCount}/{lane.Skills.Count}",
+                    FormatTokenCount(lane.TokenCount))
+                {
+                    Tag = lane,
+                });
+            }
+            pane.AddControl(lanesTable);
+        }
+
+        // Two-stage inline install in a Toolbar — first click arms with a warning toast,
+        // second click commits. Same UX as the original PR #735 implementation, now living in
+        // the same ToolbarControl primitive every other page's bulk action uses.
         var armed = _collectionInstallArmed;
         var label = armed
             ? $"Click again to install all {view.SkillCount} skill(s)"
             : $"Install collection ({view.SkillCount} skill(s))";
-        pane.AddControl(Controls.Button(label)
-            .OnClick((_, _) =>
+        var installToolbar = BuildPageToolbar(
+            (label, view.SkillCount > 0, () =>
             {
                 if (!_collectionInstallArmed)
                 {
@@ -254,7 +305,8 @@ internal sealed partial class InteractiveConsoleApp
                 ToastResult(summary, $"Could not install collection {view.Collection}", summary is null ? string.Empty : $"{view.Collection}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
                 _collectionInstallArmed = false;
                 if (_ws is not null && _activePanel is not null) BuildCollectionsPage(_ws, _activePanel);
-            }).Build());
+            }));
+        if (installToolbar is not null) pane.AddControl(installToolbar);
     }
 
     // -------------------------------------------------------------------------
@@ -274,9 +326,9 @@ internal sealed partial class InteractiveConsoleApp
 
         var filtered = packages.Where(p => MatchesFilter(p.Name, p.Title)).ToArray();
 
-        panel.AddControl(BuildIdentityStrip(title, AccentDeepSkyBlue,
+        AddIdentityStrip(panel, title, AccentDeepSkyBlue,
             (primaryOnly ? "bundles" : "packages", string.IsNullOrEmpty(_searchFilter) ? packages.Length.ToString() : $"{filtered.Length}/{packages.Length}"),
-            ("skills covered", skillCatalog.Skills.Count.ToString())));
+            ("skills covered", skillCatalog.Skills.Count.ToString()));
         AddSearchChip(panel);
 
         if (packages.Length == 0)
@@ -290,16 +342,12 @@ internal sealed partial class InteractiveConsoleApp
             return;
         }
 
-        var table = Controls.Table()
-            .WithTitle($"{(primaryOnly ? "Bundles" : "Packages")} (Enter for details)")
+        var table = BuildStyledTable($"{(primaryOnly ? "Bundles" : "Packages")} (Enter for details)", AccentDeepSkyBlue)
             .AddColumn("Bundle")
             .AddColumn("Title")
             .AddColumn("Skills", TextJustification.Right)
-            .AddColumn("Tokens", TextJustification.Right)
-            .WithSorting()
-            .Rounded()
-            .WithBorderColor(AccentDeepSkyBlue);
-        var builtTable = table.Build();
+            .AddColumn("Tokens", TextJustification.Right);
+        var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var package in filtered)
         {
             var tokenCount = package.Skills.Sum(name => skillTokens.TryGetValue(name, out var value) ? value : 0);
@@ -355,9 +403,9 @@ internal sealed partial class InteractiveConsoleApp
         var signals = SafeGet(BuildPackageSignals, Array.Empty<PackageSignalView>());
         var filtered = signals.Where(s => MatchesFilter(s.Signal, s.Skill.Name, s.Skill.Stack, s.Skill.Lane)).ToArray();
 
-        panel.AddControl(BuildIdentityStrip("package signals", AccentTurquoise,
+        AddIdentityStrip(panel, "package signals", AccentTurquoise,
             ("signals", string.IsNullOrEmpty(_searchFilter) ? signals.Count.ToString() : $"{filtered.Length}/{signals.Count}"),
-            ("skills covered", signals.Select(s => s.Skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString())));
+            ("skills covered", signals.Select(s => s.Skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString()));
         AddSearchChip(panel);
 
         if (signals.Count == 0)
@@ -371,18 +419,14 @@ internal sealed partial class InteractiveConsoleApp
             return;
         }
 
-        var table = Controls.Table()
-            .WithTitle("Package signals (Enter to inspect linked skill)")
+        var table = BuildStyledTable("Package signals (Enter to inspect linked skill)", AccentTurquoise)
             .AddColumn("Signal")
             .AddColumn("Kind")
             .AddColumn("Skill")
             .AddColumn("Collection")
             .AddColumn("Lane")
-            .AddColumn("Tokens", TextJustification.Right)
-            .WithSorting()
-            .Rounded()
-            .WithBorderColor(AccentTurquoise);
-        var builtTable = table.Build();
+            .AddColumn("Tokens", TextJustification.Right);
+        var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var signal in filtered)
         {
             builtTable.AddRow(new TableRow(
@@ -425,10 +469,10 @@ internal sealed partial class InteractiveConsoleApp
 
         // platform + target live in the top StatusBar; surface "unresolved" target here as a
         // first-class fact because the agent layout has a separate resolver from the skill one.
-        panel.AddControl(BuildIdentityStrip("orchestration agents", AccentMediumPurple,
+        AddIdentityStrip(panel, "orchestration agents", AccentMediumPurple,
             ("agents", string.IsNullOrEmpty(_searchFilter) ? agentCatalog.Agents.Count.ToString() : $"{filteredAgents.Length}/{agentCatalog.Agents.Count}"),
             ("installed", layout is null ? "[grey]-[/]" : $"{installed.Count}/{agentCatalog.Agents.Count}"),
-            ("target", layout is null ? $"[red]{Escape(layoutError ?? "unresolved")}[/]" : string.Empty)));
+            ("target", layout is null ? $"[red]{Escape(layoutError ?? "unresolved")}[/]" : string.Empty));
         AddSearchChip(panel);
 
         if (agentCatalog.Agents.Count == 0)
@@ -460,16 +504,12 @@ internal sealed partial class InteractiveConsoleApp
             }));
         if (agentsToolbar is not null) panel.AddControl(agentsToolbar);
 
-        var table = Controls.Table()
-            .WithTitle("Agents (Enter for details)")
+        var table = BuildStyledTable("Agents (Enter for details)", AccentMediumPurple)
             .AddColumn("Status", TextJustification.Center, width: 8)
             .AddColumn("Agent")
             .AddColumn("Description")
-            .AddColumn("Skills", TextJustification.Right)
-            .WithSorting()
-            .Rounded()
-            .WithBorderColor(AccentMediumPurple);
-        var builtTable = table.Build();
+            .AddColumn("Skills", TextJustification.Right);
+        var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var agent in filteredAgents)
         {
             var isInstalled = installed.Any(i => string.Equals(i.Agent.Name, agent.Name, StringComparison.OrdinalIgnoreCase));

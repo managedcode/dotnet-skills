@@ -40,12 +40,12 @@ internal sealed partial class InteractiveConsoleApp
         var installed = SafeGet(() => installer.GetInstalledSkills(layout), Array.Empty<InstalledSkillRecord>());
         var outdated = installed.Count(record => !record.IsCurrent);
 
-        panel.AddControl(BuildIdentityStrip("session", AccentDeepSkyBlue,
+        AddIdentityStrip(panel, "session", AccentDeepSkyBlue,
             ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
             ("platform", Escape(Session.Agent.ToString())),
             ("scope", Escape(Session.Scope.ToString())),
             ("project", Escape(CompactPath(Session.ProjectDirectory ?? Environment.CurrentDirectory))),
-            ("target", $"[grey50]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]")));
+            ("target", $"[grey50]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"));
 
         // catalog telemetry — five native metric cards laid out by HorizontalGrid (responsive flex).
         var installedAccent = installed.Count > 0 ? AccentGreen : AccentGrey;

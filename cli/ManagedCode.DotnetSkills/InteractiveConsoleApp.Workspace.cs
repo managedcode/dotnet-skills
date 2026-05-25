@@ -37,10 +37,10 @@ internal sealed partial class InteractiveConsoleApp
 
         var filtered = installed.Where(r => MatchesFilter(r.Skill.Name, r.Skill.Stack, r.Skill.Lane)).ToArray();
 
-        panel.AddControl(BuildIdentityStrip("installed skills", AccentGreen,
+        AddIdentityStrip(panel, "installed skills", AccentGreen,
             ("installed", string.IsNullOrEmpty(_searchFilter) ? installed.Length.ToString() : $"{filtered.Length}/{installed.Length}"),
             ("outdated", outdated.Length == 0 ? "[green]0[/]" : $"[yellow]{outdated.Length}[/]"),
-            ("tokens", FormatTokenCount(installed.Sum(record => record.Skill.TokenCount)))));
+            ("tokens", FormatTokenCount(installed.Sum(record => record.Skill.TokenCount))));
         AddSearchChip(panel);
 
         if (installed.Length == 0)
@@ -77,18 +77,14 @@ internal sealed partial class InteractiveConsoleApp
 
         // Real sortable TableControl — columns can be sorted by clicking the header. Per-row
         // foreground color flags outdated rows yellow without needing markup escaping per cell.
-        var table = Controls.Table()
-            .WithTitle("Installed skills (Enter for details)")
+        var table = BuildStyledTable("Installed skills (Enter for details)", AccentGreen)
             .AddColumn("Status", TextJustification.Center, width: 8)
             .AddColumn("Skill")
             .AddColumn("Collection")
             .AddColumn("Lane")
             .AddColumn("Installed", TextJustification.Right)
             .AddColumn("Latest", TextJustification.Right)
-            .AddColumn("Tokens", TextJustification.Right)
-            .WithSorting()
-            .Rounded()
-            .WithBorderColor(AccentGreen);
+            .AddColumn("Tokens", TextJustification.Right);
         foreach (var record in filtered)
         {
             var row = new TableRow(
@@ -114,7 +110,7 @@ internal sealed partial class InteractiveConsoleApp
                 ShowInstalledSkillModal(ws, panel, filtered[idx]);
             }
         });
-        panel.AddControl(table.Build());
+        panel.AddControl(ApplyStyledTableRuntime(table.Build()));
         // Bulk actions live in the page toolbar at the top — no bottom-of-page Button stack.
     }
 
@@ -185,10 +181,10 @@ internal sealed partial class InteractiveConsoleApp
         var med = scan.Recommendations.Count(r => r.Confidence == RecommendationConfidence.Medium);
         var low = scan.Recommendations.Count(r => r.Confidence == RecommendationConfidence.Low);
 
-        panel.AddControl(BuildIdentityStrip("project scan", AccentDeepSkyBlue,
+        AddIdentityStrip(panel, "project scan", AccentDeepSkyBlue,
             ("scanned", $"{scan.ProjectFiles.Count} project file(s)"),
             ("frameworks", scan.TargetFrameworks.Count == 0 ? "[grey50]unknown[/]" : Escape(string.Join(", ", scan.TargetFrameworks))),
-            ("recommendations", scan.Recommendations.Count.ToString())));
+            ("recommendations", scan.Recommendations.Count.ToString()));
 
         // Confidence trio — 3 horizontal BarGraphs (high green, med yellow, low grey) so the
         // user can see the shape of the recommendation set without reading numbers. Confidence
@@ -205,7 +201,7 @@ internal sealed partial class InteractiveConsoleApp
             confidencePanel.AddControl(Controls.BarGraph().WithLabel("high").WithLabelWidth(8).WithValue(high).WithMaxValue(maxConfidence).WithValueFormat("0").ShowValue(true).WithFilledColor(AccentGreen).Build());
             confidencePanel.AddControl(Controls.BarGraph().WithLabel("medium").WithLabelWidth(8).WithValue(med).WithMaxValue(maxConfidence).WithValueFormat("0").ShowValue(true).WithFilledColor(AccentYellow).Build());
             confidencePanel.AddControl(Controls.BarGraph().WithLabel("low").WithLabelWidth(8).WithValue(low).WithMaxValue(maxConfidence).WithValueFormat("0").ShowValue(true).WithFilledColor(AccentGrey).Build());
-            panel.AddControl(BuildSectionPanel("confidence", string.Empty, AccentDeepSkyBlue));
+            AddSectionHeader(panel, "confidence", AccentDeepSkyBlue);
             panel.AddControl(confidencePanel);
         }
 
@@ -250,16 +246,12 @@ internal sealed partial class InteractiveConsoleApp
         // Confidence cell renders as the same ●●● marker as the legacy list so the visual
         // grammar is preserved; the column itself is sortable, and the default sort
         // (Confidence desc) is applied via the row insertion order.
-        var table = Controls.Table()
-            .WithTitle("Recommended skills (Enter to install)")
+        var table = BuildStyledTable("Recommended skills (Enter to install)", AccentDeepSkyBlue)
             .AddColumn("Confidence", TextJustification.Center, width: 12)
             .AddColumn("Status", width: 12)
             .AddColumn("Skill")
-            .AddColumn("Reasons")
-            .WithSorting()
-            .Rounded()
-            .WithBorderColor(AccentDeepSkyBlue);
-        var builtTable = table.Build();
+            .AddColumn("Reasons");
+        var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var recommendation in scan.Recommendations
                      .OrderByDescending(r => r.Confidence)
                      .ThenBy(r => r.Skill.Name, StringComparer.Ordinal))
@@ -315,26 +307,22 @@ internal sealed partial class InteractiveConsoleApp
         var signals = SafeGet(BuildPackageSignals, Array.Empty<PackageSignalView>());
         var heaviest = skillCatalog.Skills.OrderByDescending(skill => skill.TokenCount).Take(12).ToArray();
 
-        panel.AddControl(BuildIdentityStrip("catalog analysis", AccentDeepSkyBlue,
+        AddIdentityStrip(panel, "catalog analysis", AccentDeepSkyBlue,
             ("collections", views.Length.ToString()),
             ("skills", skillCatalog.Skills.Count.ToString()),
             ("total tokens", FormatTokenCount(skillCatalog.Skills.Sum(skill => skill.TokenCount))),
-            ("package signals", signals.Count.ToString())));
+            ("package signals", signals.Count.ToString()));
 
-        var collectionCards = views.Take(12).Select(view => BuildBulletPanel(
-            view.Collection, AccentDeepSkyBlue,
-            $"[grey50]skills[/] {view.SkillCount}  [grey50]installed[/] {view.InstalledCount}  [grey50]tokens[/] {FormatTokenCount(view.TokenCount)}")).ToList();
-        panel.AddControl(BuildCardGrid(collectionCards, maxColumns: 3));
+        // The previous collection-card grid (12 BuildBulletPanels in HorizontalGrid columns)
+        // was dropped — the same data is shown in the "skills per collection (top 8)" BarGraph
+        // section further down, so the grid was redundant and crowded the page with rounded
+        // panels masquerading as content cards.
 
-        var heavyTable = Controls.Table()
-            .WithTitle("Heaviest skills (Enter for details)")
+        var heavyTable = BuildStyledTable("Heaviest skills (Enter for details)", AccentDeepSkyBlue)
             .AddColumn("Skill")
             .AddColumn("Collection")
             .AddColumn("Lane")
-            .AddColumn("Tokens", TextJustification.Right)
-            .WithSorting()
-            .Rounded()
-            .WithBorderColor(AccentDeepSkyBlue);
+            .AddColumn("Tokens", TextJustification.Right);
         foreach (var skill in heaviest)
         {
             heavyTable.AddRow(new TableRow(ToAlias(skill.Name), skill.Stack, skill.Lane, FormatTokenCount(skill.TokenCount)) { Tag = skill });
@@ -346,7 +334,7 @@ internal sealed partial class InteractiveConsoleApp
                 ShowSkillDetailModal(ws, panel, heaviest[idx]);
             }
         });
-        panel.AddControl(heavyTable.Build());
+        panel.AddControl(ApplyStyledTableRuntime(heavyTable.Build()));
 
         // Native bar charts: skills sorted by tokens (heaviest 12), then collections sorted by
         // skill count (top 8). Each bar uses the standard threshold gradient so the eye picks
@@ -363,7 +351,7 @@ internal sealed partial class InteractiveConsoleApp
             {
                 chart1.AddControl(BuildSkillTokenBar(skill, maxTokens));
             }
-            panel.AddControl(BuildSectionPanel("tokens by skill (top 12)", string.Empty, AccentDeepSkyBlue));
+            AddSectionHeader(panel, "tokens by skill (top 12)", AccentDeepSkyBlue);
             panel.AddControl(chart1);
         }
 
@@ -380,7 +368,7 @@ internal sealed partial class InteractiveConsoleApp
             {
                 chart2.AddControl(BuildCollectionCountBar(view, maxCount));
             }
-            panel.AddControl(BuildSectionPanel("skills per collection (top 8)", string.Empty, AccentTurquoise));
+            AddSectionHeader(panel, "skills per collection (top 8)", AccentTurquoise);
             panel.AddControl(chart2);
         }
 
@@ -406,16 +394,13 @@ internal sealed partial class InteractiveConsoleApp
                 .AddSeries("tokens", AccentDeepSkyBlue, "cool")
                 .WithData("tokens", sortedTokens)
                 .Build();
-            panel.AddControl(BuildSectionPanel("token distribution (long tail)", string.Empty, AccentDeepSkyBlue));
+            AddSectionHeader(panel, "token distribution (long tail)", AccentDeepSkyBlue);
             panel.AddControl(distribution);
         }
 
-        if (signals.Count > 0)
-        {
-            var signalLines = signals.Take(18).Select(signal =>
-                $"[grey]{Escape(signal.Signal)}[/] [grey50]({Escape(signal.Kind)})[/] [grey50]→[/] {Escape(ToAlias(signal.Skill.Name))}").ToArray();
-            panel.AddControl(BuildBulletPanel("package signals", AccentTurquoise, signalLines));
-        }
+        // The previous bottom-of-page bullet list of package signals was dropped —
+        // the count is already in the identity strip and per-signal detail belongs on the
+        // dedicated Packages page (which is a sortable Table of the same data).
     }
 
     /// <summary>
@@ -462,8 +447,8 @@ internal sealed partial class InteractiveConsoleApp
         var installer = new SkillInstaller(skillCatalog);
         var installed = SafeGet(() => installer.GetInstalledSkills(layout), Array.Empty<InstalledSkillRecord>());
 
-        panel.AddControl(BuildIdentityStrip("remove all installed skills", new Color(200, 60, 60),
-            ("installed", installed.Count.ToString())));
+        AddIdentityStrip(panel, "remove all installed skills", new Color(200, 60, 60),
+            ("installed", installed.Count.ToString()));
 
         if (installed.Count == 0)
         {
@@ -489,8 +474,8 @@ internal sealed partial class InteractiveConsoleApp
             .Where(record => !record.IsCurrent)
             .ToArray();
 
-        panel.AddControl(BuildIdentityStrip("update all outdated skills", AccentYellow,
-            ("outdated", outdated.Length.ToString())));
+        AddIdentityStrip(panel, "update all outdated skills", AccentYellow,
+            ("outdated", outdated.Length.ToString()));
 
         if (outdated.Length == 0)
         {
@@ -524,10 +509,10 @@ internal sealed partial class InteractiveConsoleApp
         // Settings is a form, so the strip carries an at-a-glance summary of the install targets
         // (the StatusBar already carries project/scope/platform; this adds skill+agent targets
         // because those are the form's subject and aren't surfaced anywhere else).
-        panel.AddControl(BuildIdentityStrip("workspace", AccentDeepSkyBlue,
+        AddIdentityStrip(panel, "workspace", AccentDeepSkyBlue,
             ("skill target", $"[grey50]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
             ("agent target", agentStatus.Layout is null ? $"[red]{Escape(agentStatus.Summary)}[/]" : $"[grey50]{Escape(CompactPath(agentStatus.Layout.PrimaryRoot.FullName))}[/]"),
-            ("build", ToolVersionInfo.IsDevelopmentBuild ? "[grey50]local development[/]" : "[green]published[/]")));
+            ("build", ToolVersionInfo.IsDevelopmentBuild ? "[grey50]local development[/]" : "[green]published[/]"));
 
         // Inline form: native dropdowns (change-on-pick, no modal) for Platform/Scope,
         // a plain Button for catalog refresh. SelectedIndexChanged fires only on user
