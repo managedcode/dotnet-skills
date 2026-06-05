@@ -1135,21 +1135,49 @@ internal sealed partial class InteractiveConsoleApp
 
     private void RefreshCatalogFromUi()
     {
-        try
-        {
-            Toast("Refreshing catalog…", NotificationSeverity.Info);
-            LoadCatalogsAsync(refreshCatalog: true).GetAwaiter().GetResult();
-            Toast($"Catalog refreshed: {skillCatalog.CatalogVersion} ({skillCatalog.Skills.Count} skills)", NotificationSeverity.Success);
-        }
-        catch (Exception exception)
-        {
-            Toast($"Refresh failed: {exception.Message}", NotificationSeverity.Danger);
-        }
+        // Invoked from UI handlers (Ctrl+R, refresh button, command palette). The catalog refresh
+        // is async, so we must NOT block the UI thread on it (.Result/.GetAwaiter().GetResult()
+        // deadlocks once a UI SynchronizationContext is installed and freezes the loop regardless).
+        // Instead: toast immediately on the UI thread, run the refresh off-thread, then marshal the
+        // result + rebuilds back onto the UI thread via EnqueueOnUIThread.
+        Toast("Refreshing catalog…", NotificationSeverity.Info);
 
-        // RaiseSnapshotChanged fires the AttachSessionEvents handler which calls
-        // RebuildTopStatusBar() + RebuildActivePage(); also bump the bottom bar.
-        Session.RaiseSnapshotChanged();
-        RebuildStatusBar(_currentPage);
+        var ws = _ws;
+        _ = Task.Run(async () =>
+        {
+            string message;
+            NotificationSeverity severity;
+            try
+            {
+                await LoadCatalogsAsync(refreshCatalog: true).ConfigureAwait(false);
+                message = $"Catalog refreshed: {skillCatalog.CatalogVersion} ({skillCatalog.Skills.Count} skills)";
+                severity = NotificationSeverity.Success;
+            }
+            catch (Exception exception)
+            {
+                message = $"Refresh failed: {exception.Message}";
+                severity = NotificationSeverity.Danger;
+            }
+
+            void ApplyResult()
+            {
+                Toast(message, severity);
+
+                // RaiseSnapshotChanged fires the AttachSessionEvents handler which calls
+                // RebuildTopStatusBar() + RebuildActivePage(); also bump the bottom bar.
+                Session.RaiseSnapshotChanged();
+                RebuildStatusBar(_currentPage);
+            }
+
+            if (ws is not null)
+            {
+                ws.EnqueueOnUIThread(ApplyResult);
+            }
+            else
+            {
+                ApplyResult();
+            }
+        });
     }
 
     private void UpdateAllOutdatedFromUi()
