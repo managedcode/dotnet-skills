@@ -2,10 +2,10 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Add blazor skills to dotnet-blazor plugin (#357)...
-      sha: 198e58c98363999372f38553bd4ab89e2e8a18ba
+      commitTitle: Update lsp.config to invoke dnx from the plugin directory (#607)...
+      sha: 998ae280637d9a0c7f9ae414d853525c4aea069b
       tags:
-      - skill-validator-nightly-6-g198e58c
+      - skill-validator-nightly-6-g998ae28
     path: dotnet-skills
   path: upstreams
 kind: LockConfig
