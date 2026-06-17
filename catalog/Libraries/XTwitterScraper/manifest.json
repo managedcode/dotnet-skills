@@ -1,0 +1,10 @@
+{
+  "name": "XTwitterScraper",
+  "title": "XTwitterScraper",
+  "description": "C# SDK for Xquik's X automation REST API.",
+  "links": {
+    "repository": "https://github.com/Xquik-dev/x-twitter-scraper-csharp",
+    "docs": "https://xquik.com",
+    "nuget": "https://www.nuget.org/packages/XTwitterScraper"
+  }
+}
