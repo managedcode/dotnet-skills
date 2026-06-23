@@ -1,0 +1,9 @@
+{
+  "name": "Playwright",
+  "title": "Playwright",
+  "description": "Playwright browser automation and visual regression testing for browser-facing .NET applications.",
+  "links": {
+    "repository": "https://github.com/microsoft/playwright",
+    "docs": "https://playwright.dev/docs/intro"
+  }
+}

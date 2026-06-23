@@ -45,6 +45,13 @@
       ]
     },
     {
+      "id": "playwright-release",
+      "source": "https://github.com/microsoft/playwright",
+      "skills": [
+        "playwright-visual-testing"
+      ]
+    },
+    {
       "id": "sonarjs-release",
       "source": "https://github.com/SonarSource/SonarJS",
       "skills": [
@@ -66,5 +73,20 @@
       ]
     }
   ],
-  "documentation": []
+  "documentation": [
+    {
+      "id": "playwright-visual-comparisons-docs",
+      "source": "https://playwright.dev/docs/test-snapshots",
+      "skills": [
+        "playwright-visual-testing"
+      ]
+    },
+    {
+      "id": "playwright-ci-docs",
+      "source": "https://playwright.dev/docs/ci",
+      "skills": [
+        "playwright-visual-testing"
+      ]
+    }
+  ]
 }
