@@ -40,19 +40,19 @@ internal sealed partial class InteractiveConsoleApp
 
         var filtered = available.Where(s => MatchesFilter(s.Name, s.Stack, s.Lane)).ToArray();
 
-        AddIdentityStrip(panel, "skill browser", AccentTurquoise,
+        AddIdentityStrip(panel, "skill browser", AccentTurquoise, "Enter ▸ details",
             ("available", $"{filtered.Length}/{available.Length}"),
             ("installed", $"{installed.Count}/{skillCatalog.Skills.Count}"));
         AddSearchChip(panel);
 
         if (available.Length == 0)
         {
-            panel.AddControl(BuildNotePanel("available", "[grey50]Every catalog skill is already installed in this target.[/]", AccentDeepSkyBlue));
+            AddEmptyState(panel, "Every catalog skill is already installed in this target.");
             return;
         }
         if (filtered.Length == 0)
         {
-            panel.AddControl(BuildNotePanel("available", $"[grey50]No skills match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            AddEmptyState(panel, $"No skills match “{Escape(_searchFilter)}”.");
             return;
         }
 
@@ -60,12 +60,12 @@ internal sealed partial class InteractiveConsoleApp
         // are columns instead of a single bracketed markup-salad row. Default sort matches the
         // legacy ListControl order: by collection rank then collection name then skill name,
         // already baked into the `available` ordering above.
-        var table = BuildStyledTable("Available skills (Enter for details)", AccentTurquoise)
+        var table = BuildStyledTableBorderless(AccentTurquoise)
             .AddColumn("Collection")
             .AddColumn("Lane")
             .AddColumn("Skill")
-            .AddColumn("Version", TextJustification.Right)
-            .AddColumn("Tokens", TextJustification.Right);
+            .AddColumn("Version", TextJustification.Right, width: 9)
+            .AddColumn("Tokens", TextJustification.Right, width: 9);
         var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var skill in filtered)
         {
@@ -101,33 +101,172 @@ internal sealed partial class InteractiveConsoleApp
                 ("lane", Escape(skill.Lane)),
                 ("version", Escape(skill.Version)),
                 ("tokens", FormatTokenCount(skill.TokenCount))),
-            BuildNotePanel("summary", Escape(skill.Description), AccentDeepSkyBlue),
-            BuildNotePanel("preview", Escape(LoadSkillPreview(skill)), AccentGrey),
+            BuildModalBlock("summary", Escape(skill.Description)),
+            BuildModalBlock("preview", Escape(LoadSkillPreview(skill))),
         };
 
         ShowModalNative(ws, $"Skill · {ToAlias(skill.Name)}", detail,
             ("Install into current target", () =>
             {
-                var summary = SafeGet(() => new SkillInstaller(skillCatalog).Install(new[] { skill }, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
-                if (summary is null)
-                    Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
-                else
-                    Toast($"{ToAlias(skill.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped", NotificationSeverity.Success);
-                BuildSkillBrowserPage(ws, owner);
+                var layout = ResolveSkillLayout();
+                RunOperationQueued(
+                    $"Installing {ToAlias(skill.Name)}",
+                    work: () => new SkillInstaller(skillCatalog).Install(new[] { skill }, layout, force: false),
+                    onComplete: summary =>
+                    {
+                        if (summary is null)
+                            Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
+                        else
+                            Toast($"{ToAlias(skill.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped", NotificationSeverity.Success);
+                        BuildSkillBrowserPage(ws, owner);
+                    });
             }),
             ("Force reinstall", () =>
             {
-                var summary = SafeGet(() => new SkillInstaller(skillCatalog).Install(new[] { skill }, ResolveSkillLayout(), force: true), default(SkillInstallSummary));
-                if (summary is null)
-                    Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
-                else
-                    Toast($"{ToAlias(skill.Name)}: reinstalled ({summary.InstalledCount} written)", NotificationSeverity.Success);
-                BuildSkillBrowserPage(ws, owner);
+                var layout = ResolveSkillLayout();
+                RunOperationQueued(
+                    $"Reinstalling {ToAlias(skill.Name)}",
+                    work: () => new SkillInstaller(skillCatalog).Install(new[] { skill }, layout, force: true),
+                    onComplete: summary =>
+                    {
+                        if (summary is null)
+                            Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
+                        else
+                            Toast($"{ToAlias(skill.Name)}: reinstalled ({summary.InstalledCount} written)", NotificationSeverity.Success);
+                        BuildSkillBrowserPage(ws, owner);
+                    });
             }));
     }
     // -------------------------------------------------------------------------
     // Collections
     // -------------------------------------------------------------------------
+
+    private enum CollectionRowKind { Collection, Lane, Skill }
+
+    // Identity carried in each grouped-table TableRow.Tag so RowActivated/selection can branch on row
+    // kind and recover data without indexing into a list (row count changes on every expand/collapse).
+    private sealed record CollectionRowTag(
+        CollectionRowKind Kind,
+        CollectionCatalogView Collection,
+        CollectionLaneView? Lane = null,
+        SkillEntry? Skill = null);
+
+    // Fixed width of the in-cell weight bar so the columns after it stay aligned across all rows.
+    private const int CollectionBarCellWidth = 16;
+
+    // The "cool" blue→cyan gradient — the same one the Analysis token chart uses
+    // (ColorGradient.Predefined["cool"] = Blue → Cyan1). Collection weight bars sweep this gradient
+    // ALONG their length, so a glance reads the same way as the Analysis bars.
+    private static readonly ColorGradient WeightBarGradient = ColorGradient.FromColors(Color.Blue, Color.Cyan1);
+
+    // Builds an in-cell horizontal weight bar as markup: a run of █ that sweeps the cool gradient
+    // along its length (dim blue at the start → bright cyan at the end), exactly like the Analysis
+    // BarGraphs; sized to value/parentMax and padded with ░ to cellWidth so the columns after it stay
+    // aligned. A long (heavy) bar shows the full blue→cyan sweep; a short bar shows only its start.
+    // parentMax <= 0 → empty track.
+    private static string WeightBarMarkup(int value, int parentMax, int cellWidth = CollectionBarCellWidth)
+    {
+        if (cellWidth <= 0) return string.Empty;
+        int filled = 0;
+        if (parentMax > 0 && value > 0)
+        {
+            double ratio = System.Math.Clamp((double)value / parentMax, 0.0, 1.0);
+            filled = (int)System.Math.Round(ratio * cellWidth);
+            filled = System.Math.Clamp(filled, 1, cellWidth); // any nonzero value shows at least 1 cell
+        }
+        int empty = cellWidth - filled;
+
+        // Per-cell gradient along the bar: cell i maps to Interpolate(i/(filled-1)) so the run runs
+        // the full Blue→Cyan sweep regardless of length. A 1-cell bar uses the gradient's start.
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < filled; i++)
+        {
+            double t = filled > 1 ? (double)i / (filled - 1) : 0.0;
+            var c = WeightBarGradient.Interpolate(t);
+            sb.Append($"[#{c.R:X2}{c.G:X2}{c.B:X2}]█[/]");
+        }
+        if (empty > 0)
+            sb.Append($"[grey30]{new string('░', empty)}[/]");
+        return sb.ToString();
+    }
+
+    // Rebuilds the grouped table's visible rows from _expandedCollections. Collapsed collection =>
+    // one band row; expanded => band row + each lane's sub-header row + that lane's skill rows.
+    // Restores the selection by tag identity (NOT index) because the row count changes on every toggle.
+    private void RebuildCollectionRows(TableControl table, IReadOnlyList<CollectionCatalogView> views)
+    {
+        // Capture what is selected so we can re-select the equivalent row after the rebuild.
+        var prior = table.SelectedRow?.Tag as CollectionRowTag;
+
+        table.ClearRows();
+
+        int maxCollectionTokens = views.Count == 0 ? 0 : views.Max(v => v.TokenCount);
+
+        foreach (var view in views)
+        {
+            bool expanded = _expandedCollections.Contains(view.Collection);
+            string caret = expanded ? "▾" : "▸";
+
+            var bandRow = new TableRow(
+                $"{caret} {Escape(view.Collection)}",
+                $"{view.InstalledCount}/{view.SkillCount}",
+                WeightBarMarkup(view.TokenCount, maxCollectionTokens),
+                FormatTokenCount(view.TokenCount))
+            {
+                Tag = new CollectionRowTag(CollectionRowKind.Collection, view),
+                BackgroundColor = CollectionBandBackground,
+            };
+            table.AddRow(bandRow);
+
+            if (!expanded) continue;
+
+            foreach (var lane in view.Lanes)
+            {
+                var laneRow = new TableRow(
+                    $"    {Escape(lane.Lane)}",
+                    $"{lane.InstalledCount}/{lane.Skills.Count}",
+                    string.Empty, // lanes are grouping headers — no bar
+                    FormatTokenCount(lane.TokenCount))
+                {
+                    Tag = new CollectionRowTag(CollectionRowKind.Lane, view, lane),
+                    ForegroundColor = AccentGrey,
+                };
+                table.AddRow(laneRow);
+
+                foreach (var skill in lane.Skills)
+                {
+                    var skillRow = new TableRow(
+                        $"      {Escape(ToAlias(skill.Name))}",
+                        "·",
+                        string.Empty, // bars are a collection-level comparison only; exact Tokens are shown
+                        FormatTokenCount(skill.TokenCount))
+                    {
+                        Tag = new CollectionRowTag(CollectionRowKind.Skill, view, lane, skill),
+                    };
+                    table.AddRow(skillRow);
+                }
+            }
+        }
+
+        RestoreCollectionSelection(table, prior);
+    }
+
+    // Re-selects the row matching the previously-selected tag after a rebuild. Collection bands match
+    // by collection name; skills match by collection+skill name; lanes by collection+lane name.
+    private static void RestoreCollectionSelection(TableControl table, CollectionRowTag? prior)
+    {
+        if (prior is null) return;
+        var rows = table.Rows;
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (rows[i].Tag is not CollectionRowTag tag) continue;
+            bool match = tag.Kind == prior.Kind
+                && string.Equals(tag.Collection.Collection, prior.Collection.Collection, System.StringComparison.OrdinalIgnoreCase)
+                && string.Equals(tag.Lane?.Lane, prior.Lane?.Lane, System.StringComparison.OrdinalIgnoreCase)
+                && string.Equals(tag.Skill?.Name, prior.Skill?.Name, System.StringComparison.OrdinalIgnoreCase);
+            if (match) { table.SelectedRowIndex = i; return; }
+        }
+    }
 
     private void BuildCollectionsPage(ConsoleWindowSystem ws, ScrollablePanelControl panel)
     {
@@ -150,163 +289,134 @@ internal sealed partial class InteractiveConsoleApp
 
         if (views.Length == 0)
         {
-            panel.AddControl(BuildNotePanel("collections", "[grey50]No collections in this catalog version.[/]", AccentDeepSkyBlue));
+            AddEmptyState(panel, "No collections in this catalog version.");
             return;
         }
         if (filtered.Length == 0)
         {
-            panel.AddControl(BuildNotePanel("collections", $"[grey50]No collections match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            AddEmptyState(panel, $"No collections match “{Escape(_searchFilter)}”.");
             return;
         }
 
-        // Master-detail layout. The left rail is now a 2-column sortable TableControl (matches
-        // the visual grammar of the rest of the polished shell — Skills, Bundles, Packages,
-        // Agents, Project all use TableControl). The right pane shows the detail of
-        // _selectedCollection and is rebuilt in place on selection change.
-        if (_selectedCollection is null
-            || !filtered.Any(v => string.Equals(v.Collection, _selectedCollection.Collection, StringComparison.OrdinalIgnoreCase)))
-        {
-            _selectedCollection = filtered[0];
-            _collectionInstallArmed = false;
-        }
-
-        // Right pane = a ScrollablePanel so the detail (identity strip + per-lane BarGraph +
-        // Lanes table + install Toolbar) can grow without the splitter constraining it.
-        var rightPane = new ScrollablePanelControl
-        {
-            ShowScrollbar = true,
-            VerticalScrollMode = ScrollMode.Scroll,
-            EnableMouseWheel = true,
-        };
-
-        // Left rail — sortable 2-column table. SelectedRowItemChanged fires on row selection
-        // (keyboard or click) and gives us the actual TableRow so we can read Tag without
-        // worrying about display-vs-data index mapping under user sort.
-        var leftTable = ApplyStyledTableRuntime(BuildStyledTable("Collections", AccentDeepSkyBlue)
-            .AddColumn("Collection")
-            .AddColumn("Skills", TextJustification.Right)
+        // Single borderless grouped table — Collection bands collapse/expand to reveal Lane sub-headers
+        // and Skill rows. Matches the Phase-1 grammar of every other page (no splitter, no nested frame).
+        var table = ApplyStyledTableRuntime(BuildStyledTableBorderless(AccentDeepSkyBlue)
+            .AddColumn("Name")
+            .AddColumn("Installed", TextJustification.Right, width: 9)
+            .AddColumn("Weight", TextJustification.Left, width: CollectionBarCellWidth)
+            .AddColumn("Tokens", TextJustification.Right, width: 9)
             .Build());
-        foreach (var view in filtered)
+
+        void ToggleCollection(CollectionCatalogView collection)
         {
-            leftTable.AddRow(new TableRow(view.Collection, $"{view.InstalledCount}/{view.SkillCount}")
-            {
-                Tag = view,
-            });
+            if (!_expandedCollections.Remove(collection.Collection))
+                _expandedCollections.Add(collection.Collection);
+            RebuildCollectionRows(table, filtered);
         }
-        leftTable.SelectedRowItemChanged += (_, row) =>
+
+        // Keyboard Enter / double-click on a row: bands toggle, skills open detail, lanes do nothing.
+        table.RowActivated += (_, _) =>
         {
-            if (row?.Tag is CollectionCatalogView v && !ReferenceEquals(v, _selectedCollection))
+            if (table.SelectedRow?.Tag is not CollectionRowTag tag) return;
+            switch (tag.Kind)
             {
-                _selectedCollection = v;
-                _collectionInstallArmed = false;
-                BuildCollectionDetail(rightPane, v);
+                case CollectionRowKind.Collection:
+                    ToggleCollection(tag.Collection);
+                    break;
+                case CollectionRowKind.Skill:
+                    if (tag.Skill is not null) ShowSkillDetailModal(ws, panel, tag.Skill);
+                    break;
+                case CollectionRowKind.Lane:
+                    break; // lanes are non-interactive sub-headers
             }
         };
 
-        // HorizontalGrid with WithSplitterAfter(0) — the grid hosts both columns AND the
-        // splitter control between them. The splitter is drag-resizable. SplitterControl is
-        // not a standalone container; it must live inside a HorizontalGrid between adjacent
-        // ColumnContainers, so `Controls.HorizontalGrid().Column(...).Column(...).WithSplitterAfter(0)`
-        // is the ergonomic builder for it.
-        var grid = Controls.HorizontalGrid()
-            .Column(col => col.Flex(1).Add(leftTable))
-            .Column(col => col.Flex(2).Add(rightPane))
-            .WithSplitterAfter(0)
-            .Build();
-        panel.AddControl(grid);
-
-        BuildCollectionDetail(rightPane, _selectedCollection!);
-    }
-
-    /// <summary>
-    /// Renders the right pane of the Collections master-detail view. Layout (top to bottom):
-    /// identity strip, tokens-by-lane BarGraph stack (visual weight of each lane within the
-    /// collection — "cool" gradient, same vocabulary as the Analysis page), sortable Lanes
-    /// TableControl, and a single-button Toolbar that handles the two-stage inline install.
-    /// </summary>
-    private void BuildCollectionDetail(ScrollablePanelControl pane, CollectionCatalogView view)
-    {
-        pane.ClearContents();
-        AddIdentityStrip(pane, view.Collection, AccentDeepSkyBlue,
-            ("lanes", view.Lanes.Count.ToString()),
-            ("skills", $"{view.InstalledCount}/{view.SkillCount}"),
-            ("tokens", FormatTokenCount(view.TokenCount)));
-
-        // BarGraph stack — one horizontal bar per lane, sized against the heaviest lane's tokens.
-        // Smooth "cool" gradient (blue → cyan) for magnitude. Lets the eye see which lanes carry
-        // the collection's weight without reading numbers. Mirrors the Analysis page's
-        // "tokens by skill" chart so the visual vocabulary is consistent across the shell.
-        if (view.Lanes.Count > 0)
+        // Single-click on the caret glyph (the first cell of the Name column) toggles a collection band.
+        // MouseClick fires AFTER the table has already selected the clicked row, so SelectedRow is the
+        // clicked band; we only need to confirm the click landed on the arrow (table-relative X 0..1).
+        table.MouseClick += (_, args) =>
         {
-            var maxLaneTokens = view.Lanes.Max(l => l.TokenCount);
-            var laneChart = new ScrollablePanelControl
-            {
-                ShowScrollbar = false,
-                EnableMouseWheel = false,
-            };
-            foreach (var lane in view.Lanes)
-            {
-                laneChart.AddControl(Controls.BarGraph()
-                    .WithLabel(lane.Lane)
-                    .WithLabelWidth(20)
-                    .WithValue(lane.TokenCount)
-                    .WithMaxValue(maxLaneTokens == 0 ? 1 : maxLaneTokens)
-                    .WithValueFormat("N0")
-                    .ShowValue(true)
-                    .WithSmoothGradient("cool")
-                    .Build());
-            }
-            AddSectionHeader(pane, "tokens by lane", AccentDeepSkyBlue);
-            pane.AddControl(laneChart);
-        }
+            if (args.Position.X > 1) return; // only the caret column, not the whole band
+            if (table.SelectedRow?.Tag is CollectionRowTag tag && tag.Kind == CollectionRowKind.Collection)
+                ToggleCollection(tag.Collection);
+        };
 
-        // Lanes table — sortable, columns match the lane's logical dimensions.
-        if (view.Lanes.Count > 0)
-        {
-            var lanesTable = ApplyStyledTableRuntime(BuildStyledTable("Lanes", AccentTurquoise)
-                .AddColumn("Lane")
-                .AddColumn("Skills", TextJustification.Right)
-                .AddColumn("Installed", TextJustification.Right)
-                .AddColumn("Tokens", TextJustification.Right)
-                .Build());
-            foreach (var lane in view.Lanes)
-            {
-                lanesTable.AddRow(new TableRow(
-                    lane.Lane,
-                    lane.Skills.Count.ToString(),
-                    $"{lane.InstalledCount}/{lane.Skills.Count}",
-                    FormatTokenCount(lane.TokenCount))
-                {
-                    Tag = lane,
-                });
-            }
-            pane.AddControl(lanesTable);
-        }
+        panel.AddControl(table);
+        RebuildCollectionRows(table, filtered);
 
-        // Two-stage inline install in a Toolbar — first click arms with a warning toast,
-        // second click commits. Same UX as the original PR #735 implementation, now living in
-        // the same ToolbarControl primitive every other page's bulk action uses.
-        var armed = _collectionInstallArmed;
-        var label = armed
-            ? $"Click again to install all {view.SkillCount} skill(s)"
-            : $"Install collection ({view.SkillCount} skill(s))";
-        var installToolbar = BuildPageToolbar(
-            (label, view.SkillCount > 0, () =>
+        // Resolves the collection the install action targets = the collection owning the highlighted
+        // row (band, lane, or skill), falling back to the first when nothing is selected.
+        CollectionCatalogView InstallTarget()
+            => (table.SelectedRow?.Tag as CollectionRowTag)?.Collection ?? filtered[0];
+
+        // Caption names the highlighted collection (explicit install target) AND reflects the two-stage
+        // arm state.
+        string InstallLabel(CollectionCatalogView t)
+            => _collectionInstallArmed
+                ? $"Click again to install “{t.Collection}” ({t.SkillCount} skill(s))"
+                : $"Install “{t.Collection}” ({t.SkillCount} skill(s))";
+
+        // Build the install button explicitly so we can keep a reference and update its caption live as
+        // the selection moves between collections (the toolbar is built once and never rebuilt on a
+        // mere selection change). Styling mirrors BuildPageToolbar (below-line, spacing 1).
+        var installButton = Controls.Button(InstallLabel(InstallTarget()))
+            .OnClick((_, _) =>
             {
+                var current = InstallTarget();
                 if (!_collectionInstallArmed)
                 {
                     _collectionInstallArmed = true;
-                    Toast($"Click again to confirm installing {view.SkillCount} skill(s)", NotificationSeverity.Warning);
-                    BuildCollectionDetail(pane, view);
+                    Toast($"Click again to confirm installing {current.SkillCount} skill(s)", NotificationSeverity.Warning);
+                    BuildCollectionsPage(ws, panel);
                     return;
                 }
-                var skills = SafeGet(() => new SkillInstaller(skillCatalog).SelectSkillsFromCollections(new[] { view.Collection }), Array.Empty<SkillEntry>());
-                var summary = skills.Count == 0 ? null : SafeGet(() => new SkillInstaller(skillCatalog).Install(skills, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
-                ToastResult(summary, $"Could not install collection {view.Collection}", summary is null ? string.Empty : $"{view.Collection}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
                 _collectionInstallArmed = false;
-                if (_ws is not null && _activePanel is not null) BuildCollectionsPage(_ws, _activePanel);
-            }));
-        if (installToolbar is not null) pane.AddControl(installToolbar);
+                var layout = ResolveSkillLayout();
+                RunOperationQueued(
+                    $"Installing {current.Collection} ({current.SkillCount} skills)",
+                    work: () =>
+                    {
+                        var skills = new SkillInstaller(skillCatalog).SelectSkillsFromCollections(new[] { current.Collection });
+                        return skills.Count == 0 ? null : new SkillInstaller(skillCatalog).Install(skills, layout, force: false);
+                    },
+                    onComplete: summary =>
+                    {
+                        ToastResult(summary, $"Could not install collection {current.Collection}", summary is null ? string.Empty : $"{current.Collection}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                        BuildCollectionsPage(ws, panel);
+                    });
+            })
+            .Build();
+        installButton.IsEnabled = InstallTarget().SkillCount > 0;
+
+        // Keep the install caption (and enabled state) in sync as the cursor moves between collections.
+        // Use the ROW PASSED BY THE EVENT, not table.SelectedRow — the property may not be updated yet
+        // when the event fires, which would leave the caption one row behind.
+        //
+        // The update is deferred via EnqueueOnUIThread: this handler fires synchronously from inside
+        // input dispatch (mouse click → RebuildCollectionRows → SetSelectedRow → this event). Mutating
+        // the button + repainting from here re-enters the renderer while the window content lock is held
+        // and deadlocks the UI thread (watchdog stall: "blocked in Click / TableControl",
+        // Window.EnsureContentReady → Monitor.Enter — do NOT call ws.ForceRender here). Running the
+        // update on the next UI-loop drain applies it outside the dispatch stack, so it's both
+        // deadlock-free AND lands on the very next frame (no one-selection lag).
+        table.SelectedRowItemChanged += (_, row) =>
+        {
+            var t = (row?.Tag as CollectionRowTag)?.Collection ?? InstallTarget();
+            ws.EnqueueOnUIThread(() =>
+            {
+                installButton.Text = InstallLabel(t);
+                installButton.IsEnabled = t.SkillCount > 0;
+            });
+        };
+
+        // Above-line (not below): the rule separates the table from the install button, so the order
+        // reads table → ruler → button rather than button → ruler → empty space.
+        var installToolbar = Controls.Toolbar()
+            .WithSpacing(1)
+            .WithAboveLine(true)
+            .AddButton(installButton)
+            .Build();
+        panel.AddControl(installToolbar);
     }
 
     // -------------------------------------------------------------------------
@@ -326,27 +436,27 @@ internal sealed partial class InteractiveConsoleApp
 
         var filtered = packages.Where(p => MatchesFilter(p.Name, p.Title)).ToArray();
 
-        AddIdentityStrip(panel, title, AccentDeepSkyBlue,
+        AddIdentityStrip(panel, title, AccentDeepSkyBlue, "Enter ▸ details",
             (primaryOnly ? "bundles" : "packages", string.IsNullOrEmpty(_searchFilter) ? packages.Length.ToString() : $"{filtered.Length}/{packages.Length}"),
             ("skills covered", skillCatalog.Skills.Count.ToString()));
         AddSearchChip(panel);
 
         if (packages.Length == 0)
         {
-            panel.AddControl(BuildNotePanel(title, "[grey50]Nothing available in this catalog version.[/]", AccentDeepSkyBlue));
+            AddEmptyState(panel, "Nothing available in this catalog version.");
             return;
         }
         if (filtered.Length == 0)
         {
-            panel.AddControl(BuildNotePanel(title, $"[grey50]No bundles match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            AddEmptyState(panel, $"No bundles match “{Escape(_searchFilter)}”.");
             return;
         }
 
-        var table = BuildStyledTable($"{(primaryOnly ? "Bundles" : "Packages")} (Enter for details)", AccentDeepSkyBlue)
+        var table = BuildStyledTableBorderless(AccentDeepSkyBlue)
             .AddColumn("Bundle")
             .AddColumn("Title")
-            .AddColumn("Skills", TextJustification.Right)
-            .AddColumn("Tokens", TextJustification.Right);
+            .AddColumn("Skills", TextJustification.Right, width: 8)
+            .AddColumn("Tokens", TextJustification.Right, width: 9);
         var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var package in filtered)
         {
@@ -379,16 +489,25 @@ internal sealed partial class InteractiveConsoleApp
                 ("title", Escape(package.Title)),
                 ("skills", package.Skills.Count.ToString()),
                 ("includes", Escape(string.Join(", ", package.Skills.Take(10).Select(ToAlias))))),
-            BuildNotePanel("summary", Escape(package.Description), AccentDeepSkyBlue),
+            BuildModalBlock("summary", Escape(package.Description)),
         };
 
         ShowModalNative(ws, $"Bundle · {package.Name}", detail,
             ("Install bundle into current target", () =>
             {
-                var skills = SafeGet(() => new SkillInstaller(skillCatalog).SelectSkillsFromPackages(new[] { package.Name }), Array.Empty<SkillEntry>());
-                var summary = skills.Count == 0 ? null : SafeGet(() => new SkillInstaller(skillCatalog).Install(skills, ResolveSkillLayout(), force: false), default(SkillInstallSummary));
-                ToastResult(summary, $"Could not install bundle {package.Name}", summary is null ? string.Empty : $"{package.Name}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
-                BuildBundlesPage(ws, owner, primaryOnly);
+                var layout = ResolveSkillLayout();
+                RunOperationQueued(
+                    $"Installing {package.Name}",
+                    work: () =>
+                    {
+                        var skills = new SkillInstaller(skillCatalog).SelectSkillsFromPackages(new[] { package.Name });
+                        return skills.Count == 0 ? null : new SkillInstaller(skillCatalog).Install(skills, layout, force: false);
+                    },
+                    onComplete: summary =>
+                    {
+                        ToastResult(summary, $"Could not install bundle {package.Name}", summary is null ? string.Empty : $"{package.Name}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                        BuildBundlesPage(ws, owner, primaryOnly);
+                    });
             }));
     }
 
@@ -403,29 +522,29 @@ internal sealed partial class InteractiveConsoleApp
         var signals = SafeGet(BuildPackageSignals, Array.Empty<PackageSignalView>());
         var filtered = signals.Where(s => MatchesFilter(s.Signal, s.Skill.Name, s.Skill.Stack, s.Skill.Lane)).ToArray();
 
-        AddIdentityStrip(panel, "package signals", AccentTurquoise,
+        AddIdentityStrip(panel, "package signals", AccentTurquoise, "Enter ▸ inspect linked skill",
             ("signals", string.IsNullOrEmpty(_searchFilter) ? signals.Count.ToString() : $"{filtered.Length}/{signals.Count}"),
             ("skills covered", signals.Select(s => s.Skill.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString()));
         AddSearchChip(panel);
 
         if (signals.Count == 0)
         {
-            panel.AddControl(BuildNotePanel("packages", "[grey50]No NuGet package or prefix signals are present in this catalog version.[/]", AccentDeepSkyBlue));
+            AddEmptyState(panel, "No NuGet package or prefix signals are present in this catalog version.");
             return;
         }
         if (filtered.Length == 0)
         {
-            panel.AddControl(BuildNotePanel("packages", $"[grey50]No signals match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            AddEmptyState(panel, $"No signals match “{Escape(_searchFilter)}”.");
             return;
         }
 
-        var table = BuildStyledTable("Package signals (Enter to inspect linked skill)", AccentTurquoise)
+        var table = BuildStyledTableBorderless(AccentTurquoise)
             .AddColumn("Signal")
             .AddColumn("Kind")
             .AddColumn("Skill")
             .AddColumn("Collection")
             .AddColumn("Lane")
-            .AddColumn("Tokens", TextJustification.Right);
+            .AddColumn("Tokens", TextJustification.Right, width: 9);
         var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var signal in filtered)
         {
@@ -469,20 +588,20 @@ internal sealed partial class InteractiveConsoleApp
 
         // platform + target live in the top StatusBar; surface "unresolved" target here as a
         // first-class fact because the agent layout has a separate resolver from the skill one.
-        AddIdentityStrip(panel, "orchestration agents", AccentMediumPurple,
+        AddIdentityStrip(panel, "orchestration agents", AccentMediumPurple, "Enter ▸ details",
             ("agents", string.IsNullOrEmpty(_searchFilter) ? agentCatalog.Agents.Count.ToString() : $"{filteredAgents.Length}/{agentCatalog.Agents.Count}"),
             ("installed", layout is null ? "[grey]-[/]" : $"{installed.Count}/{agentCatalog.Agents.Count}"),
-            ("target", layout is null ? $"[red]{Escape(layoutError ?? "unresolved")}[/]" : string.Empty));
+            ("target", layout is null ? $"[#d70000]{Escape(layoutError ?? "unresolved")}[/]" : string.Empty));
         AddSearchChip(panel);
 
         if (agentCatalog.Agents.Count == 0)
         {
-            panel.AddControl(BuildNotePanel("agents", "[grey50]No agents available in the catalog.[/]", AccentDeepSkyBlue));
+            AddEmptyState(panel, "No agents available in the catalog.");
             return;
         }
         if (filteredAgents.Length == 0)
         {
-            panel.AddControl(BuildNotePanel("agents", $"[grey50]No agents match “{Escape(_searchFilter)}”.[/]", AccentYellow));
+            AddEmptyState(panel, $"No agents match “{Escape(_searchFilter)}”.");
             return;
         }
 
@@ -498,17 +617,24 @@ internal sealed partial class InteractiveConsoleApp
                     Toast("No native agent directories detected", NotificationSeverity.Warning);
                     return;
                 }
-                var summary2 = SafeGet(() => new AgentInstaller(agentCatalog).InstallToMultiple(agentCatalog.Agents, detected, force: false), default(AgentInstallSummary));
-                ToastResult(summary2, "Install failed", summary2 is null ? string.Empty : $"Installed {summary2.InstalledCount} agent file(s) across {detected.Count} platform(s)");
-                BuildAgentsPage(ws, panel);
+                RunOperationQueued(
+                    $"Installing all agents across {detected.Count} platform(s)",
+                    work: () => new AgentInstaller(agentCatalog).InstallToMultiple(agentCatalog.Agents, detected, force: false),
+                    onComplete: summary2 =>
+                    {
+                        ToastResult(summary2, "Install failed", summary2 is null ? string.Empty : $"Installed {summary2.InstalledCount} agent file(s) across {detected.Count} platform(s)");
+                        BuildAgentsPage(ws, panel);
+                    });
             }));
         if (agentsToolbar is not null) panel.AddControl(agentsToolbar);
 
-        var table = BuildStyledTable("Agents (Enter for details)", AccentMediumPurple)
-            .AddColumn("Status", TextJustification.Center, width: 8)
-            .AddColumn("Agent")
+        // Status fits "○ available"/"✓ installed" (~11 cols); Agent gets a fixed width so it isn't
+        // collapsed by the stretch Description column (two stretch columns starve each other).
+        var table = BuildStyledTableBorderless(AccentMediumPurple)
+            .AddColumn("Status", TextJustification.Left, width: 12)
+            .AddColumn("Agent", TextJustification.Left, width: 28)
             .AddColumn("Description")
-            .AddColumn("Skills", TextJustification.Right);
+            .AddColumn("Skills", TextJustification.Right, width: 8);
         var builtTable = ApplyStyledTableRuntime(table.Build());
         foreach (var agent in filteredAgents)
         {
@@ -533,7 +659,7 @@ internal sealed partial class InteractiveConsoleApp
 
         if (layout is null)
         {
-            panel.AddControl(BuildNotePanel("note", "[yellow]No native agent directory resolved. Set the platform on the Settings page, or create one of .codex/.claude/.github/.gemini/.junie.[/]", AccentYellow));
+            AddInlineNote(panel, "No native agent directory resolved. Set the platform on the Settings page, or create one of .codex/.claude/.github/.gemini/.junie.", NoteSeverity.Warning);
         }
         // Bulk install lives in the page toolbar at the top.
     }
@@ -546,7 +672,7 @@ internal sealed partial class InteractiveConsoleApp
                 ("agent", Escape(agent.Name)),
                 ("skills", agent.Skills.Count == 0 ? "[grey50]-[/]" : Escape(string.Join(", ", agent.Skills.Select(ToAlias)))),
                 ("platform", Escape(Session.Agent.ToString()))),
-            BuildNotePanel("summary", Escape(agent.Description), AccentDeepSkyBlue),
+            BuildModalBlock("summary", Escape(agent.Description)),
         };
 
         var buttons = new List<(string, Action)>();
@@ -555,15 +681,25 @@ internal sealed partial class InteractiveConsoleApp
         {
             buttons.Add(("Install into current target", () =>
             {
-                var summary = SafeGet(() => new AgentInstaller(agentCatalog).Install(new[] { agent }, layout, force: false), default(AgentInstallSummary));
-                ToastResult(summary, "Install failed", summary is null ? string.Empty : $"{ToAlias(agent.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
-                BuildAgentsPage(ws, owner);
+                RunOperationQueued(
+                    $"Installing agent {ToAlias(agent.Name)}",
+                    work: () => new AgentInstaller(agentCatalog).Install(new[] { agent }, layout, force: false),
+                    onComplete: summary =>
+                    {
+                        ToastResult(summary, "Install failed", summary is null ? string.Empty : $"{ToAlias(agent.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
+                        BuildAgentsPage(ws, owner);
+                    });
             }));
             buttons.Add(("Remove from current target", () =>
             {
-                var summary = SafeGet(() => new AgentInstaller(agentCatalog).Remove(new[] { agent }, layout), default(AgentRemoveSummary));
-                ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {ToAlias(agent.Name)} ({summary.RemovedCount} file(s))");
-                BuildAgentsPage(ws, owner);
+                RunOperationQueued(
+                    $"Removing agent {ToAlias(agent.Name)}",
+                    work: () => new AgentInstaller(agentCatalog).Remove(new[] { agent }, layout),
+                    onComplete: summary =>
+                    {
+                        ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {ToAlias(agent.Name)} ({summary.RemovedCount} file(s))");
+                        BuildAgentsPage(ws, owner);
+                    });
             }));
         }
 
