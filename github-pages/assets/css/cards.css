@@ -7,6 +7,7 @@
   --card-accent-rgb: 255, 126, 93;
   container-type: inline-size;
   position: relative;
+  min-width: 0;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 0;
@@ -68,6 +69,7 @@
 
 .bundle-card .card-head {
   gap: 10px;
+  min-width: 0;
 }
 
 .bundle-card h3 {
@@ -91,6 +93,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  min-width: 0;
   gap: 6px 8px;
 }
 
@@ -129,12 +132,14 @@
 
 .bundle-card .card-footer {
   padding-top: 14px;
+  min-width: 0;
 }
 
 .bundle-card .card-cmd-row {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--bg-sunken);
+  min-width: 0;
 }
 
 .bundle-card .card-cmd {
@@ -177,6 +182,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .card-head-top {
@@ -308,12 +314,14 @@
 .card-footer {
   margin-top: auto;
   padding-top: 12px;
+  min-width: 0;
   width: 100%;
 }
 
 .card-cmd-row {
   display: flex;
   align-items: stretch;
+  min-width: 0;
   width: 100%;
   border-radius: 6px;
   overflow: hidden;

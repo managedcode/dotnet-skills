@@ -34,6 +34,30 @@ GITHUB_REPOSITORY_URL = "https://github.com/managedcode/dotnet-skills"
 NUGET_PACKAGE_URL = "https://www.nuget.org/packages/dotnet-skills"
 MANAGEDCODE_WEBSITE_URL = "https://www.managed-code.com/"
 
+LEGACY_DIRECT_REDIRECTS = {
+    "bundles/core/": "bundles/foundations/",
+    "bundles/testing/": "bundles/testing-base/",
+    "bundles/metrics/": "collections/diagnostics-metrics/",
+    "bundles/data/": "collections/data/",
+    "bundles/cloud/": "collections/",
+    "categories/": "collections/",
+    "categories/core/": "collections/net-foundations/",
+    "categories/cross-platform-ui/": "collections/mobile-device/",
+    "categories/testing/": "collections/testing/",
+    "categories/metrics/": "collections/diagnostics-metrics/",
+    "categories/desktop/": "collections/desktop-ui/",
+    "packages/legacy/": "collections/legacy/",
+    "skills/exp-test-gap-analysis/": "skills/test-gap-analysis/",
+    "skills/exp-assertion-quality/": "skills/assertion-quality/",
+    "skills/maui-doctor/": "skills/dotnet-maui-doctor/",
+    "skills/pinvoke/": "skills/dotnet-pinvoke/",
+    "skills/trace-collect/": "skills/dotnet-trace-collect/",
+    "skills/test-frameworks/": "skills/dotnet-test-frameworks/",
+    "skills/exp-dotnet-test-frameworks/": "skills/dotnet-test-frameworks/",
+    "skills/mcp-csharp-test/": "skills/mcp/",
+    "skills/libvlc/libvlc-skill.md": "skills/libvlc/",
+}
+
 PLACEHOLDERS = {
     "page_title": "PAGE_TITLE_PLACEHOLDER",
     "page_description": "PAGE_DESCRIPTION_PLACEHOLDER",
@@ -161,12 +185,44 @@ def build_absolute_url(site_url: str, path: str) -> str:
     return urljoin(site_url, path)
 
 
+def normalize_page_path(path: str) -> str:
+    """Normalize a generated public path."""
+    normalized = path.strip("/")
+    if not normalized:
+        return ""
+    if Path(normalized).suffix:
+        return normalized
+    return normalized + "/"
+
+
+def add_redirect(redirects: dict[str, str], source_path: str, target_path: str) -> None:
+    """Add a redirect if it does not point to itself."""
+    source = normalize_page_path(source_path)
+    target = normalize_page_path(target_path)
+    if not source or source == target:
+        return
+    redirects[source] = target
+
+
 def output_file_for(path: str) -> Path:
     """Resolve the output file for a page path."""
     if not path:
         return OUTPUT_DIR / "index.html"
 
     return OUTPUT_DIR / path / "index.html"
+
+
+def output_file_for_redirect(path: str) -> Path:
+    """Resolve the exact output file for a redirect source path."""
+    normalized = path.strip("/")
+    if not normalized:
+        return OUTPUT_DIR / "index.html"
+
+    redirect_path = Path(normalized)
+    if redirect_path.suffix:
+        return OUTPUT_DIR / redirect_path
+
+    return OUTPUT_DIR / redirect_path / "index.html"
 
 
 def render_copyright_year_range() -> str:
@@ -2070,8 +2126,8 @@ def build_breadcrumb_json_ld(site_url: str, items: list[tuple[str, str]]) -> dic
     }
 
 
-def build_root_json_ld(site_url: str, canonical_url: str, release_version: str) -> list[dict]:
-    """Build JSON-LD for the home page."""
+def build_common_json_ld_nodes(site_url: str) -> list[dict]:
+    """Build shared schema nodes that detail pages reference."""
     return [
         {
             "@context": "https://schema.org",
@@ -2099,24 +2155,42 @@ def build_root_json_ld(site_url: str, canonical_url: str, release_version: str) 
         },
         {
             "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "@id": f"{site_url}#cli",
+            "name": "dotnet-skills",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Windows, macOS, Linux",
+            "downloadUrl": NUGET_PACKAGE_URL,
+            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+            "author": {"@id": f"{site_url}#organization"},
+        },
+    ]
+
+
+def with_common_json_ld(site_url: str, items: list[dict]) -> list[dict]:
+    """Prepend shared schema nodes unless the page already defines them."""
+    item_ids = {item.get("@id") for item in items if item.get("@id")}
+    common_nodes = [item for item in build_common_json_ld_nodes(site_url) if item.get("@id") not in item_ids]
+    return common_nodes + items
+
+
+def build_root_json_ld(site_url: str, canonical_url: str, release_version: str) -> list[dict]:
+    """Build JSON-LD for the home page."""
+    nodes = build_common_json_ld_nodes(site_url)
+    for node in nodes:
+        if node.get("@id") == f"{site_url}#cli":
+            node["softwareVersion"] = release_version
+
+    return [
+        *nodes,
+        {
+            "@context": "https://schema.org",
             "@type": "CollectionPage",
             "@id": f"{canonical_url}#page",
             "url": canonical_url,
             "name": "dotnet-skills home",
             "description": "The home page for the dotnet-skills catalog, with bundle installs, the full .NET skill directory, and links to collection, skill, agent, and about pages.",
             "isPartOf": {"@id": f"{site_url}#website"},
-        },
-        {
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "@id": f"{site_url}#cli",
-            "name": "dotnet-skills",
-            "applicationCategory": "DeveloperApplication",
-            "operatingSystem": "Windows, macOS, Linux",
-            "softwareVersion": release_version,
-            "downloadUrl": NUGET_PACKAGE_URL,
-            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-            "author": {"@id": f"{site_url}#organization"},
         },
         {
             "@context": "https://schema.org",
@@ -2135,7 +2209,7 @@ def build_root_json_ld(site_url: str, canonical_url: str, release_version: str) 
                     "name": "What changed on the public site?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "The public site now includes dedicated pages for bundles, categories, skills, agents, and an about section so the catalog is easier to crawl and share.",
+                        "text": "The public site includes dedicated pages for bundles, collections, skills, agents, and an about section so the catalog is easier to crawl and share.",
                     },
                 },
             ],
@@ -2205,6 +2279,93 @@ def build_article_json_ld(
     ]
 
 
+def build_skill_json_ld(site_url: str, skill: dict, breadcrumbs: list[tuple[str, str]]) -> list[dict]:
+    """Build structured data for a skill detail page."""
+    install_command = f"dotnet skills install {skill['short_name']}"
+    package_terms = [
+        {"@type": "DefinedTerm", "name": package_name, "inDefinedTermSet": "NuGet packages"}
+        for package_name in skill.get("packages", [])
+    ]
+    if skill.get("package_prefix"):
+        package_terms.append(
+            {
+                "@type": "DefinedTerm",
+                "name": f"{skill['package_prefix']}.*",
+                "inDefinedTermSet": "NuGet package prefixes",
+            }
+        )
+
+    items = build_article_json_ld(
+        site_url,
+        skill["detail_url"],
+        f"{skill['title']} skill",
+        skill["description"],
+        skill["lastmod"],
+        breadcrumbs,
+    )
+    article = items[0]
+    article.update(
+        {
+            "keywords": dedupe_strings(
+                [
+                    "dotnet skill",
+                    skill["name"],
+                    skill["title"],
+                    skill["stack"],
+                    skill.get("lane", ""),
+                    skill.get("type", ""),
+                    *skill.get("packages", []),
+                    skill.get("package_prefix", ""),
+                ]
+            ),
+            "about": [
+                {"@type": "Thing", "name": skill["stack"]},
+                {"@type": "Thing", "name": skill["title"]},
+            ],
+            "teaches": dedupe_strings(
+                [
+                    skill["title"],
+                    skill["description"],
+                    f"{skill['stack']} / {skill.get('lane', '')}".strip(" /"),
+                ]
+            ),
+            "programmingLanguage": [".NET", "C#"],
+            "runtimePlatform": "Windows, macOS, Linux",
+            "isAccessibleForFree": True,
+            "license": f"{GITHUB_REPOSITORY_URL}/blob/main/LICENSE",
+            "provider": {"@id": f"{site_url}#organization"},
+            "audience": {
+                "@type": "Audience",
+                "audienceType": ".NET developers using AI coding assistants",
+            },
+        }
+    )
+    if package_terms:
+        article["mentions"] = package_terms
+
+    return [
+        article,
+        {
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "@id": f"{skill['detail_url']}#install",
+            "name": f"Install the {skill['title']} skill",
+            "description": f"Install {skill['title']} from the dotnet-skills catalog.",
+            "isPartOf": {"@id": f"{skill['detail_url']}#article"},
+            "tool": [{"@id": f"{site_url}#cli"}],
+            "step": [
+                {
+                    "@type": "HowToStep",
+                    "position": 1,
+                    "name": "Install the skill",
+                    "text": install_command,
+                }
+            ],
+        },
+        items[1],
+    ]
+
+
 def build_about_json_ld(site_url: str, canonical_url: str, breadcrumbs: list[tuple[str, str]]) -> list[dict]:
     """Build JSON-LD for the about page."""
     return [
@@ -2257,6 +2418,112 @@ def render_sitemap(site_url: str, pages: list[dict]) -> str:
     )
 
 
+def render_redirect_page(site_url: str, source_path: str, target_path: str) -> str:
+    """Render a static redirect page for GitHub Pages-hosted legacy URLs."""
+    source_url = build_absolute_url(site_url, source_path)
+    target_url = build_absolute_url(site_url, target_path)
+    target_json = json.dumps(target_url)
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting to dotnet-skills</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="{escape_html(target_url)}">
+  <meta http-equiv="refresh" content="0; url={escape_html(target_url)}">
+  <script>window.location.replace({target_json});</script>
+</head>
+<body>
+  <main>
+    <h1>Redirecting</h1>
+    <p>The dotnet-skills catalog moved this page to <a href="{escape_html(target_url)}">{escape_html(target_url)}</a>.</p>
+    <p><small>Legacy source: {escape_html(source_url)}</small></p>
+  </main>
+</body>
+</html>
+"""
+
+
+def build_legacy_redirects(
+    skills: list[dict],
+    bundles: list[dict],
+    category_infos: dict[str, dict],
+) -> dict[str, str]:
+    """Build legacy URL redirects for previous public catalog routes."""
+    redirects: dict[str, str] = {}
+    valid_targets = {""}
+
+    valid_targets.update(skill["detail_path"] for skill in skills)
+    valid_targets.update(bundle["detail_path"] for bundle in bundles)
+    valid_targets.update(
+        [
+            "packages/",
+            "bundles/",
+            "skills/",
+            "collections/",
+            "agents/",
+            "about/",
+        ]
+    )
+    valid_targets.update(f"collections/{category_info['slug']}/" for category_info in category_infos.values())
+
+    for source_path, target_path in LEGACY_DIRECT_REDIRECTS.items():
+        target = normalize_page_path(target_path)
+        if target in valid_targets:
+            add_redirect(redirects, source_path, target)
+
+    skills_by_slug = {skill["slug"]: skill for skill in skills}
+    for skill in skills:
+        slug = skill["slug"]
+        detail_path = skill["detail_path"]
+
+        if not slug.startswith("dotnet-"):
+            add_redirect(redirects, f"skills/dotnet-{slug}/", detail_path)
+
+        skill_root = REPO_ROOT / skill["path"]
+        for support_dir in ("references", "scripts"):
+            support_root = skill_root / support_dir
+            if not support_root.exists():
+                continue
+            for support_file in sorted(support_root.rglob("*")):
+                if not support_file.is_file():
+                    continue
+                relative_file = support_file.relative_to(skill_root).as_posix()
+                add_redirect(redirects, f"skills/{slug}/{relative_file}", detail_path)
+                if not slug.startswith("dotnet-"):
+                    add_redirect(redirects, f"skills/dotnet-{slug}/{relative_file}", detail_path)
+
+    for source_slug, target_slug in {
+        "maui-doctor": "dotnet-maui-doctor",
+        "pinvoke": "dotnet-pinvoke",
+        "trace-collect": "dotnet-trace-collect",
+        "test-frameworks": "dotnet-test-frameworks",
+        "exp-dotnet-test-frameworks": "dotnet-test-frameworks",
+        "exp-test-gap-analysis": "test-gap-analysis",
+        "exp-assertion-quality": "assertion-quality",
+        "mcp-csharp-test": "mcp",
+    }.items():
+        target_skill = skills_by_slug.get(target_slug)
+        if target_skill:
+            add_redirect(redirects, f"skills/{source_slug}/", target_skill["detail_path"])
+
+    return dict(sorted(redirects.items()))
+
+
+def write_redirects(site_url: str, redirects: dict[str, str], canonical_paths: set[str]) -> None:
+    """Write redirect pages without adding them to the canonical sitemap."""
+    written = 0
+    for source_path, target_path in redirects.items():
+        if normalize_page_path(source_path) in canonical_paths:
+            continue
+        output_path = output_file_for_redirect(source_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(render_redirect_page(site_url, source_path, target_path), encoding="utf-8")
+        written += 1
+    print(f"Generated {written} legacy redirect pages")
+
+
 def render_robots(site_url: str) -> str:
     """Render robots.txt."""
     return f"""User-agent: *
@@ -2278,6 +2545,25 @@ def maybe_write_cname(site_url: str) -> None:
     host = urlparse(site_url).netloc
     if host and not host.endswith("github.io"):
         CNAME_PATH.write_text(host + "\n", encoding="utf-8")
+
+
+def cache_bust_imported_stylesheets(output_assets: Path, asset_version: str) -> None:
+    """Add the current asset version to CSS modules imported by site.css."""
+    site_css_path = output_assets / "site.css"
+    if not site_css_path.exists():
+        return
+
+    version_token = re.sub(r"[^A-Za-z0-9._-]", "-", asset_version or date.today().isoformat())
+    stylesheet = site_css_path.read_text(encoding="utf-8")
+
+    def rewrite_import(match: re.Match[str]) -> str:
+        target = match.group(1)
+        if "?v=" in target:
+            return match.group(0)
+        return f'@import url("{target}?v={version_token}");'
+
+    stylesheet = re.sub(r'@import url\("([^"?]+\.css)"\);', rewrite_import, stylesheet)
+    site_css_path.write_text(stylesheet, encoding="utf-8")
 
 
 def main() -> int:
@@ -2345,7 +2631,7 @@ def main() -> int:
                 "canonical_url": escape_html(canonical_url),
                 "og_type": escape_html(og_type),
                 "social_image": escape_html(social_image_url),
-                "page_json_ld": serialize_json_ld(json_ld),
+                "page_json_ld": serialize_json_ld(with_common_json_ld(site_url, json_ld)),
                 "page_extra_head": extra_head,
                 "body_class": escape_html(body_class),
                 "root_prefix": root_prefix,
@@ -2590,15 +2876,19 @@ def main() -> int:
             path=skill["detail_path"],
             title=f"{skill['title']} skill | dotnet-skills",
             description=trim_text(skill["description"], 156),
-            keywords=["dotnet skill", skill["title"], skill["stack"], skill["short_name"], ".NET"],
+            keywords=[
+                "dotnet skill",
+                skill["title"],
+                skill["stack"],
+                skill["short_name"],
+                ".NET",
+                *skill.get("packages", [])[:5],
+            ],
             body_class="page-skills",
             main_content=skill_body,
-            json_ld=build_article_json_ld(
+            json_ld=build_skill_json_ld(
                 site_url,
-                skill["detail_url"],
-                f"{skill['title']} skill",
-                skill["description"],
-                skill["lastmod"],
+                skill,
                 [
                     ("Home", site_url),
                     ("Skills", build_absolute_url(site_url, "skills/")),
@@ -2640,11 +2930,15 @@ def main() -> int:
             priority="0.72",
         )
 
+    canonical_paths = {normalize_page_path(page["path"]) for page in pages}
+    write_redirects(site_url, build_legacy_redirects(skills, bundles, category_infos), canonical_paths)
+
     assets_dir = REPO_ROOT / "github-pages" / "assets"
     output_assets = OUTPUT_DIR / "assets"
     if output_assets.exists():
         shutil.rmtree(output_assets)
     shutil.copytree(assets_dir, output_assets)
+    cache_bust_imported_stylesheets(output_assets, asset_version)
     print(f"Copied assets to {output_assets}")
 
     SITEMAP_PATH.write_text(render_sitemap(site_url, pages), encoding="utf-8")

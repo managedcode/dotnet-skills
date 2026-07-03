@@ -57,6 +57,33 @@
   background: rgba(0,0,0,0.04);
 }
 
+.header-external-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-text-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: var(--r);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 100ms ease;
+}
+
+.header-text-link:hover {
+  background: rgba(0,0,0,0.04);
+  color: var(--ink);
+}
+
 .header-icon-link {
   display: inline-grid;
   place-items: center;
