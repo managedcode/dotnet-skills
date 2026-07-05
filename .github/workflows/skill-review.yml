@@ -1,6 +1,6 @@
-# Tessl Skill Review — runs on PRs that change any SKILL.md; posts scores as one PR comment.
-# Docs: https://github.com/tesslio/skill-review
-name: Tessl Skill Review
+# Tessl Review — runs on PRs that change any SKILL.md.
+# Docs: https://docs.tessl.io/distribute/review-and-publish-with-github-actions
+name: Tessl Review
 
 on:
   pull_request:
@@ -11,12 +11,35 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
+    env:
+      TESSL_TOKEN: ${{ secrets.TESSL_TOKEN }}
     permissions:
-      pull-requests: write
       contents: read
     steps:
       - uses: actions/checkout@v6
-      - uses: tesslio/skill-review@main
-      # Optional quality gate (off by default — do not enable unless user asked):
-      # with:
-      #   fail-threshold: 70
+
+      - name: Skip Tessl Review without token
+        if: env.TESSL_TOKEN == ''
+        run: echo "::notice::Skipping Tessl Review because TESSL_TOKEN is not configured for this workflow context."
+
+      - uses: tesslio/setup-tessl@v2
+        if: env.TESSL_TOKEN != ''
+        with:
+          token: ${{ env.TESSL_TOKEN }}
+
+      - name: Run Tessl Review for changed skills
+        if: env.TESSL_TOKEN != ''
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+          mapfile -t changed_skills < <(git diff --name-only --diff-filter=ACMRT "origin/${{ github.base_ref }}"...HEAD -- "**/SKILL.md")
+          if [ "${#changed_skills[@]}" -eq 0 ]; then
+            echo "No SKILL.md changes detected."
+            exit 0
+          fi
+
+          for skill_path in "${changed_skills[@]}"; do
+            skill_dir="$(dirname "$skill_path")"
+            echo "Running Tessl Review for ${skill_dir}"
+            tessl review run "$skill_dir" --json --threshold 0
+          done

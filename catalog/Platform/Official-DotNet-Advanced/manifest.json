@@ -1,0 +1,9 @@
+{
+  "name": "dotnet-advanced",
+  "title": "Official .NET skills: dotnet-advanced",
+  "description": "Advanced .NET and C# skills for niche scenarios that are not part of the core dotnet plugin.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-advanced"
+  }
+}

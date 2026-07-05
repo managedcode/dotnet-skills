@@ -65,7 +65,7 @@ def parse_simple_yaml_mapping(path: Path, raw_frontmatter: str) -> dict:
     while index < len(lines):
         line = lines[index]
         stripped = line.strip()
-        if not stripped:
+        if not stripped or stripped.startswith("#"):
             index += 1
             continue
 

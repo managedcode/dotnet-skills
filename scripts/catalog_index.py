@@ -82,12 +82,11 @@ CURATED_BUNDLES = [
     {
         "name": "testing-base",
         "title": "Testing base bundle",
-        "description": "Install the clean testing baseline: test command fundamentals, framework selection guidance, coverage, and report output. Framework migrations stay out of this bundle.",
+        "description": "Install the clean testing baseline: test command fundamentals, coverage, reporting, and test anti-pattern guidance. Framework migrations stay out of this bundle.",
         "kind": "workflow",
         "stack": "Testing",
         "lane": "Foundations",
         "skills": [
-            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -103,7 +102,6 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -120,7 +118,6 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -137,7 +134,6 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -155,7 +151,6 @@ CURATED_BUNDLES = [
         "stack": "Testing",
         "lane": "Frameworks",
         "skills": [
-            "dotnet-test-frameworks",
             "run-tests",
             "coverage-analysis",
             "coverlet",
@@ -714,7 +709,7 @@ def parse_simple_yaml_mapping(path: Path, raw_frontmatter: str) -> dict[str, obj
     while index < len(lines):
         line = lines[index]
         stripped = line.strip()
-        if not stripped:
+        if not stripped or stripped.startswith("#"):
             index += 1
             continue
 

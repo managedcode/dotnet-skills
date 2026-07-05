@@ -2,11 +2,11 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'skill-validator: restore 15K aggregate cap as the real Copilot
-        CLI skill-menu budget (#803)...'
-      sha: 592a53008e550aadd46e955f155a31a491b5a6a2
+      commitTitle: 'dotnet-test: raise timeouts for chronic-timeout eval scenarios
+        (#850)...'
+      sha: ce75c355694bb358162464058081121645767d6f
       tags:
-      - skill-validator-nightly-14-g592a530
+      - skill-validator-nightly
     path: dotnet-skills
   path: upstreams
 kind: LockConfig

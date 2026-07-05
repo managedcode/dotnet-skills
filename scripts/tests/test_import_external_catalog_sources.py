@@ -40,6 +40,35 @@ class ImportExternalCatalogSourcesTests(unittest.TestCase):
             encoding="utf-8",
         )
 
+    def test_parse_frontmatter_allows_comments_after_folded_block(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_root_value:
+            skill_path = Path(temp_root_value) / "SKILL.md"
+            skill_path.write_text(
+                "\n".join(
+                    [
+                        "---",
+                        "name: find-untested-sources",
+                        "description: >",
+                        "  Parse source files and tests.",
+                        "  Emit JSON output.",
+                        "# Kept out of default model menus but still invocable by name.",
+                        "disable-model-invocation: true",
+                        "---",
+                        "",
+                        "# Find Untested Sources",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            metadata, body = IMPORTER.parse_markdown_frontmatter(skill_path)
+
+        self.assertEqual(metadata["name"], "find-untested-sources")
+        self.assertEqual(metadata["description"], "Parse source files and tests. Emit JSON output.")
+        self.assertEqual(metadata["disable-model-invocation"], "true")
+        self.assertIn("# Find Untested Sources", body)
+
     def test_import_source_skips_excluded_skill_overrides(self) -> None:
         with tempfile.TemporaryDirectory() as temp_root_value:
             temp_root = Path(temp_root_value)

@@ -76,12 +76,11 @@ internal static class CatalogScanner
         new(
             "testing-base",
             "Testing base bundle",
-            "Install the clean testing baseline: test command fundamentals, framework selection guidance, coverage, and report output. Framework migrations stay out of this bundle.",
+            "Install the clean testing baseline: test command fundamentals, coverage, reporting, and test anti-pattern guidance. Framework migrations stay out of this bundle.",
             "workflow",
             "Testing",
             "Foundations",
             [
-                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -96,7 +95,6 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -112,7 +110,6 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -128,7 +125,6 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -145,7 +141,6 @@ internal static class CatalogScanner
             "Testing",
             "Frameworks",
             [
-                "dotnet-test-frameworks",
                 "run-tests",
                 "coverage-analysis",
                 "coverlet",
@@ -696,7 +691,7 @@ internal static class CatalogScanner
         for (var index = 0; index < lines.Length;)
         {
             var line = lines[index].TrimEnd('\r');
-            if (string.IsNullOrWhiteSpace(line))
+            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("#", StringComparison.Ordinal))
             {
                 index++;
                 continue;

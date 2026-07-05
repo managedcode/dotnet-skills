@@ -112,6 +112,45 @@ public sealed class SkillCatalogPackageTests
     }
 
     [Fact]
+    public void LoadFromDirectory_AllowsFrontmatterCommentsAfterFoldedDescription()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+        var skillDirectory = Directory.CreateDirectory(
+            Path.Combine(tempDirectory.Path, "catalog", "Testing", "Official-DotNet-Test", "skills", "find-untested-sources"));
+
+        Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Testing", "Official-DotNet-Test"));
+        File.WriteAllText(
+            Path.Combine(tempDirectory.Path, "catalog", "Testing", "Official-DotNet-Test", "manifest.json"),
+            """{"name":"Official-DotNet-Test","title":"Official .NET Test","description":"","links":{}}""");
+        File.WriteAllText(
+            Path.Combine(skillDirectory.FullName, "manifest.json"),
+            """{"version":"1.0.0","category":"Testing","compatibility":"Requires .NET test work."}""");
+        File.WriteAllText(
+            Path.Combine(skillDirectory.FullName, "SKILL.md"),
+            """
+            ---
+            name: find-untested-sources
+            description: >
+              Parse source files and tests.
+              Emit JSON output.
+            # Kept out of default model menus but still invocable by name.
+            disable-model-invocation: true
+            ---
+
+            # Find Untested Sources
+            """);
+
+        var package = SkillCatalogPackage.LoadFromDirectory(
+            new DirectoryInfo(tempDirectory.Path),
+            "test payload",
+            "test");
+
+        var skill = Assert.Single(package.Skills);
+        Assert.Equal("find-untested-sources", skill.Name);
+        Assert.Equal("Parse source files and tests. Emit JSON output.", skill.Description);
+    }
+
+    [Fact]
     public void LoadFromDirectory_RejectsInlineSkillVersionAndCategory()
     {
         using var tempDirectory = new TemporaryDirectory();
