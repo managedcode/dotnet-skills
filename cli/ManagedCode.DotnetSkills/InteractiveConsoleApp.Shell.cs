@@ -20,11 +20,13 @@
 using ManagedCode.DotnetSkills.Runtime;
 using SharpConsoleUI;
 using SharpConsoleUI.Builders;
+using SharpConsoleUI.Configuration;
 using SharpConsoleUI.Controls;
 using SharpConsoleUI.Core;
 using SharpConsoleUI.Drivers;
 using SharpConsoleUI.Helpers;
 using SharpConsoleUI.Layout;
+using SharpConsoleUI.Parsing;
 using SharpConsoleUI.Rendering;
 using SharpConsoleUI.Themes;
 
@@ -53,6 +55,22 @@ internal sealed partial class InteractiveConsoleApp
     private static readonly Color AccentYellow = new(215, 175, 0);         // Spectre "yellow"
     private static readonly Color AccentGrey = new(135, 135, 135);         // Spectre "grey"
     private static readonly Color PanelBorderColor = new(70, 88, 116);     // matches the root window border
+
+    // Dimmed vertical column separator for borderless page tables. Deliberately a low-contrast
+    // desaturated grey-blue — NOT an accent — so the hairlines read as quiet column structure
+    // without competing with the turquoise/blue column headers above them.
+    private static readonly Color GridLineColor = new(64, 76, 92);
+
+    // Faint accent-tinted fill behind a collection band row in the grouped Collections table — a
+    // darkened blend of the page accent toward the dark bg, so bands read as group headers without
+    // shouting. Quiet, like GridLineColor.
+    private static readonly Color CollectionBandBackground = new(22, 40, 54);
+
+    // Elevated modal surface: a lighter version of the page's dark blue gradient. In a dark UI an
+    // "above" surface reads as lighter, so modals get this raised gradient (vs the page's
+    // (25,32,52)->(7,7,13)) to feel floated rather than blended into the page.
+    private static readonly ColorGradient ElevatedModalGradient =
+        ColorGradient.FromColors(new Color(58, 70, 104), new Color(34, 42, 66));
     // Softer warm yellow for "outdated" row foreground — the saturated AccentYellow used to
     // double as both the chart-severity yellow and the row-attention yellow, which made the
     // Project confidence trio fight the Installed table for the user's eye. Desaturated so the
@@ -63,6 +81,13 @@ internal sealed partial class InteractiveConsoleApp
     private ConsoleWindowSystem? _ws;
     private ScrollablePanelControl? _activePanel;
     private HomeAction? _currentPage;
+    // The nav rail. Held so NavigateTo (palette / Home cards / toolbar buttons) can sync the rail's
+    // visual selection to the target page instead of leaving it stuck on the previously-clicked item.
+    private NavigationView? _nav;
+    // The command-center window — held so the command palette can host its portal overlay.
+    private Window? _mainWindow;
+    private CommandPalettePortal? _palettePortal;
+    private LayoutNode? _palettePortalNode;
     private StatusBarControl? _statusBar;
     private StatusBarItem? _clockItem;
     private StatusBarItem? _statusMessage;
@@ -79,12 +104,21 @@ internal sealed partial class InteractiveConsoleApp
     // List-page filter active across rebuilds; cleared on page switch. Bound to the `/` overlay.
     private string _searchFilter = string.Empty;
 
-    // Currently selected collection in the master-detail Collections page (Commit 4).
-    private CollectionCatalogView? _selectedCollection;
-
     // First-click arms the inline two-stage install button on Collections detail (Commit 4);
     // second click commits. Cleared every time the selected collection changes.
     private bool _collectionInstallArmed;
+
+    // Keys (collection name, case-insensitive) of collections currently expanded in the grouped
+    // Collections table. Empty = all collapsed (the default at-a-glance view).
+    private readonly HashSet<string> _expandedCollections = new(StringComparer.OrdinalIgnoreCase);
+
+    // ===== Off-thread operation queue (installs/removes) — UI-thread-only access by construction =====
+    private readonly Queue<Action> _operationQueue = new();
+    private bool _operationInProgress;
+    private SpinnerTextAnimator? _operationSpinner;
+
+    // True while the quit-confirm dialog is open, so repeated Ctrl+Q/Esc don't stack modals.
+    private bool _quitConfirmOpen;
 
     private static readonly Color[] SectionPalette =
     {
@@ -120,7 +154,13 @@ internal sealed partial class InteractiveConsoleApp
 
         try
         {
-            var windowSystem = new ConsoleWindowSystem(new NetConsoleDriver(RenderMode.Buffer), BuildTheme());
+            var windowSystem = new ConsoleWindowSystem(
+                new NetConsoleDriver(RenderMode.Buffer),
+                BuildTheme(),
+                options: new ConsoleWindowSystemOptions(ExitKey: null));
+            // We own Ctrl+Q (ExitKey disabled above) so it raises the graceful confirm dialog instead
+            // of the framework's instant shutdown.
+            windowSystem.RegisterGlobalShortcut(ConsoleModifiers.Control, ConsoleKey.Q, RequestExit);
             // Top/bottom system panels are both replaced by interactive StatusBarControl instances —
             // the top one carries live session identity (project, scope, version), the bottom one
             // carries shortcuts + toast slot.
@@ -145,19 +185,25 @@ internal sealed partial class InteractiveConsoleApp
 
         var installedCount = SafeCount(GetInstalledSkillCount);
         var outdatedCount = SafeCount(GetOutdatedSkillCount);
+        // Rail surfaces only. Exit is a shell hotkey, not a rail destination. Update-all /
+        // Remove-all are consolidated into the Installed page (its toolbar + U / Delete
+        // shortcuts + per-row modal), so they're hidden from the rail here — their manifest
+        // surfaces, HomeAction values, page builders, and CLI verbs all stay intact. This
+        // filter is on the SharpConsoleUI call site only; GetHomeActions and the classic
+        // fallback menu are untouched.
         var actions = GetHomeActions(installedCount, outdatedCount)
-            .Where(action => action.Action != HomeAction.Exit)
+            .Where(action => action.Action is not (HomeAction.Exit or HomeAction.UpdateAll or HomeAction.RemoveAll))
             .ToArray();
 
         var nav = Controls.NavigationView()
             .WithNavWidth(30)
             .WithPaneHeader("[bold rgb(120,180,255)]  ◆  dotnet skills[/]")
             .WithPaneDisplayMode(NavigationViewDisplayMode.Auto)
-            // Reserve full pane labels for genuinely wide terminals (≥160 cols). On
-            // 120–160-col terminals the rail goes Compact (icons + selected label only),
-            // giving the polished tables and graphs the horizontal space they need. Below
-            // 90 cols the rail collapses to Minimal (hidden, summon on hotkey).
-            .WithExpandedThreshold(160)
+            // Show full pane labels at ≥120 cols. On 90–120-col terminals the rail goes
+            // Compact (icon-only) — and because every surface now has a DISTINCT geometric
+            // icon (see IconFor), compact mode stays readable rather than a column of
+            // identical glyphs. Below 90 cols the rail collapses to Minimal (summon on hotkey).
+            .WithExpandedThreshold(120)
             .WithCompactThreshold(90)
             .WithContentBorder(BorderStyle.Rounded)
             .WithContentBorderColor(new Color(70, 100, 150))
@@ -176,7 +222,7 @@ internal sealed partial class InteractiveConsoleApp
                 {
                     var captured = action;
                     header.AddItem(
-                        new NavigationItem(captured.Label, icon: "›", subtitle: captured.Summary) { Tag = captured.Action },
+                        new NavigationItem(captured.Label, icon: IconFor(captured.Action), subtitle: captured.Summary) { Tag = captured.Action },
                         panel => BuildActionPage(ws, panel, captured.Action));
                 }
             });
@@ -187,6 +233,7 @@ internal sealed partial class InteractiveConsoleApp
             .WithAlignment(HorizontalAlignment.Stretch)
             .WithVerticalAlignment(VerticalAlignment.Fill)
             .Build();
+        _nav = navView;
 
         _topStatusBar = new StatusBarControl(stickyBottom: false)
         {
@@ -215,7 +262,7 @@ internal sealed partial class InteractiveConsoleApp
         // Background gradient (cxpost / cxfiles house style — cool dark blue top to near-black bottom).
         var backgroundGradient = ColorGradient.FromColors(new Color(25, 32, 52), new Color(7, 7, 13));
 
-        new WindowBuilder(ws)
+        _mainWindow = new WindowBuilder(ws)
             .WithTitle("dotnet skills — command center")
             .HideTitle()
             .Maximized()
@@ -235,9 +282,31 @@ internal sealed partial class InteractiveConsoleApp
             .AddControl(_statusBar)
             .BuildAndShow();
 
+        // Preview-key hook: lets the command palette portal swallow all keys before they reach the page.
+        _mainWindow.PreviewKeyPressed += (_, e) => HandlePreviewKey(e);
+
         RebuildStatusBar(null);
         RebuildTopStatusBar();
     }
+
+    /// <summary>
+    /// Distinct geometric (1-cell, terminal-safe) rail icon per surface. Distinct icons keep the
+    /// rail readable in Compact (icon-only) mode — otherwise every section item shows the same glyph.
+    /// </summary>
+    private static string IconFor(HomeAction action) => action switch
+    {
+        HomeAction.BrowseSkills      => "◇",
+        HomeAction.BrowseCollections => "⊞",
+        HomeAction.BrowseBundles     => "▣",
+        HomeAction.BrowsePackages    => "⬡",
+        HomeAction.BrowseAgents      => "⊕",
+        HomeAction.ManageInstalled   => "▤",
+        HomeAction.SyncProject       => "⌖",
+        HomeAction.Analysis          => "∿",
+        HomeAction.Workspace         => "⚙",  // Settings
+        HomeAction.About             => "ⓘ",
+        _ => "›",
+    };
 
     /// <summary>
     /// Repopulates the top status bar with current session identity. Called on initial build
@@ -262,13 +331,33 @@ internal sealed partial class InteractiveConsoleApp
     }
 
     /// <summary>
-    /// Navigates to a HomeAction page without going through the NavigationView rail — used by
-    /// the clickable Home metric cards and the command palette. The rail's visual selection
-    /// state won't follow, but the content panel rebuilds and status bars update.
+    /// Navigates to a HomeAction page from outside the rail (Home metric cards, command palette,
+    /// page toolbar buttons). Routes through the rail's selection so the rail highlight follows the
+    /// content: selecting the matching item rebuilds the page via the rail's own factory and fires
+    /// SelectedItemChanged (which updates the status bar). Falls back to a direct build if no rail
+    /// item carries the action (e.g. Home, or an action not present in the rail).
     /// </summary>
     private void NavigateTo(HomeAction action)
     {
         if (_ws is null || _activePanel is null) return;
+
+        if (_nav is not null)
+        {
+            var items = _nav.Items;
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].Tag is HomeAction tagged && tagged == action)
+                {
+                    // Setting SelectedIndex applies the rail highlight AND invokes the item's page
+                    // factory (→ BuildActionPage) + fires SelectedItemChanged (→ RebuildStatusBar),
+                    // so content, rail, and status bar all stay in sync through one path.
+                    _nav.SelectedIndex = i;
+                    return;
+                }
+            }
+        }
+
+        // Fallback: no matching rail item — build directly (rail selection won't follow).
         BuildActionPage(_ws, _activePanel, action);
         RebuildStatusBar(action);
     }
@@ -299,11 +388,23 @@ internal sealed partial class InteractiveConsoleApp
         };
     }
 
+    // Fires BEFORE any control sees the key (Window.PreviewKeyPressed). While the command palette portal
+    // is open it captures ALL keys here and marks them handled, so nothing leaks to the focused page/rail
+    // (OnKeyPressed runs too late — the focused control would already have processed the key).
+    private void HandlePreviewKey(KeyPressedEventArgs e)
+    {
+        if (_palettePortal != null)
+        {
+            _palettePortal.ProcessKey(e.KeyInfo);
+            e.Handled = true;
+        }
+    }
+
     private void HandleGlobalKey(KeyPressedEventArgs e)
     {
         var key = e.KeyInfo;
 
-        // Esc clears an active search filter first, then ends the session.
+        // Esc clears an active search filter first, then raises the graceful quit dialog.
         if (key.Key == ConsoleKey.Escape)
         {
             if (!string.IsNullOrEmpty(_searchFilter))
@@ -313,7 +414,7 @@ internal sealed partial class InteractiveConsoleApp
                 e.Handled = true;
                 return;
             }
-            _ws?.Shutdown(0);
+            RequestExit();
             e.Handled = true;
             return;
         }
@@ -368,12 +469,12 @@ internal sealed partial class InteractiveConsoleApp
 
     private void BuildActionPage(ConsoleWindowSystem ws, ScrollablePanelControl panel, HomeAction action)
     {
-        // Page-switch clears transient filters (search + Collections detail selection) so each
+        // Page-switch clears transient filters (search + Collections expansion/arm state) so each
         // page lands in a clean state. Use NavigateTo if you need to preserve filter context.
         if (_currentPage != action)
         {
             _searchFilter = string.Empty;
-            _selectedCollection = null;
+            _expandedCollections.Clear();
             _collectionInstallArmed = false;
         }
         _activePanel = panel;
@@ -396,7 +497,7 @@ internal sealed partial class InteractiveConsoleApp
             case HomeAction.About: BuildAboutPage(panel); break;
             default:
                 panel.ClearContents();
-                panel.AddControl(BuildNotePanel(action.ToString(), "[grey50]Not available in this surface.[/]", AccentGrey));
+                AddEmptyState(panel, "Not available in this surface.");
                 break;
         }
     }
@@ -405,20 +506,6 @@ internal sealed partial class InteractiveConsoleApp
     // -------------------------------------------------------------------------
     // Native control helpers — every page and modal renders through these.
     // -------------------------------------------------------------------------
-
-    /// <summary>
-    /// A native PanelControl with rounded border, themed header, and accent border color —
-    /// the visual equivalent of BuildRichShellPanel but drawn directly into the cell buffer
-    /// so its border aligns with the surrounding window chrome.
-    /// </summary>
-    private static PanelControl BuildSectionPanel(string title, string body, Color accent) => Controls.Panel()
-        .WithHeader($"[bold]{Escape(title)}[/]")
-        .WithBorderStyle(BorderStyle.Rounded)
-        .WithBorderColor(accent)
-        .WithPadding(1, 0, 1, 0)
-        .WithContent(body)
-        .WithAlignment(HorizontalAlignment.Stretch)
-        .Build();
 
     /// <summary>
     /// A native metric card: three stacked lines (title accent, value bold, detail grey) inside
@@ -466,26 +553,16 @@ internal sealed partial class InteractiveConsoleApp
     private static PanelControl BuildPropertyPanel(string title, Color accent, params (string Label, string Value)[] rows)
     {
         var body = string.Join("\n", rows.Select(r => FormatRow(r.Label, r.Value)));
-        return BuildSectionPanel(title, body, accent);
+        return Controls.Panel()
+            .WithHeader($"[bold]{Escape(title)}[/]")
+            .WithBorderStyle(BorderStyle.Rounded)
+            .WithBorderColor(accent)
+            .WithPadding(1, 0, 1, 0)
+            .WithContent(body)
+            .WithAlignment(HorizontalAlignment.Stretch)
+            .Build();
     }
 
-    /// <summary>
-    /// A native section panel containing a single markup line — used for empty-state notes and
-    /// short status messages.
-    /// </summary>
-    private static PanelControl BuildNotePanel(string title, string markup, Color accent)
-        => BuildSectionPanel(title, markup, accent);
-
-    /// <summary>
-    /// A native section panel whose body is a vertical stack of markup lines — used for
-    /// "quick start", "surface map", and similar bullet-list cards. Lines are joined with \n
-    /// so PanelControl wraps each independently.
-    /// </summary>
-    private static PanelControl BuildBulletPanel(string title, Color accent, params string[] lines)
-    {
-        var body = string.Join("\n", lines.Where(l => !string.IsNullOrWhiteSpace(l)));
-        return BuildSectionPanel(title, body, accent);
-    }
 
     /// <summary>
     /// One-line identity strip used as a page header. Renders as a single MarkupControl with the
@@ -495,9 +572,25 @@ internal sealed partial class InteractiveConsoleApp
     /// labels are dimmed by this helper.
     /// </summary>
     private static IWindowControl BuildIdentityStrip(string title, Color accent, params (string Label, string Value)[] facts)
+        => BuildIdentityStrip(title, accent, hint: null, facts);
+
+    /// <summary>
+    /// Identity strip with an optional affordance <paramref name="hint"/> (e.g. "Enter ▸ details")
+    /// rendered as a quiet bracketed chip immediately after the title. Pages whose primary table no
+    /// longer carries its own title line pass the affordance here instead, so the page has a single
+    /// header (the column row) rather than a redundant turquoise title duplicating the strip.
+    /// </summary>
+    private static IWindowControl BuildIdentityStrip(string title, Color accent, string? hint, params (string Label, string Value)[] facts)
     {
         var hex = $"#{accent.R:X2}{accent.G:X2}{accent.B:X2}";
-        var parts = new List<string> { $"[bold {hex}]{Escape(title)}[/]" };
+        var head = $"[bold {hex}]{Escape(title)}[/]";
+        if (!string.IsNullOrEmpty(hint))
+        {
+            // Dim bracketed chip — subordinate to the title, signals the row action without
+            // competing with the accent-colored column header below.
+            head += $"  [grey50]❨[/][grey62]{Escape(hint)}[/][grey50]❩[/]";
+        }
+        var parts = new List<string> { head };
         foreach (var (label, value) in facts)
         {
             if (string.IsNullOrEmpty(value)) continue;
@@ -515,8 +608,17 @@ internal sealed partial class InteractiveConsoleApp
     /// `panel.AddControl(BuildIdentityStrip(...))` directly.
     /// </summary>
     private static void AddIdentityStrip(ScrollablePanelControl panel, string title, Color accent, params (string Label, string Value)[] facts)
+        => AddIdentityStrip(panel, title, accent, hint: null, facts);
+
+    /// <summary>
+    /// Identity-strip variant carrying an affordance <paramref name="hint"/> chip (see
+    /// <see cref="BuildIdentityStrip(string, Color, string?, ValueTuple{string, string}[])"/>). Pages
+    /// whose primary table dropped its own title use this so the row action ("Enter ▸ details") lives
+    /// in the header strip rather than as a second turquoise line above the columns.
+    /// </summary>
+    private static void AddIdentityStrip(ScrollablePanelControl panel, string title, Color accent, string? hint, params (string Label, string Value)[] facts)
     {
-        panel.AddControl(BuildIdentityStrip(title, accent, facts));
+        panel.AddControl(BuildIdentityStrip(title, accent, hint, facts));
         panel.AddControl(Controls.RuleBuilder()
             .WithColor(accent)
             .WithBorderStyle(BorderStyle.Single)
@@ -544,6 +646,60 @@ internal sealed partial class InteractiveConsoleApp
             .Build());
     }
 
+    // ===== Quiet text-block vocabulary (replaces the rounded accent-box panels) =====
+
+    internal enum NoteSeverity { Info, Warning, Error, Success }
+
+    /// <summary>Quiet empty-state: a spacer + a centered dim line. No box. For passive
+    /// "no results / nothing available" states (the page identity strip gives context).</summary>
+    private static void AddEmptyState(ScrollablePanelControl panel, string message)
+    {
+        panel.AddControl(new MarkupControl(new List<string> { string.Empty }));
+        panel.AddControl(Controls.Markup()
+            .AddLine($"[grey50]{message}[/]")
+            .Centered()
+            .Build());
+    }
+
+    /// <summary>Inline severity note: a single wrapped line with a leading glyph + color, NO box.
+    /// The glyph/color carries severity. For actionable notes (warnings, errors, status).</summary>
+    private static void AddInlineNote(ScrollablePanelControl panel, string message, NoteSeverity severity)
+    {
+        // Muted accent hexes (not the raw [yellow]/[red] markup tags, which resolve to the
+        // max-bright #FFFF00 / #FF0000 and "scream" against the dark shell). These match the
+        // app's AccentYellow / AccentGreen palette so a passive note stays warm, not loud.
+        var (glyph, open) = severity switch
+        {
+            NoteSeverity.Warning => ("⚠", "[#d7af00]"),   // AccentYellow — muted amber
+            NoteSeverity.Error => ("✕", "[#d70000]"),     // softened red
+            NoteSeverity.Success => ("✓", "[#00af00]"),   // AccentGreen
+            _ => ("ℹ", "[grey62]"),
+        };
+        panel.AddControl(new MarkupControl(new List<string> { $"{open}{glyph}  {message}[/]" }));
+    }
+
+    /// <summary>Form section header: a titled rule (via AddSectionHeader) + a dim caption line. No box.
+    /// The caller adds the fields after.</summary>
+    private static void AddFormSection(ScrollablePanelControl panel, string title, string caption, Color accent)
+    {
+        AddSectionHeader(panel, title, accent);
+        panel.AddControl(new MarkupControl(new List<string> { $"[grey50]{caption}[/]" }));
+    }
+
+    /// <summary>Info block: a bold caption + dim body lines, no border. For bullet-list info
+    /// ("quick start", "tool update", "surface map", "notes").</summary>
+    private static void AddInfoBlock(ScrollablePanelControl panel, string title, params string[] lines)
+    {
+        var rows = new List<string> { $"[bold]{Escape(title)}[/]" };
+        rows.AddRange(lines.Where(l => !string.IsNullOrWhiteSpace(l)));
+        panel.AddControl(new MarkupControl(rows));
+    }
+
+    /// <summary>De-emphasized titled block for use INSIDE a detail modal (which already has a frame).
+    /// A bold caption + body, no accent box.</summary>
+    private static IWindowControl BuildModalBlock(string title, string body)
+        => new MarkupControl(new List<string> { $"[bold]{Escape(title)}[/]", body });
+
     /// <summary>
     /// Standard sortable rounded table with a left-aligned title and the accent border color.
     /// TableControl defaults the title to centered; left-aligned reads better against the
@@ -557,6 +713,42 @@ internal sealed partial class InteractiveConsoleApp
         .Rounded()
         .WithBorderColor(accent)
         .StretchHorizontal();
+
+    /// <summary>
+    /// Borderless variant of <see cref="BuildStyledTable"/> for a page's PRIMARY table — the one that
+    /// sits directly inside the NavigationView content area, which already supplies a rounded frame.
+    /// Dropping the table's own border removes the redundant inner frame (one frame, not two). Tables
+    /// shown inside a modal (which has its own border) keep the rounded <see cref="BuildStyledTable"/>.
+    /// </summary>
+    private static TableControlBuilder BuildStyledTableBorderless(string title, Color accent)
+    {
+        var builder = BuildStyledTableBorderless(accent);
+        if (!string.IsNullOrEmpty(title))
+            builder.WithTitle(title, TextJustification.Left);
+        return builder;
+    }
+
+    /// <summary>
+    /// Titleless borderless page table. The page's identity strip already names the section (and
+    /// carries the row-action affordance as a chip), so the table needs no title of its own — a
+    /// turquoise title line directly above the same-colored column header read as a duplicate header.
+    /// Use this for Skills/Bundles/Packages/Agents; the column row is the only header.
+    /// </summary>
+    private static TableControlBuilder BuildStyledTableBorderless(Color accent) => Controls.Table()
+        .WithSorting()
+        .NoBorder()
+        .WithBorderColor(accent)
+        // Dim hairline between columns — borders are off, so this is the only column structure.
+        // A desaturated grey keeps it quiet (see GridLineColor); padded:true gives the glyph a
+        // space on each side so it doesn't sit flush against the cell text.
+        .WithColumnSeparator('│', GridLineColor, padded: true)
+        // Keep the right-aligned final column (e.g. Tokens) off the scrollbar with a 1-cell gutter.
+        .ScrollbarGutter()
+        .StretchHorizontal()
+        // Fill the page's content height so the table viewport (rows + scrollbar) uses the available
+        // space instead of leaving a large void below. The page table is always the primary content,
+        // so it should own the vertical room.
+        .WithVerticalAlignment(VerticalAlignment.Fill);
 
     /// <summary>
     /// Configures a built TableControl with the polish-PR's standard runtime properties:
@@ -658,14 +850,20 @@ internal sealed partial class InteractiveConsoleApp
             }
         }
 
-        // Above-line gives a visual separator between the modal's data/property panels and the
-        // action toolbar — without it the buttons sit flush against the content and read as
-        // "more content" on first glance.
+        // Separator between the modal's data/property panels and the action toolbar. The
+        // toolbar's own AboveLine only spans the centered button cluster (the toolbar measures to
+        // its content width), so it reads as an underline of the buttons rather than a section
+        // divider. Instead, a standalone edge-to-edge Rule spans the full modal width, and the
+        // toolbar itself is borderless so the buttons sit centered beneath it.
+        var toolbarRule = Controls.RuleBuilder()
+            .WithColor(new Color(70, 88, 116))
+            .WithBorderStyle(BorderStyle.Single)
+            .Build();
+        toolbarRule.StickyPosition = StickyPosition.Bottom;
+
         var toolbar = Controls.Toolbar()
             .WithSpacing(2)
-            .WithAlignment(HorizontalAlignment.Center)
-            .WithAboveLine(true)
-            .WithAboveLineColor(new Color(70, 88, 116));
+            .WithAlignment(HorizontalAlignment.Center);
         foreach (var (label, onClick) in buttons)
         {
             var captured = onClick;
@@ -678,6 +876,7 @@ internal sealed partial class InteractiveConsoleApp
             .WithSize(width, height)
             .Centered()
             .AsModal()
+            .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
             .Minimizable(false)
             .Maximizable(false)
             .WithBorderStyle(BorderStyle.Rounded)
@@ -691,18 +890,191 @@ internal sealed partial class InteractiveConsoleApp
                 }
             })
             .AddControl(body)
+            .AddControl(toolbarRule)
             .AddControl(toolbar.StickyBottom().Build())
             .BuildAndShow();
     }
 
-    private void ConfirmModal(ConsoleWindowSystem ws, string title, string message, Action onConfirm)
+    // Single exit funnel for Ctrl+Q, Escape, and the "Quit" status action. Always confirms; the message
+    // escalates when a background operation is in progress or queued (quitting then drops the queue).
+    private void RequestExit()
     {
-        var content = new IWindowControl[]
-        {
-            BuildNotePanel("confirm", $"[yellow]{Escape(message)}[/]", AccentYellow),
-        };
-        ShowModalNative(ws, title, content, ("Yes, proceed", onConfirm));
+        if (_quitConfirmOpen || _ws is null) return;
+        _quitConfirmOpen = true;
+
+        bool busy = _operationInProgress || _operationQueue.Count > 0;
+        int queued = _operationQueue.Count;
+        string body = busy
+            ? $"[yellow]⚠ An operation is still running{(queued > 0 ? $" (+{queued} queued)" : string.Empty)}. Quitting now drops queued operations.[/]"
+            : "Exit the catalog browser?";
+        string confirmLabel = busy ? "Quit anyway" : "Quit";
+
+        ShowExitConfirm("Quit dotnet skills?", body, confirmLabel,
+            onConfirm: () => { _quitConfirmOpen = false; _ws?.Shutdown(0); },
+            onCancel: () => { _quitConfirmOpen = false; });
     }
+
+    // Compact confirm dialog: a small modal sized to its message, with the message as plain markup (no
+    // boxed panel) and a centered [confirmLabel] / [Cancel] toolbar. Escape or Cancel runs onCancel;
+    // the confirm button runs onConfirm. Self-sized (vs the large content-modal ShowModalNative) so a
+    // one-line question doesn't open a near-fullscreen window.
+    private void ShowExitConfirm(string title, string bodyMarkup, string confirmLabel, Action onConfirm, Action onCancel)
+    {
+        var ws = _ws;
+        if (ws is null) return;
+
+        Window? modal = null;
+        bool closed = false;
+        void Close(Action after)
+        {
+            if (closed) return;
+            closed = true;
+            if (modal is not null) ws.CloseWindow(modal);
+            after();
+        }
+
+        var toolbar = Controls.Toolbar()
+            .WithSpacing(2)
+            .WithAlignment(HorizontalAlignment.Center);
+        toolbar.AddButton(confirmLabel, (_, _) => Close(onConfirm));
+        toolbar.AddButton("Cancel", (_, _) => Close(onCancel));
+
+        // Width fits the longer of the message / title / buttons, within a tidy small range.
+        int msgWidth = MarkupParser.StripLength(bodyMarkup);
+        int btnWidth = confirmLabel.Length + "Cancel".Length + 8;
+        int width = Math.Clamp(Math.Max(Math.Max(msgWidth, title.Length), btnWidth) + 8, 40, 72);
+
+        modal = new WindowBuilder(ws)
+            .WithTitle(title)
+            .WithSize(width, 8)
+            .Centered()
+            .AsModal()
+            .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
+            .Minimizable(false)
+            .Maximizable(false)
+            .WithBorderStyle(BorderStyle.Rounded)
+            .WithBorderColor(new Color(90, 110, 142))
+            .OnKeyPressed((_, e) =>
+            {
+                if (e.KeyInfo.Key == ConsoleKey.Escape)
+                {
+                    Close(onCancel);
+                    e.Handled = true;
+                }
+            })
+            .AddControl(new MarkupControl(new List<string> { string.Empty, "  " + bodyMarkup }))
+            .AddControl(toolbar.StickyBottom().Build())
+            .BuildAndShow();
+    }
+
+    /// <summary>
+    /// Danger-styled confirmation dialog for destructive actions. Red (Danger-role) border, a ⚠
+    /// title prefix, the message, an optional "Affected" list (capped at 8 + "+K more"), and a
+    /// neutral Cancel (focused by default — reflexive Enter cancels) beside a Danger-red confirm.
+    /// Esc cancels. No auto "Close" button.
+    /// </summary>
+    private void ConfirmDangerModal(ConsoleWindowSystem ws, string title, string message, string confirmLabel, Action onConfirm, IReadOnlyList<string>? affectedItems = null)
+    {
+        const int AffectedListCap = 8;
+        const int ConfirmWidth = 58;   // compact, content-width — not the full info-modal clamp
+
+        Window? modal = null;
+
+        // Danger-role red for the border (the contrast-checked Border derivative, not the fill).
+        Color dangerColor = ColorRoleResolver.Resolve(ColorRole.Danger, ws.Theme).Border;
+
+        // Content-sized: a confirm is a question, not a document. Estimate the body line count from
+        // the message (wrapped to the inner width) + the optional Affected block, then add chrome
+        // (border 2 + title 1 + rule 1 + button row 1 + a little breathing room). Clamp to the screen.
+        int termW = SafeConsole(() => Console.WindowWidth, 120);
+        int termH = SafeConsole(() => Console.WindowHeight, 32);
+        int width = Math.Min(ConfirmWidth, Math.Max(40, termW - 8));
+        int innerW = Math.Max(10, width - 4 - 4);   // border (2) + body padding (2 each side)
+        int msgLines = message.Split('\n').Sum(l => Math.Max(1, (int)Math.Ceiling((double)MarkupParser.StripLength(l) / innerW)));
+        int affectedLines = affectedItems is { Count: > 0 }
+            ? 2 + Math.Min(affectedItems.Count, AffectedListCap) + (affectedItems.Count > AffectedListCap ? 1 : 0)
+            : 0;
+        // chrome: border 2 + title 1 + rule 1 + button row 1 + body padding 2 (top+bottom) = 7
+        int height = Math.Clamp(msgLines + affectedLines + 7, 9, Math.Max(9, termH - 4));
+
+        // Per-control padding on the body panel only — the message/Affected list breathe off the
+        // border, while the sticky rule + centered toolbar below stay full-width.
+        var body = Controls.ScrollablePanel().WithPadding(2, 1, 2, 1).Build();
+        body.AddControl(new MarkupControl(new List<string> { $"[grey85]{Escape(message)}[/]" }));
+
+        if (affectedItems is { Count: > 0 })
+        {
+            var lines = new List<string> { string.Empty, "[grey50]Affected[/]" };
+            foreach (var name in affectedItems.Take(AffectedListCap))
+                lines.Add($"  [grey70]•[/] {Escape(name)}");
+            if (affectedItems.Count > AffectedListCap)
+                lines.Add($"[grey50]  +{affectedItems.Count - AffectedListCap} more[/]");
+            body.AddControl(new MarkupControl(lines));
+        }
+
+        void Close()
+        {
+            if (modal is not null) ws.CloseWindow(modal);
+        }
+
+        var toolbarRule = Controls.RuleBuilder()
+            .WithColor(new Color(70, 88, 116))
+            .WithBorderStyle(BorderStyle.Single)
+            .Build();
+        toolbarRule.StickyPosition = StickyPosition.Bottom;
+
+        // Cancel FIRST so the toolbar's initial focus (first focusable) lands on it; we also set it
+        // explicitly after show as a belt-and-suspenders safe default.
+        var cancelButton = new ButtonBuilder()
+            .WithText("Cancel")
+            .OnClick((_, _) => Close())
+            .Build();
+        var confirmButton = new ButtonBuilder()
+            .WithText(confirmLabel)
+            .WithColorRole(ColorRole.Danger)
+            .OnClick((_, _) => { Close(); onConfirm(); })
+            .Build();
+
+        var toolbar = Controls.Toolbar()
+            .WithSpacing(2)
+            .WithAlignment(HorizontalAlignment.Center)
+            .AddButton(cancelButton)
+            .AddButton(confirmButton);
+
+        modal = new WindowBuilder(ws)
+            .WithTitle($"⚠  {title}")
+            .WithSize(width, height)
+            .Centered()
+            .AsModal()
+            // Flat solid surface (not the elevated gradient used by info/detail modals) so a confirm
+            // reads as a focused decision, not a document. The red border carries the danger signal.
+            .WithBackgroundColor(ws.Theme.WindowBackgroundColor)
+            .Minimizable(false)
+            .Maximizable(false)
+            .WithBorderStyle(BorderStyle.Rounded)
+            .WithBorderColor(dangerColor)
+            .OnKeyPressed((_, e) =>
+            {
+                if (e.KeyInfo.Key == ConsoleKey.Escape)
+                {
+                    Close();
+                    e.Handled = true;
+                }
+            })
+            .AddControl(body)
+            .AddControl(toolbarRule)
+            .AddControl(toolbar.StickyBottom().Build())
+            .BuildAndShow();
+
+        // Default focus on Cancel (safe — a reflexive Enter cancels rather than destroys).
+        modal?.FocusManager.SetFocus(cancelButton, FocusReason.Programmatic);
+    }
+
+    // Backward-compatible wrapper: every existing caller is a destructive remove, so it routes to
+    // the danger dialog with a "Remove" confirm label and no affected-item list. Callers wanting the
+    // "Affected" list call ConfirmDangerModal directly (see RemoveCheckedSkills).
+    private void ConfirmModal(ConsoleWindowSystem ws, string title, string message, Action onConfirm)
+        => ConfirmDangerModal(ws, title, message, confirmLabel: "Remove", onConfirm);
 
     private void ChooseEnumModal<TEnum>(ConsoleWindowSystem ws, string title, TEnum[] values, TEnum current, Action<TEnum> onPicked)
         where TEnum : struct, Enum
@@ -739,6 +1111,7 @@ internal sealed partial class InteractiveConsoleApp
             .WithSize(Math.Clamp(values.Length == 0 ? 40 : values.Max(v => v.ToString().Length) + 24, 40, 70), Math.Min(values.Length + 8, 18))
             .Centered()
             .AsModal()
+            .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
             .Minimizable(false)
             .Maximizable(false)
             .WithBorderStyle(BorderStyle.Rounded)
@@ -792,6 +1165,7 @@ internal sealed partial class InteractiveConsoleApp
             .WithSize(Math.Clamp(SafeConsole(() => Console.WindowWidth, 100) - 20, 50, 80), 9)
             .Centered()
             .AsModal()
+            .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
             .Minimizable(false)
             .Maximizable(false)
             .WithBorderStyle(BorderStyle.Rounded)
@@ -810,79 +1184,62 @@ internal sealed partial class InteractiveConsoleApp
     }
 
     /// <summary>
-    /// Global command palette (Ctrl+P). Opens a centered modal hosting a PromptControl + a
-    /// ListControl pre-populated with every catalog skill, bundle, and agent. Enter on the prompt
-    /// filters the list; Enter on the list activates the entry (skill/bundle/agent detail modal).
+    /// Global command palette (Ctrl+P). Opens (or toggles closed) a portal overlay: commands-first by
+    /// default, with a '/' prefix switching to searching skills/bundles/agents. Live-filters per
+    /// keystroke. Replaces the old modal palette.
     /// </summary>
     private void ShowCommandPalette(ConsoleWindowSystem ws)
     {
-        Window? modal = null;
-        var allEntries = BuildPaletteEntries();
+        if (_palettePortal != null) { DismissPalette(); return; } // toggle closed
+        if (_mainWindow is null || _nav is null) return;
 
-        void Close()
+        var portal = new CommandPalettePortal(BuildCommandRegistry(), BuildContentEntries(), _mainWindow.Width, _mainWindow.Height)
         {
-            if (modal is not null) ws.CloseWindow(modal);
-        }
-
-        var listControl = StyledList(null).MaxVisibleItems(14).WithScrollbarVisibility(ScrollbarVisibility.Auto).Build();
-        listControl.ItemActivated += (_, item) =>
-        {
-            if (item.Tag is PaletteEntry entry)
-            {
-                Close();
-                entry.Activate();
-            }
+            Container = _mainWindow
         };
-        void FillList(string filter)
-        {
-            listControl.ClearItems();
-            var f = filter.Trim();
-            var matches = string.IsNullOrEmpty(f)
-                ? allEntries
-                : allEntries.Where(e => e.SearchHaystack.Contains(f, StringComparison.OrdinalIgnoreCase)).ToArray();
-            foreach (var entry in matches.Take(80))
-            {
-                listControl.AddItem(new ListItem($"[{entry.AccentMarkup}]{entry.IconLabel}[/]  {Escape(entry.Label)}  [grey50]{Escape(entry.Detail)}[/]") { Tag = entry });
-            }
-        }
+        _palettePortal = portal;
+        _palettePortalNode = _mainWindow.CreatePortal(_nav, portal);
 
-        FillList(string.Empty);
+        portal.CommandChosen += (_, cmd) => { DismissPalette(); cmd?.Execute(); };
+        portal.ContentChosen += (_, entry) => { DismissPalette(); entry?.Activate(); };
+        portal.DismissRequested += (_, _) => DismissPalette();
+    }
 
-        var prompt = Controls.Prompt("  >  ")
-            .UnfocusOnEnter(false)
-            .OnEntered((_, query) =>
-            {
-                FillList(query ?? string.Empty);
-            })
-            .Build();
-
-        modal = new WindowBuilder(ws)
-            .WithTitle("command palette · Esc to close")
-            .WithSize(Math.Clamp(SafeConsole(() => Console.WindowWidth, 120) - 10, 64, 100), 22)
-            .Centered()
-            .AsModal()
-            .Minimizable(false)
-            .Maximizable(false)
-            .WithBorderStyle(BorderStyle.Rounded)
-            .WithBorderColor(AccentDeepSkyBlue)
-            .OnKeyPressed((_, e) =>
-            {
-                if (e.KeyInfo.Key == ConsoleKey.Escape)
-                {
-                    Close();
-                    e.Handled = true;
-                }
-            })
-            .AddControl(prompt)
-            .AddControl(listControl)
-            .BuildAndShow();
+    private void DismissPalette()
+    {
+        if (_palettePortalNode is not null && _mainWindow is not null && _nav is not null)
+            _mainWindow.RemovePortal(_nav, _palettePortalNode);
+        _palettePortal = null;
+        _palettePortalNode = null;
     }
 
     /// <summary>
-    /// Builds the union of every searchable entry — skills, bundles, agents, settings actions —
-    /// used to populate the command palette. Each entry knows how to activate itself.
+    /// The curated command set shown in the palette's default (commands) mode. Navigate commands route
+    /// through NavigateTo (which also syncs the rail); actions run their handler.
     /// </summary>
-    private IReadOnlyList<PaletteEntry> BuildPaletteEntries()
+    private CommandRegistry BuildCommandRegistry()
+    {
+        var r = new CommandRegistry();
+        r.Register(new SkillCommand { Id = "nav.skills", Label = "Skills", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.BrowseSkills) });
+        r.Register(new SkillCommand { Id = "nav.installed", Label = "Installed", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.ManageInstalled) });
+        r.Register(new SkillCommand { Id = "nav.collections", Label = "Collections", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.BrowseCollections) });
+        r.Register(new SkillCommand { Id = "nav.bundles", Label = "Bundles", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.BrowseBundles) });
+        r.Register(new SkillCommand { Id = "nav.packages", Label = "Packages", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.BrowsePackages) });
+        r.Register(new SkillCommand { Id = "nav.agents", Label = "Agents", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.BrowseAgents) });
+        r.Register(new SkillCommand { Id = "nav.project", Label = "Project", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.SyncProject) });
+        r.Register(new SkillCommand { Id = "nav.analysis", Label = "Analysis", Category = "Navigate", Icon = "→", Priority = 80, Execute = () => NavigateTo(HomeAction.Analysis) });
+        r.Register(new SkillCommand { Id = "nav.about", Label = "About", Category = "Navigate", Icon = "→", Priority = 70, Execute = () => NavigateTo(HomeAction.About) });
+        r.Register(new SkillCommand { Id = "nav.home", Label = "Home", Category = "Navigate", Icon = "◈", Priority = 70, Execute = () => { if (_ws is not null && _activePanel is not null) BuildHomePage(_ws, _activePanel); } });
+        r.Register(new SkillCommand { Id = "act.refresh", Label = "Refresh catalog", Category = "Action", Icon = "↻", Keybinding = "Ctrl+R", Priority = 75, Execute = () => RefreshCatalogFromUi() });
+        r.Register(new SkillCommand { Id = "act.settings", Label = "Settings", Category = "Action", Icon = "⚙", Priority = 60, Execute = () => NavigateTo(HomeAction.Workspace) });
+        return r;
+    }
+
+    /// <summary>
+    /// The searchable content (skills, bundles, agents) shown in the palette's '/' content mode. Each
+    /// entry opens its detail modal on activation.
+    /// </summary>
+    private IReadOnlyList<PaletteEntry> BuildContentEntries()
     {
         var entries = new List<PaletteEntry>();
 
@@ -921,30 +1278,8 @@ internal sealed partial class InteractiveConsoleApp
                 Activate: () => { if (_ws is not null && _activePanel is not null) ShowAgentModal(_ws, _activePanel, a); }));
         }
 
-        // Settings actions and page jumps.
-        entries.Add(new PaletteEntry("⚙ settings", "deepskyblue1", "Settings",                "open workspace settings", "settings platform scope refresh workspace",                    () => NavigateTo(HomeAction.Workspace)));
-        entries.Add(new PaletteEntry("↻ refresh",  "deepskyblue1", "Refresh catalog",          "pull the latest catalog",  "refresh catalog reload pull",                                   () => RefreshCatalogFromUi()));
-        entries.Add(new PaletteEntry("◈ home",     "deepskyblue1", "Home",                    "session and telemetry",    "home session telemetry",                                        () => { if (_ws is not null && _activePanel is not null) BuildHomePage(_ws, _activePanel); }));
-        entries.Add(new PaletteEntry("→ skills",   "turquoise2",   "Skills",                  "browse the catalog",       "skills browse catalog",                                         () => NavigateTo(HomeAction.BrowseSkills)));
-        entries.Add(new PaletteEntry("→ installed","green",        "Installed",               "manage installed skills",  "installed manage update remove",                                () => NavigateTo(HomeAction.ManageInstalled)));
-        entries.Add(new PaletteEntry("→ collections","deepskyblue1","Collections",            "browse collections",       "collections browse",                                            () => NavigateTo(HomeAction.BrowseCollections)));
-        entries.Add(new PaletteEntry("→ bundles",  "springgreen3", "Bundles",                 "focused bundles",          "bundles focused",                                               () => NavigateTo(HomeAction.BrowseBundles)));
-        entries.Add(new PaletteEntry("→ packages", "turquoise2",   "Packages",                "NuGet signals",            "packages nuget signals",                                        () => NavigateTo(HomeAction.BrowsePackages)));
-        entries.Add(new PaletteEntry("→ agents",   "mediumpurple2","Agents",                  "orchestration agents",     "agents orchestration",                                          () => NavigateTo(HomeAction.BrowseAgents)));
-        entries.Add(new PaletteEntry("→ project",  "deepskyblue1", "Project",                 "scan and install",         "project scan recommend",                                        () => NavigateTo(HomeAction.SyncProject)));
-        entries.Add(new PaletteEntry("→ analysis", "deepskyblue1", "Analysis",                "catalog analysis",         "analysis stats heaviest",                                       () => NavigateTo(HomeAction.Analysis)));
-        entries.Add(new PaletteEntry("→ about",    "grey",         "About",                   "version and surface map",  "about version",                                                 () => NavigateTo(HomeAction.About)));
-
         return entries;
     }
-
-    private sealed record PaletteEntry(
-        string IconLabel,
-        string AccentMarkup,
-        string Label,
-        string Detail,
-        string SearchHaystack,
-        Action Activate);
 
     private static ITheme BuildTheme() => new ModernGrayTheme
     {
@@ -993,7 +1328,7 @@ internal sealed partial class InteractiveConsoleApp
                 bar.AddLeft(key, label, action);
             }
             bar.AddLeft("Ctrl+R", "Refresh", RefreshCatalogFromUi);
-            bar.AddLeft("Esc", "Quit", () => _ws?.Shutdown(0));
+            bar.AddLeft("Esc/^Q", "Quit", () => RequestExit());
 
             _statusMessage = bar.AddCenterText(string.Empty);
 
@@ -1035,7 +1370,7 @@ internal sealed partial class InteractiveConsoleApp
     }
 
     /// <summary>
-    /// Shows a transient notification. Info/Success render only as a sliding card; Warning/Danger
+    /// Shows a transient toast. Info/Success render only as the corner toast card; Warning/Danger
     /// also leave a sticky line in the bottom status bar until the next page change so the user
     /// has time to read it. Default severity is Info.
     /// </summary>
@@ -1044,7 +1379,7 @@ internal sealed partial class InteractiveConsoleApp
         if (string.IsNullOrEmpty(message)) { ClearStickyStatus(); return; }
 
         var sev = severity ?? NotificationSeverity.Info;
-        _ws?.NotificationStateService.ShowNotification(title: string.Empty, message, sev);
+        _ws?.ToastService.Show(message, sev);
 
         if (_statusMessage is not null)
         {
@@ -1106,10 +1441,7 @@ internal sealed partial class InteractiveConsoleApp
     private void AddSearchChip(ScrollablePanelControl panel)
     {
         if (string.IsNullOrWhiteSpace(_searchFilter)) return;
-        panel.AddControl(BuildNotePanel(
-            "filter",
-            $"[yellow]matching “{Escape(_searchFilter)}”[/]  [grey50]· press[/] [bold]Esc[/] [grey50]to clear[/]",
-            AccentYellow));
+        AddInlineNote(panel, $"matching “{Escape(_searchFilter)}”  [grey50]· press[/] [bold]Esc[/] [grey50]to clear[/]", NoteSeverity.Info);
     }
 
     private async Task ClockLoopAsync(Window window, CancellationToken cancellationToken)
@@ -1131,6 +1463,65 @@ internal sealed partial class InteractiveConsoleApp
                 window.Invalidate(false);
             }
         }
+    }
+
+    // Submit an install/remove to run off the UI thread, queued behind any in-flight op. Called FROM
+    // the UI thread. `work` is the synchronous filesystem/catalog operation (runs off-thread); its
+    // exceptions are caught by the runner and toasted (do NOT SafeGet the install call inside work).
+    // `onComplete` runs back on the UI thread with the result (toast + page rebuild).
+    private void RunOperationQueued<TResult>(string busyLabel, Func<TResult> work, Action<TResult> onComplete)
+    {
+        _operationQueue.Enqueue(() => StartOperation(busyLabel, work, onComplete));
+        if (_operationInProgress)
+            Toast($"Queued: {busyLabel}", NotificationSeverity.Info);
+        PumpOperations();
+    }
+
+    // Runs the next queued op if idle. Re-invoked on each op's completion to drain the queue.
+    private void PumpOperations()
+    {
+        if (_operationInProgress || _operationQueue.Count == 0) return;
+        _operationQueue.Dequeue()();
+    }
+
+    private void StartOperation<TResult>(string busyLabel, Func<TResult> work, Action<TResult> onComplete)
+    {
+        _operationInProgress = true;
+        var ws = _ws;
+
+        if (ws is not null && _statusMessage is not null)
+        {
+            _operationSpinner = new SpinnerTextAnimator(ws, SpinnerStyle.Braille,
+                frame => _statusMessage.Label = $"{frame} [grey70]{Escape(busyLabel)}[/]");
+            _operationSpinner.Start();
+        }
+
+        _ = Task.Run(() =>
+        {
+            TResult result = default!;
+            Exception? error = null;
+            try { result = work(); }
+            catch (Exception ex) { error = ex; }
+
+            void Finish()
+            {
+                _operationSpinner?.Stop();
+                _operationSpinner?.Dispose();
+                _operationSpinner = null;
+                ClearStickyStatus();
+
+                if (error is not null)
+                    Toast($"{busyLabel} failed: {error.Message}", NotificationSeverity.Danger);
+                else
+                    onComplete(result);
+
+                _operationInProgress = false;
+                PumpOperations();
+            }
+
+            if (ws is not null) ws.EnqueueOnUIThread(Finish);
+            else Finish();
+        });
     }
 
     private void RefreshCatalogFromUi()
@@ -1213,11 +1604,14 @@ internal sealed partial class InteractiveConsoleApp
         }
 
         ConfirmModal(_ws, "Remove all installed skills?", $"Deletes every catalog skill from {layout.PrimaryRoot.FullName}.", () =>
-        {
-            var summary = SafeGet(() => new SkillInstaller(skillCatalog).Remove(installed.Select(record => record.Skill).ToArray(), layout), default(SkillRemoveSummary));
-            ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {summary.RemovedCount} skill(s)");
-            RebuildActivePage();
-        });
+            RunOperationQueued(
+                "Removing all installed skills",
+                work: () => new SkillInstaller(skillCatalog).Remove(installed.Select(record => record.Skill).ToArray(), layout),
+                onComplete: summary =>
+                {
+                    ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {summary.RemovedCount} skill(s)");
+                    RebuildActivePage();
+                }));
     }
 
     private void InstallAllRecommendedFromUi()

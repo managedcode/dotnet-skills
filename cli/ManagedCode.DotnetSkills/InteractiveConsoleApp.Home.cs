@@ -26,7 +26,7 @@ internal sealed partial class InteractiveConsoleApp
         if (_currentPage != null)
         {
             _searchFilter = string.Empty;
-            _selectedCollection = null;
+            _expandedCollections.Clear();
             _collectionInstallArmed = false;
         }
         _activePanel = panel;
@@ -67,19 +67,19 @@ internal sealed partial class InteractiveConsoleApp
                 : toolUpdateStatus.UsedCachedValue
                     ? $"[grey50]cached[/] [grey]{Escape(toolUpdateStatus.CheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))}[/]"
                     : $"[grey50]checked[/] [grey]{Escape(toolUpdateStatus.CheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))}[/]";
-            panel.AddControl(BuildBulletPanel("tool update", AccentYellow,
+            AddInfoBlock(panel, "tool update",
                 "[bold yellow]New dotnet-skills version available[/]",
                 $"[grey50]current[/] [grey]{Escape(toolUpdateStatus.CurrentVersion)}[/] [grey50]-> latest[/] [green]{Escape(toolUpdateStatus.LatestVersion ?? "?")}[/]",
                 $"[green]{Escape(GlobalToolUpdateCommand)}[/]",
                 $"[grey50]local tool manifest[/] [green]{Escape(LocalToolUpdateCommand)}[/]",
-                freshness));
+                freshness);
         }
 
-        panel.AddControl(BuildBulletPanel("quick start", AccentDeepSkyBlue,
+        AddInfoBlock(panel, "quick start",
             "[grey50]Use the rail on the left to browse and install.[/]",
             "[grey]Skills[/] [grey50]browse and install individual catalog skills[/]",
             "[grey]Installed[/] [grey50]update or remove what is already installed[/]",
             "[grey]Project[/] [grey50]scan the current solution and install recommended skills[/]",
-            "[grey]Agents[/] [grey50]install orchestration agents into native agent directories[/]"));
+            "[grey]Agents[/] [grey50]install orchestration agents into native agent directories[/]");
     }
 }
