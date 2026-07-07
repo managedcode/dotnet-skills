@@ -2,9 +2,9 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'dotnet-test: raise timeouts for chronic-timeout eval scenarios
-        (#850)...'
-      sha: ce75c355694bb358162464058081121645767d6f
+      commitTitle: 'dotnet-test: make code-testing agent tools Claude Code-compatible
+        + add cross-host portability check (#856)...'
+      sha: 77154137e87200e9e865b8a72e8674cb70e48ceb
       tags:
       - skill-validator-nightly
     path: dotnet-skills
