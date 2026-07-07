@@ -93,6 +93,11 @@ internal sealed partial class InteractiveConsoleApp
 
     private void ShowSkillDetailModal(ConsoleWindowSystem ws, ScrollablePanelControl owner, SkillEntry skill)
     {
+        // Fold the one-line summary into the top of the scrolling markdown document so the modal
+        // reads as one cohesive skill page (summary lead-in, then the full SKILL.md) rather than
+        // three stacked blocks. The identity strip stays pinned above.
+        var body = ComposeSkillMarkdown(skill.Description, LoadSkillPreview(skill));
+
         var detail = new IWindowControl[]
         {
             BuildPropertyPanel(ToAlias(skill.Name), AccentTurquoise,
@@ -101,8 +106,7 @@ internal sealed partial class InteractiveConsoleApp
                 ("lane", Escape(skill.Lane)),
                 ("version", Escape(skill.Version)),
                 ("tokens", FormatTokenCount(skill.TokenCount))),
-            BuildModalBlock("summary", Escape(skill.Description)),
-            BuildModalBlock("preview", Escape(LoadSkillPreview(skill))),
+            BuildScrollingMarkdownBlock("preview", body),
         };
 
         ShowModalNative(ws, $"Skill · {ToAlias(skill.Name)}", detail,
@@ -489,7 +493,7 @@ internal sealed partial class InteractiveConsoleApp
                 ("title", Escape(package.Title)),
                 ("skills", package.Skills.Count.ToString()),
                 ("includes", Escape(string.Join(", ", package.Skills.Take(10).Select(ToAlias))))),
-            BuildModalBlock("summary", Escape(package.Description)),
+            BuildMarkdownBlock("summary", package.Description),
         };
 
         ShowModalNative(ws, $"Bundle · {package.Name}", detail,
@@ -672,7 +676,7 @@ internal sealed partial class InteractiveConsoleApp
                 ("agent", Escape(agent.Name)),
                 ("skills", agent.Skills.Count == 0 ? "[grey50]-[/]" : Escape(string.Join(", ", agent.Skills.Select(ToAlias)))),
                 ("platform", Escape(Session.Agent.ToString()))),
-            BuildModalBlock("summary", Escape(agent.Description)),
+            BuildMarkdownBlock("summary", agent.Description),
         };
 
         var buttons = new List<(string, Action)>();
