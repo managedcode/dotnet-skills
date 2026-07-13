@@ -1,0 +1,19 @@
+{
+  "name": "webgpu-threejs-tsl",
+  "owner": {
+    "name": "Dan Greenheck",
+    "email": "dgreenheck@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "Claude skill for WebGPU-enabled Three.js development with TSL (Three.js Shading Language)",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "webgpu-threejs-tsl",
+      "description": "Comprehensive guide for WebGPU Three.js with TSL - covers renderer setup, node materials, compute shaders, post-processing, and WGSL integration",
+      "source": "./",
+      "strict": false
+    }
+  ]
+}

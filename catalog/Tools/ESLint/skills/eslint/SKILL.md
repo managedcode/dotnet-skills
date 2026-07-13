@@ -45,9 +45,9 @@ compatibility: "Requires a .NET repository with Node-based frontend assets such 
 
 ## Current Upstream Notes
 
-- ESLint `v10.5.0` improves rule location reporting for complexity-style rules such as `max-depth`, `max-lines-per-function`, `max-nested-callbacks`, and `max-statements`, and reports `no-with` at the `with` keyword.
-- Rebaseline snapshot tests or lint-output parsers after upgrading because diagnostics may point at more precise locations.
-- Current docs clarify parser option precedence over `languageOptions`; review flat-config migrations that mix legacy parser settings with new config shapes.
+- ESLint `v10.7.0` adds `errorClassNames` to `preserve-caught-error`, constructor-callback handling to `max-nested-callbacks`, computed `Number.parseInt` support in `radix`, and suggestions for `no-compare-neg-zero`.
+- The `v10.7.0` fixes also reduce false positives when built-ins such as `RegExp`, `NaN`, or `Number` are shadowed and tighten `eqeqeq`, `radix`, and `no-implicit-coercion` behavior. Re-run the real lint suite before changing suppressions or snapshot expectations.
+- Current docs clarify parser option precedence over `languageOptions` and document the v9/v10 migration codemods; review flat-config migrations that mix legacy parser settings with new config shapes.
 
 ## Bootstrap When Missing
 

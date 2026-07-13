@@ -75,6 +75,17 @@
   ],
   "documentation": [
     {
+      "id": "webgpu-threejs-tsl-main-head",
+      "source": "https://api.github.com/repos/dgreenheck/webgpu-claude-skill/commits/main",
+      "name": "WebGPU Three.js TSL skill main branch",
+      "issue_key": "webgpu-threejs-tsl-upstream",
+      "issue_name": "Review WebGPU Three.js TSL skill upstream update",
+      "notes": "Review external-sources/vendir.lock.yml, sync external-sources/upstreams/webgpu-claude-skill via vendir, rerun scripts/import_external_catalog_sources.py, then regenerate catalog outputs and verify the imported webgpu-threejs-tsl skill.",
+      "skills": [
+        "webgpu-threejs-tsl"
+      ]
+    },
+    {
       "id": "playwright-visual-comparisons-docs",
       "source": "https://playwright.dev/docs/test-snapshots",
       "skills": [

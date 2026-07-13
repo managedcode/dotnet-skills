@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import functools
 import json
 import os
 import subprocess
@@ -16,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOG_ROOT = ROOT / "catalog"
 DEFAULT_REPORT = ROOT / "artifacts" / "waza-skill-quality" / "report.md"
 DEFAULT_JSON = ROOT / "artifacts" / "waza-skill-quality" / "report.json"
+EXTERNAL_IMPORT_CONFIG_ROOT = ROOT / "external-sources" / "imports"
 
 IGNORED_SPEC_CHECKS = {
     "spec-compatibility": "Repository-authored skills intentionally use the string compatibility field required by AGENTS.md.",
@@ -89,9 +91,20 @@ def run_check(waza: str, skill_dir: Path) -> dict[str, Any]:
     return skills[0]
 
 
+@functools.cache
+def imported_package_prefixes() -> tuple[str, ...]:
+    prefixes: set[str] = set()
+    for config_path in EXTERNAL_IMPORT_CONFIG_ROOT.glob("*.json"):
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        prefix = config.get("managedPackagePrefix")
+        if isinstance(prefix, str) and prefix.strip():
+            prefixes.add(prefix.strip())
+    return tuple(sorted(prefixes))
+
+
 def is_imported_skill_path(skill_path: str) -> bool:
     parts = Path(skill_path).parts
-    return len(parts) > 2 and parts[2].startswith("Official-DotNet")
+    return len(parts) > 2 and any(parts[2].startswith(prefix) for prefix in imported_package_prefixes())
 
 
 def load_token_profiles(waza: str, catalog_root: Path) -> dict[str, dict[str, Any]]:
@@ -275,7 +288,7 @@ def render_markdown(report: dict[str, Any]) -> str:
             "",
             "- Waza `spec-compatibility`, `spec-license`, and `spec-version` warnings are ignored because this repository stores compatibility and version metadata according to root `AGENTS.md`.",
             "- Waza link findings caused by external rate limits, official-doc snapshot internals, or known HEAD/anti-bot false positives are filtered out of CI warnings.",
-            "- Imported `Official-DotNet-*` skills are reported separately because their markdown is synchronized from upstream and should be fixed through the import/upstream path, not edited directly.",
+            "- Vendir-imported skills are reported separately because their markdown is synchronized from upstream and should be fixed through the import/upstream path, not edited directly.",
             "- Missing eval coverage is reported as an aggregate backlog, not as a per-skill warning, until eval suites are intentionally added.",
             "",
         ]

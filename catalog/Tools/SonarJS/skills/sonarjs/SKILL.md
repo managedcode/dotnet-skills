@@ -50,6 +50,11 @@ flowchart LR
 6. Fix code or phase rules deliberately; do not hide the first rollout behind broad disables.
 7. Document licensing or hosting caveats before making Sonar-based tooling the default quality gate.
 
+## Current Upstream Notes
+
+- SonarJS `13.2` improves generated-file detection and adds or refines test-focused findings for parameterized tests, UI debug commands, fixed waits, inline snapshots, and unawaited async helpers.
+- The release also reduces false positives for ARIA composite widgets, nullable comparisons, TSX components, default sorting, date comparisons, and async assertions that use a completion callback. Re-run the server analysis before preserving old suppressions.
+
 ## Bootstrap When Missing
 
 1. Detect current state:

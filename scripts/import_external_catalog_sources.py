@@ -185,15 +185,29 @@ def resolve_source_root(source_root_value: str) -> Path:
 def discover_upstream_plugins(source_root: Path) -> dict[str, tuple[Path, dict]]:
     plugins: dict[str, tuple[Path, dict]] = {}
 
-    for plugin_manifest_path in sorted(source_root.glob("*/plugin.json")):
-        plugin_dir = plugin_manifest_path.parent
+    plugin_manifest_paths = {
+        *source_root.glob("*/plugin.json"),
+        *source_root.glob("*/.claude-plugin/plugin.json"),
+    }
+    for candidate in (source_root / "plugin.json", source_root / ".claude-plugin" / "plugin.json"):
+        if candidate.is_file():
+            plugin_manifest_paths.add(candidate)
+
+    for plugin_manifest_path in sorted(
+        plugin_manifest_paths,
+        key=lambda path: (path.parent.name == ".claude-plugin", str(path)),
+    ):
+        is_claude_plugin_layout = plugin_manifest_path.parent.name == ".claude-plugin"
+        plugin_dir = plugin_manifest_path.parent.parent if is_claude_plugin_layout else plugin_manifest_path.parent
         plugin_manifest = load_json(plugin_manifest_path)
         plugin_name = normalize_text(plugin_manifest.get("name", plugin_dir.name))
 
         if not plugin_name:
             raise ValueError(f"{plugin_manifest_path} must define a non-empty plugin name")
-        if plugin_name != plugin_dir.name:
+        if not is_claude_plugin_layout and plugin_name != plugin_dir.name:
             raise ValueError(f"{plugin_manifest_path} name {plugin_name!r} must match directory name {plugin_dir.name!r}")
+        if plugin_name in plugins and plugins[plugin_name][0] == plugin_dir:
+            continue
         if plugin_name in plugins:
             raise ValueError(f"Duplicate upstream plugin name detected: {plugin_name}")
 
@@ -460,8 +474,12 @@ def cleanup_empty_package_dirs() -> None:
 def expand_plugin_entries(plugin_dir: Path, entries: object, *, pattern: str, entry_label: str) -> list[Path]:
     if entries is None:
         return []
+    if isinstance(entries, str):
+        entries = [entries]
     if not isinstance(entries, list) or any(not isinstance(entry, str) or not entry.strip() for entry in entries):
-        raise ValueError(f"{plugin_dir / 'plugin.json'} field {entry_label} must be a list of non-empty strings")
+        raise ValueError(
+            f"{plugin_dir / 'plugin.json'} field {entry_label} must be a non-empty string or a list of non-empty strings"
+        )
 
     discovered: list[Path] = []
     for entry in entries:

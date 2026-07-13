@@ -7,5 +7,9 @@ directories:
       tags:
       - skill-validator-nightly-5-g1270722
     path: dotnet-skills
+  - git:
+      commitTitle: Add Cursor rules that reference the existing skill docs...
+      sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
+    path: webgpu-claude-skill
   path: upstreams
 kind: LockConfig

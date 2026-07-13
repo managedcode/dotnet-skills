@@ -58,6 +58,7 @@ Load only what the task needs:
 
 ## Current v1.4 Notes
 
+- Upgrade HTTP/SSE servers to at least `v1.4.1`: it releases the `StreamableHttpServerTransport` SSE response reference when a GET ends, preventing disconnected long-lived clients from retaining Kestrel connections and their memory-pool buffers until session disposal.
 - Enterprise managed authorization now has an SDK surface through `IdentityAssertionGrantProvider` for the Identity Assertion Authorization Grant flow. Use it only when the enterprise SSO and MCP authorization-server contract is part of the actual scenario.
 - `StdioClientTransportOptions.InheritEnvironmentVariables` controls whether child-process MCP servers inherit the parent environment. Set it intentionally when launching untrusted or third-party servers.
 - Streamable HTTP session `DELETE` is hardened to require the same authenticated user that opened the session. Do not build custom session cleanup paths that bypass that authorization check.
