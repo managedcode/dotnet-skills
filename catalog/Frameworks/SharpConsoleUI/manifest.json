@@ -1,0 +1,10 @@
+{
+  "name": "SharpConsoleUI",
+  "title": "SharpConsoleUI",
+  "description": "Terminal application framework for .NET with overlapping windows, a real compositor, a DOM layout engine, and 40+ reactive controls.",
+  "links": {
+    "repository": "https://github.com/nickprotop/ConsoleEx",
+    "docs": "https://nickprotop.github.io/ConsoleEx/",
+    "nuget": "https://www.nuget.org/packages/SharpConsoleUI/"
+  }
+}

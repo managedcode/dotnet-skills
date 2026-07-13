@@ -2,10 +2,10 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Fix migrate-static-to-wrapper skill activation on evals (#864)...
-      sha: 1270722c951dece787074c8fde3bdab2f8ef54db
+      commitTitle: Update to Vally 0.7.0 (#854)
+      sha: 52ba152ed6e3a80cac59bf4f9827a3ed555292e1
       tags:
-      - skill-validator-nightly-5-g1270722
+      - skill-validator-nightly
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...

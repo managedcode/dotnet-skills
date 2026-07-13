@@ -71,6 +71,7 @@ Update this file when the user gives:
 - a rule request for library skill quality, such as “when adding a library skill, include installation and practical usage patterns in the skill body”
 
 - In chat status updates for repository work, keep progress messages terse and execution-focused. Do not dump internal planning narration, repo-level obligation reminders, file/search counters, or step-by-step patching strategy unless the user explicitly asks for that level of detail.
+- When resolving pull-request conflicts and local Git access is available, use the repository checkout and Git CLI directly. Do not switch to browser-based conflict resolution merely because a prior push or API attempt encountered an environment or authentication problem.
 
 Treat explicit frustration, swearing, sarcasm, repeated rejection, or "don't do this again" as strong signals that a durable rule should likely be captured here.
 
