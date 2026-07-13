@@ -127,6 +127,87 @@ class ImportExternalCatalogSourcesTests(unittest.TestCase):
             self.assertTrue((package_root / "mcp" / "SKILL.md").is_file())
             self.assertFalse((package_root / "mcp-csharp-create").exists())
 
+    def test_import_source_supports_standard_claude_plugin_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_root_value:
+            temp_root = Path(temp_root_value)
+            catalog_root = temp_root / "catalog"
+            external_root = temp_root / "external-sources"
+            config_root = external_root / "imports"
+            plugin_dir = external_root / "upstreams" / "webgpu-claude-skill"
+
+            self.write_json(
+                plugin_dir / ".claude-plugin" / "plugin.json",
+                {
+                    "name": "webgpu-threejs-tsl",
+                    "version": "1.0.0",
+                    "description": "WebGPU-enabled Three.js development with TSL.",
+                    "skills": "./skills/",
+                },
+            )
+            self.write_skill(plugin_dir, "webgpu-threejs-tsl", "WebGPU Three.js with TSL")
+
+            config_path = config_root / "webgpu-claude-skill.json"
+            config = {
+                "id": "webgpu-claude-skill",
+                "repository": "https://github.com/dgreenheck/webgpu-claude-skill",
+                "sourceRoot": "upstreams/webgpu-claude-skill",
+                "docsBase": "https://github.com/dgreenheck/webgpu-claude-skill/tree/main/skills",
+                "titlePrefix": "Three.js skills",
+                "managedPackagePrefix": "ThreeJS",
+                "pluginDefaults": {
+                    "type": "Frameworks",
+                    "category": "Web",
+                    "compatibility": "Requires a JavaScript or TypeScript project using Three.js WebGPU.",
+                },
+                "pluginOverrides": {
+                    "webgpu-threejs-tsl": {
+                        "package": "ThreeJS-WebGPU-TSL",
+                        "title": "WebGPU Three.js with TSL",
+                        "skillDefaults": {
+                            "packages": ["three"],
+                        },
+                    }
+                },
+            }
+
+            with (
+                patch.object(IMPORTER, "ROOT", temp_root),
+                patch.object(IMPORTER, "CATALOG_ROOT", catalog_root),
+                patch.object(IMPORTER, "EXTERNAL_SOURCES_ROOT", external_root),
+                patch.object(IMPORTER, "CONFIG_ROOT", config_root),
+            ):
+                summary = IMPORTER.import_source(config_path, config)
+
+            self.assertEqual(summary["skills"], 1)
+            imported_skill = catalog_root / "Frameworks" / "ThreeJS-WebGPU-TSL" / "skills" / "webgpu-threejs-tsl"
+            self.assertTrue((imported_skill / "SKILL.md").is_file())
+            self.assertEqual(
+                json.loads((imported_skill / "manifest.json").read_text(encoding="utf-8"))["packages"],
+                ["three"],
+            )
+
+    def test_discovery_prefers_flat_manifest_over_duplicate_claude_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_root_value:
+            source_root = Path(temp_root_value)
+            plugin_dir = source_root / "dotnet-msbuild"
+            flat_manifest = {
+                "name": "dotnet-msbuild",
+                "version": "1.0.0",
+                "description": "Flat manifest.",
+                "skills": ["./skills/"],
+            }
+            nested_manifest = {
+                **flat_manifest,
+                "description": "Nested compatibility manifest.",
+            }
+            self.write_json(plugin_dir / "plugin.json", flat_manifest)
+            self.write_json(plugin_dir / ".claude-plugin" / "plugin.json", nested_manifest)
+
+            plugins = IMPORTER.discover_upstream_plugins(source_root)
+
+            self.assertEqual(list(plugins), ["dotnet-msbuild"])
+            self.assertEqual(plugins["dotnet-msbuild"][1]["description"], "Flat manifest.")
+
 
 if __name__ == "__main__":
     unittest.main()

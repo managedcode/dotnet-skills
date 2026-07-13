@@ -1,0 +1,26 @@
+{
+  "id": "webgpu-claude-skill",
+  "repository": "https://github.com/dgreenheck/webgpu-claude-skill",
+  "sourceRoot": "upstreams/webgpu-claude-skill",
+  "docsBase": "https://github.com/dgreenheck/webgpu-claude-skill/tree/main/skills",
+  "titlePrefix": "Three.js skills",
+  "managedPackagePrefix": "ThreeJS",
+  "replaceSkillConflicts": true,
+  "replaceAgentConflicts": true,
+  "pluginDefaults": {
+    "type": "Frameworks",
+    "category": "Web",
+    "compatibility": "Requires a JavaScript or TypeScript project using Three.js WebGPU and TSL."
+  },
+  "pluginOverrides": {
+    "webgpu-threejs-tsl": {
+      "package": "ThreeJS-WebGPU-TSL",
+      "title": "WebGPU Three.js with TSL",
+      "skillDefaults": {
+        "packages": [
+          "three"
+        ]
+      }
+    }
+  }
+}

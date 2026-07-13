@@ -134,10 +134,10 @@ See `references/recipes.md` for full grid/table/form/dialog examples and
 
 ## Load References
 
-- `references/controls.md` — the 40+ control set grouped by purpose, with the factory/API entry point and a "use when" for each group.
-- `references/markup.md` — the `[tag]text[/]` markup language (colors, decorations, links, `[spinner]`, `[markdown]`, `[gradient]`, `MarkupParser` API). Markup works everywhere text renders — load this for any styled-text work.
-- `references/architecture.md` — compositor, DOM layout pipeline, cooperative UI-thread model, marshalling, and NativeAOT notes.
-- `references/recipes.md` — full-screen and multi-window apps, window builders, grids, dialogs, portals/toasts, and forms, with verified code.
-- `references/features.md` — gradients, transparency/alpha blending, compositor effects, animations, desktop background, and image/video/syntax-highlighting rendering.
-- `references/system.md` — constructor overloads, state services, panels, configuration, registry, MVVM data binding, flows, plugins, clipboard, shell-pipeline/schost distribution, and the "when to choose this framework" comparison + pattern catalog.
-- `references/app-patterns.md` — how to structure and polish a real production app: single-window shell + content-swap navigation, own-your-header, custom awaitable modals, live process output, the semantic color/theme layer, escaping untrusted text, threading discipline, and a never-crash wrapper. Load this when building a full app, not just one screen.
+- [Control reference](references/controls.md) — the 40+ control set grouped by purpose, with the factory/API entry point and a "use when" for each group.
+- [Markup reference](references/markup.md) — the `[tag]text[/]` markup language (colors, decorations, links, `[spinner]`, `[markdown]`, `[gradient]`, `MarkupParser` API). Markup works everywhere text renders — load this for any styled-text work.
+- [Architecture reference](references/architecture.md) — compositor, DOM layout pipeline, cooperative UI-thread model, marshalling, and NativeAOT notes.
+- [Recipe reference](references/recipes.md) — full-screen and multi-window apps, window builders, grids, dialogs, portals/toasts, and forms, with verified code.
+- [Feature reference](references/features.md) — gradients, transparency/alpha blending, compositor effects, animations, desktop background, and image/video/syntax-highlighting rendering.
+- [System reference](references/system.md) — constructor overloads, state services, panels, configuration, registry, MVVM data binding, flows, plugins, clipboard, shell-pipeline/schost distribution, and the "when to choose this framework" comparison + pattern catalog.
+- [Application-pattern reference](references/app-patterns.md) — how to structure and polish a real production app: single-window shell + content-swap navigation, own-your-header, custom awaitable modals, live process output, the semantic color/theme layer, escaping untrusted text, threading discipline, and a never-crash wrapper. Load this when building a full app, not just one screen.

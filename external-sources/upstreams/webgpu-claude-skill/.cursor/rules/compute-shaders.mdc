@@ -1,0 +1,19 @@
+---
+description: GPU compute shaders in Three.js WebGPU using TSL. Covers instanced array buffers, parallel simulation, particle systems, atomic operations, and workgroup barriers. Use when writing compute passes, particle systems, or GPU-side simulations.
+globs: **/*compute*.{js,ts,jsx,tsx},**/*particle*.{js,ts,jsx,tsx}
+alwaysApply: false
+---
+
+# Three.js WebGPU Compute Shaders (TSL)
+
+Compute shaders in TSL use `Fn()` wrapped with `.compute(count)` and dispatched via `renderer.computeAsync()`. Data lives in `instancedArray()` buffers accessed by `instanceIndex`.
+
+Key patterns:
+- `instancedArray(count, 'vec3')` for storage buffers
+- `Fn(() => { ... }).compute(count)` to define a compute kernel
+- `renderer.computeAsync(kernel)` to dispatch
+- Workgroup barriers via `workgroupBarrier()` for shared memory sync
+
+@skills/webgpu-threejs-tsl/docs/compute-shaders.md
+@skills/webgpu-threejs-tsl/examples/particle-system.js
+@skills/webgpu-threejs-tsl/templates/compute-shader.js

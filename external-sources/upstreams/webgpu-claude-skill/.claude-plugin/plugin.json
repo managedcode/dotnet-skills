@@ -1,0 +1,23 @@
+{
+  "name": "webgpu-threejs-tsl",
+  "version": "1.0.0",
+  "description": "Claude skill for WebGPU-enabled Three.js development with TSL (Three.js Shading Language)",
+  "author": {
+    "name": "Dan Greenheck",
+    "url": "https://github.com/dgreenheck"
+  },
+  "repository": "https://github.com/dgreenheck/webgpu-claude-skill",
+  "license": "MIT",
+  "keywords": [
+    "webgpu",
+    "three.js",
+    "threejs",
+    "tsl",
+    "shaders",
+    "graphics",
+    "3d",
+    "compute",
+    "wgsl"
+  ],
+  "skills": "./skills/"
+}

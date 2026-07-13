@@ -2,11 +2,14 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'dotnet-test: make code-testing agent tools Claude Code-compatible
-        + add cross-host portability check (#856)...'
-      sha: 77154137e87200e9e865b8a72e8674cb70e48ceb
+      commitTitle: Fix migrate-static-to-wrapper skill activation on evals (#864)...
+      sha: 1270722c951dece787074c8fde3bdab2f8ef54db
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-5-g1270722
     path: dotnet-skills
+  - git:
+      commitTitle: Add Cursor rules that reference the existing skill docs...
+      sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
+    path: webgpu-claude-skill
   path: upstreams
 kind: LockConfig

@@ -3186,7 +3186,10 @@ internal sealed partial class InteractiveConsoleApp
 
         SpectreConsole.Write(BuildRichTwoColumn(
             BuildRichShellPanel("summary", new Spectre.Console.Markup(Escape(skill.Description))),
-            BuildRichShellPanel("preview", new Spectre.Console.Markup(Escape(LoadSkillPreview(skill)))),
+            // Static (non-scrolling) Spectre panel: cap the preview to a handful of lines so it
+            // doesn't flood stdout. The interactive modal renders the full SKILL.md in a scrolling
+            // markdown block instead (see BuildScrollingMarkdownBlock).
+            BuildRichShellPanel("preview", new Spectre.Console.Markup(Escape(PreviewExcerpt(LoadSkillPreview(skill), 10)))),
             gap: 3));
         AnsiConsole.WriteLine();
         SpectreConsole.Write(BuildRichShellPanel(
@@ -3482,21 +3485,50 @@ internal sealed partial class InteractiveConsoleApp
                 }
             }
 
-            var previewLines = text
-                .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                .Select(line => line.Trim())
-                .Where(line => line.Length > 0)
-                .Take(10)
-                .ToArray();
-
-            return previewLines.Length == 0
-                ? "No previewable markdown lines were found in SKILL.md."
-                : string.Join(Environment.NewLine, previewLines);
+            // Return the FULL SKILL.md body (frontmatter already stripped above) as markdown so the
+            // detail modal can render and scroll all of it. Do not cap lines or flatten structure —
+            // the scrolling markdown block owns overflow.
+            var body = text.Trim();
+            return body.Length == 0
+                ? "No previewable markdown content was found in SKILL.md."
+                : body;
         }
         catch (Exception exception)
         {
             return $"Could not load preview: {exception.Message}";
         }
+    }
+
+    // Compose the skill detail modal's single markdown document: the one-line summary as an
+    // italicized lead paragraph, a horizontal rule, then the full SKILL.md body. Folding the summary
+    // in (rather than a separate block) makes the modal read as one cohesive skill page. The summary
+    // is skipped when it's empty or the body already opens with it, to avoid a duplicated lead line.
+    private static string ComposeSkillMarkdown(string summary, string body)
+    {
+        summary = (summary ?? string.Empty).Trim();
+        body = (body ?? string.Empty).Trim();
+
+        if (summary.Length == 0)
+            return body;
+
+        if (body.Contains(summary, StringComparison.Ordinal))
+            return body;
+
+        return $"*{summary}*{Environment.NewLine}{Environment.NewLine}---{Environment.NewLine}{Environment.NewLine}{body}";
+    }
+
+    // Short excerpt of a full markdown body for static (non-scrolling) surfaces: the first
+    // `maxLines` non-empty lines, trimmed. The interactive modal shows the full body in a scrolling
+    // block, so this cap applies only to the Spectre stdout detail panel.
+    private static string PreviewExcerpt(string markdown, int maxLines)
+    {
+        var lines = markdown
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Trim())
+            .Where(line => line.Length > 0)
+            .Take(maxLines)
+            .ToArray();
+        return lines.Length == 0 ? markdown : string.Join(Environment.NewLine, lines);
     }
 
     private static string CompactDescription(string description)
