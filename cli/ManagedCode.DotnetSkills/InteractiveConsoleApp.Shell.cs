@@ -88,6 +88,8 @@ internal sealed partial class InteractiveConsoleApp
     private Window? _mainWindow;
     private CommandPalettePortal? _palettePortal;
     private LayoutNode? _palettePortalNode;
+    private SearchFilterPortal? _searchPortal;
+    private LayoutNode? _searchPortalNode;
     private StatusBarControl? _statusBar;
     private StatusBarItem? _clockItem;
     private StatusBarItem? _statusMessage;
@@ -397,6 +399,13 @@ internal sealed partial class InteractiveConsoleApp
         {
             _palettePortal.ProcessKey(e.KeyInfo);
             e.Handled = true;
+            return;
+        }
+
+        if (_searchPortal != null)
+        {
+            _searchPortal.ProcessKey(e.KeyInfo);
+            e.Handled = true;
         }
     }
 
@@ -424,7 +433,7 @@ internal sealed partial class InteractiveConsoleApp
         {
             if (key.KeyChar == '/' && IsListBearingPage(_currentPage))
             {
-                ShowSearchOverlay();
+                ShowSearchPortal();
                 e.Handled = true;
             }
             return;
@@ -695,10 +704,47 @@ internal sealed partial class InteractiveConsoleApp
         panel.AddControl(new MarkupControl(rows));
     }
 
-    /// <summary>De-emphasized titled block for use INSIDE a detail modal (which already has a frame).
-    /// A bold caption + body, no accent box.</summary>
-    private static IWindowControl BuildModalBlock(string title, string body)
-        => new MarkupControl(new List<string> { $"[bold]{Escape(title)}[/]", body });
+    /// <summary>Titled block whose body is rendered as MARKDOWN via
+    /// <c>MarkupControl.SetMarkdown</c>. For short, pinned content (e.g. a one-line summary or a
+    /// description). The markdown body must NOT be pre-escaped — escaping turns markup/markdown
+    /// syntax into literals. Only the title is escaped.</summary>
+    private static IWindowControl BuildMarkdownBlock(string title, string markdown)
+        // Bold caption line, a blank spacer, then the markdown body — one MarkupControl built via
+        // the markup builder so the body renders as markdown (AddMarkdown) while the caption stays
+        // literal markup (AddLine). Matches BuildModalBlock's caption-above-body shape.
+        => Controls.Markdown()
+            .AddLine($"[bold]{Escape(title)}[/]")
+            .AddLine(string.Empty)
+            .AddMarkdown(markdown)
+            .Build();
+
+    /// <summary>Titled block whose FULL markdown body scrolls inside its own fill-height
+    /// ScrollablePanel. Use for long content (e.g. the whole SKILL.md preview) so it scrolls in the
+    /// modal body while the header/summary/toolbar stay pinned. The markdown body must NOT be
+    /// pre-escaped.</summary>
+    private static IWindowControl BuildScrollingMarkdownBlock(string title, string markdown)
+    {
+        // Render the title as a real markdown H2 heading at the top of the body (so it uses the
+        // markdown heading style, not a separate bold caption), then the markdown itself.
+        var heading = string.IsNullOrWhiteSpace(title) ? string.Empty : $"## {Capitalize(title)}\n\n";
+        var content = new MarkupControl(new List<string> { string.Empty })
+        {
+            // Left margin so the markdown body isn't flush against the panel edge.
+            Margin = new Margin(1, 0, 0, 0),
+        };
+        content.SetMarkdown(heading + markdown);
+
+        var scroller = new ScrollablePanelControl
+        {
+            VerticalAlignment = VerticalAlignment.Fill,
+        };
+        scroller.AddControl(content);
+        return scroller;
+    }
+
+    // Upper-cases the first character of a block title (e.g. "preview" -> "Preview") for headings.
+    private static string Capitalize(string value)
+        => string.IsNullOrEmpty(value) ? value : char.ToUpperInvariant(value[0]) + value[1..];
 
     /// <summary>
     /// Standard sortable rounded table with a left-aligned title and the accent border color.
@@ -1134,53 +1180,36 @@ internal sealed partial class InteractiveConsoleApp
     /// _searchFilter and rebuilds it. Esc dismisses without changing the filter. Triggered by
     /// `/` from any list-bearing page.
     /// </summary>
-    private void ShowSearchOverlay()
+    // Live list filter as a slim portal overlay. Replaces the old centered modal: a slim search bar
+    // near the top filters the table/list behind it on every keystroke via _searchFilter +
+    // RebuildActivePage (the same filter path used everywhere), so grouped, flat, and non-table pages
+    // all filter uniformly. Enter/Esc close it; the filter persists (Esc again on the page clears it).
+    private void ShowSearchPortal()
     {
-        if (_ws is null) return;
-        Window? modal = null;
+        if (_searchPortal != null) { DismissSearchPortal(); return; } // toggle closed
+        if (_mainWindow is null || _nav is null) return;
 
-        void Close()
+        var portal = new SearchFilterPortal(_searchFilter, _mainWindow.Width, _mainWindow.Height)
         {
-            if (modal is not null) _ws.CloseWindow(modal);
-        }
+            Container = _mainWindow,
+        };
+        _searchPortal = portal;
+        _searchPortalNode = _mainWindow.CreatePortal(_nav, portal);
 
-        var prompt = Controls.Prompt($"  /  ")
-            .UnfocusOnEnter(false)
-            .OnEntered((_, query) =>
-            {
-                _searchFilter = (query ?? string.Empty).Trim();
-                Close();
-                RebuildActivePage();
-            })
-            .Build();
-
-        var hint = new MarkupControl(new List<string>
+        portal.TextChanged += (_, text) =>
         {
-            "[grey50]Type to filter the current list. [bold]Enter[/] applies, [bold]Esc[/] cancels.[/]",
-            string.IsNullOrEmpty(_searchFilter) ? string.Empty : $"[grey50]current:[/] [yellow]{Escape(_searchFilter)}[/]",
-        });
+            _searchFilter = (text ?? string.Empty).Trim();
+            RebuildActivePage();
+        };
+        portal.Closed += (_, _) => DismissSearchPortal();
+    }
 
-        modal = new WindowBuilder(_ws)
-            .WithTitle("search")
-            .WithSize(Math.Clamp(SafeConsole(() => Console.WindowWidth, 100) - 20, 50, 80), 9)
-            .Centered()
-            .AsModal()
-            .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
-            .Minimizable(false)
-            .Maximizable(false)
-            .WithBorderStyle(BorderStyle.Rounded)
-            .WithBorderColor(AccentYellow)
-            .OnKeyPressed((_, e) =>
-            {
-                if (e.KeyInfo.Key == ConsoleKey.Escape)
-                {
-                    Close();
-                    e.Handled = true;
-                }
-            })
-            .AddControl(hint)
-            .AddControl(prompt)
-            .BuildAndShow();
+    private void DismissSearchPortal()
+    {
+        if (_searchPortalNode is not null && _mainWindow is not null && _nav is not null)
+            _mainWindow.RemovePortal(_nav, _searchPortalNode);
+        _searchPortal = null;
+        _searchPortalNode = null;
     }
 
     /// <summary>
@@ -1320,7 +1349,7 @@ internal sealed partial class InteractiveConsoleApp
             bar.AddLeft("Enter", page is HomeAction.SyncProject ? "Install" : page is HomeAction.Workspace ? "Change" : "Open");
             if (IsListBearingPage(page))
             {
-                bar.AddLeft("/", "Search", ShowSearchOverlay);
+                bar.AddLeft("/", "Search", ShowSearchPortal);
             }
             bar.AddLeft("Ctrl+P", "Palette", () => { if (_ws is not null) ShowCommandPalette(_ws); });
             foreach (var (key, label, action) in PageShortcuts(page))
@@ -1441,7 +1470,29 @@ internal sealed partial class InteractiveConsoleApp
     private void AddSearchChip(ScrollablePanelControl panel)
     {
         if (string.IsNullOrWhiteSpace(_searchFilter)) return;
-        AddInlineNote(panel, $"matching “{Escape(_searchFilter)}”  [grey50]· press[/] [bold]Esc[/] [grey50]to clear[/]", NoteSeverity.Info);
+
+        // Passive filter note plus a clickable [Clear] link. MarkupControl supports link clicks
+        // ([link=url] + OnLinkClicked), so the chip stays a single lightweight markup line — no
+        // toolbar/button row — while still offering a mouse affordance alongside the Esc hint.
+        var chip = Controls.Markup()
+            .AddLine($"[#82aaff]⌕[/]  [grey62]filtering “{Escape(_searchFilter)}”[/]  [grey50]· press[/] [bold]Esc[/] [grey50]or[/] [link=clear][#82aaff]Clear[/][/]")
+            .OnLinkClicked((_, e) =>
+            {
+                if (e.Url == "clear")
+                {
+                    _searchFilter = string.Empty;
+                    RebuildActivePage();
+                }
+            })
+            .Build();
+        panel.AddControl(chip);
+
+        // Subtle separator below the chip so the filter status reads as its own band, distinct from
+        // the table beneath. Quiet desaturated grey (GridLineColor) — a hairline, not a section rule.
+        panel.AddControl(Controls.RuleBuilder()
+            .WithColor(GridLineColor)
+            .WithBorderStyle(BorderStyle.Single)
+            .Build());
     }
 
     private async Task ClockLoopAsync(Window window, CancellationToken cancellationToken)

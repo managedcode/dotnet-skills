@@ -297,7 +297,7 @@ internal sealed partial class InteractiveConsoleApp
                 ("latest", Escape(record.Skill.Version)),
                 ("status", record.IsCurrent ? "[green]✓ current[/]" : "[yellow]↻ update available[/]"),
                 ("tokens", FormatTokenCount(record.Skill.TokenCount))),
-            BuildModalBlock("summary", Escape(record.Skill.Description)),
+            BuildMarkdownBlock("summary", record.Skill.Description),
         };
 
         var buttons = new List<(string, Action)>();

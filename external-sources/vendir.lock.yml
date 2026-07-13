@@ -2,11 +2,10 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'dotnet-test: raise timeouts for chronic-timeout eval scenarios
-        (#850)...'
-      sha: ce75c355694bb358162464058081121645767d6f
+      commitTitle: Fix migrate-static-to-wrapper skill activation on evals (#864)...
+      sha: 1270722c951dece787074c8fde3bdab2f8ef54db
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-5-g1270722
     path: dotnet-skills
   path: upstreams
 kind: LockConfig
