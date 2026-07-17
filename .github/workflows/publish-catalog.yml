@@ -150,7 +150,7 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=${{ env.CATALOG_TAG_PREFIX }}$version" >> "$GITHUB_OUTPUT"
 
-      - name: Generate catalog outputs in CI
+      - name: Validate catalog metadata in CI
         if: steps.changes.outputs.has_new_commits == 'true'
         run: python3 scripts/generate_catalog.py
 
@@ -327,7 +327,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate GitHub Pages payload
+      - name: Validate catalog metadata for GitHub Pages
         run: python3 scripts/generate_catalog.py
 
       - name: Render GitHub Pages

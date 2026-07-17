@@ -216,7 +216,7 @@ The importer auto-discovers upstream plugins from vendored `plugin.json` files a
 
 For imported official upstream skills, keep the upstream skill or agent id unless there is a real compatibility reason to rename it.
 
-Do not hand-edit the generated catalog tables.
+Do not add generated catalog tables to `README.md`. The browsable catalog is published at [skills.managed-code.com](https://skills.managed-code.com/).
 
 Instead:
 
@@ -227,20 +227,21 @@ Instead:
 bash scripts/sync_external_catalog_sources.sh
 ```
 
-3. If you want a local preview of generated outputs, run:
-
-```bash
-python3 scripts/generate_catalog.py
-```
-
-This preview updates:
-
-- the generated catalog section in [`README.md`](README.md)
-
-For metadata-only validation without rewriting generated files:
+3. Validate the scanned catalog and render a local site preview:
 
 ```bash
 python3 scripts/generate_catalog.py --validate-only
+python3 scripts/generate_pages.py
+```
+
+The site preview is written to:
+
+- `artifacts/github-pages/`
+
+To export a transient machine-readable release manifest explicitly:
+
+```bash
+python3 scripts/generate_catalog.py --manifest-output /path/to/dotnet-skills-manifest.json
 ```
 
 ## Dotnet Tool Distribution
