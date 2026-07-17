@@ -78,7 +78,7 @@ Subsequent Requests:
 
 ## Current Upstream Notes
 
-- Treat `dotnet/aspnetcore` `v9.0.17` as servicing. For new guidance, keep using the `.NET 10` Blazor docs and the imported official Blazor task skills for project creation, component authoring, user input, auth, data, JS interop, and prerendering.
+- Treat `dotnet/aspnetcore` `v10.0.10` as servicing. It restores the original .NET 10 `OwningComponentBase.Dispose` behavior and fixes a `Virtualize` null-reference path; re-run component disposal and virtualization regression tests when upgrading.
 - When existing apps update servicing packages, recheck render-mode assumptions, SignalR circuit behavior, and any interactive-auto client/server service split.
 
 ## Component Patterns

@@ -2,10 +2,11 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Update to Vally 0.7.0 (#854)
-      sha: 52ba152ed6e3a80cac59bf4f9827a3ed555292e1
+      commitTitle: 'test(dotnet-test): pin fixture SDK via global.json for writing-mstest-tests
+        and detect-static-dependencies (#907)...'
+      sha: a9fc55a7650fb8a6f09d19a4d60f0bfaf0848e9a
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-4-ga9fc55a
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...

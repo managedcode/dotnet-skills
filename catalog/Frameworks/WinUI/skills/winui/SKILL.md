@@ -54,9 +54,9 @@ compatibility: "Requires a WinUI 3, Windows App SDK, or MAUI-on-Windows integrat
 
 ## Current Upstream Notes
 
-- Windows App SDK `2.2.0` adds the `Microsoft.Windows.AI.Video.VideoScaler` API, `ApplicationData.GetForUnpackaged()`, new `XamlBindingHelper` value setter overloads, and `Setter.ValueProperty`.
+- Windows App SDK `2.3.1` adds schema-constrained Phi Silica JSON output, `XamlOptionalChanges`, ARM64EC support for Windows ML, Video Super Resolution improvements, and opt-in XAML startup/style/resource-lookup optimizations.
 - For unpackaged apps, prefer `ApplicationData.GetForUnpackaged()` over registry or custom folder conventions when the app needs first-class app data storage.
-- When upgrading to 2.2.0, retest `RenderTargetBitmap`, `ScrollView`, `ThemeSettings`, pointer cancellation, sparse-packaged PRI discovery, and Windows ML startup/shutdown paths if the app uses those surfaces.
+- When upgrading to 2.3.1, retest unpackaged `LocalSettings`, background tasks, side-placement flyouts, `MediaPlayerPresenter` device loss, popup pointer replay, `ItemsRepeater` layouts, Windows ML, and any opted-in XAML change IDs.
 
 ```mermaid
 flowchart LR

@@ -43,8 +43,8 @@ compatibility: "Requires a .NET repository, solution, or project tree."
 
 ## Current Upstream Notes
 
-- `.NET 9.0.17` runtime and ASP.NET Core releases are servicing updates. Treat them as patch validation work unless the repo shows a concrete affected area such as WebSocket frame handling, JIT loop cloning, QUIC/MsQuic, or Linux CRL caching.
-- `.NET SDK 8.0.422` belongs to the 8.0.28 servicing train. Use it for repos pinned to .NET 8, but do not infer modern C# or .NET 10 language availability from that SDK line.
+- `.NET 10.0.10` runtime and ASP.NET Core releases are servicing updates. Re-test affected paths such as heavily pinned GC heaps, NativeAOT, macOS drive enumeration, cookie-auth return URLs, data-protection cold starts, Blazor disposal/virtualization, and OpenAPI generation rather than changing architecture by default.
+- `.NET SDK 10.0.302` is the current 10.0.3xx servicing SDK and enables the file-based app `#:include` / `#:exclude` flow without feature flags. `.NET SDK 8.0.423` remains an 8.0 servicing SDK; do not infer C# 13 or C# 14 availability from that line.
 - The refreshed "Build apps with .NET" Learn page remains broad routing context; still hand off to `project-setup`, `worker-services`, `aspnet-core`, `modern-csharp`, or another narrow skill as soon as the app model is known.
 
 ## Routing Heuristics

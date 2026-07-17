@@ -19,8 +19,13 @@ compatibility: "Relevant to console apps, workers, ASP.NET Core apps, functions,
 3. Use options binding for structured configuration and validate configuration at startup when bad settings would fail later at runtime.
 4. Prefer `IHttpClientFactory` and typed or named clients for outbound HTTP instead of ad-hoc singleton or per-call `HttpClient` usage.
 5. Use logging categories and config-driven log levels rather than scattered ad-hoc logging behavior.
-6. For Kubernetes-hosted services, prefer the stable `Microsoft.Extensions.Diagnostics.ResourceMonitoring.Kubernetes` package from the 10.7 line when CPU/memory request and limit metrics should come from pod resource quotas.
+6. For Kubernetes-hosted services, prefer the stable `Microsoft.Extensions.Diagnostics.ResourceMonitoring.Kubernetes` package from the 10.7+ line when CPU/memory request and limit metrics should come from pod resource quotas.
 7. Avoid building mini-frameworks over Microsoft.Extensions unless the repo genuinely needs reusable composition primitives.
+
+## Current Upstream Notes
+
+- `dotnet/extensions` `v10.8.0` is primarily an AI-library release; it does not change the Generic Host, dependency injection, configuration, logging, options, or `IHttpClientFactory` patterns in this skill.
+- Keep Microsoft.Extensions package versions aligned within the repo's selected servicing line, then rerun host startup and options-validation tests after upgrading.
 
 ## Deliver
 

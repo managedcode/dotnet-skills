@@ -23,7 +23,7 @@ compatibility: "Requires an ASP.NET Core API project that uses or should use con
 
 ## Current Upstream Notes
 
-- `dotnet/aspnetcore` `v9.0.17` is servicing. Controller-based API guidance still depends on whether the project needs controller conventions, advanced model binding, OData, JsonPatch, or existing filter conventions.
+- `dotnet/aspnetcore` `v10.0.10` is servicing. It fixes nullable `DescriptionAttribute` handling and duplicate generic-property/reference IDs in OpenAPI generation; controller-based API guidance still depends on conventions, advanced model binding, OData, JsonPatch, and existing filters.
 - Use the `aspnetcore-10.0` Learn overview for exact current routing, OpenAPI, auth, and hosting links before changing public API contracts.
 
 ## Deliver

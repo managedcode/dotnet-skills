@@ -3,7 +3,7 @@
     {
       "name": "aspnet-core",
       "title": "ASP.NET Core",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Web",
       "type": "Framework",
       "package": "ASP.NET-Core",
@@ -12,13 +12,13 @@
       "description": "Build, debug, modernize, or review ASP.NET Core applications with correct hosting, middleware, security, configuration, logging, and deployment patterns on current .NET. USE FOR: working on ASP.NET Core apps, services, or middleware; changing auth, routing, configuration, hosting, or deployment behavior; deciding between ASP.NET Core sub-stacks. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires an ASP.NET Core project or solution.",
       "path": "catalog/Frameworks/ASP.NET-Core/skills/aspnet-core/",
-      "tokenCount": 1795,
+      "tokenCount": 1828,
       "package_prefix": "Microsoft.AspNetCore"
     },
     {
       "name": "aspire",
       "title": ".NET Aspire",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "category": "Cloud",
       "type": "Framework",
       "package": "Aspire",
@@ -53,7 +53,7 @@
     {
       "name": "blazor",
       "title": "Blazor",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Web",
       "type": "Framework",
       "package": "Blazor",
@@ -62,7 +62,7 @@
       "description": "Build and review Blazor applications across server, WebAssembly, web app, and hybrid scenarios with correct component design, state flow, rendering, and hosting choices. USE FOR: building interactive web UIs with C# instead of JavaScript; choosing between Server, WebAssembly, or Auto render modes; designing component hierarchies and state. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires Blazor project (.NET 6+, preferably .NET 8+ for unified model).",
       "path": "catalog/Frameworks/Blazor/skills/blazor/",
-      "tokenCount": 1876,
+      "tokenCount": 1867,
       "links": {
         "repository": "https://github.com/dotnet/aspnetcore",
         "docs": "https://learn.microsoft.com/en-us/aspnet/core/blazor/",
@@ -73,7 +73,7 @@
     {
       "name": "entity-framework6",
       "title": "Entity Framework 6",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "category": "Data",
       "type": "Framework",
       "package": "Entity-Framework-6",
@@ -88,7 +88,7 @@
     {
       "name": "entity-framework-core",
       "title": "Entity Framework Core",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Data",
       "type": "Framework",
       "package": "Entity-Framework-Core",
@@ -97,7 +97,7 @@
       "description": "Design, tune, or review EF Core data access with proper modeling, migrations, query translation, performance, and lifetime management for modern .NET applications. USE FOR: DbContext, migrations, model configuration, EF queries, tracking, loading, performance, transactions, and EF6 migration decisions. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires EF Core 7+ (preferably 8/9 for latest features).",
       "path": "catalog/Frameworks/Entity-Framework-Core/skills/entity-framework-core/",
-      "tokenCount": 2104,
+      "tokenCount": 2122,
       "links": {
         "repository": "https://github.com/dotnet/efcore",
         "docs": "https://learn.microsoft.com/en-us/ef/core/",
@@ -153,7 +153,7 @@
     {
       "name": "minimal-apis",
       "title": "Minimal APIs",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Web",
       "type": "Framework",
       "package": "Minimal-APIs",
@@ -162,7 +162,7 @@
       "description": "Design and implement Minimal APIs in ASP.NET Core using handler-first endpoints, route groups, filters, and lightweight composition suited to modern .NET services. USE FOR: building new HTTP APIs in ASP.NET Core; creating lightweight microservices; choosing between Minimal APIs and controllers. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires ASP.NET Core 6+, preferably .NET 8+ for full features.",
       "path": "catalog/Frameworks/Minimal-APIs/skills/minimal-apis/",
-      "tokenCount": 1993
+      "tokenCount": 2010
     },
     {
       "name": "configuring-opentelemetry-dotnet",
@@ -413,7 +413,7 @@
     {
       "name": "semantic-kernel",
       "title": "Semantic Kernel for .NET",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "AI",
       "type": "Framework",
       "package": "Semantic-Kernel",
@@ -422,7 +422,7 @@
       "description": "Build AI-enabled .NET applications with Semantic Kernel using services, plugins, prompts, and function-calling patterns that remain testable and maintainable. USE FOR: adding AI-driven prompts, plugins, or orchestration to a .NET app; reviewing kernel construction, service registration, or plugin usage; building function-calling. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires Semantic Kernel 1.x packages (.NET 8+).",
       "path": "catalog/Frameworks/Semantic-Kernel/skills/semantic-kernel/",
-      "tokenCount": 2079,
+      "tokenCount": 2144,
       "links": {
         "repository": "https://github.com/microsoft/semantic-kernel",
         "docs": "https://learn.microsoft.com/en-us/semantic-kernel/",
@@ -431,9 +431,31 @@
       "package_prefix": "Microsoft.SemanticKernel"
     },
     {
+      "name": "sharpconsoleui",
+      "title": "SharpConsoleUI terminal application framework",
+      "version": "1.0.0",
+      "category": "Terminal UI",
+      "type": "Framework",
+      "package": "SharpConsoleUI",
+      "stack": ".NET Foundations",
+      "lane": "Foundations",
+      "description": "Use SharpConsoleUI to build full terminal (TUI) applications in .NET \u2014 equally suited to full-screen single-window apps and multi-window desktops with overlapping draggable windows \u2014 using a compositor, a DOM layout engine, and 40+ reactive controls (data tables, tree views, forms, an embedded PTY terminal, markdown, charts, video). USE FOR: interactive console apps, full-screen TUIs, multi-window terminal desktops, dashboards, wizards, and admin/monitoring UIs that need focus, mouse, and flicker-free rendering over local terminals or SSH; NativeAOT console tools. DO NOT USE FOR: simple line-based CLI output or argument parsing; non-interactive scripts; GUI/desktop (WPF/WinForms) or web UIs. INVOKES: inspect the project, add the SharpConsoleUI package, scaffold a window/control tree, and build/run to verify the app renders.",
+      "compatibility": "Requires a .NET 8.0+ console project (net8.0/net9.0/net10.0) that can reference the `SharpConsoleUI` package and run against a modern terminal. Uses a retained-mode UI on a single cooperative UI thread, not immediate-mode Console.Write.",
+      "path": "catalog/Frameworks/SharpConsoleUI/skills/sharpconsoleui/",
+      "tokenCount": 2302,
+      "links": {
+        "repository": "https://github.com/nickprotop/ConsoleEx",
+        "docs": "https://nickprotop.github.io/ConsoleEx/",
+        "nuget": "https://www.nuget.org/packages/SharpConsoleUI/"
+      },
+      "packages": [
+        "SharpConsoleUI"
+      ]
+    },
+    {
       "name": "signalr",
       "title": "SignalR",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Web",
       "type": "Framework",
       "package": "SignalR",
@@ -444,6 +466,27 @@
       "path": "catalog/Frameworks/SignalR/skills/signalr/",
       "tokenCount": 2679,
       "package_prefix": "Microsoft.AspNetCore.SignalR"
+    },
+    {
+      "name": "webgpu-threejs-tsl",
+      "title": "WebGPU Three.js with TSL",
+      "version": "1.0.0",
+      "category": "Web",
+      "type": "Framework",
+      "package": "ThreeJS-WebGPU-TSL",
+      "stack": "Web",
+      "lane": "Frameworks",
+      "description": "Comprehensive guide for developing WebGPU-enabled Three.js applications using TSL (Three.js Shading Language). Covers WebGPU renderer setup, TSL syntax and node materials, compute shaders, post-processing effects, and WGSL integration. Use this skill when working with Three.js WebGPU, TSL shaders, node materials, or GPU compute in Three.js.",
+      "compatibility": "Requires a JavaScript or TypeScript project using Three.js WebGPU and TSL.",
+      "path": "catalog/Frameworks/ThreeJS-WebGPU-TSL/skills/webgpu-threejs-tsl/",
+      "tokenCount": 804,
+      "links": {
+        "repository": "https://github.com/dgreenheck/webgpu-claude-skill",
+        "docs": "https://github.com/dgreenheck/webgpu-claude-skill/tree/main/skills/webgpu-threejs-tsl"
+      },
+      "packages": [
+        "three"
+      ]
     },
     {
       "name": "uno-platform",
@@ -493,7 +536,7 @@
     {
       "name": "web-api",
       "title": "ASP.NET Core Web API",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Web",
       "type": "Framework",
       "package": "Web-API",
@@ -502,7 +545,7 @@
       "description": "Build or maintain controller-based ASP.NET Core APIs when the project needs controller conventions, advanced model binding, validation extensions, OData, JsonPatch, or existing API patterns. USE FOR: working on controller-based APIs in ASP.NET Core; needing controller-specific extensibility or conventions; migrating or reviewing existing API controllers and filters. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires an ASP.NET Core API project that uses or should use controllers.",
       "path": "catalog/Frameworks/Web-API/skills/web-api/",
-      "tokenCount": 1686
+      "tokenCount": 1699
     },
     {
       "name": "winforms",
@@ -522,7 +565,7 @@
     {
       "name": "winui",
       "title": "WinUI 3 and Windows App SDK",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "Desktop",
       "type": "Framework",
       "package": "WinUI",
@@ -531,13 +574,13 @@
       "description": "Build or review WinUI 3 applications with the Windows App SDK, including MVVM patterns, packaging decisions, navigation, theming, windowing, and interop boundaries with other .NET stacks. USE FOR: building native modern Windows desktop UI on WinUI 3; integrating Windows App SDK features into a .NET app; deciding between WinUI, WPF, WinForms, and MAUI for Windows. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a WinUI 3, Windows App SDK, or MAUI-on-Windows integration scenario.",
       "path": "catalog/Frameworks/WinUI/skills/winui/",
-      "tokenCount": 1181,
+      "tokenCount": 1191,
       "package_prefix": "Microsoft.WindowsAppSDK"
     },
     {
       "name": "worker-services",
       "title": ".NET Worker Services",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Core",
       "type": "Framework",
       "package": "Worker-Services",
@@ -546,7 +589,7 @@
       "description": "Build long-running .NET background services with `BackgroundService`, Generic Host, graceful shutdown, configuration, logging, and deployment patterns suited to workers and daemons. USE FOR: background services; scheduled workers; hosted services; worker extraction; graceful shutdown, health checks, and service hosting review. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a worker, hosted service, or background-processing scenario.",
       "path": "catalog/Frameworks/Worker-Services/skills/worker-services/",
-      "tokenCount": 2856,
+      "tokenCount": 2865,
       "packages": [
         "Microsoft.Extensions.Hosting"
       ]
@@ -568,7 +611,7 @@
     {
       "name": "grpc",
       "title": "gRPC for .NET",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Web",
       "type": "Framework",
       "package": "gRPC",
@@ -577,7 +620,7 @@
       "description": "Build or review gRPC services and clients in .NET. USE FOR: ASP.NET Core gRPC, protobuf contracts, unary or streaming RPC, gRPC client factory, interceptors, deadlines, cancellation, channel reuse, backend service integration. DO NOT USE FOR: broad browser-facing APIs without gRPC-Web tradeoff review, SignalR realtime hubs, plain REST APIs. INVOKES: dotnet build/test and focused service or client smoke checks when code changes.",
       "compatibility": "Requires ASP.NET Core gRPC or gRPC client projects.",
       "path": "catalog/Frameworks/gRPC/skills/grpc/",
-      "tokenCount": 1128,
+      "tokenCount": 1135,
       "package_prefix": "Grpc"
     },
     {
@@ -621,7 +664,7 @@
     {
       "name": "mcp",
       "title": "MCP C# SDK for .NET",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "category": "AI",
       "type": "Library",
       "package": "MCP",
@@ -630,7 +673,7 @@
       "description": "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. USE FOR: .NET MCP servers or clients; stdio versus HTTP transport choices; tools, resources, prompts, completions, and capability negotiation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.4.x SDK.",
       "path": "catalog/Libraries/MCP/skills/mcp/",
-      "tokenCount": 2649,
+      "tokenCount": 2705,
       "packages": [
         "ModelContextProtocol",
         "ModelContextProtocol.AspNetCore"
@@ -692,7 +735,7 @@
     {
       "name": "managedcode-mimetypes",
       "title": "ManagedCode.MimeTypes",
-      "version": "1.0.0",
+      "version": "1.1.1",
       "category": "Core",
       "type": "Library",
       "package": "ManagedCode-MimeTypes",
@@ -701,7 +744,7 @@
       "description": "Use ManagedCode.MimeTypes when a .NET application needs consistent MIME type detection, extension mapping, and content-type decisions for uploads, downloads, or HTTP responses. USE FOR: integrating ManagedCode.MimeTypes into upload or download flows; mapping file extensions to content types in APIs or background processing; reviewing content-type. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET application that integrates ManagedCode.MimeTypes or evaluates MIME type mapping behavior.",
       "path": "catalog/Libraries/ManagedCode-MimeTypes/skills/managedcode-mimetypes/",
-      "tokenCount": 430,
+      "tokenCount": 1158,
       "packages": [
         "ManagedCode.MimeTypes"
       ]
@@ -769,7 +812,7 @@
     {
       "name": "microsoft-extensions",
       "title": "Microsoft.Extensions for .NET",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "Core",
       "type": "Library",
       "package": "Microsoft-Extensions",
@@ -778,13 +821,13 @@
       "description": "Use the Microsoft.Extensions stack correctly across Generic Host, dependency injection, configuration, logging, options, HttpClientFactory, and other shared infrastructure patterns. USE FOR: wiring dependency injection, configuration, logging, or options; introducing Generic Host patterns into non-web .NET apps; cleaning up service registration, typed HTTP. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Relevant to console apps, workers, ASP.NET Core apps, functions, and reusable libraries.",
       "path": "catalog/Libraries/Microsoft-Extensions/skills/microsoft-extensions/",
-      "tokenCount": 529,
+      "tokenCount": 613,
       "package_prefix": "Microsoft.Extensions"
     },
     {
       "name": "microsoft-extensions-ai",
       "title": "Microsoft.Extensions.AI",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "category": "AI",
       "type": "Library",
       "package": "Microsoft-Extensions-AI",
@@ -793,7 +836,7 @@
       "description": "Build provider-agnostic .NET AI integrations with `Microsoft.Extensions.AI`, `IChatClient`, embeddings, middleware, structured output, vector search, and evaluation. USE FOR: building or reviewing .NET code that uses Microsoft.Extensions.AI, Microsoft.Extensions.AI.Abstractions, IChatClient, IEmbeddingGenerator, ChatOptions, or AIFunction;. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires `Microsoft.Extensions.AI` or a .NET AI application that needs model, embedding, tool-calling, or evaluation composition without full agent orchestration.",
       "path": "catalog/Libraries/Microsoft-Extensions-AI/skills/microsoft-extensions-ai/",
-      "tokenCount": 2546,
+      "tokenCount": 2604,
       "package_prefix": "Microsoft.Extensions.AI"
     },
     {
@@ -903,7 +946,7 @@
     {
       "name": "dotnet",
       "title": ".NET Router Skill",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "category": "Core",
       "type": "Platform",
       "package": "DotNet",
@@ -912,7 +955,7 @@
       "description": "Primary router skill for broad .NET work. Classify the repo by app model and cross-cutting concern first, then switch to the narrowest matching .NET skill instead of staying at a generic layer. USE FOR: general .NET requests without a narrower framework; C# implementation, debugging, review, or refactoring; routing to framework and tooling skills. DO NOT USE FOR: unrelated stacks; tasks already covered by a narrower .NET skill. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository, solution, or project tree.",
       "path": "catalog/Platform/DotNet/skills/dotnet/",
-      "tokenCount": 1241
+      "tokenCount": 1277
     },
     {
       "name": "legacy-aspnet",
@@ -1608,7 +1651,7 @@
     {
       "name": "project-setup",
       "title": ".NET Project Setup",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Core",
       "type": "Platform",
       "package": "Project-Setup",
@@ -1617,7 +1660,7 @@
       "description": "Create or reorganize .NET solutions with clean project boundaries, repeatable SDK settings, and a maintainable baseline for libraries, apps, tests, CI, and local development. USE FOR: creating a new .NET solution or restructuring an existing one; setting up Directory.Build.props, shared package management, or repo-wide defaults; defining project. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Best for new repositories or structural refactors of existing .NET solutions.",
       "path": "catalog/Platform/Project-Setup/skills/project-setup/",
-      "tokenCount": 587
+      "tokenCount": 632
     },
     {
       "name": "coverlet",
@@ -1686,7 +1729,7 @@
       "description": "Analyzes the variety and depth of assertions across test suites in any language. Use when the user asks to evaluate assertion quality, find shallow tests, identify assertion-free tests (no assertions or only trivial ones like Assert.IsNotNull / toBeTruthy()), flag self-referential or tautological assertions, measure assertion diversity, or audit whether tests verify different facets of behavior. Polyglot: .NET, Python, TS/JS, Java, Go, Ruby, Rust, Swift, Kotlin, PowerShell, C++. DO NOT USE FOR: writing new tests (use code-testing-agent / writing-mstest-tests), mutation reasoning about whether tests would catch a bug (use test-gap-analysis), or a general severity-ranked anti-pattern audit (use test-anti-patterns), fixing or rewriting assertions, or writing, fixing, or modernizing MSTest tests, assertions, or attributes (use writing-mstest-tests).",
       "compatibility": "Requires a .NET test project or solution.",
       "path": "catalog/Testing/Official-DotNet-Test/skills/assertion-quality/",
-      "tokenCount": 3820,
+      "tokenCount": 4006,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-test"
@@ -1831,10 +1874,10 @@
       "package": "Official-DotNet-Test",
       "stack": "Testing",
       "lane": "Foundations",
-      "description": "Generate wrapper interfaces and DI registration for hard-to-test static dependencies in C#. Produces IFileSystem, IEnvironmentProvider, IConsole, IProcessRunner wrappers, or guides adoption of TimeProvider and IHttpClientFactory. USE FOR: generate wrapper for static, create IFileSystem wrapper, wrap DateTime.Now, make static testable, make class testable, create abstraction for File.*, generate DI registration, TimeProvider adoption, IHttpClientFactory setup, testability wrapper, mock-friendly interface, mock time in tests, create the right abstraction to mock, how to mock DateTime, test code using File.ReadAllText, what abstraction for Environment, how to make statics injectable, adopt System.IO.Abstractions, make file calls testable. DO NOT USE FOR: detecting statics (use detect-static-dependencies), migrating call sites (use migrate-static-to-wrapper), general interface design not about testability.",
+      "description": "Generate wrapper interfaces and DI registration for hard-to-test static dependencies in C#, when the abstraction does NOT exist yet. Produces IFileSystem, IEnvironmentProvider, IConsole, IProcessRunner wrappers, or guides first-time adoption of TimeProvider and IHttpClientFactory and registering them in DI. USE FOR: generate wrapper for static, create IFileSystem wrapper, wrap DateTime.Now, make static testable, make class testable, create abstraction for File.*, generate DI registration, set up/adopt TimeProvider when it is not registered yet, IHttpClientFactory setup, testability wrapper, create the right abstraction to mock, what abstraction for Environment, how to make statics injectable, adopt System.IO.Abstractions. DO NOT USE FOR: detecting statics (use detect-static-dependencies), migrating call sites or replacing existing DateTime.*/File.* usages once the wrapper is created or already registered in DI (use migrate-static-to-wrapper), general interface design.",
       "compatibility": "Requires a .NET test project or solution.",
       "path": "catalog/Testing/Official-DotNet-Test/skills/generate-testability-wrappers/",
-      "tokenCount": 2007,
+      "tokenCount": 2022,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-test"
@@ -1867,10 +1910,10 @@
       "package": "Official-DotNet-Test",
       "stack": "Upgrades & Migration",
       "lane": "Migration",
-      "description": "Mechanically replace static dependency call sites with wrapper or built-in abstraction calls across a bounded scope (file, project, or namespace). Performs codemod-style bulk replacement of DateTime.UtcNow to TimeProvider.GetUtcNow(), File.ReadAllText to IFileSystem, and similar transformations. Adds constructor injection parameters and updates DI registration. USE FOR: replace DateTime.Now/UtcNow with TimeProvider, migrate static calls to wrapper, bulk replace File.* with IFileSystem, codemod static to injectable, add constructor injection for a dependency, mechanical or scoped migration of statics, convert static calls to use an abstraction, update call sites. DO NOT USE FOR: detecting statics (use detect-static-dependencies), generating wrappers (use generate-testability-wrappers), migrating between test frameworks.",
+      "description": "Replace existing static dependency call sites with a wrapper or built-in abstraction that already exists or is registered in DI. Codemod-style bulk replacement of DateTime.Now/UtcNow to TimeProvider, File.ReadAllText to IFileSystem, and similar, across a bounded scope (file, project, namespace), adding constructor injection to affected classes and updating their unit tests to use a test double. USE FOR: replace DateTime.UtcNow/DateTime.Now with TimeProvider and add the constructor parameter, migrate static call sites to a wrapper already in DI, bulk replace File.* with IFileSystem, scoped migration of statics in only certain files, migrate a service to TimeProvider and update its unit tests to a controllable/fake time source, update test doubles when migrating off static DateTime/File calls. DO NOT USE FOR: detecting statics (use detect-static-dependencies), creating or registering the wrapper when it does not exist yet (use generate-testability-wrappers), migrating between test frameworks.",
       "compatibility": "Requires a .NET test project or solution.",
       "path": "catalog/Testing/Official-DotNet-Test/skills/migrate-static-to-wrapper/",
-      "tokenCount": 1846,
+      "tokenCount": 2859,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-test"
@@ -1921,10 +1964,10 @@
       "package": "Official-DotNet-Test",
       "stack": "Testing",
       "lane": "Foundations",
-      "description": "Run, filter, or troubleshoot .NET tests with `dotnet test`. USE FOR: running all tests in a project or solution; running only a subset (a specific test class, category, or trait) via filters; running a single target framework in a multi-TFM project (`--framework`); producing TRX reports; collecting crash or hang dumps; diagnosing why `dotnet test` fails or uses the wrong argument syntax. Detects the test platform (VSTest vs Microsoft.Testing.Platform) and framework (MSTest/xUnit/NUnit/TUnit), then picks the matching command: the `--` separator on .NET SDK 8/9 vs 10+, the right filter flag (--filter, --filter-class, --filter-trait, --filter-query, --treenode-filter), and TRX/blame flags. DO NOT USE FOR: writing test code (use code-testing-agent), iterating on failing tests without rebuilding (use mtp-hot-reload), CI/CD config, or debugging test logic.",
+      "description": "Recommend or run the exact `dotnet test` command. ALWAYS use when the user asks to run, filter, or troubleshoot .NET tests or wants the precise command, flags, or argument order \u2014 the right syntax depends on the test platform (VSTest vs Microsoft.Testing.Platform) and SDK version and is easy to get wrong from memory. USE FOR: running all tests or a subset (a specific class, category, or trait) via filters; a single framework in a multi-TFM project (`--framework`); TRX reports; crash or hang dumps; whether MTP args need the `--` separator (SDK 8/9) or pass directly (SDK 10+); diagnosing why `dotnet test` fails or uses wrong argument syntax. Detects the platform (VSTest vs MTP) and framework (MSTest/xUnit/NUnit/TUnit), then picks the matching command and filter flag (--filter, --filter-class, --filter-trait, --filter-query, --treenode-filter). DO NOT USE FOR: writing test code (use code-testing-agent), iterating on failing tests without rebuilding (use mtp-hot-reload), CI/CD config, or debugging test logic.",
       "compatibility": "Requires a .NET test project or solution.",
       "path": "catalog/Testing/Official-DotNet-Test/skills/run-tests/",
-      "tokenCount": 4561,
+      "tokenCount": 4642,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-test"
@@ -2029,10 +2072,10 @@
       "package": "Official-DotNet-Test",
       "stack": "Testing",
       "lane": "Frameworks",
-      "description": "Write, create, modernize, or fix comprehensive MSTest unit tests with MSTest 3.x/4.x APIs. USE FOR: write or create MSTest unit tests, fix/modernize MSTest assertions, better MSTest assertion than Assert.IsTrue, replace hard cast with type check (IsInstanceOfType), MSTest assertion APIs (Contains, ContainsSingle, HasCount, IsEmpty, IsNotEmpty, DoesNotContain, AreSame, IsNull, StartsWith, EndsWith, MatchesRegex, IsGreaterThan, IsLessThan, IsInRange), swapped Assert.AreEqual args, replace ExpectedException with Assert.Throws, data-driven (DataRow, DynamicData, ValueTuples), lifecycle (TestInitialize, TestCleanup, TestContext), async tests and cancellation tokens, conditional execution/retry/cleanup (OSCondition, Retry), parallelization (Parallelize/DoNotParallelize), MSTest.Sdk setup, MSTESTxxxx analyzer fixes. DO NOT USE FOR: test quality audits (use test-anti-patterns), running tests (use run-tests), MSTest version migration (use the migrate-mstest skills), xUnit/NUnit/TUnit, or non-.NET languages.",
+      "description": "Write, create, modernize, or fix comprehensive MSTest unit tests with MSTest 3.x/4.x APIs. USE FOR: write, create, review, or modernize MSTest tests and assertions, better MSTest assertion than Assert.IsTrue, replace hard cast with IsInstanceOfType, MSTest assertion APIs (Contains, ContainsSingle, HasCount, IsEmpty, IsNotEmpty, DoesNotContain, AreSame, IsNull, StartsWith, EndsWith, MatchesRegex, IsGreaterThan, IsLessThan, IsInRange), swapped/reversed Assert.AreEqual args (Expected/Actual backwards), replace ExpectedException with Assert.Throws, data-driven (DataRow, DynamicData, ValueTuples), lifecycle (TestInitialize, TestCleanup, TestContext), async and cancellation tests, conditional execution/retry/cleanup (OSCondition, Retry), parallelization (Parallelize/DoNotParallelize), MSTest.Sdk setup, MSTESTxxxx analyzer fixes. DO NOT USE FOR: test quality audits (use test-anti-patterns), running tests (use run-tests), MSTest version migration (use migrate-mstest skills), xUnit/NUnit/TUnit, or non-.NET languages.",
       "compatibility": "Requires a .NET test project or solution.",
       "path": "catalog/Testing/Official-DotNet-Test/skills/writing-mstest-tests/",
-      "tokenCount": 3963,
+      "tokenCount": 3965,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-test"
@@ -2083,7 +2126,7 @@
     {
       "name": "tunit",
       "title": "TUnit",
-      "version": "1.1.0",
+      "version": "1.1.2",
       "category": "Testing",
       "type": "Testing",
       "package": "TUnit",
@@ -2149,7 +2192,7 @@
     {
       "name": "biome",
       "title": "Biome for Frontend Assets in .NET Repositories",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "Code Quality",
       "type": "Tool",
       "package": "Biome",
@@ -2158,7 +2201,7 @@
       "description": "Use Biome in .NET repositories that ship Node-based frontend assets and want a fast combined formatter-linter-import organizer for JavaScript, TypeScript, CSS, JSON, GraphQL, or HTML. USE FOR: biome.json or @biomejs/biome setup; fast frontend formatting and linting; replacing overlapping frontend style tools deliberately. DO NOT USE FOR: ESLint-only plugin coverage; runtime site audits such as headers, accessibility, or browser behavior. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with frontend assets managed through Node or a standalone Biome binary workflow; keep ownership explicit versus ESLint, Stylelint, and webhint.",
       "path": "catalog/Tools/Biome/skills/biome/",
-      "tokenCount": 1365
+      "tokenCount": 1471
     },
     {
       "name": "csharpier",
@@ -2197,7 +2240,7 @@
     {
       "name": "chrome-devtools-mcp",
       "title": "Chrome DevTools MCP for .NET Repos",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "Web",
       "type": "Tool",
       "package": "Chrome-DevTools-MCP",
@@ -2206,7 +2249,7 @@
       "description": "Use Chrome DevTools MCP from .NET agents and .NET-focused repos to inspect, debug, and automate Chrome through an MCP client. USE FOR: the repo needs browser-level debugging for ASP.NET Core, Blazor, WebAssembly, or any .NET app with a web UI; the user wants an MCP server that can inspect console. DO NOT USE FOR: pure .NET code analysis, unit testing, or NuGet/package management; static HTML linting alone. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires an MCP-capable .NET agent/app or repo with a browser-debugging workflow; Chrome DevTools MCP runs as an external Node-based server and needs Chrome or Chrome for Testing.",
       "path": "catalog/Tools/Chrome-DevTools-MCP/skills/chrome-devtools-mcp/",
-      "tokenCount": 1921,
+      "tokenCount": 1999,
       "links": {
         "repository": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
         "docs": "https://github.com/ChromeDevTools/chrome-devtools-mcp#readme"
@@ -2272,12 +2315,12 @@
       "description": "Use ESLint in .NET repositories that ship JavaScript, TypeScript, React, or other Node-based frontend assets. USE FOR: the repo has package.json, eslint.config.*, .eslintrc*, tsconfig.json, or JS/TS/React frontend files; the user asks for JavaScript or TypeScript linting, React rule. DO NOT USE FOR: CSS ownership by itself; route that to stylelint; HTML-only checks on static output; route that to htmlhint. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with Node-based frontend assets such as `package.json`, `ClientApp/`, `src/`, or separate web frontend folders.",
       "path": "catalog/Tools/ESLint/skills/eslint/",
-      "tokenCount": 1351
+      "tokenCount": 1415
     },
     {
       "name": "fsharp",
       "title": "F# for .NET",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Core",
       "type": "Tool",
       "package": "FSharp",
@@ -2404,7 +2447,7 @@
       "description": "Write modern, version-aware C# for .NET repositories while staying compatible with the repo's target framework and language-version policy. USE FOR: modern idiomatic C# code; language-version compatibility decisions; upgrading or reviewing C# feature usage across versions. DO NOT USE FOR: non-C# .NET languages such as F# or VB; analyzer-only or formatter-only setup with no language feature choice. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a C# or .NET repository; respects explicit `LangVersion` and target framework settings.",
       "path": "catalog/Tools/Modern-CSharp/skills/modern-csharp/",
-      "tokenCount": 1348
+      "tokenCount": 1375
     },
     {
       "name": "analyzing-dotnet-performance",
@@ -2631,10 +2674,28 @@
       "package": "Official-DotNet-MSBuild",
       "stack": "MSBuild",
       "lane": "Build Pipelines",
-      "description": "Detects MSBuild projects with conflicting OutputPath or IntermediateOutputPath. USE FOR: builds failing with 'Cannot create a file when that file already exists', 'The process cannot access the file because it is being used by another process', intermittent build failures that succeed on retry, missing outputs in multi-project builds, multi-targeting builds where project.assets.json conflicts. Diagnoses when multiple projects or TFMs write to the same bin/obj directories due to shared OutputPath, missing AppendTargetFrameworkToOutputPath, or extra global properties like PublishReadyToRun creating redundant evaluations. DO NOT USE FOR: file access errors unrelated to MSBuild (OS-level locking), single-project single-TFM builds, non-MSBuild build systems.",
+      "description": "Detects MSBuild projects with conflicting OutputPath or IntermediateOutputPath. USE FOR: builds failing with 'Cannot create a file when that file already exists', 'The process cannot access the file because it is being used by another process', intermittent build failures that succeed on retry, missing outputs in multi-project builds, multi-targeting builds where project.assets.json conflicts. Diagnoses when multiple projects or TFMs write to the same bin/obj directories due to shared OutputPath, missing AppendTargetFrameworkToOutputPath, or extra global properties like PublishReadyToRun creating redundant evaluations, or SetTargetFramework metadata on a ProjectReference to a single-targeting project. DO NOT USE FOR: file access errors unrelated to MSBuild (OS-level locking), single-project single-TFM builds, non-MSBuild build systems.",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/check-bin-obj-clash/",
-      "tokenCount": 4918,
+      "tokenCount": 5972,
+      "links": {
+        "repository": "https://github.com/dotnet/skills",
+        "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
+      }
+    },
+    {
+      "name": "copy-to-output-directory",
+      "title": "Choosing a CopyToOutputDirectory Mode",
+      "version": "0.1.0",
+      "category": "Core",
+      "type": "Tool",
+      "package": "Official-DotNet-MSBuild",
+      "stack": "MSBuild",
+      "lane": "Build Pipelines",
+      "description": "Choosing an MSBuild CopyToOutputDirectory / CopyToPublishDirectory mode: Never, PreserveNewest, Always, and IfDifferent (MSBuild 17.13+), plus $(SkipUnchangedFilesOnCopyAlways). USE FOR: removing the per-build Always copy perf hit; resetting output files mutated between builds. DO NOT USE FOR: general incremental-build diagnosis (use incremental-build); non-MSBuild build systems.",
+      "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
+      "path": "catalog/Tools/Official-DotNet-MSBuild/skills/copy-to-output-directory/",
+      "tokenCount": 1689,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -2811,10 +2872,10 @@
       "package": "Official-DotNet-MSBuild",
       "stack": "MSBuild",
       "lane": "Build Pipelines",
-      "description": "MSBuild property definition patterns: conditional defaults, composition/concatenation, path normalization, trailing slash handling, TFM detection helpers, and property evaluation order. USE FOR: diagnosing and fixing MSBuild property definition issues in .props or .csproj files, reviewing and fixing shared property configuration anti-patterns, fixing DefineConstants or NoWarn being overwritten instead of appended, fixing unconditional property assignments that prevent project-level overrides, fixing unquoted conditions that fail when properties are empty, fixing hardcoded paths that break cross-platform builds, setting property defaults that can be overridden, understanding property evaluation order and last-write-wins semantics. DO NOT USE FOR: props vs targets placement (use directory-build-organization), item operations (use item-management), target structure (use target-authoring), general anti-patterns (use msbuild-antipatterns), non-MSBuild build systems.",
+      "description": "MSBuild property definition patterns: conditional defaults, composition/concatenation, path normalization, trailing-slash handling, TFM detection helpers, and evaluation order. USE FOR: diagnosing and fixing property definition issues and shared-property anti-patterns in .props/.csproj; DefineConstants or NoWarn overwritten instead of appended; unconditional assignments that block project-level overrides; unquoted conditions that fail on empty properties; hardcoded paths that break cross-platform builds; setting overridable defaults; property evaluation order and last-write-wins semantics. DO NOT USE FOR: props vs targets placement (use directory-build-organization), item operations (use item-management), target structure (use target-authoring), general anti-patterns (use msbuild-antipatterns), non-MSBuild build systems.",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/property-patterns/",
-      "tokenCount": 1618,
+      "tokenCount": 1599,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -2847,10 +2908,10 @@
       "package": "Official-DotNet-MSBuild",
       "stack": "MSBuild",
       "lane": "Build Pipelines",
-      "description": "Canonical patterns for writing custom MSBuild targets. USE FOR: diagnosing and fixing custom target authoring anti-patterns, reviewing MSBuild target definitions for correctness, diagnosing broken SDK target chains across files (e.g., Directory.Build.targets silently redefining SDK targets), fixing targets that replace CompileDependsOn instead of extending it with $(CompileDependsOn), fixing query targets that return stale results due to Outputs vs Returns misuse, fixing missing Inputs/Outputs causing unnecessary rebuilds, fixing missing FileWrites registration. Covers DependsOnTargets vs BeforeTargets vs AfterTargets, the Build\u2192CoreBuild three-level pattern, hooking into the build pipeline, the $(XxxDependsOn) chain-extension pattern. DO NOT USE FOR: incremental build tuning (use incremental-build), parallelization (use build-parallelism), general anti-patterns (use msbuild-antipatterns), non-MSBuild build systems.",
+      "description": "Canonical patterns for writing custom MSBuild targets. USE FOR: diagnosing and fixing custom target authoring anti-patterns; broken SDK target chains across files (e.g., Directory.Build.targets silently redefining SDK targets); targets that replace CompileDependsOn instead of extending it with $(CompileDependsOn); query targets returning stale results from Outputs vs Returns misuse; missing Inputs/Outputs causing unnecessary rebuilds; missing FileWrites registration. Covers DependsOnTargets vs BeforeTargets vs AfterTargets, the Build\u2192CoreBuild three-level pattern, and the $(XxxDependsOn) chain-extension pattern. DO NOT USE FOR: incremental build tuning (use incremental-build), parallelization (use build-parallelism), general anti-patterns (use msbuild-antipatterns), non-MSBuild build systems.",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/target-authoring/",
-      "tokenCount": 1536,
+      "tokenCount": 1516,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -2985,7 +3046,7 @@
     {
       "name": "profiling",
       "title": ".NET Profiling",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "Metrics",
       "type": "Tool",
       "package": "Profiling",
@@ -3094,7 +3155,7 @@
       "description": "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. USE FOR: SonarQube, SonarCloud, or eslint-plugin-sonarjs setups; frontend code smells; cognitive complexity and deeper bug-risk rules. DO NOT USE FOR: lightweight base lint setups with no extra smell or complexity rules; teams that reject Sonar tooling. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with JS or TS frontend assets; local developer loops normally use `eslint-plugin-sonarjs`, while full SonarQube or SonarCloud analysis should follow the repo's existing scanner pipeline and documented licensing posture.",
       "path": "catalog/Tools/SonarJS/skills/sonarjs/",
-      "tokenCount": 1321
+      "tokenCount": 1416
     },
     {
       "name": "stylecop-analyzers",

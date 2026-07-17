@@ -446,7 +446,7 @@ def fetch_github_release(watch: dict[str, Any], token: str | None) -> dict[str, 
     include_prereleases = bool(watch.get("include_prereleases", False))
     match_tag_regex = watch.get("match_tag_regex")
     exclude_tag_regex = watch.get("exclude_tag_regex")
-    selected = None
+    candidates: list[dict[str, Any]] = []
     for release in releases:
         if release.get("draft"):
             continue
@@ -457,11 +457,23 @@ def fetch_github_release(watch: dict[str, Any], token: str | None) -> dict[str, 
             continue
         if exclude_tag_regex and re.search(exclude_tag_regex, tag_name):
             continue
-        selected = release
-        break
+        candidates.append(release)
 
-    if selected is None:
+    if not candidates:
         raise RuntimeError(f"No matching release found for {watch['owner']}/{watch['repo']}")
+
+    # GitHub's releases endpoint is ordered by creation time, which can put a
+    # servicing release from an older support line ahead of a newer release
+    # that was published later. Track the newest published matching release so
+    # watches do not move backwards when repositories publish several lines.
+    selected = max(
+        candidates,
+        key=lambda release: (
+            release.get("published_at") or "",
+            release.get("created_at") or "",
+            release.get("id") or 0,
+        ),
+    )
 
     return {
         "kind": "github_release",

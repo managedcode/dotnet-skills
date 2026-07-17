@@ -95,6 +95,48 @@ class UpstreamWatchIssueTests(unittest.TestCase):
         self.assertTrue(UPSTREAM_WATCH.is_transient_fetch_error("curl: (28) Operation timed out"))
         self.assertFalse(UPSTREAM_WATCH.is_transient_fetch_error("curl: (22) The requested URL returned error: 404"))
 
+    def test_fetch_github_release_uses_latest_published_matching_release(self) -> None:
+        releases = [
+            {
+                "id": 8,
+                "tag_name": "v8.0.29",
+                "published_at": "2026-07-14T22:35:59Z",
+                "created_at": "2026-07-15T02:00:00Z",
+                "html_url": "https://example.com/v8.0.29",
+                "draft": False,
+                "prerelease": False,
+            },
+            {
+                "id": 10,
+                "tag_name": "v10.0.10",
+                "published_at": "2026-07-15T00:37:49Z",
+                "created_at": "2026-07-15T01:00:00Z",
+                "html_url": "https://example.com/v10.0.10",
+                "draft": False,
+                "prerelease": False,
+            },
+            {
+                "id": 11,
+                "tag_name": "v11.0.0-preview.4",
+                "published_at": "2026-07-16T00:00:00Z",
+                "created_at": "2026-07-16T00:00:00Z",
+                "html_url": "https://example.com/v11.0.0-preview.4",
+                "draft": False,
+                "prerelease": True,
+            },
+        ]
+        watch = {
+            "id": "dotnet-release",
+            "owner": "dotnet",
+            "repo": "runtime",
+        }
+
+        with mock.patch.object(UPSTREAM_WATCH, "gh_api", return_value=releases):
+            snapshot = UPSTREAM_WATCH.fetch_github_release(watch, token=None)
+
+        self.assertEqual(snapshot["value"], "v10.0.10")
+        self.assertEqual(snapshot["source_url"], "https://example.com/v10.0.10")
+
     def test_rotate_issue_group_batches_multiple_watch_changes_into_one_issue_write(self) -> None:
         watch_index = self.build_watch_index(3)
         pending_watches = self.build_pending_watches(3)

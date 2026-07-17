@@ -45,8 +45,8 @@ compatibility: "Requires a .NET repository with frontend assets managed through 
 
 ## Current Upstream Notes
 
-- Biome CLI `2.5.3` fixes a CSS Modules parser panic at end-of-file, Svelte `noUnusedVariables` false positives, a language-server scanner deadlock, Astro shorthand parsing, and unsafe optional-chaining gaps in TypeScript assertion expressions.
-- Re-run the repo's existing `biome check` command after upgrading. Remove local suppressions only when the affected Svelte, Astro, CSS Modules, or TypeScript cases are covered by the repository's own fixtures.
+- Biome CLI `2.5.4` fixes an infinite `biome check --write --unsafe` loop in the `noCommentText` JSX fix, comment movement during on-type formatting, Astro/Svelte/Vue label interpolation, stale Unix daemon sockets, and curried test-call wrapping.
+- Re-run the repo's existing `biome check` command after upgrading. Remove local suppressions only when the affected JSX, Astro, Svelte, Vue, or formatter cases are covered by the repository's own fixtures.
 - The watched Biome release is `@biomejs/js-api@6.0.0`, not a core CLI-only release. It adds `spanInBytesToSpanInCodeUnits` for converting Biome UTF-8 byte spans to JavaScript UTF-16 code unit spans.
 - Use that helper when custom JavaScript tooling slices source text from Biome diagnostics, especially with non-ASCII content. Normal `.NET` repos that only run the Biome CLI usually need no config change for this release.
 - Recent Biome changes also continue expanding CSS/SCSS, HTML accessibility, import sorting, watch mode, and upgrade-command surfaces; verify actual CLI ownership before replacing ESLint or Stylelint.

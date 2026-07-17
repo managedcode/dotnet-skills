@@ -4,8 +4,8 @@ Use this reference when official first-party Aspire integrations do not cover th
 
 Last verified against:
 
-- `CommunityToolkit/Aspire` release `v13.4.0` published on `2026-06-02`
-- the current repository README package index and Microsoft Learn Community Toolkit pages
+- `CommunityToolkit/Aspire` 13.4 line and repository README package index, verified on `2026-07-17`
+- Microsoft Learn Community Toolkit pages
 
 ## Table of Contents
 
@@ -41,6 +41,7 @@ Do not reach for it simply because it exists. First-party Aspire remains the def
 - you need community-maintained integrations such as Meilisearch, MinIO, RavenDB, SurrealDB, KurrentDB, LavinMQ, or Zitadel
 - you need extension packages around existing first-party resources, such as Redis, PostgreSQL, SQL Server, MySQL, MongoDB, Keycloak, Elasticsearch, or OpenTelemetry Collector support
 - you need newer 13.4 toolkit additions such as DuckDB hosting/client support, the bacon hosting integration, or analyzer support around Aspire integration usage
+- you need local Kubernetes cluster resources through `CommunityToolkit.Aspire.Hosting.Kind` or `CommunityToolkit.Aspire.Hosting.K3s`
 
 ## Package families
 
@@ -115,6 +116,13 @@ These extend or deepen the official resource story:
 - `CommunityToolkit.Aspire.Hosting.Flyway`
 
 Choose these when first-party Aspire gets you most of the way there, but the real missing piece is a dev tool, extension, or advanced integration surface.
+
+### Local Kubernetes clusters
+
+- `CommunityToolkit.Aspire.Hosting.Kind` can model an ephemeral or persistent Kind cluster as an AppHost resource, inject kubeconfig into dependents, deploy Helm charts, and use Kind as an `aspire publish` / `aspire deploy` compute environment.
+- `CommunityToolkit.Aspire.Hosting.K3s` can model a local K3s cluster with service endpoints, Helm/manifests, and lifecycle-aware health checks.
+
+Use these only when local Kubernetes is the actual development or deployment target. Keep ordinary local dependencies as normal Aspire resources, and prefer the official `Aspire.Hosting.Kubernetes` surface for manifest generation where the toolkit integration composes with it.
 
 ### Dev-time utilities and diagnostics
 

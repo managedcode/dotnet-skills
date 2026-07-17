@@ -56,9 +56,10 @@ flowchart LR
 - `Microsoft.Extensions.DataIngestion` gives you the document-side RAG pipeline: `IngestionDocument`, document readers like MarkItDown/Markdig, document processors such as `ImageAlternativeTextEnricher`, chunkers, chunk processors, `VectorStoreWriter<T>`, and `IngestionPipeline<T>` for end-to-end composition.
 - `IngestionPipeline<T>.ProcessAsync` is partial-success oriented. Handle `IAsyncEnumerable<IngestionResult>` deliberately instead of assuming one failed document should automatically crash the whole ingestion run.
 - `Microsoft.Extensions.AI.Evaluation.*` gives you quality, NLP, safety, caching, and reporting layers for regression checks and CI gates.
-- In `dotnet/extensions` v10.7.0, `Microsoft.Extensions.AI.OpenAI` moves to OpenAI 2.11.0, `ToolJson.AdditionalProperties` correctly preserves sub-schema objects, and `HostedFileContent.SizeInBytes` / `CreatedAt` are stable. Remove any local workaround that normalized old `ToolApprovalResponseContent.InformationalOnly` history only after checking serialized approval sessions.
+- In `dotnet/extensions` `v10.8.0`, `Microsoft.Extensions.AI.OpenAI` moves to OpenAI 2.12.0, speech-to-text auto-detects audio format, and `ImageGeneratingChatClient` stops duplicating preceding content or dropping following content. Re-run multimodal and speech fixtures before removing local workarounds.
+- `AIFunctionNameAttribute`, `AIParameterNameAttribute`, and `ToolApprovalRequestContent.RequiresConfirmation` are new experimental `MEAI001` APIs. Opt in deliberately and keep approval decisions at the side-effect boundary.
 - The official `.NET AI` docs now make MCP, assistants, local models, templates, and text-to-image part of the same app-level story. Use `mcp` when the protocol itself becomes the design problem; stay here when you still mostly need app composition around `IChatClient` and friends.
-- `Microsoft Agent Framework` builds on these abstractions. Use it when you need autonomous orchestration, threads, workflows, hosting, or multi-agent collaboration instead of just model composition.
+- The current `.NET AI` ecosystem guidance separates direct MEAI composition, MCP interoperability, a prebuilt Copilot SDK harness, and Microsoft Agent Framework orchestration. Use `Microsoft Agent Framework` when you need autonomous orchestration, threads, workflows, hosting, or multi-agent collaboration instead of just model composition.
 
 ## Decision Cheatsheet
 

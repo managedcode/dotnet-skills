@@ -55,8 +55,8 @@ compatibility: "Requires a C# or .NET repository; respects explicit `LangVersion
 
 ## Current Upstream Notes
 
-- `.NET runtime` `v9.0.17` is servicing. It should not by itself justify language-feature rewrites.
-- `.NET SDK` `v8.0.422` is an 8.0 servicing SDK. Do not use C# 13 or C# 14 syntax in a repo pinned to that line unless the project explicitly configures a compatible newer compiler/toolset.
+- `.NET runtime` `v10.0.10` is servicing. It should not by itself justify language-feature rewrites.
+- `.NET SDK` `v10.0.302` enables file-based app `#:include` / `#:exclude` without feature flags. `.NET SDK 8.0.423` remains an 8.0 servicing SDK; do not use C# 13 or C# 14 syntax in a repo pinned to that line unless the project explicitly configures a compatible newer compiler/toolset.
 
 ## Bootstrap When Missing
 

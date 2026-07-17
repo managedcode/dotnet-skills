@@ -53,7 +53,7 @@ compatibility: "Requires a worker, hosted service, or background-processing scen
 
 ## Current Upstream Notes
 
-- `.NET runtime` `v9.0.17` is servicing. For workers, rerun cancellation, graceful shutdown, WebSocket/HTTP client, and long-running loop checks after upgrading packages rather than changing architecture by default.
+- `.NET runtime` `v10.0.10` is servicing. For workers, rerun cancellation, graceful shutdown, long-running GC/pinning, EventPipe diagnostics, NativeAOT, and platform-specific filesystem/drive checks after upgrading rather than changing architecture by default.
 - Use the refreshed Worker Services and hosted-service Learn pages for exact current hosting and health-check APIs when adding new worker entry points.
 
 ## Basic BackgroundService Pattern

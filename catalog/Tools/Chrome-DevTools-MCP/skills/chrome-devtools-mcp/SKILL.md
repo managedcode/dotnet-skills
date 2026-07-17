@@ -43,7 +43,8 @@ compatibility: "Requires an MCP-capable .NET agent/app or repo with a browser-de
 
 ## Current Upstream Notes
 
-- Chrome DevTools MCP `v1.2.0` adds memory debugging tools, a `close_heapsnapshot` tool, extension service worker logs, allowed/blocked URL pattern options, multiple third-party developer-tool providers, and experimental TOON structured-content output.
+- Chrome DevTools MCP `v1.6.0` adds heap-snapshot aggregate filters and object-count/total-size details, `--allow-unrestricted-paths`, experimental GCF-encoded responses, and Lighthouse 13.4.0.
+- The same release fixes page-id reuse across reconnects, snapshot element resolution, first-page pagination, selected-page fallback behavior, held modifier cleanup, and daemon startup races. Reproduce browser-state bugs after upgrading before adding client-side retries or page-id workarounds.
 - Use the memory tools only when heap snapshots are the actual debugging need; close snapshots when finished so the browser session does not keep unnecessary memory pressure.
 - For sensitive or scoped browser automation, prefer `allowedUrlPattern` / `blockedUrlPattern` over relying only on prompt instructions.
 - When enabling category extensions, prompt the user for the category instead of silently broadening the tool surface.
@@ -106,6 +107,7 @@ codex mcp add chrome-devtools -- npx chrome-devtools-mcp@latest
 - `--no-usage-statistics`: opt out of usage collection
 - `--no-performance-crux`: stop sending performance trace URLs to CrUX
 - `--acceptInsecureCerts`: only when the target environment uses self-signed or expired certs
+- `--allow-unrestricted-paths`: opt out of filesystem path restrictions only for a trusted local workflow that genuinely needs arbitrary path access
 - `--logFile <path>`: capture debug logs for bug reports
 - `--experimentalScreencast`: only when ffmpeg is available and you need video capture
 

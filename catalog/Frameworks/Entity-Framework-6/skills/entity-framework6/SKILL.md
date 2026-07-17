@@ -48,7 +48,7 @@ compatibility: "Requires EF6 or a transition plan from EF6 to EF Core or modern 
 ## Current Upstream Notes
 
 - The current EF Core vs EF6 comparison page keeps the migration decision separate from runtime modernization. EF6 can remain the right ORM when EDMX, ObjectContext, or complex legacy mappings dominate the risk.
-- EF Core `v9.0.17` servicing does not change EF6 guidance by itself; only move an EF6 codebase when the project has a bounded migration slice and database-backed equivalence tests.
+- EF Core `v10.0.10` servicing does not change EF6 guidance by itself; only move an EF6 codebase when the project has a bounded migration slice and database-backed equivalence tests.
 
 ```mermaid
 flowchart LR
