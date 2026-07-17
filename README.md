@@ -13,6 +13,20 @@ This catalog fixes that. A growing catalog covering the entire .NET ecosystem—
 
 **[Browse the complete catalog on skills.managed-code.com →](https://skills.managed-code.com/skills/)**
 
+## Interactive Control Center
+
+Run `dotnet skills` to open the full-screen control center for catalog browsing, project-aware recommendations, installation, updates, and agent management.
+
+![dotnet skills interactive control center home screen](https://raw.githubusercontent.com/managedcode/dotnet-skills/main/docs/images/cli/control-center-home.png)
+
+Explore the catalog as `Collection -> Lane -> Skill`, with installed coverage, token weight, and an install action kept visible while you browse.
+
+![dotnet skills collection browser with an expanded collection hierarchy](https://raw.githubusercontent.com/managedcode/dotnet-skills/main/docs/images/cli/collection-browser.png)
+
+Use the analysis surface to compare the heaviest skills, collection sizes, package signals, and the catalog's token distribution before installing.
+
+![dotnet skills catalog analysis with token and collection charts](https://raw.githubusercontent.com/managedcode/dotnet-skills/main/docs/images/cli/catalog-analysis.png)
+
 ## Why This Matters
 
 - **No more outdated patterns.** Skills are maintained by the community and track official Microsoft documentation.
