@@ -39,16 +39,7 @@
     {
       "source": "https://github.com/managedcode/MCAF",
       "skills": [
-        "mcaf",
-        "mcaf-agile-delivery",
-        "mcaf-devex",
-        "mcaf-documentation",
-        "mcaf-feature-spec",
-        "mcaf-human-review-planning",
-        "mcaf-ml-ai-delivery",
-        "mcaf-nfr",
-        "mcaf-source-control",
-        "mcaf-ui-ux"
+        "mcaf"
       ]
     }
   ],
@@ -56,16 +47,7 @@
     {
       "source": "https://mcaf.managed-code.com/",
       "skills": [
-        "mcaf",
-        "mcaf-agile-delivery",
-        "mcaf-devex",
-        "mcaf-documentation",
-        "mcaf-feature-spec",
-        "mcaf-human-review-planning",
-        "mcaf-ml-ai-delivery",
-        "mcaf-nfr",
-        "mcaf-source-control",
-        "mcaf-ui-ux"
+        "mcaf"
       ]
     }
   ]

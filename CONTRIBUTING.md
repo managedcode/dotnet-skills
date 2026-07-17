@@ -480,6 +480,26 @@ python3 scripts/upstream_watch.py --validate-config
 python3 scripts/upstream_watch.py --dry-run
 ```
 
+When skill behavior or routing changed, also inspect and validate the local
+SkillOpt dynamic-evaluation lane:
+
+```bash
+python3 scripts/skillopt_catalog.py coverage
+python3 scripts/skillopt_catalog.py validate
+```
+
+Run the covered model-backed suites only when the change needs behavioral
+evidence and the chosen backend is available. The runner is a dry-run and does
+not edit catalog skills:
+
+```bash
+.venv-skillopt/bin/python scripts/skillopt_catalog.py run --covered --backend codex --progress
+```
+
+See [`docs/skillopt-catalog-evaluation.md`](docs/skillopt-catalog-evaluation.md)
+for task-set authoring, coverage semantics, installation, data boundaries, and
+cost controls.
+
 If you changed the watch config:
 
 ```bash

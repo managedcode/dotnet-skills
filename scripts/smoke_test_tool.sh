@@ -105,6 +105,20 @@ grep -q "aspire" "$skills_path/available-list.txt"
 
 dotnet skills bundle list --bundled > "$skills_path/bundle-list.txt"
 grep -q "quality" "$skills_path/bundle-list.txt"
+if grep -Eq '(^|[[:space:]])mcaf([[:space:]]|$)' "$skills_path/bundle-list.txt"; then
+  echo "MCAF must be a direct skill, not a bundle." >&2
+  exit 1
+fi
+
+dotnet skills install mcaf --bundled --target "$skills_path"
+test -f "$skills_path/mcaf/SKILL.md"
+dotnet skills remove mcaf --bundled --target "$skills_path"
+test ! -e "$skills_path/mcaf"
+
+if dotnet skills install bundle mcaf --bundled --target "$skills_path" >/dev/null 2>&1; then
+  echo "The removed MCAF bundle unexpectedly installed successfully." >&2
+  exit 1
+fi
 
 dotnet agents list --agent claude --scope project --project-dir "$workspace_path" > "$skills_path/agents-list.txt"
 grep -q "router" "$skills_path/agents-list.txt"

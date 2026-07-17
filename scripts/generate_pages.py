@@ -2700,7 +2700,7 @@ def main() -> int:
         path="bundles/",
         title=".NET Bundles | dotnet-skills",
         description="Browse one-command .NET bundles. Bundles are focused grouped installs built from the collection taxonomy for quality, testing, architecture, Orleans, and more.",
-        keywords=["dotnet bundles", "install bundle quality", "install bundle orleans", "mcaf bundle", "dotnet-skills bundles"],
+        keywords=["dotnet bundles", "install bundle quality", "install bundle orleans", "mcaf skill", "dotnet-skills bundles"],
         body_class="page-bundles",
         main_content=bundles_body,
         json_ld=build_collection_json_ld(

@@ -42,6 +42,14 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "architecture", "Architecture", "Architecture");
         AssertSkill(catalog, "mcaf", "Governance & Delivery", "Governance");
         AssertSkill(catalog, "code-review", "Governance & Delivery", "Review");
+        Assert.Equal(
+            ["mcaf"],
+            catalog.Skills
+                .Where(entry => entry.Name.Equals("mcaf", StringComparison.Ordinal)
+                                || entry.Name.StartsWith("mcaf-", StringComparison.Ordinal))
+                .Select(entry => entry.Name)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
         var aspire = catalog.Skills.Single(entry => string.Equals(entry.Name, "aspire", StringComparison.Ordinal));
         Assert.True(aspire.TokenCount > 0);
     }
@@ -55,7 +63,6 @@ public sealed class CatalogOrganizationTests
         var frontendQuality = catalog.Packages.Single(package => string.Equals(package.Name, "frontend-quality", StringComparison.Ordinal));
         var testingBase = catalog.Packages.Single(package => string.Equals(package.Name, "testing-base", StringComparison.Ordinal));
         var testingMigrations = catalog.Packages.Single(package => string.Equals(package.Name, "testing-migrations", StringComparison.Ordinal));
-        var mcaf = catalog.Packages.Single(package => string.Equals(package.Name, "mcaf", StringComparison.Ordinal));
         var dotnetBase = catalog.Packages.Single(package => string.Equals(package.Name, "foundations", StringComparison.Ordinal));
 
         Assert.Equal(".NET Quality", dotnetQuality.Stack);
@@ -85,7 +92,7 @@ public sealed class CatalogOrganizationTests
 
         Assert.True(CatalogOrganization.IsPrimaryBundle(dotnetQuality));
         Assert.Equal("Upgrades & Migration", testingMigrations.Stack);
-        Assert.Equal("Governance & Delivery", mcaf.Stack);
+        Assert.DoesNotContain(catalog.Packages, package => string.Equals(package.Name, "mcaf", StringComparison.Ordinal));
         var orleans = catalog.Packages.Single(package => string.Equals(package.Name, "orleans", StringComparison.Ordinal));
         Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "worker-services", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "aspire", StringComparison.OrdinalIgnoreCase));

@@ -56,25 +56,6 @@ public sealed class SkillCatalogPackageTests
         WriteSkill(tempDirectory.Path, "Frameworks", "Aspire", "aspire", ".NET Aspire");
         WriteSkillManifest(tempDirectory.Path, "Frameworks", "Aspire", "aspire", """{"version":"1.0.0","category":"Cloud","package_prefix":"Aspire"}""");
 
-        WritePackageManifest(tempDirectory.Path, "Platform", "MCAF", """{"name":"MCAF","title":"MCAF","description":"","links":{}}""");
-        foreach (var skillName in new[]
-                 {
-                     "mcaf",
-                     "mcaf-agile-delivery",
-                     "mcaf-devex",
-                     "mcaf-documentation",
-                     "mcaf-feature-spec",
-                     "mcaf-human-review-planning",
-                     "mcaf-ml-ai-delivery",
-                     "mcaf-nfr",
-                     "mcaf-source-control",
-                     "mcaf-ui-ux",
-                 })
-        {
-            WriteSkill(tempDirectory.Path, "Platform", "MCAF", skillName, skillName);
-            WriteSkillManifest(tempDirectory.Path, "Platform", "MCAF", skillName, """{"version":"1.0.0","category":"Architecture"}""");
-        }
-
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Orleans", """{"name":"Orleans","title":"Orleans","description":"","links":{}}""");
         WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "orleans", "Orleans");
         WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "orleans", """{"version":"1.0.0","category":"Distributed"}""");
@@ -214,25 +195,6 @@ public sealed class SkillCatalogPackageTests
             File.WriteAllText(Path.Combine(targetDirectory.FullName, "manifest.json"), json);
         }
 
-        WritePackageManifest(tempDirectory.Path, "Platform", "MCAF", """{"name":"MCAF","title":"MCAF","description":"","links":{}}""");
-        foreach (var skillName in new[]
-                 {
-                     "mcaf",
-                     "mcaf-agile-delivery",
-                     "mcaf-devex",
-                     "mcaf-documentation",
-                     "mcaf-feature-spec",
-                     "mcaf-human-review-planning",
-                     "mcaf-ml-ai-delivery",
-                     "mcaf-nfr",
-                     "mcaf-source-control",
-                     "mcaf-ui-ux",
-                 })
-        {
-            WriteSkill(tempDirectory.Path, "Platform", "MCAF", skillName, skillName);
-            WriteSkillManifest(tempDirectory.Path, "Platform", "MCAF", skillName, """{"version":"1.0.0","category":"Architecture"}""");
-        }
-
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Orleans", """{"name":"Orleans","title":"Orleans","description":"","links":{}}""");
         WriteSkill(tempDirectory.Path, "Frameworks", "Orleans", "orleans", "Orleans");
         WriteSkillManifest(tempDirectory.Path, "Frameworks", "Orleans", "orleans", """{"version":"1.0.0","category":"Distributed"}""");
@@ -319,25 +281,6 @@ public sealed class SkillCatalogPackageTests
         {
             var targetDirectory = Directory.CreateDirectory(Path.Combine(root, "catalog", type, package, "skills", skillName));
             File.WriteAllText(Path.Combine(targetDirectory.FullName, "manifest.json"), json);
-        }
-
-        WritePackageManifest(tempDirectory.Path, "Platform", "MCAF", """{"name":"MCAF","title":"MCAF","description":"","links":{}}""");
-        foreach (var skillName in new[]
-                 {
-                     "mcaf",
-                     "mcaf-agile-delivery",
-                     "mcaf-devex",
-                     "mcaf-documentation",
-                     "mcaf-feature-spec",
-                     "mcaf-human-review-planning",
-                     "mcaf-ml-ai-delivery",
-                     "mcaf-nfr",
-                     "mcaf-source-control",
-                     "mcaf-ui-ux",
-                 })
-        {
-            WriteSkill(tempDirectory.Path, "Platform", "MCAF", skillName, skillName);
-            WriteSkillManifest(tempDirectory.Path, "Platform", "MCAF", skillName, """{"version":"1.0.0","category":"Architecture"}""");
         }
 
         WritePackageManifest(tempDirectory.Path, "Frameworks", "Orleans", """{"name":"Orleans","title":"Orleans","description":"","links":{}}""");

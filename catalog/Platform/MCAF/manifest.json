@@ -1,6 +1,9 @@
 {
   "name": "MCAF",
   "title": "MCAF",
-  "description": "",
-  "links": {}
+  "description": "Minimal MCAF repository governance for .NET projects.",
+  "links": {
+    "repository": "https://github.com/managedcode/MCAF",
+    "docs": "https://mcaf.managed-code.com/"
+  }
 }

@@ -40,7 +40,7 @@ dotnet skills recommend                     # suggest skills from local .csproj 
 dotnet skills install --auto                # install skills for NuGet packages detected in local .csproj files
 dotnet skills install --auto --prune        # remove stale auto-managed skills that no longer match the project
 dotnet skills install bundle quality        # install a focused .NET quality bundle
-dotnet skills install bundle mcaf           # install the MCAF governance bundle
+dotnet skills install mcaf                  # install the opt-in MCAF governance skill
 dotnet skills install bundle orleans        # install the Orleans workflow bundle
 dotnet skills install aspire orleans        # install skills
 dotnet skills catalog tokens --catalog-root . # export per-skill token counts as JSON
@@ -68,7 +68,7 @@ agents install router --auto                # same agent install flow without th
 | `dotnet skills install --auto` | Inspect local `*.csproj` files, detect NuGet packages and strong project signals, and install matching skills automatically |
 | `dotnet skills install --auto --prune` | Remove stale auto-managed skills that no longer match the current project's NuGet packages or app-model signals |
 | `dotnet skills install <skill...>` | Install one or more skills |
-| `dotnet skills install bundle <bundle...>` | Install one or more focused bundles such as `quality`, `frontend-quality`, `mcaf`, or `orleans` |
+| `dotnet skills install bundle <bundle...>` | Install one or more focused bundles such as `quality`, `frontend-quality`, or `orleans` |
 | `dotnet skills catalog tokens --catalog-root .` | Export the tokenizer model name plus per-skill token counts as JSON |
 | `dotnet skills remove <skill...>` | Remove one or more installed catalog skills by skill id or alias |
 | `dotnet skills remove bundle <bundle...>` | Remove every installed skill mapped to one or more focused bundles |
@@ -94,7 +94,7 @@ The interactive shell behind bare `dotnet skills` is the main control center: it
 
 The [public catalog](https://skills.managed-code.com/) is the canonical browse surface for `Packages`, `Bundles`, `Collections`, `Skills`, `Agents`, and `About`. It uses the same shared navigation manifest and collection taxonomy as the CLI.
 
-`dotnet skills bundle list` shows the ready-made focused bundles. Bundle installs are bulk shortcuts for related skill sets, so `dotnet skills install bundle quality`, `dotnet skills install bundle frontend-quality`, `dotnet skills install bundle mcaf`, or `dotnet skills install bundle orleans` install every skill mapped to that focused bundle in one pass.
+`dotnet skills bundle list` shows the ready-made focused bundles. Bundle installs are bulk shortcuts for related skill sets, so `dotnet skills install bundle quality`, `dotnet skills install bundle frontend-quality`, or `dotnet skills install bundle orleans` install every skill mapped to that focused bundle in one pass. MCAF is one opt-in governance skill and installs directly with `dotnet skills install mcaf`.
 
 `dotnet skills install --auto` inspects local `*.csproj` files, detects NuGet packages plus strong SDK and project-property signals, and installs the matching skills for that project automatically. Add `dotnet skills install --auto --prune` when you also want to remove stale auto-managed skills that no longer match the current project. Protected diagnostic skills and `graphify-dotnet` are not pruned.
 
@@ -130,7 +130,6 @@ Public bundle installs use `bundle`, not `package`. The focused bundle surface i
 - `testing-tunit`
 - `testing-migrations`
 - `runtime-upgrades`
-- `mcaf`
 - `orleans`
 
 Collections are intentionally split so installs stay explicit instead of collapsing into one overloaded `.NET` bucket:

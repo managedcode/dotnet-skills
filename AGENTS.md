@@ -173,15 +173,13 @@ Do not record:
 List only the skills this repository actually uses for its own maintenance workflows.
 
 - `skill-creator` - when creating or restructuring skills in `catalog/`
-- `mcaf-solution-governance` - when changing `AGENTS.md`, repository governance, or maintenance policy
-- `mcaf-documentation` - when changing durable repo docs such as `README.md`, `CONTRIBUTING.md`, or policy docs
-- `mcaf-ci-cd` - when changing GitHub Actions, release flow, or automation policy
-- `mcaf-dotnet` - when changing the publishable `.NET` tool
-- `mcaf-testing` - when adding or updating automated verification for the tool or automation
+- `mcaf` - when adopting MCAF or changing `AGENTS.md`, repository governance, or maintenance policy
+- `dotnet` - when changing the publishable `.NET` tool
+- `quality-ci` - when changing GitHub Actions, release flow, automation policy, or automated verification
 
 If work touches `.NET` code in this repository:
 
-- `mcaf-dotnet` is the entry skill and routes to more specialized `.NET` guidance.
+- `dotnet` is the entry skill and routes to more specialized `.NET` guidance.
 - Keep the executable surface limited to the catalog installer tool; repo automation does not need to be moved into `.NET`.
 - Recheck `build`, `pack`, smoke-test, and publish workflows when tool behavior changes.
 - Do not rely on smoke tests alone for tool changes; keep a real automated `.NET` test project with focused unit or integration coverage for installer behavior, path resolution, command semantics, and recommendation logic when those areas change.

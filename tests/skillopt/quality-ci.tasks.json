@@ -1,0 +1,117 @@
+{
+  "format": "skillopt_sleep.tasks.v1",
+  "skill": "quality-ci",
+  "target_skill_path": "catalog/Tools/Quality-CI/skills/quality-ci/SKILL.md",
+  "reviewed": true,
+  "minimum_test_score": 1.0,
+  "tasks": [
+    {
+      "id": "quality-ci-train-mtp-baseline",
+      "project": "dotnet-skills-evals",
+      "intent": "Design a concrete quality baseline for a .NET 10 repository that uses Microsoft.Testing.Platform. Include exact format, analyzer/build, test, and coverage commands, identify the configuration owner for each gate, and finish with a Validation section.",
+      "reference_kind": "rule",
+      "judge": {
+        "kind": "rule",
+        "checks": [
+          { "op": "contains", "arg": "dotnet format" },
+          { "op": "contains", "arg": "TreatWarningsAsErrors" },
+          { "op": "contains", "arg": "coverlet" },
+          { "op": "section_present", "arg": "Validation" }
+        ]
+      },
+      "tags": ["quality-ci", "mtp"],
+      "split": "train",
+      "origin": "real"
+    },
+    {
+      "id": "quality-ci-train-analyzer-selection",
+      "project": "dotnet-skills-evals",
+      "intent": "A .NET team already uses SDK analyzers and asks whether to add StyleCopAnalyzers, Roslynator, and Meziantou.Analyzer. Recommend a non-overlapping setup, explain which distinct gap each selected tool owns, and give a local verification command.",
+      "reference_kind": "rule",
+      "judge": {
+        "kind": "rule",
+        "checks": [
+          { "op": "contains", "arg": "StyleCopAnalyzers" },
+          { "op": "contains", "arg": "Roslynator" },
+          { "op": "contains", "arg": "Meziantou.Analyzer" },
+          { "op": "contains", "arg": "dotnet build" }
+        ]
+      },
+      "tags": ["quality-ci", "analyzers"],
+      "split": "train",
+      "origin": "real"
+    },
+    {
+      "id": "quality-ci-val-vstest-coverage",
+      "project": "dotnet-skills-evals",
+      "intent": "Add coverage collection and a human-readable report to a VSTest-based .NET repository. Give the exact test and report commands, keep collection separate from report generation, and end with a Verification section.",
+      "reference_kind": "rule",
+      "judge": {
+        "kind": "rule",
+        "checks": [
+          { "op": "contains", "arg": "XPlat Code Coverage" },
+          { "op": "contains", "arg": "ReportGenerator" },
+          { "op": "contains", "arg": "dotnet test" },
+          { "op": "section_present", "arg": "Verification" }
+        ]
+      },
+      "tags": ["quality-ci", "vstest", "coverage"],
+      "split": "val",
+      "origin": "real"
+    },
+    {
+      "id": "quality-ci-val-mtp-coverage",
+      "project": "dotnet-skills-evals",
+      "intent": "Review a coverage proposal for a Microsoft.Testing.Platform test project. Replace VSTest-only assumptions with the correct MTP-oriented command, name the coverage driver, and explain how to verify the result.",
+      "reference_kind": "rule",
+      "judge": {
+        "kind": "rule",
+        "checks": [
+          { "op": "contains", "arg": "Microsoft.Testing.Platform" },
+          { "op": "contains", "arg": "coverlet" },
+          { "op": "contains", "arg": "dotnet test" },
+          { "op": "contains", "arg": "verify" }
+        ]
+      },
+      "tags": ["quality-ci", "mtp", "coverage"],
+      "split": "val",
+      "origin": "real"
+    },
+    {
+      "id": "quality-ci-test-formatter-ownership",
+      "project": "dotnet-skills-evals",
+      "intent": "A repository runs both CSharpier and dotnet format over the same C# formatting rules and gets conflicting diffs. Diagnose the ownership problem and give a concrete policy and verification command that avoids two formatters owning the same concern.",
+      "reference_kind": "rule",
+      "judge": {
+        "kind": "rule",
+        "checks": [
+          { "op": "contains", "arg": "CSharpier" },
+          { "op": "contains", "arg": "dotnet format" },
+          { "op": "contains", "arg": "owner" },
+          { "op": "contains", "arg": "verify" }
+        ]
+      },
+      "tags": ["quality-ci", "formatting"],
+      "split": "test",
+      "origin": "real"
+    },
+    {
+      "id": "quality-ci-test-advanced-gates",
+      "project": "dotnet-skills-evals",
+      "intent": "Propose an open-source-first advanced quality lane for a mature .NET library. Explain when mutation testing should run, name the suitable mutation tool, include CodeQL with its private-repository hosting caveat, and keep these gates separate from the fast pull-request baseline.",
+      "reference_kind": "rule",
+      "judge": {
+        "kind": "rule",
+        "checks": [
+          { "op": "contains", "arg": "Stryker" },
+          { "op": "contains", "arg": "schedule" },
+          { "op": "contains", "arg": "CodeQL" },
+          { "op": "contains", "arg": "private" }
+        ]
+      },
+      "tags": ["quality-ci", "mutation", "security"],
+      "split": "test",
+      "origin": "real"
+    }
+  ]
+}
