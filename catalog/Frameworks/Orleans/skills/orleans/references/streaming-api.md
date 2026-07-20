@@ -372,13 +372,16 @@ Existing stream systems (Kafka, Storm, Spark) are for uniform dataflow graphs. O
 
 Typical use: per-user streams with different processing logic per user, subscriptions changing dynamically.
 
-## Streams vs Broadcast vs Observers vs IAsyncEnumerable
+## Direct Calls vs Streams vs Broadcast vs Observers vs IAsyncEnumerable
 
-| Feature | Streams | Broadcast | Observers | IAsyncEnumerable |
-|---|---|---|---|---|
-| Persistence | Provider-dependent | No | No | No |
-| Delivery | At-least-once (varies) | At-most-once | Best-effort | Request-scoped |
-| Subscription | Implicit + explicit | Implicit only | Manual | N/A |
-| Pattern | Pub/sub | Fan-out | Push notify | Pull streaming |
-| Survives restart | Yes (with provider) | No | No | No |
-| Use case | Event pipelines | Announcements | Client updates | Paginated data |
+| Feature | Direct call | Streams | Broadcast | Observers | IAsyncEnumerable |
+|---|---|---|---|---|---|
+| Purpose | Command/query a known owner | Decoupled event flow | Loss-tolerant fan-out | Live callback to a connected subscriber | Progressive response to one caller |
+| Persistence | No message persistence | Provider-dependent | No | No | No |
+| Delivery | At-most-once by default; retries can duplicate | Provider-dependent | Best-effort | Best-effort for clients | Bound to the request |
+| Subscription | None | Implicit or explicit | Implicit | Manual and renewable | None |
+| Replay/history | No | Provider-dependent | No | No | No |
+| Lifetime | One request/response | Long-lived logical subscription | Active implicit subscriber mapping | Client/object reference lifetime | One enumeration/call |
+| Primary use | Typed result, completion, error | Dynamic pub/sub and queue-backed processing | Cache invalidation, latest-value hints, announcements | UI/client notifications | Large/progressive result sets with backpressure |
+
+Use a one-way request only as an advanced direct-call variant when the caller explicitly accepts no completion, error, result, or receipt guarantee. Do not treat one-way calls, broadcast channels, or observers as durable messaging.

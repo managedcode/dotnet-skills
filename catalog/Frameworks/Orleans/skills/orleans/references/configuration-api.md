@@ -353,6 +353,8 @@ Exclude grains from profiling: `[NoProfiling]` attribute.
 
 Preferred: use .NET `BackgroundService` or `IHostedService`. Register after `UseOrleans()`.
 
+Remember that hosted services run once per host process. Scaling to multiple silos multiplies the loop. Use a well-known grain identity, broker consumer group, or external lease when the operation needs one logical cluster-wide owner.
+
 ```csharp
 // BackgroundService approach
 public class GrainInitializer : BackgroundService
@@ -374,7 +376,7 @@ siloBuilder.AddStartupTask(async (IServiceProvider sp, CancellationToken ct) =>
 });
 ```
 
-Warning: exceptions from startup tasks stop the silo (fail-fast).
+Warning: exceptions from startup tasks stop the silo (fail-fast). Use them for deterministic lifecycle initialization/validation, not ordinary recurring work or transient remote calls. See [scheduling-and-services.md](scheduling-and-services.md) for the ownership decision.
 
 ## ADO.NET Configuration
 
@@ -544,7 +546,7 @@ public class MyTests
 - Use `[StatelessWorker]` for stateless operations
 - Initial `ReadStateAsync` happens automatically before `OnActivateAsync`
 - Call `WriteStateAsync()` after state changes
-- Use Polly for retry logic
+- Retry only idempotent operations with an explicit end-to-end policy; retries can produce duplicate delivery
 
 ## NuGet Packages Map
 
@@ -591,6 +593,24 @@ public class MyTests
 | `Microsoft.Orleans.Reminders.AdoNet` | SQL |
 | `Microsoft.Orleans.Reminders.Redis` | Redis |
 | `Microsoft.Orleans.Reminders.Cosmos` | Cosmos DB |
+
+### Durable Jobs (Experimental)
+
+| Package | Purpose |
+|---|---|
+| `Microsoft.Orleans.DurableJobs` | One-time persistent future delivery to target grains |
+| `Microsoft.Orleans.DurableJobs.AzureStorage` | Azure Blob-backed job journal/shards |
+
+The Orleans 10.2.1 packages are `10.2.1-alpha.1`. Pin them to the same release line as the rest of Orleans and review [scheduling-and-services.md](scheduling-and-services.md) before adoption.
+
+### Journaling (Experimental)
+
+| Package | Purpose |
+|---|---|
+| `Microsoft.Orleans.Journaling` | Operation-journaled durable collections, values, and state |
+| `Microsoft.Orleans.Journaling.AzureStorage` | Azure Blob journal provider |
+
+The Orleans 10.2.1 packages are `10.2.1-alpha.1`. This surface is separate from `Microsoft.Orleans.EventSourcing` and `JournaledGrain`.
 
 ### Grain Directory
 

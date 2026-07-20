@@ -1,6 +1,44 @@
-# Persistence, Event Sourcing, and Transactions API
+# Persistence, Databases, Journaling, Event Sourcing, and Transactions API
 
 Detailed state management API patterns from official Orleans documentation.
+
+## Contents
+
+- [State ownership and database boundary](#state-ownership-and-database-boundary)
+- [IPersistentState API](#ipersistentstate-api)
+- [Storage provider configuration](#storage-provider-configuration)
+- [Experimental Orleans.Journaling](#experimental-orleansjournaling)
+- [Event sourcing with JournaledGrain](#event-sourcing-with-journaledgrain)
+- [ACID transactions](#acid-transactions)
+
+## State Ownership and Database Boundary
+
+Use Orleans persistence to preserve state owned by a logical grain identity. The normal model is:
+
+1. Orleans activates the grain and loads its named state before application calls are processed.
+2. Grain code reads and mutates the in-memory state during serialized turns.
+3. Grain code explicitly calls `WriteStateAsync` when the new state must become durable.
+4. The storage provider persists an opaque state record keyed by grain identity and state name.
+
+This is an entity-state API, not a general database abstraction. Select it for bounded current state addressed by grain identity. Select an application database/repository or read model for:
+
+- joins, search, reports, arbitrary filters, or scans across many identities;
+- large/unbounded collections, time-series, files, and append-only history;
+- set-based updates and database-native constraints;
+- data shared with non-Orleans applications;
+- an existing external system of record.
+
+It is common to use both. Let the grain own command serialization, invariants, workflow position, idempotency keys, and a small current snapshot. Let a database own query projections, history, reporting rows, or large payloads. Define which side is authoritative for each field and how projections recover after failure.
+
+Do not:
+
+- query another grain's storage row instead of calling its contract;
+- mutate provider tables/containers behind an active grain;
+- assume that using an ADO.NET or Cosmos provider turns grain state into a supported application query model;
+- store an unbounded child collection in one grain because the provider can serialize it;
+- keep two writable copies without conflict/reconciliation rules.
+
+When external data is authoritative, keep only a cache plus its version/staleness metadata in the grain, or re-read the external repository at the consistency points required by the domain.
 
 ## IPersistentState API
 
@@ -134,6 +172,61 @@ public class MyStorage : IGrainStorage
     public Task ClearStateAsync<T>(string stateName, GrainId grainId, IGrainState<T> grainState) { }
 }
 ```
+
+## Experimental Orleans.Journaling
+
+`Microsoft.Orleans.Journaling` is a separate experimental persistence surface in Orleans 10.2. It records durable state operations in an ordered journal and replays them to recover durable collections and values. The `10.2.1` package is published as `10.2.1-alpha.1`, so require an explicit adoption decision and version pin.
+
+Use it when operation-journaled durable collections or completion state solve a concrete need. Available durable shapes include dictionary, list, queue, set, value, persistent state, and durable task completion source. Do not confuse it with `JournaledGrain<TState,TEvent>`:
+
+| Surface | Purpose | Entry model |
+|---|---|---|
+| `IPersistentState<T>` | Persist the current entity snapshot | Application writes the current state |
+| `Orleans.Journaling` | Persist/replay durable collection/value operations | Framework durable-operation codecs |
+| `JournaledGrain<TState,TEvent>` | Event-source domain state | Application-defined business events |
+
+Install and configure a journaling provider on the same Orleans version:
+
+```bash
+dotnet add package Microsoft.Orleans.Journaling --version 10.2.1-alpha.1
+dotnet add package Microsoft.Orleans.Journaling.AzureStorage --version 10.2.1-alpha.1
+```
+
+```csharp
+[JsonSerializable(typeof(string))]
+[JsonSerializable(typeof(int))]
+internal partial class JournalJsonContext : JsonSerializerContext;
+
+builder.UseOrleans(siloBuilder =>
+    siloBuilder
+        .AddAzureBlobJournalStorage()
+        .UseJsonJournalFormat(JournalJsonContext.Default));
+```
+
+Use durable keyed state from a `DurableGrain` and commit through `WriteStateAsync`:
+
+```csharp
+public sealed class CartGrain(
+    [FromKeyedServices("cart")] IDurableDictionary<string, int> items)
+    : DurableGrain, ICartGrain
+{
+    public async ValueTask SetQuantityAsync(string itemId, int quantity)
+    {
+        items[itemId] = quantity;
+        await WriteStateAsync();
+    }
+}
+```
+
+Orleans 10.2 uses JSON Lines for new journal writes by default. Existing records with format metadata remain readable; records without metadata are treated as legacy Orleans binary. Pin `JournaledStateManagerOptions.JournalFormatKey = "orleans-binary"` only when a staged compatibility plan requires continuing old-format writes.
+
+For trimming or Native AOT, register source-generated `System.Text.Json` metadata for every journaled key, value, and state type. Test replay, compaction/snapshot migration, provider failure, and version upgrade with production-like storage.
+
+Official package sources:
+
+- [Orleans.Journaling README for 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.Journaling/README.md)
+- [Azure Storage Journaling README for 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Azure/Orleans.Journaling.AzureStorage/README.md)
+- [Orleans 10.2.0 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.0)
 
 ## Event Sourcing with JournaledGrain
 

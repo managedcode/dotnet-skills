@@ -33,7 +33,7 @@ Use this reference when the main question is about running Orleans, wiring provi
 | Use immutable types | [Serialization of immutable types](https://learn.microsoft.com/dotnet/orleans/host/configuration-guide/serialization-immutability) | Immutable-type handling |
 | Configure serialization | [Configure serialization](https://learn.microsoft.com/dotnet/orleans/host/configuration-guide/serialization-configuration) | Serializer configuration switches |
 | Customize serializers | [Customize serialization](https://learn.microsoft.com/dotnet/orleans/host/configuration-guide/serialization-customization) | Custom serializers and codecs |
-| Run startup hooks | [Startup tasks](https://learn.microsoft.com/dotnet/orleans/host/configuration-guide/startup-tasks) | Startup task registration |
+| Run host-owned background work or startup hooks | [Background services and startup tasks](https://learn.microsoft.com/dotnet/orleans/host/configuration-guide/startup-tasks) | Prefer `BackgroundService`/`IHostedService`; use Orleans startup tasks only for lifecycle-specific fail-fast hooks |
 | Shut clusters down cleanly | [Graceful shutdown](https://learn.microsoft.com/dotnet/orleans/host/configuration-guide/shutting-down-orleans) | Drain and shutdown behavior |
 
 ## Observability
@@ -65,6 +65,7 @@ For `Orleans.Journaling`, JSON Lines is the default format for new writes in 10.
 ## Usage Guidance
 
 - Start here when the problem is cluster wiring, clients, provider registration, or operational readiness.
+- Use [scheduling-and-services.md](scheduling-and-services.md) when ownership is unclear between per-host services, per-silo grain services, per-grain reminders/timers, or one-time Durable Jobs.
 - Use [grains.md](grains.md) when the problem is inside a grain rather than in the hosting model.
 - Use [implementation.md](implementation.md) when you need runtime internals, messaging guarantees, or testing behavior.
 - Use [testing-patterns.md](testing-patterns.md) when the hosting question is specifically about mixing Orleans, Aspire, `WebApplicationFactory`, SignalR, or Playwright in integration tests.

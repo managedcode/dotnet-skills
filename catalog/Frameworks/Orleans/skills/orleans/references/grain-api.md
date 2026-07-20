@@ -449,15 +449,19 @@ var orleans = builder.AddOrleans("cluster")
 
 Inject `IReminderRegistry` instead of using `Grain` base class methods.
 
-### Timers vs Reminders Decision
+### Timers vs Reminders vs Durable Jobs Decision
 
 | Need | Use |
 |---|---|
 | High-frequency ticks (seconds) | Timer |
-| Must survive deactivation/restart | Reminder |
+| Recurring schedule must survive deactivation/restart | Reminder |
+| One-time future execution must survive deactivation/restart | Durable Job (experimental on Orleans 10.2) |
 | Activation-local periodic work | Timer |
 | Durable low-frequency wakeups | Reminder |
 | Should prevent deactivation | Timer with `KeepAlive = true` |
+| Must replay every occurrence missed during cluster downtime | Neither a plain reminder nor timer; persist due work or use an appropriate scheduler/workflow |
+
+Reminder definitions are durable, but individual missed ticks are not replayed. Durable Jobs execute at least once, so handlers must be idempotent. See [scheduling-and-services.md](scheduling-and-services.md) for the full ownership and failure model.
 
 ## Interceptors
 

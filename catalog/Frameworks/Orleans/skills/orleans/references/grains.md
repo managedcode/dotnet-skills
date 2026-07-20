@@ -19,6 +19,7 @@ Use this reference when the main question is inside grain design rather than hos
 | Need | Official Source | What It Covers |
 |---|---|---|
 | Choose timers vs reminders | [Timers and reminders](https://learn.microsoft.com/dotnet/orleans/grains/timers-and-reminders) | Activation-local timers versus durable reminders |
+| Schedule one-time future grain work | [Durable Jobs README for 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.DurableJobs/README.md) | Experimental at-least-once one-time scheduling, cancellation, retry, and shard ownership |
 | Push updates back to clients | [Observers](https://learn.microsoft.com/dotnet/orleans/grains/observers) | Grain observers and callback patterns |
 | Cancel grain work safely | [Cancellation tokens](https://learn.microsoft.com/dotnet/orleans/grains/cancellation-tokens) | Cancellation behavior across grain calls |
 | Reason about reentrancy and ordering | [Request scheduling](https://learn.microsoft.com/dotnet/orleans/grains/request-scheduling) | Scheduler rules, interleaving, and request ordering |
@@ -34,7 +35,9 @@ Use this reference when the main question is inside grain design rather than hos
 
 | Need | Official Source | What It Covers |
 |---|---|---|
+| Choose grain state versus a query database | [Grain persistence](https://learn.microsoft.com/dotnet/orleans/grains/grain-persistence/) | Per-identity state loading/writing; use [persistence-api.md](persistence-api.md) for the query/read-model boundary |
 | Persist grain state | [Grain persistence](https://learn.microsoft.com/dotnet/orleans/grains/grain-persistence/) | Persistent state model and provider wiring |
+| Use operation-journaled durable collections | [Orleans.Journaling README for 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.Journaling/README.md) | Experimental durable dictionaries/lists/queues/sets/values and replay |
 | Use Azure Cosmos DB storage | [Azure Cosmos DB persistence](https://learn.microsoft.com/dotnet/orleans/grains/grain-persistence/azure-cosmos-db) | Cosmos-backed state provider setup |
 | Use relational storage | [Relational storage (ADO.NET)](https://learn.microsoft.com/dotnet/orleans/grains/grain-persistence/relational-storage) | SQL-backed provider options |
 | Use Azure Storage | [Azure storage persistence](https://learn.microsoft.com/dotnet/orleans/grains/grain-persistence/azure-storage) | Azure Table/Blob-backed state provider guidance |
@@ -67,5 +70,6 @@ Use this reference when the main question is inside grain design rather than hos
 ## Usage Guidance
 
 - Start here when the dominant question is grain boundaries, runtime primitives, or state semantics.
+- Use [scheduling-and-services.md](scheduling-and-services.md) when deciding among timers, reminders, Durable Jobs, stateless workers, hosted services, startup tasks, and grain services.
 - Jump to [hosting.md](hosting.md) when the problem is cluster wiring, clients, observability, or deployment.
 - Jump to [implementation.md](implementation.md) when you need runtime-internals or testing details.

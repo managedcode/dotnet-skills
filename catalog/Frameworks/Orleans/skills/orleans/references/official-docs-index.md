@@ -2,13 +2,13 @@
 
 Use this reference when the summarized guidance in the skill is not enough and you need the official Orleans documentation tree through direct links.
 
-This skill keeps a live-link map for Orleans instead of a mirrored local docs snapshot.
+This skill keeps a live-link map for Orleans instead of a mirrored local docs snapshot. The map covers the complete official Microsoft Learn Orleans table of contents and supplements it with version-pinned package documentation for features, such as Durable Jobs and `Orleans.Journaling`, which are not yet fully represented in the Learn tree.
 
 ## Scope
 
 - Full Orleans Microsoft Learn tree mapped through links, including getting started, grains, streaming, host, deployment, implementation details, resources, quickstarts, and code samples
 - Official examples and samples entry points from Microsoft Learn, `dotnet/samples`, and the Orleans repository sample index
-- GitHub repository entry points for repo-level docs, releases, and sample navigation
+- GitHub repository entry points for repo-level docs, releases, package READMEs, public API, and sample navigation
 
 ## Primary Entry Points
 
@@ -19,6 +19,30 @@ This skill keeps a live-link map for Orleans instead of a mirrored local docs sn
 - [Best practices](https://learn.microsoft.com/dotnet/orleans/resources/best-practices)
 - [Orleans GitHub repository](https://github.com/dotnet/orleans)
 - [Latest Orleans release](https://github.com/dotnet/orleans/releases/latest)
+- [What's new in Orleans](https://learn.microsoft.com/dotnet/orleans/whats-new/whats-new-in-orleans)
+
+## Version-Pinned Package Documentation
+
+These official sources cover newer 10.2 features that are not yet first-class pages in the Learn table of contents. The packages are currently published with an `alpha.1` suffix, so verify their status on the exact target release before adoption.
+
+### Durable Jobs
+
+- [Durable Jobs README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.DurableJobs/README.md)
+- [Azure Storage Durable Jobs README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Azure/Orleans.DurableJobs.AzureStorage/README.md)
+- [Durable Jobs public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Orleans.DurableJobs/Orleans.DurableJobs.cs)
+- [Azure Storage Durable Jobs public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Azure/Orleans.DurableJobs.AzureStorage/Orleans.DurableJobs.AzureStorage.cs)
+
+### Orleans.Journaling
+
+- [Orleans.Journaling README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.Journaling/README.md)
+- [Azure Storage Journaling README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Azure/Orleans.Journaling.AzureStorage/README.md)
+- [Orleans.Journaling public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Orleans.Journaling/Orleans.Journaling.cs)
+- [Azure Storage Journaling public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Azure/Orleans.Journaling.AzureStorage/Orleans.Journaling.AzureStorage.cs)
+
+### Release Semantics
+
+- [Orleans 10.2.0 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.0) — Durable Jobs journal catalog, JSON Lines journaling default, observability, reminder lifecycle, and provider changes
+- [Orleans 10.2.1 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.1) — current 10.2 servicing release at this skill revision
 
 ## Get Started
 
