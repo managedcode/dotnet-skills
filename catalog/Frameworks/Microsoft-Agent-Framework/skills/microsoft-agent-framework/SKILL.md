@@ -22,7 +22,7 @@ compatibility: "Requires preview-era Microsoft Agent Framework packages and a .N
 3. Choose the agent type and provider intentionally. Prefer the simplest agent that satisfies the threading, tooling, and hosting requirements.
 4. Keep agents stateless and keep conversation or long-lived state in provider-owned session objects. Most persistence guidance still centers on `AgentThread`, while newer middleware and background-response examples may surface `AgentSession`. Treat both as opaque provider-specific state.
 5. Add only the tools and middleware that the scenario needs. Narrow the tool surface, require approval for side effects, and treat MCP, A2A, and third-party services as trust boundaries.
-6. For workflows, model executors, edges, request-response ports, checkpoints, shared state, and human-in-the-loop explicitly rather than hiding control flow in prompts.
+6. For workflows, model executors, edges, typed `RequestPort` boundaries, checkpoints, shared state, and human-in-the-loop explicitly rather than hiding control flow in prompts.
 7. Prefer Responses-based protocols for new remote/OpenAI-compatible integrations unless you specifically need Chat Completions compatibility.
 8. Use durable agents only when you truly need Azure Functions serverless hosting, durable thread storage, or deterministic long-running orchestrations.
 9. Verify preview status, package maturity, docs recency, and provider-specific limitations before locking a production architecture.
@@ -58,10 +58,14 @@ flowchart LR
 - `Workflow` is an explicit graph of executors and edges. Use it when the control flow must stay inspectable, typed, resumable, or human-steerable.
 - `workflow.AsAIAgent()` is the escape hatch when a complex workflow needs to present a normal agent surface. It keeps sessions, streaming, and agent response APIs, but the workflow start executor still needs chat-message-compatible input.
 - `AgentWorkflowBuilder` provides high-level factory methods such as `BuildConcurrent` for common agent orchestration patterns. Use it when you need concurrent or sequential agent pipelines without writing custom executor classes.
+- Sequential orchestration passes the previous agent's full input-and-response conversation forward by default. Choose response-only context deliberately when later stages should not inherit the entire conversation.
+- Current .NET workflow execution uses `InProcessExecution.RunStreamingAsync(...)`. For sensitive agent tools, wrap the function with `ApprovalRequiredAIFunction`, listen for `RequestInfoEvent` with `ToolApprovalRequestContent`, and send the external approval response back through the run.
+- Handoff is a mesh-style transfer of task ownership between agents, not a primary-agent tool call. In the current C# docs it requires locally tool-capable agents; Python-only autonomous handoff, approval, or checkpoint examples are not evidence of equivalent .NET APIs.
 - Declarative workflows are now a documented surface, but the .NET package/runtime story is still preview-heavy and narrower than programmatic workflows. Use YAML when portability and operator-editable orchestration matter; keep deeply custom .NET control flow programmatic.
 - Hosting layers such as OpenAI-compatible HTTP, A2A, and AG-UI are adapters over your in-process agent or workflow. They do not replace the core architecture choice.
 - Durable agents are a hosting and persistence decision for Azure Functions. They are not the default answer for ordinary app-level orchestration.
 - Current Learn docs now consolidate middleware under `agents/middleware` and tools under `agents/tools/*`; older tutorial URLs can redirect to the same canonical page, so prefer the canonical path when exact signatures or headings matter.
+- The watched `/user-guide/hosting/` URL now resolves to the broader integrations hub. Treat chat-history, memory, RAG, vector-store, UI, safety, and protocol integrations as separate capability families; do not infer that every integration is an ASP.NET Core hosting package.
 - The June 2026 Learn refresh adds deeper AG-UI, AutoGen migration, Semantic Kernel migration, support, troubleshooting, and upgrade pages. Load the relevant reference before writing AG-UI protocol, migration, or production-support guidance instead of relying only on the top-level overview.
 
 ## Decision Cheatsheet

@@ -58,6 +58,8 @@ flowchart TD
 5. Wire CI for repeatability:
    - use `npm ci`, then `npx playwright install --with-deps`, then the focused Playwright command
    - set CI workers conservatively when screenshots are resource-sensitive
+   - optionally run `npx playwright test --only-changed=origin/$GITHUB_BASE_REF` first on pull requests for faster feedback, but always follow it with the full suite because changed-test selection is heuristic
+   - use the same OS, browser build, fonts, headless mode, and rendering environment that produced the committed baselines; an official Playwright container is useful when host drift keeps changing pixels
    - upload the Playwright HTML report and `test-results/`, or upload `screenshots/baseline`, `screenshots/actual`, and `screenshots/diff` for a custom Pixelmatch flow
 6. Triage failures from artifacts:
    - inspect expected, actual, and diff images together

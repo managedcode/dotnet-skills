@@ -190,7 +190,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: npm
@@ -206,7 +206,7 @@ jobs:
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: playwright-report
           path: playwright-report/
@@ -214,12 +214,25 @@ jobs:
 
       - name: Upload test results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: playwright-test-results
           path: test-results/
           retention-days: 30
 ```
+
+For pull requests, a preliminary `--only-changed` run can surface likely failures sooner, but it must not replace the complete run:
+
+```yaml
+      - name: Run likely affected tests first
+        if: github.event_name == 'pull_request'
+        run: npx playwright test --only-changed=origin/$GITHUB_BASE_REF
+
+      - name: Run the full Playwright suite
+        run: npx playwright test
+```
+
+Use `fetch-depth: 0` on `actions/checkout` when the job needs the base ref for `--only-changed`. Treat the result as a heuristic only. Visual baselines must still be generated and compared in the same rendering environment; pin an official Playwright container image when runner-level browser, font, or OS drift remains noisy.
 
 For a standalone Pixelmatch script, run the compare step after screenshot capture and upload image folders:
 
@@ -229,7 +242,7 @@ For a standalone Pixelmatch script, run the compare step after screenshot captur
 
       - name: Upload visual diffs
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: visual-screenshots
           path: |

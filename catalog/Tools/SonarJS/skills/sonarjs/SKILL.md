@@ -52,8 +52,8 @@ flowchart LR
 
 ## Current Upstream Notes
 
-- SonarJS `13.2` improves generated-file detection and adds or refines test-focused findings for parameterized tests, UI debug commands, fixed waits, inline snapshots, and unawaited async helpers.
-- The release also reduces false positives for ARIA composite widgets, nullable comparisons, TSX components, default sorting, date comparisons, and async assertions that use a completion callback. Re-run the server analysis before preserving old suppressions.
+- SonarJS `13.3` adds test rules for explicit skips, Testing Library query presence/absence matching, handled async queries, `find*` for eventually available elements, promises passed to `fireEvent`, global regular expressions in queries, and explicit button types. It also imports Vue `require-v-for-key` and `valid-v-for` rules as external findings.
+- The release reduces false positives for `should` assertions, Vitest type-level assertions, framework-prefixed `test.expect` entry points, destructured component props, type-guarded string concatenation, side-effect constructors, and `RegExp` syntax-validation constructors. Re-run the server analysis before preserving old suppressions.
 
 ## Bootstrap When Missing
 

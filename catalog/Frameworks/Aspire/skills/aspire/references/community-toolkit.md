@@ -4,7 +4,7 @@ Use this reference when official first-party Aspire integrations do not cover th
 
 Last verified against:
 
-- `CommunityToolkit/Aspire` 13.4 line and repository README package index, verified on `2026-07-17`
+- `CommunityToolkit/Aspire` 13.4 line, repository README package index, and Aspire 13.4 first-party Go and Bun guidance, verified on `2026-07-20`
 - Microsoft Learn Community Toolkit pages
 
 ## Table of Contents
@@ -35,7 +35,7 @@ Do not reach for it simply because it exists. First-party Aspire remains the def
 
 ### Prefer `CommunityToolkit/Aspire` when
 
-- you need to host non-.NET apps such as Go, Java, PowerShell, Deno, Bun, or Rust in the AppHost
+- you need to host non-.NET apps such as Java, PowerShell, Deno, or Rust beyond current first-party coverage
 - you need SQLite-specific hosting or related EF and client wiring
 - you want extra dev-time tools such as MailPit, ngrok, k6, McpInspector, Adminer, or DbGate in the topology
 - you need community-maintained integrations such as Meilisearch, MinIO, RavenDB, SurrealDB, KurrentDB, LavinMQ, or Zitadel
@@ -49,18 +49,16 @@ The toolkit surface is large. Keep the selection practical and grouped by proble
 
 ### Polyglot and executable app hosting
 
-Use these when the AppHost must orchestrate non-.NET executable projects:
+Use these when the AppHost must orchestrate non-.NET executable projects that current first-party Aspire does not already cover:
 
-- `CommunityToolkit.Aspire.Hosting.Golang`
 - `CommunityToolkit.Aspire.Hosting.Java`
 - `CommunityToolkit.Aspire.Hosting.Python.Extensions`
 - `CommunityToolkit.Aspire.Hosting.JavaScript.Extensions`
 - `CommunityToolkit.Aspire.Hosting.PowerShell`
 - `CommunityToolkit.Aspire.Hosting.Deno`
-- `CommunityToolkit.Aspire.Hosting.Bun`
 - `CommunityToolkit.Aspire.Hosting.Rust`
 
-These are especially important because current AppHost guidance explicitly points to toolkit integrations for Go and Java, while JavaScript has first-party coverage and Python often routes through the toolkit extension path. In the 13.4 release train, prefer core `Aspire.Hosting.JavaScript` over the now-deprecated toolkit Bun hosting integration when first-party JavaScript hosting covers the scenario.
+Aspire 13.4 adds first-party Go and Bun hosting. Prefer those official surfaces for new resources; treat `CommunityToolkit.Aspire.Hosting.Golang` and `CommunityToolkit.Aspire.Hosting.Bun` as legacy compatibility signals, not current defaults. Java and several other polyglot hosts still use toolkit integrations, while JavaScript has first-party coverage and Python often routes through the toolkit extension path.
 
 ### Databases, object stores, and search
 

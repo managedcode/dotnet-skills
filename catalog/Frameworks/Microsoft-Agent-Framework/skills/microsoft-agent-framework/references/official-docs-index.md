@@ -6,7 +6,7 @@ The local snapshot lives under `references/official-docs/`.
 
 ## Scope
 
-- Mirrored authored docs: `100` markdown pages across overview, tutorials, user guide, integrations, migration, and support
+- Local curated docs snapshots: `100` markdown pages across overview, tutorials, user guide, integrations, migration, and support
 - Live-only Learn pages added into the mirror: `support/faq.md`, `support/troubleshooting.md`, and `support/upgrade/index.md`
 - Generated API references are not mirrored page-by-page; use the live `.NET` API landing page when exact symbols matter
 - Intentional exclusions: media files, TOC scaffolding, breadcrumb files, DocFX support files, and Python-only upgrade pages are not mirrored into the skill
@@ -34,7 +34,7 @@ The local snapshot lives under `references/official-docs/`.
 - Workflow core concepts: `official-docs/user-guide/workflows/core-concepts/overview.md`
 - Workflow orchestrations: `official-docs/user-guide/workflows/orchestrations/overview.md`
 - Declarative workflows: `official-docs/user-guide/workflows/declarative-workflows.md`
-- Hosting and remote protocols: `official-docs/user-guide/hosting/index.md`
+- Integration capability hub: `official-docs/user-guide/hosting/index.md`
 - A2A hosting: `official-docs/user-guide/hosting/agent-to-agent-integration.md`
 - OpenAI-compatible hosting: `official-docs/user-guide/hosting/openai-integration.md`
 - DevUI: `official-docs/user-guide/devui/index.md`
@@ -77,7 +77,7 @@ The local snapshot lives under `references/official-docs/`.
 - [`official-docs/tutorials/workflows/checkpointing-and-resuming.md`](official-docs/tutorials/workflows/checkpointing-and-resuming.md)
 - [`official-docs/tutorials/workflows/requests-and-responses.md`](official-docs/tutorials/workflows/requests-and-responses.md)
 - [`official-docs/tutorials/workflows/simple-concurrent-workflow.md`](official-docs/tutorials/workflows/simple-concurrent-workflow.md)
-- [`official-docs/tutorials/workflows/simple-sequential-workflow.md`](official-docs/tutorials/workflows/simple-sequential-workflow.md)
+- [`official-docs/tutorials/workflows/simple-sequential-workflow.md`](official-docs/tutorials/workflows/simple-sequential-workflow.md) — Legacy tutorial URL now resolves to the canonical sequential orchestration page
 - [`official-docs/tutorials/workflows/workflow-builder-with-factories.md`](official-docs/tutorials/workflows/workflow-builder-with-factories.md)
 - [`official-docs/tutorials/workflows/workflow-with-branching-logic.md`](official-docs/tutorials/workflows/workflow-with-branching-logic.md)
 
@@ -150,11 +150,11 @@ The local snapshot lives under `references/official-docs/`.
 
 - [`official-docs/user-guide/workflows/orchestrations/concurrent.md`](official-docs/user-guide/workflows/orchestrations/concurrent.md)
 - [`official-docs/user-guide/workflows/orchestrations/group-chat.md`](official-docs/user-guide/workflows/orchestrations/group-chat.md)
-- [`official-docs/user-guide/workflows/orchestrations/handoff.md`](official-docs/user-guide/workflows/orchestrations/handoff.md)
-- [`official-docs/user-guide/workflows/orchestrations/human-in-the-loop.md`](official-docs/user-guide/workflows/orchestrations/human-in-the-loop.md)
+- [`official-docs/user-guide/workflows/orchestrations/handoff.md`](official-docs/user-guide/workflows/orchestrations/handoff.md) — Current C# mesh handoff and language-parity limits
+- [`official-docs/user-guide/workflows/orchestrations/human-in-the-loop.md`](official-docs/user-guide/workflows/orchestrations/human-in-the-loop.md) — Current `RequestPort` and approval event flow
 - [`official-docs/user-guide/workflows/orchestrations/magentic.md`](official-docs/user-guide/workflows/orchestrations/magentic.md)
 - [`official-docs/user-guide/workflows/orchestrations/overview.md`](official-docs/user-guide/workflows/orchestrations/overview.md)
-- [`official-docs/user-guide/workflows/orchestrations/sequential.md`](official-docs/user-guide/workflows/orchestrations/sequential.md)
+- [`official-docs/user-guide/workflows/orchestrations/sequential.md`](official-docs/user-guide/workflows/orchestrations/sequential.md) — Current context propagation, streaming run, and tool-approval flow
 
 ### User Guide / Workflows / Declarative Workflows
 
@@ -165,7 +165,7 @@ The local snapshot lives under `references/official-docs/`.
 ### User Guide / Hosting
 
 - [`official-docs/user-guide/hosting/agent-to-agent-integration.md`](official-docs/user-guide/hosting/agent-to-agent-integration.md)
-- [`official-docs/user-guide/hosting/index.md`](official-docs/user-guide/hosting/index.md)
+- [`official-docs/user-guide/hosting/index.md`](official-docs/user-guide/hosting/index.md) — Current URL resolves to the broader integrations hub
 - [`official-docs/user-guide/hosting/openai-integration.md`](official-docs/user-guide/hosting/openai-integration.md)
 
 ### User Guide / DevUI

@@ -9,6 +9,8 @@ The core rule is simple:
 
 Do not choose your architecture because a protocol package exists. Choose the runtime model first, then attach the hosting surface you actually need.
 
+The watched Learn URL `/agent-framework/user-guide/hosting/` now resolves to the broader Agent Framework integrations hub. Keep the ASP.NET Core hosting packages below distinct from general integrations such as memory, RAG, vector stores, UI frameworks, and hosted-agent services.
+
 ## Core Hosting Library
 
 `Microsoft.Agents.AI.Hosting` is the base ASP.NET Core hosting layer.
@@ -54,6 +56,19 @@ That means the hosting layer is not just for HTTP exposure. It is also the compo
 | A2A | `Microsoft.Agents.AI.Hosting.A2A` and `.AspNetCore` | agent-to-agent interoperability | Agent cards and task semantics matter |
 | AG-UI | `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` | rich web/mobile UI protocols | Treat browser input as hostile unless mediated |
 | Azure Functions durable | `Microsoft.Agents.AI.Hosting.AzureFunctions` | long-running durable hosting | Choose only for real durability needs |
+
+## Integration Capability Matrix
+
+| Capability | Current .NET Surface | Maturity Note |
+| --- | --- | --- |
+| Hosted agents | Microsoft Foundry Hosted Agents | The linked Agent Framework sample is Python; verify a .NET path before promising parity |
+| UI | AG-UI, DevUI, Purview | Listed as preview in the current integration hub |
+| Chat history | `InMemoryChatHistoryProvider`, Cosmos DB NoSQL provider | In-memory is released; Cosmos DB NoSQL is preview |
+| Memory | Chat-history memory provider, Neo4j memory provider | Chat-history memory is released; Neo4j is preview |
+| RAG | `TextSearchProvider`, Neo4j GraphRAG provider | Text search is released; Neo4j GraphRAG is preview |
+| Vector stores | `Microsoft.Extensions.VectorData.Abstractions` implementations | Connector ownership and SDK support vary; review the chosen provider |
+
+Choose a provider by capability and maturity. Do not treat an integrations index as evidence that every provider shares the same package, support level, persistence model, or hosting boundary.
 
 ## OpenAI-Compatible Hosting
 

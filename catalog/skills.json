@@ -17,17 +17,17 @@
     },
     {
       "name": "aspire",
-      "title": ".NET Aspire",
-      "version": "1.4.1",
+      "title": "Aspire",
+      "version": "1.5.0",
       "category": "Cloud",
       "type": "Framework",
       "package": "Aspire",
       "stack": "Aspire",
       "lane": "Frameworks",
-      "description": "Build, upgrade, and operate .NET Aspire 13.4.x application hosts with current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, MCP, and Azure deployment patterns for distributed apps. USE FOR: Aspire.AppHost.Sdk, Aspire.Hosting.*, DistributedApplication.CreateBuilder, WithReference, WaitFor, AddProject, AddRedis, AddPostgres, aspire run, aspire init, aspire. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
-      "compatibility": "Best for current Aspire 13.4.x tooling on .NET 10; use version-aware upgrade guidance for older 8.x or 9.x Aspire solutions.",
+      "description": "Build, upgrade, and operate Aspire 13.4.x C# or TypeScript application hosts with the current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, MCP, and deployment patterns for distributed apps. USE FOR: Aspire.AppHost.Sdk, Aspire.Hosting.*, DistributedApplication.CreateBuilder, apphost.mts, createBuilder, WithReference, WaitFor, AddProject, AddRedis, AddPostgres, aspire run, aspire init, aspire. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
+      "compatibility": "Best for current Aspire 13.4.x tooling with .NET 10 or a supported Node.js runtime for TypeScript AppHosts; use version-aware upgrade guidance for older 8.x or 9.x solutions.",
       "path": "catalog/Frameworks/Aspire/skills/aspire/",
-      "tokenCount": 2487,
+      "tokenCount": 2820,
       "links": {
         "repository": "https://github.com/microsoft/aspire",
         "docs": "https://learn.microsoft.com/en-us/dotnet/aspire/",
@@ -138,7 +138,7 @@
     {
       "name": "microsoft-agent-framework",
       "title": "Microsoft Agent Framework",
-      "version": "1.8.1",
+      "version": "1.9.0",
       "category": "AI",
       "type": "Framework",
       "package": "Microsoft-Agent-Framework",
@@ -147,7 +147,7 @@
       "description": "Build .NET AI agents and multi-agent workflows with Microsoft Agent Framework using the right agent type, threads, tools, workflows, hosting protocols, and enterprise guardrails. USE FOR: building or reviewing .NET code that uses Microsoft.Agents.*, Microsoft.Extensions.AI, AIAgent, AgentThread, AgentSession, or Agent Framework hosting packages; choosing. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires preview-era Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration.",
       "path": "catalog/Frameworks/Microsoft-Agent-Framework/skills/microsoft-agent-framework/",
-      "tokenCount": 2679,
+      "tokenCount": 2884,
       "package_prefix": "Microsoft.Agents"
     },
     {
@@ -1963,7 +1963,7 @@
     {
       "name": "playwright-visual-testing",
       "title": "Playwright Visual Testing",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "Testing",
       "type": "Testing",
       "package": "Playwright",
@@ -1972,7 +1972,7 @@
       "description": "Add, repair, or review Playwright visual regression tests for browser-facing .NET apps, including screenshot baselines, Pixelmatch thresholds, deterministic rendering, and GitHub Actions artifacts. USE FOR: toHaveScreenshot, page.screenshot visual checks, Pixelmatch/pngjs comparison scripts, visual baseline updates, screenshot diff triage, or CI workflows for UI regression screenshots. DO NOT USE FOR: pure unit tests, accessibility audits, browser-debugging sessions, or frontend linting.",
       "compatibility": "Requires a browser-facing app or static site plus a Node-based Playwright test surface. Works best for .NET repos that already have package.json, a frontend test project, or a CI job capable of installing Playwright browsers.",
       "path": "catalog/Testing/Playwright/skills/playwright-visual-testing/",
-      "tokenCount": 1238,
+      "tokenCount": 1322,
       "links": {
         "repository": "https://github.com/microsoft/playwright",
         "docs": "https://playwright.dev/docs/intro"
@@ -2483,7 +2483,7 @@
       "description": "Generate MSBuild binary logs (binlogs) for build diagnostics and analysis. USE FOR: adding /bl:{} to any dotnet build, test, pack, publish, or restore command to capture a full build execution trace, prerequisite for binlog-failure-analysis and build-perf-diagnostics skills, enabling post-build investigation of errors or performance. Requires MSBuild 17.8+ / .NET 8 SDK+ for {} placeholder; PowerShell needs -bl:{{}}. DO NOT USE FOR: non-MSBuild build systems (npm, Maven, CMake), analyzing an existing binlog (use binlog-failure-analysis instead).",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/binlog-generation/",
-      "tokenCount": 824,
+      "tokenCount": 1047,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -2491,17 +2491,17 @@
     },
     {
       "name": "build-parallelism",
-      "title": "MSBuild Parallelism Model",
+      "title": "Diagnose a slow parallel build (start here)",
       "version": "0.1.0",
       "category": "Core",
       "type": "Tool",
       "package": "Official-DotNet-MSBuild",
       "stack": "MSBuild",
       "lane": "Build Pipelines",
-      "description": "Guide for optimizing MSBuild build parallelism and multi-project scheduling. USE FOR: builds not utilizing all CPU cores, speeding up multi-project solutions, evaluating graph build mode (/graph), build time not improving with -m flag, understanding project dependency topology. Note: /maxcpucount default is 1 (sequential) \u2014 always use -m for parallel builds. Covers /maxcpucount, graph build for better scheduling and isolation, BuildInParallel on MSBuild task, reducing unnecessary ProjectReferences, solution filters (.slnf) for building subsets. DO NOT USE FOR: single-project builds, incremental build issues (use incremental-build), compilation slowness within a project (use build-perf-diagnostics), non-MSBuild build systems.",
+      "description": "Diagnose and fix under-parallelized MSBuild builds. USE WHEN a multi-project solution build is slower than expected, doesn't speed up when you add cores, pegs a single core while others idle, or you want to know why `-m` isn't helping. Note: `/maxcpucount` default is 1 (sequential) \u2014 always pass `-m` for parallel builds. Covers finding the critical path (longest serial ProjectReference chain), graph build (`/graph`), BuildInParallel, and solution filters (`.slnf`). DO NOT USE FOR: single-project builds, incremental issues (use incremental-build), compilation slowness inside one project (use build-perf-diagnostics), non-MSBuild build systems.",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/build-parallelism/",
-      "tokenCount": 1049,
+      "tokenCount": 1338,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -2552,10 +2552,10 @@
       "package": "Official-DotNet-MSBuild",
       "stack": "MSBuild",
       "lane": "Build Pipelines",
-      "description": "Detects MSBuild projects with conflicting OutputPath or IntermediateOutputPath. USE FOR: builds failing with 'Cannot create a file when that file already exists', 'The process cannot access the file because it is being used by another process', intermittent build failures that succeed on retry, missing outputs in multi-project builds, multi-targeting builds where project.assets.json conflicts. Diagnoses when multiple projects or TFMs write to the same bin/obj directories due to shared OutputPath, missing AppendTargetFrameworkToOutputPath, or extra global properties like PublishReadyToRun creating redundant evaluations, or SetTargetFramework metadata on a ProjectReference to a single-targeting project. DO NOT USE FOR: file access errors unrelated to MSBuild (OS-level locking), single-project single-TFM builds, non-MSBuild build systems.",
+      "description": "Detects MSBuild projects with conflicting OutputPath or IntermediateOutputPath. USE FOR: builds failing with 'Cannot create a file when that file already exists', 'The process cannot access the file because it is being used by another process', intermittent build failures that succeed on retry, or missing/overwritten outputs in multi-project or multi-targeting builds where bin/obj (or project.assets.json) collide. Common causes: shared OutputPath, missing AppendTargetFrameworkToOutputPath, extra global properties (e.g. PublishReadyToRun), or SetTargetFramework on a ProjectReference to a single-targeting project. DO NOT USE FOR: file access errors unrelated to MSBuild (OS-level locking), single-project single-TFM builds, non-MSBuild build systems.",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/check-bin-obj-clash/",
-      "tokenCount": 5972,
+      "tokenCount": 4867,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -2599,7 +2599,7 @@
     },
     {
       "name": "eval-performance",
-      "title": "MSBuild Evaluation Phases",
+      "title": "Diagnosing MSBuild Evaluation Performance",
       "version": "0.1.0",
       "category": "Core",
       "type": "Tool",
@@ -2609,7 +2609,7 @@
       "description": "Guide for diagnosing and improving MSBuild project evaluation performance. USE FOR: builds slow before any compilation starts, high evaluation time in binlog analysis, expensive glob patterns walking large directories (node_modules, .git, bin/obj), deep import chains (>20 levels), preprocessed output >10K lines indicating heavy evaluation, property functions with file I/O ($([System.IO.File]::ReadAllText(...))), multiple evaluations per project. Covers the 5 MSBuild evaluation phases, glob optimization via DefaultItemExcludes, import chain analysis with /pp preprocessing. DO NOT USE FOR: compilation-time slowness (use build-perf-diagnostics), incremental build issues (use incremental-build), non-MSBuild build systems.",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/eval-performance/",
-      "tokenCount": 1164,
+      "tokenCount": 1526,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -2696,10 +2696,10 @@
       "package": "Official-DotNet-MSBuild",
       "stack": "MSBuild",
       "lane": "Build Pipelines",
-      "description": "Catalog of MSBuild anti-patterns with detection rules and fix recipes. USE FOR: reviewing, auditing, or cleaning up .csproj, .vbproj, .fsproj, .props, .targets, or .proj files. Each anti-pattern has a symptom, explanation, and concrete BAD\u2192GOOD transformation. Covers Exec-instead-of-built-in-task, unquoted conditions, hardcoded paths, restating SDK defaults, scattered package versions, and more. DO NOT USE FOR: non-MSBuild build systems (npm, Maven, CMake, etc.), project migration to SDK-style (use msbuild-modernization).",
+      "description": "Detect and fix MSBuild anti-patterns in project and build files. USE WHEN asked to review, audit, lint, clean up, or code-review a .csproj/.vbproj/.fsproj/.props/.targets/.proj (or Directory.Build.props/.targets) file, when asked 'is this project file correct?' or 'what's wrong with my build file?', or when hunting subtle build bugs caused by how a project is authored. Each anti-pattern has a symptom and a concrete BAD\u2192GOOD fix. DO NOT USE FOR: non-MSBuild build systems (npm, Maven, CMake), or migrating a project to SDK-style (use msbuild-modernization).",
       "compatibility": "Requires a .NET repository with MSBuild project or solution files.",
       "path": "catalog/Tools/Official-DotNet-MSBuild/skills/msbuild-antipatterns/",
-      "tokenCount": 4493,
+      "tokenCount": 4504,
       "links": {
         "repository": "https://github.com/dotnet/skills",
         "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-msbuild"
@@ -3024,7 +3024,7 @@
     {
       "name": "sonarjs",
       "title": "SonarJS Rules for Frontend Assets in .NET Repositories",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "Code Quality",
       "type": "Tool",
       "package": "SonarJS",
@@ -3033,7 +3033,7 @@
       "description": "Use SonarJS-derived rules in .NET repositories that ship JavaScript or TypeScript frontends and need deeper bug-risk, code-smell, or cognitive-complexity checks than a minimal ESLint baseline. USE FOR: SonarQube, SonarCloud, or eslint-plugin-sonarjs setups; frontend code smells; cognitive complexity and deeper bug-risk rules. DO NOT USE FOR: lightweight base lint setups with no extra smell or complexity rules; teams that reject Sonar tooling. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made.",
       "compatibility": "Requires a .NET repository with JS or TS frontend assets; local developer loops normally use `eslint-plugin-sonarjs`, while full SonarQube or SonarCloud analysis should follow the repo's existing scanner pipeline and documented licensing posture.",
       "path": "catalog/Tools/SonarJS/skills/sonarjs/",
-      "tokenCount": 1416
+      "tokenCount": 1468
     },
     {
       "name": "stylecop-analyzers",

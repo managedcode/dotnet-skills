@@ -34,7 +34,7 @@ Use this file when you need the smallest official proof that a pattern exists be
 
 | Need | Official Source Path | First Proof | Production Follow-Up |
 | --- | --- | --- | --- |
-| Sequential workflow | `tutorials/workflows/simple-sequential-workflow.md` | ordered stage execution | verify stage boundaries and error handling |
+| Sequential workflow | `user-guide/workflows/orchestrations/sequential.md` | ordered stage execution, context flow, and approval requests | verify stage boundaries, context policy, and error handling |
 | Concurrent workflow | `tutorials/workflows/simple-concurrent-workflow.md` | fan-out and aggregation | make aggregation deterministic |
 | Agents inside workflows | `tutorials/workflows/agents-in-workflows.md` | specialist composition | keep agent versus executor responsibilities clear |
 | Branching logic | `tutorials/workflows/workflow-with-branching-logic.md` | conditional routing | move branch policy out of prompts |
@@ -46,7 +46,7 @@ Use this file when you need the smallest official proof that a pattern exists be
 
 | Need | Official Source Path | First Proof | Production Follow-Up |
 | --- | --- | --- | --- |
-| Core ASP.NET Core hosting | `user-guide/hosting/index.md` | `AddAIAgent`, `AddWorkflow`, thread store wiring | keep runtime model protocol-agnostic |
+| Integration discovery | `user-guide/hosting/index.md` | choose hosted-agent, UI, history, memory, RAG, or vector-store capability | verify .NET availability and maturity for the selected provider |
 | OpenAI-compatible endpoint | `user-guide/hosting/openai-integration.md` | map Chat Completions or Responses | prefer Responses for new clients |
 | A2A endpoint | `user-guide/hosting/agent-to-agent-integration.md` | `MapA2A` and agent card | decide discovery and task semantics |
 | AG-UI surface | `integrations/ag-ui/index.md` | SSE and UI protocol mapping | treat browser trust boundaries explicitly |
@@ -59,6 +59,6 @@ Use this file when you need the smallest official proof that a pattern exists be
 - `references/official-docs/tutorials/overview.md`
 - `references/official-docs/tutorials/quick-start.md`
 - `references/official-docs/tutorials/agents/run-agent.md`
-- `references/official-docs/tutorials/workflows/simple-sequential-workflow.md`
+- `references/official-docs/user-guide/workflows/orchestrations/sequential.md`
 - `references/official-docs/user-guide/hosting/index.md`
 - `references/official-docs/integrations/ag-ui/index.md`

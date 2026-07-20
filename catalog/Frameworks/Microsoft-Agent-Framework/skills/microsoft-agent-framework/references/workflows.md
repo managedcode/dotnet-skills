@@ -24,7 +24,7 @@ If a single agent with a small tool surface can solve the task, stay with an age
 | Edge | A routing rule between executors | Makes branching and handoff explicit |
 | Workflow | The execution graph | Defines the process structure |
 | Superstep | A unit of progress between checkpoint points | Determines checkpoint timing |
-| `InputPort` | The boundary for external requests and responses | Enables HITL and system callbacks |
+| `RequestPort` | A typed external request/response boundary | Enables HITL and system callbacks |
 | Shared state | Workflow-wide durable data | Avoids abusing agent state for process state |
 | Checkpoint | A saved execution snapshot | Enables recovery, resume, and rehydration |
 
@@ -51,7 +51,7 @@ var workflow = AgentWorkflowBuilder.BuildConcurrent(agents);
 - Accepts `IEnumerable<AIAgent>` and an optional custom aggregator `Func<IList<List<ChatMessage>>, List<ChatMessage>>`.
 - Handles fan-out and fan-in automatically without requiring custom executor classes.
 - Default aggregator returns the last message from each responding agent.
-- After `InProcessExecution.StreamAsync`, send `TurnToken(emitEvents: true)` via `run.TrySendMessageAsync` to kick off agents.
+- After `InProcessExecution.RunStreamingAsync`, send `TurnToken(emitEvents: true)` via `run.TrySendMessageAsync` to kick off agents.
 - Use manual `WorkflowBuilder` with `AddFanOutEdge`/`AddFanInEdge` only when you need a custom dispatcher or aggregation logic beyond what the built-in overload supports.
 
 ## Workflow Patterns
@@ -66,6 +66,18 @@ var workflow = AgentWorkflowBuilder.BuildConcurrent(agents);
 
 These are workflow patterns, not prompt slogans. If you cannot explain the message flow in code, you probably do not have a real workflow design yet.
 
+### Sequential Context And Approval
+
+- `AgentWorkflowBuilder.BuildSequential(...)` passes the previous agent's full input-and-response conversation to the next agent by default. Use the documented response-only option when a stage should consume only its predecessor's output.
+- Wrap a side-effecting function with `ApprovalRequiredAIFunction` when execution must pause for approval. The workflow emits `RequestInfoEvent`; inspect its `ToolApprovalRequestContent` and call `run.SendResponseAsync(...)` with the approved or rejected response.
+- Do not add a parallel approval loop around the workflow. The built-in sequential orchestration already propagates approval-required tool requests through the workflow request/response channel.
+
+### Handoff Versus Agent-As-Tool
+
+- Handoff transfers control and full task ownership to another agent in a mesh; the receiving agent gets the conversation context.
+- Agent-as-tool keeps a primary agent in control and returns a bounded subtask result to it.
+- The current C# handoff surface uses `AgentWorkflowBuilder.CreateHandoffBuilderWith(...)` and explicit `.WithHandoffs(...)` routes. Do not copy Python-only autonomous-mode, tool-approval, or checkpoint examples into .NET code.
+
 ## Request And Response
 
 Request and response is the first-class way to model:
@@ -75,15 +87,16 @@ Request and response is the first-class way to model:
 - asynchronous system input
 - pauses that must survive beyond one model run
 
-`InputPort` is the key primitive.
+`RequestPort` is the key .NET primitive.
 
 ```csharp
-var inputPort = InputPort.Create<ApprovalRequest, ApprovalResponse>("approval");
+var approvalPort = RequestPort.Create<ApprovalRequest, ApprovalResponse>("approval");
 
-var workflow = new WorkflowBuilder(inputPort)
-    .AddEdge(inputPort, reviewerExecutor)
-    .AddEdge(reviewerExecutor, inputPort)
-    .Build<ApprovalRequest>();
+var workflow = new WorkflowBuilder(approvalPort)
+    .AddEdge(approvalPort, reviewerExecutor)
+    .AddEdge(reviewerExecutor, approvalPort)
+    .WithOutputFrom(reviewerExecutor)
+    .Build();
 ```
 
 Operationally:
