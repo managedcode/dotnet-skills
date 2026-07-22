@@ -10,6 +10,8 @@ Sources reviewed:
 - Playwright CI setup: https://playwright.dev/docs/ci
 - Playwright GitHub Actions setup: https://playwright.dev/docs/ci-intro
 
+The official CI and visual-comparison pages were re-reviewed in July 2026. Their core operational contract is unchanged: install the exact browser/dependency set in CI, keep the rendering environment stable, and update snapshot baselines only through an explicit reviewed command.
+
 ## Preferred Built-In Snapshot Path
 
 Use this path when the repo already uses Playwright Test or can add it cleanly. Playwright's `toHaveScreenshot` integrates snapshot storage, pixel comparison, retry-until-stable behavior, traces, and the HTML report.

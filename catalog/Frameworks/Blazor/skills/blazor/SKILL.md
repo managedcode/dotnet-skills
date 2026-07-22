@@ -79,7 +79,7 @@ Subsequent Requests:
 ## Current Upstream Notes
 
 - Treat `dotnet/aspnetcore` `v10.0.10` as servicing. It restores the original .NET 10 `OwningComponentBase.Dispose` behavior and fixes a `Virtualize` null-reference path; re-run component disposal and virtualization regression tests when upgrading.
-- When existing apps update servicing packages, recheck render-mode assumptions, SignalR circuit behavior, and any interactive-auto client/server service split.
+- The July 2026 ASP.NET Core overview still positions Blazor as the component UI path. When existing apps update servicing packages, recheck render-mode assumptions, SignalR circuit behavior, and any interactive-auto client/server service split.
 
 ## Component Patterns
 

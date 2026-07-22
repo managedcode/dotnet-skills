@@ -13,7 +13,7 @@ This directory isolates vendir-managed upstream repositories from the human-main
 
 - Keep vendir transport details here instead of mixing them into `catalog/`.
 - Keep `imports/*.json` overrides-only. Do not mirror every upstream plugin there.
-- Let `scripts/import_external_catalog_sources.py` auto-discover upstream plugins from vendored `plugin.json` files.
+- Let `scripts/import_external_catalog_sources.py` auto-discover upstream plugins from vendored `plugin.json` files or standalone official skills from canonical `.agents/skills/*/SKILL.md` trees.
 - Put local policy here only when upstream does not know it: catalog type, category, package naming, compatibility, or skill-level package trigger overrides.
 
 ## Flow
@@ -21,7 +21,7 @@ This directory isolates vendir-managed upstream repositories from the human-main
 ```mermaid
 flowchart LR
   A["vendir.yml"] --> B["upstreams/<repo>/"]
-  B --> C["plugin.json auto-discovery"]
+  B --> C["plugin or canonical skill auto-discovery"]
   D["imports/*.json overrides"] --> E["scripts/import_external_catalog_sources.py"]
   C --> E
   E --> F["catalog/<type>/<package>/"]

@@ -60,7 +60,7 @@ compatibility: "Requires an ASP.NET Core project or solution."
 ## Current Upstream Notes
 
 - ASP.NET Core `v10.0.10` is servicing rather than a new programming model. It fixes data-protection cold-start thread-pool starvation, rejects ASCII control characters in cookie-auth return URLs, skips indexers in validation source generation, and repairs nullable/OpenAPI metadata cases. Keep existing middleware and endpoint architecture, then rerun focused auth, startup, validation, and OpenAPI tests.
-- The current Microsoft Learn overview for `aspnetcore-10.0` remains the routing entry point for choosing between Blazor, Minimal APIs, controller APIs, SignalR, and gRPC.
+- The July 2026 Microsoft Learn overview for `aspnetcore-10.0` remains the routing entry point for choosing between Blazor, Minimal APIs, controller APIs, SignalR, and gRPC; the refresh does not justify changing an existing app model by itself.
 
 ## Middleware Patterns
 

@@ -58,7 +58,7 @@ compatibility: "Requires a Windows Forms project on .NET or .NET Framework."
 
 ## Current Upstream Notes
 
-- The refreshed Windows Forms overview remains focused on Windows desktop, designer-driven controls, events, data binding, and migration to modern .NET. Keep WinForms guidance pragmatic: improve form boundaries and designer safety before proposing a framework rewrite.
+- The July 2026 Windows Forms overview refresh remains focused on Windows desktop, designer-driven controls, events, data binding, and migration to modern .NET. It does not change the framework-selection guidance: improve form boundaries and designer safety before proposing a rewrite.
 - For docs-driven updates, validate whether the app targets .NET Framework, modern .NET, or mixed libraries before changing project format, designer files, or deployment assumptions.
 
 ```mermaid

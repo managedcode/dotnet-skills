@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.0.1",
   "category": "Distributed",
   "compatibility": "Prefer current Orleans 10.2.x or 9.x APIs; verify the target package line. Durable Jobs and Orleans.Journaling are experimental alpha packages on 10.2.1.",
   "package_prefix": "Microsoft.Orleans"

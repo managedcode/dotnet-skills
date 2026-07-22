@@ -24,7 +24,7 @@ compatibility: "Relevant to console apps, workers, ASP.NET Core apps, functions,
 
 ## Current Upstream Notes
 
-- `dotnet/extensions` `v10.8.0` is primarily an AI-library release; it does not change the Generic Host, dependency injection, configuration, logging, options, or `IHttpClientFactory` patterns in this skill.
+- `dotnet/extensions` `v10.8.1` is an AI-library servicing release for approval-resume ordering and stateless reasoning state; it does not change the Generic Host, dependency injection, configuration, logging, options, or `IHttpClientFactory` patterns in this skill.
 - Keep Microsoft.Extensions package versions aligned within the repo's selected servicing line, then rerun host startup and options-validation tests after upgrading.
 
 ## Deliver

@@ -1,0 +1,5 @@
+{
+  "version": "7.1.3",
+  "category": "Web",
+  "compatibility": "Requires the withastro/astro monorepo."
+}

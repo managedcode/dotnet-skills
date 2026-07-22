@@ -212,7 +212,7 @@ External upstream repositories are handled separately:
 - `scripts/import_external_catalog_sources.py` performs the normalization step
 
 Do not maintain a second manual plugin registry in local config.
-The importer auto-discovers upstream plugins from vendored `plugin.json` files and standard Claude plugin manifests at `.claude-plugin/plugin.json`. It uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides. Imported `SKILL.md`, `AGENT.md`, and supporting skill content should be copied verbatim from upstream rather than rewritten locally.
+The importer auto-discovers upstream plugins from vendored `plugin.json` files and standard Claude plugin manifests at `.claude-plugin/plugin.json`. For official repositories that publish standalone skills without a plugin manifest, it also discovers canonical `.agents/skills/*/SKILL.md` entries and reads their release version from vendored package metadata. It uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides. Imported `SKILL.md`, `AGENT.md`, and supporting skill content should be copied verbatim from upstream rather than rewritten locally.
 
 For imported official upstream skills, keep the upstream skill or agent id unless there is a real compatibility reason to rename it.
 

@@ -39,7 +39,7 @@ compatibility: "Requires ASP.NET Core SignalR server or client code."
 ## Current Upstream Notes
 
 - `dotnet/aspnetcore` `v10.0.10` is a servicing release. Keep SignalR architecture guidance focused on hub contract design, reconnection, transport, authorization, and scale-out validation.
-- After servicing updates, rerun at least one reconnect and group-broadcast smoke path because dependency updates can expose client/server package mismatches.
+- The July 2026 ASP.NET Core overview still positions SignalR for real-time server/client communication. After servicing updates, rerun at least one reconnect and group-broadcast smoke path because dependency updates can expose client/server package mismatches.
 
 ## Hub Patterns
 

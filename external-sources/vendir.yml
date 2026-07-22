@@ -12,3 +12,10 @@ directories:
         git:
           url: https://github.com/dgreenheck/webgpu-claude-skill
           ref: origin/main
+      - path: astro
+        git:
+          url: https://github.com/withastro/astro
+          ref: origin/main
+        includePaths:
+          - .agents/skills/astro-developer/**/*
+          - packages/astro/package.json

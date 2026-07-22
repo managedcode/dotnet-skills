@@ -63,12 +63,11 @@
 - Update any named-argument usage to `new VectorStoreVectorAttribute(dimensions: 1536)` and check generated samples or templates for the old casing.
 - If a collection was created against an older embedding model or dimension count, treat the schema change as a reindexing event rather than a transparent package upgrade.
 
-## Extensions v10.7 AI Notes
+## Extensions v10.8 AI Notes
 
-- `Microsoft.Extensions.AI.OpenAI` now targets OpenAI 2.11.0; retest provider-specific options and hosted-file behavior when upgrading.
-- `ToolJson.AdditionalProperties` preserves JSON Schema sub-schema object values, so remove defensive deserialization shims that only existed for that bug.
-- `HostedFileContent.SizeInBytes` and `HostedFileContent.CreatedAt` are stable; `Purpose` and `Scope` remain provider-shaped and experimental.
-- `FunctionInvokingChatClient` no longer auto-marks old `ToolApprovalResponseContent` history as informational-only. Keep a compatibility middleware only when replaying sessions serialized before the 10.7 behavior.
+- In `v10.8.1`, resume paths for approval-gated functions keep tool calls and tool results in protocol order even when the service owns chat history. Keep an integration test that pauses for approval, persists/resumes through the provider path, and completes the tool result.
+- Stateless OpenAI Responses calls with encrypted reasoning now round-trip the reasoning item id. Preserve it with the encrypted content when `store=false`; dropping the id breaks the continuation contract.
+- `v10.8.0` targets OpenAI 2.12.0, auto-detects speech input format, and fixes image-generating chat-client content ordering. Re-run provider-specific speech, multimodal, approval, and stateless-response fixtures rather than validating only plain text chat.
 
 ## Evaluation
 

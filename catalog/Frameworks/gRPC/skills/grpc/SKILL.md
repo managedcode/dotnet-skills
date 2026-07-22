@@ -55,7 +55,7 @@ compatibility: "Requires ASP.NET Core gRPC or gRPC client projects."
 ## Current Upstream Notes
 
 - `dotnet/aspnetcore` `v10.0.10` is servicing and does not change the gRPC programming model. Keep guidance focused on proto compatibility, streaming shape, deadlines, cancellation, channel reuse, and smoke calls.
-- After package servicing updates, regenerate protobuf outputs only when inputs or generator packages actually changed; do not churn generated files as a proxy for validation.
+- The July 2026 ASP.NET Core overview still treats gRPC as a contract-first RPC option. After package servicing updates, regenerate protobuf outputs only when inputs or generator packages actually changed; do not churn generated files as a proxy for validation.
 
 ```mermaid
 flowchart LR

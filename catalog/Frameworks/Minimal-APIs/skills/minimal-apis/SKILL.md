@@ -49,7 +49,7 @@ compatibility: "Requires ASP.NET Core 6+, preferably .NET 8+ for full features."
 ## Current Upstream Notes
 
 - `dotnet/aspnetcore` `v10.0.10` is servicing; it does not change the Minimal API route-group/filter/TypedResults model, but it fixes nullable `DescriptionAttribute` handling and duplicate XML documentation IDs in OpenAPI generation.
-- Continue to use the `aspnetcore-10.0` Learn overview and Minimal API pages when exact OpenAPI, filter, or parameter-binding behavior matters.
+- The July 2026 `aspnetcore-10.0` overview still routes lightweight HTTP APIs here. Use the dedicated Minimal API pages when exact OpenAPI, filter, or parameter-binding behavior matters.
 
 ## Basic Patterns
 

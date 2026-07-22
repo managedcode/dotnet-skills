@@ -1,0 +1,9 @@
+{
+  "name": "astro-developer",
+  "title": "Official Astro: Astro Developer",
+  "description": "Comprehensive guide for developing in the Astro monorepo. Covers architecture, debugging, testing, and critical constraints. Use when working on features, fixes, tests, or understanding the codebase structure.",
+  "links": {
+    "repository": "https://github.com/withastro/astro",
+    "docs": "https://github.com/withastro/astro/tree/main/.agents/skills/astro-developer"
+  }
+}

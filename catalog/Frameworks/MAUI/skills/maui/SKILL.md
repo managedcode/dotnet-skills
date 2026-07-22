@@ -47,7 +47,7 @@ compatibility: "Requires .NET MAUI workload (.NET 8+)."
 
 - `.NET MAUI` `10.0.71` is a servicing release for the 10.0 line. It includes fixes around HybridWebView/WebView rendering, modal navigation and tab behavior, SafeArea listeners in recycler items, MapPool retention, and platform-specific navigation regressions.
 - After upgrading MAUI packages, smoke-test Shell modal navigation, tabs, keyboard interactions, SafeArea layout, maps, WebView/HybridWebView, and accessibility narration on the target platforms.
-- The current `.NET MAUI` Learn overview for `net-maui-10.0` remains the source for supported platforms, single-project structure, native API access, Blazor Hybrid, and migration positioning.
+- The July 2026 `.NET MAUI` Learn overview for `net-maui-10.0` still frames the platform around a shared single-project app, native API access, handlers, and optional Blazor Hybrid UI. Verify each target platform rather than treating shared code as identical runtime behavior.
 
 ## Project Structure
 

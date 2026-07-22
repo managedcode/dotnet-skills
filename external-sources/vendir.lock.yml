@@ -2,14 +2,21 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Harden vally comparison reliability (#887)...
-      sha: ab72985132b79adcc4818d1fc5c41d9543f12498
+      commitTitle: 'Merge pull request #598 from romanglogowski-volue/fix/claude-code-lsp-schema...'
+      sha: 5354047b0a20f484fde6aa43ac8c1887d2efaae6
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-6-g5354047
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
+  - git:
+      commitTitle: Add missing `background` prop to `<Image />` component TypeScript
+        types (#17472)...
+      sha: 4dc590c8fcdd9207492914dddb8e861c532ed904
+      tags:
+      - '@astrojs/language-server@2.16.13-4-g4dc590c8fc'
+    path: astro
   path: upstreams
 kind: LockConfig

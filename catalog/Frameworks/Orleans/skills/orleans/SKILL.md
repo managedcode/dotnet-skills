@@ -42,6 +42,10 @@ identity -> serialized decisions -> bounded current state -> messages/events/wor
 4. Keep default non-reentrant scheduling and placement until a measured requirement justifies a change.
 5. Configure providers independently and test the failure model the design depends on.
 
+## Current Upstream Notes
+
+- The July 2026 docs still separate the core virtual-actor model from provider-dependent storage, streaming, clustering, and deployment. Route from the required guarantee to the narrow primitive, then validate its configured provider and topology rather than generalizing from in-memory defaults.
+
 ## Choose the State Owner
 
 | Primitive | Purpose | Choose it when | Do not use it as |

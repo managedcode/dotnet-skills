@@ -24,6 +24,11 @@ compatibility: "Requires a browser-facing app or static site plus a Node-based P
 
 - Read [CI and snapshot patterns](references/ci-and-snapshot-patterns.md) when adding a new visual test suite, wiring GitHub Actions, choosing between Playwright snapshots and a standalone Pixelmatch script, or stabilizing screenshot diffs.
 
+## Current Upstream Notes
+
+- The July 2026 Playwright CI and visual-comparison docs still require browser dependencies to be installed explicitly in CI and warn that screenshot rendering varies by host OS, browser build, fonts, headless mode, and hardware. Generate and review baselines in the same environment used for comparison.
+- Keep `--update-snapshots` as an intentional local review action. Pull-request CI should retain expected, actual, diff, trace, and report artifacts instead of silently accepting a new baseline.
+
 ## Workflow
 
 ```mermaid

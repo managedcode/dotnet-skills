@@ -182,6 +182,60 @@ def resolve_source_root(source_root_value: str) -> Path:
     return EXTERNAL_SOURCES_ROOT / source_root_value
 
 
+def discover_repository_version(source_root: Path) -> str:
+    package_paths = [
+        source_root / "packages" / source_root.name / "package.json",
+        source_root / "package.json",
+    ]
+    package_paths.extend(sorted((source_root / "packages").glob("*/package.json")))
+
+    seen: set[Path] = set()
+    for package_path in package_paths:
+        if package_path in seen or not package_path.is_file():
+            continue
+        seen.add(package_path)
+
+        version = normalize_text(load_json(package_path).get("version"))
+        if version and version != "0.0.0":
+            return version
+
+    raise ValueError(
+        f"No non-placeholder package version was found for standalone skills under {source_root}. "
+        "Vendor the authoritative package.json alongside the skill source."
+    )
+
+
+def discover_standalone_skill_plugins(source_root: Path) -> dict[str, tuple[Path, dict]]:
+    skills_root = source_root / ".agents" / "skills"
+    skill_manifest_paths = sorted(skills_root.glob("*/SKILL.md"))
+    if not skill_manifest_paths:
+        return {}
+
+    version = discover_repository_version(source_root)
+    plugins: dict[str, tuple[Path, dict]] = {}
+    for skill_manifest_path in skill_manifest_paths:
+        skill_dir = skill_manifest_path.parent
+        metadata, _ = parse_markdown_frontmatter(skill_manifest_path)
+        skill_name = normalize_text(metadata.get("name"))
+        description = normalize_text(metadata.get("description"))
+        if not skill_name or not description:
+            raise ValueError(f"{skill_manifest_path} must define non-empty name and description")
+        if skill_name in plugins:
+            raise ValueError(f"Duplicate standalone upstream skill name detected: {skill_name}")
+
+        plugins[skill_name] = (
+            skill_dir,
+            {
+                "name": skill_name,
+                "version": version,
+                "description": description,
+                "skills": ["."],
+            },
+        )
+
+    return plugins
+
+
 def discover_upstream_plugins(source_root: Path) -> dict[str, tuple[Path, dict]]:
     plugins: dict[str, tuple[Path, dict]] = {}
 
@@ -214,7 +268,12 @@ def discover_upstream_plugins(source_root: Path) -> dict[str, tuple[Path, dict]]
         plugins[plugin_name] = (plugin_dir, plugin_manifest)
 
     if not plugins:
-        raise ValueError(f"No upstream plugin.json files were found under {source_root}")
+        plugins = discover_standalone_skill_plugins(source_root)
+
+    if not plugins:
+        raise ValueError(
+            f"No upstream plugin.json files or canonical .agents/skills entries were found under {source_root}"
+        )
 
     return plugins
 

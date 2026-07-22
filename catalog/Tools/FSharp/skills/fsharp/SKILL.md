@@ -64,7 +64,7 @@ When adding a file, update the `.fsproj` intentionally. Do not assume wildcard o
 
 ## Current Upstream Notes
 
-- The refreshed F# overview emphasizes functional-first programming on .NET with records, discriminated unions, pattern matching, units of measure, type providers, and interop. Keep F# guidance domain-model oriented rather than translating C# object patterns mechanically.
+- The July 2026 F# overview refresh continues to emphasize functional-first programming on .NET with records, discriminated unions, pattern matching, units of measure, type providers, and interop. Keep F# guidance domain-model oriented rather than translating C# object patterns mechanically.
 - Use `fsi` for exploratory scripts, but move durable code into ordered `.fsproj` files before it becomes production behavior.
 
 ## Practical Patterns

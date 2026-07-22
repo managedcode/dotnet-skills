@@ -47,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.5.0" />
     <PackageReference Include="Microsoft.ML.Tokenizers" Version="1.0.1" />
     <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="1.0.1" />
     <PackageReference Include="NuGet.Versioning" Version="7.3.0" />

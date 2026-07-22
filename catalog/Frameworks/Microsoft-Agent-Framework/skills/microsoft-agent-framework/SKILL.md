@@ -27,6 +27,12 @@ compatibility: "Requires preview-era Microsoft Agent Framework packages and a .N
 8. Use durable agents only when you truly need Azure Functions serverless hosting, durable thread storage, or deterministic long-running orchestrations.
 9. Verify preview status, package maturity, docs recency, and provider-specific limitations before locking a production architecture.
 
+## Current Upstream Notes
+
+- The July 2026 overview now describes one Agent Framework across .NET, Python, and Go. This catalog skill remains intentionally .NET-scoped; do not infer API or feature parity from cross-language overview wording.
+- The refreshed AG-UI security guidance keeps the browser outside the trust boundary: put a trusted frontend/server mediator in front of the AG-UI server, validate client-supplied messages, state, tools, and forwarded properties, and filter sensitive tool or agent output before streaming it back.
+- Middleware, function-tool, migration, support, troubleshooting, upgrade, durable-agent, observability, and AG-UI pages all changed in the same review window. Check the exact current .NET page before relying on a Python example or an older preview signature.
+
 ## Architecture
 
 ```mermaid

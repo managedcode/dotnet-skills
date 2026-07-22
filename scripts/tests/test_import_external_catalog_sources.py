@@ -208,6 +208,80 @@ class ImportExternalCatalogSourcesTests(unittest.TestCase):
             self.assertEqual(list(plugins), ["dotnet-msbuild"])
             self.assertEqual(plugins["dotnet-msbuild"][1]["description"], "Flat manifest.")
 
+    def test_import_source_supports_canonical_agents_skills_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_root_value:
+            temp_root = Path(temp_root_value)
+            catalog_root = temp_root / "catalog"
+            external_root = temp_root / "external-sources"
+            config_root = external_root / "imports"
+            source_root = external_root / "upstreams" / "astro"
+            skill_dir = source_root / ".agents" / "skills" / "astro-developer"
+
+            skill_dir.mkdir(parents=True, exist_ok=True)
+            skill_dir.joinpath("SKILL.md").write_text(
+                "\n".join(
+                    [
+                        "---",
+                        "name: astro-developer",
+                        'description: "Develop features and fixes in the Astro monorepo."',
+                        "---",
+                        "",
+                        "# Astro Developer",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            skill_dir.joinpath("architecture.md").write_text("# Architecture\n", encoding="utf-8")
+            self.write_json(
+                source_root / "packages" / "astro" / "package.json",
+                {
+                    "name": "astro",
+                    "version": "7.1.3",
+                },
+            )
+
+            config_path = config_root / "astro.json"
+            config = {
+                "id": "astro",
+                "repository": "https://github.com/withastro/astro",
+                "sourceRoot": "upstreams/astro",
+                "docsBase": "https://github.com/withastro/astro/tree/main/.agents/skills",
+                "titlePrefix": "Official Astro skills",
+                "managedPackagePrefix": "Official-Astro",
+                "pluginDefaults": {
+                    "type": "Frameworks",
+                    "category": "Web",
+                    "compatibility": "Requires the withastro/astro monorepo.",
+                },
+                "pluginOverrides": {
+                    "astro-developer": {
+                        "package": "Official-Astro",
+                        "title": "Official Astro: Astro Developer",
+                    }
+                },
+            }
+
+            with (
+                patch.object(IMPORTER, "ROOT", temp_root),
+                patch.object(IMPORTER, "CATALOG_ROOT", catalog_root),
+                patch.object(IMPORTER, "EXTERNAL_SOURCES_ROOT", external_root),
+                patch.object(IMPORTER, "CONFIG_ROOT", config_root),
+            ):
+                summary = IMPORTER.import_source(config_path, config)
+
+            self.assertEqual(summary["skills"], 1)
+            imported_skill = catalog_root / "Frameworks" / "Official-Astro" / "skills" / "astro-developer"
+            self.assertEqual(
+                (imported_skill / "SKILL.md").read_text(encoding="utf-8"),
+                (skill_dir / "SKILL.md").read_text(encoding="utf-8"),
+            )
+            self.assertTrue((imported_skill / "architecture.md").is_file())
+            self.assertEqual(
+                json.loads((imported_skill / "manifest.json").read_text(encoding="utf-8"))["version"],
+                "7.1.3",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

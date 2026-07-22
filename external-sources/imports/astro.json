@@ -1,0 +1,21 @@
+{
+  "id": "astro",
+  "repository": "https://github.com/withastro/astro",
+  "sourceRoot": "upstreams/astro",
+  "docsBase": "https://github.com/withastro/astro/tree/main/.agents/skills",
+  "titlePrefix": "Official Astro skills",
+  "managedPackagePrefix": "Official-Astro",
+  "replaceSkillConflicts": true,
+  "replaceAgentConflicts": true,
+  "pluginDefaults": {
+    "type": "Frameworks",
+    "category": "Web",
+    "compatibility": "Requires the withastro/astro monorepo."
+  },
+  "pluginOverrides": {
+    "astro-developer": {
+      "package": "Official-Astro",
+      "title": "Official Astro: Astro Developer"
+    }
+  }
+}

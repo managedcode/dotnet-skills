@@ -23,7 +23,7 @@ compatibility: "Best for new repositories or structural refactors of existing .N
 
 ## Current Upstream Notes
 
-- The current "Build apps with .NET" Learn page reinforces app-model-first setup: console, web, worker, desktop, mobile, cloud, and AI entry points should drive SDK/template choice.
+- The July 2026 "Build apps with .NET" Learn refresh reinforces app-model-first setup: console, web, worker, desktop, mobile, cloud, and AI entry points should drive SDK/template choice.
 - `.NET SDK 10.0.302` is the current 10.0.3xx servicing SDK; it fixes Aspire AppHost launching and tool-runner duplicate-flag handling and enables file-based app `#:include` / `#:exclude` without feature flags. `.NET SDK 8.0.423` remains the current 8.0 servicing SDK. Keep `global.json` and CI images explicit for the selected line.
 
 ## Deliver

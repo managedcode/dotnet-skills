@@ -286,7 +286,7 @@ External upstream repositories live in the dedicated [`external-sources/`](exter
 - `external-sources/vendir.yml` and `external-sources/vendir.lock.yml` handle fetch-and-pin only.
 - `external-sources/upstreams/` holds the checked-in vendored snapshots.
 - `external-sources/imports/*.json` is overrides-only local policy for type, category, package naming, compatibility, and skill-level package trigger metadata.
-- `scripts/import_external_catalog_sources.py` auto-discovers upstream plugins from vendored `plugin.json` and `.claude-plugin/plugin.json` files, applies the local overrides, and normalizes the result into `catalog/<type>/<package>/`.
+- `scripts/import_external_catalog_sources.py` auto-discovers upstream plugins from vendored `plugin.json` and `.claude-plugin/plugin.json` files plus standalone official skills from canonical `.agents/skills/*/SKILL.md` trees, applies the local overrides, and normalizes the result into `catalog/<type>/<package>/`.
 - Imported upstream `SKILL.md`, `AGENT.md`, and supporting skill content is copied verbatim; local-only metadata stays in sibling `manifest.json` files instead of being injected into upstream markdown.
 
 Official imports may keep their upstream skill ids instead of being renamed to match local repo-authored conventions.
@@ -294,7 +294,7 @@ Official imports may keep their upstream skill ids instead of being renamed to m
 ```mermaid
 flowchart LR
   A["external-sources/vendir.yml"] --> B["external-sources/upstreams/<repo>/"]
-  B --> C["plugin manifest auto-discovery"]
+  B --> C["plugin or canonical skill auto-discovery"]
   D["external-sources/imports/*.json (overrides only)"] --> C
   C --> E["scripts/import_external_catalog_sources.py"]
   E --> F["catalog/<type>/<package>/"]
@@ -404,6 +404,7 @@ This catalog builds on the work of many open-source projects and their authors:
 |---------|---------|-------------|
 | [MCAF](https://mcaf.managed-code.com/) | Managed Code | Framework for building real software with AI coding agents through repo-native context, verification, `AGENTS.md`, and skills |
 | [dotnet/skills](https://github.com/dotnet/skills) | Microsoft, .NET team | Official .NET skills repository vendir-imported into this catalog for upstream task-specific skills and agents |
+| [withastro/astro](https://github.com/withastro/astro) | Astro Technology Company | Official Astro `astro-developer` skill vendir-imported with pinned source and upstream-change tracking |
 | [webgpu-claude-skill](https://github.com/dgreenheck/webgpu-claude-skill) | Dan Greenheck | Three.js WebGPU and TSL skill vendir-imported with pinned source and upstream-change tracking |
 | [Agent Skills Standard](https://agentskills.io) | Anthropic | Open specification for portable agent skill packages |
 | [Claude Code](https://code.claude.com) | Anthropic | Subagent architecture that shaped our orchestration agent design |
