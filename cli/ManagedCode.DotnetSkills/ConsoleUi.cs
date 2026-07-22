@@ -581,7 +581,7 @@ internal static class ConsoleUi
         Section("Catalog");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} list", "Inventory with scope comparison");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} bundle list", "Focused bundles by collection and workflow");
-        Cmd($"{ToolIdentity.SkillsDisplayCommand} recommend", "Scan .csproj and propose skills");
+        Cmd($"{ToolIdentity.SkillsDisplayCommand} recommend", "Scan .NET and browser UI signals");
         Cmd($"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts as JSON");
 
         Section("Install");
@@ -792,8 +792,9 @@ internal static class ConsoleUi
         grid.AddColumn(new GridColumn().NoWrap());
         grid.AddColumn();
         grid.AddRow(new Markup("[dim]project[/]"), new Markup($"[dim]{Escape(scanResult.ProjectRoot.FullName)}[/]"));
-        grid.AddRow(new Markup("[dim]scanned[/]"), new Markup($"{scanResult.ProjectFiles.Count} projects"));
-        grid.AddRow(new Markup("[dim]frameworks[/]"), new Markup(scanResult.TargetFrameworks.Count == 0 ? "[dim]unknown[/]" : Escape(string.Join(", ", scanResult.TargetFrameworks))));
+        grid.AddRow(new Markup("[dim]scanned[/]"), new Markup($"{scanResult.ProjectFiles.Count} .NET project(s), {scanResult.FrontendManifestCount} package.json"));
+        grid.AddRow(new Markup("[dim].NET[/]"), new Markup(scanResult.TargetFrameworks.Count == 0 ? "[dim]none[/]" : Escape(string.Join(", ", scanResult.TargetFrameworks))));
+        grid.AddRow(new Markup("[dim]frontend[/]"), new Markup(scanResult.FrontendFrameworks.Count == 0 ? "[dim]none[/]" : Escape(string.Join(", ", scanResult.FrontendFrameworks))));
         grid.AddRow(new Markup("[dim]catalog[/]"), new Markup($"{Escape(catalog.SourceLabel)} [dim]({Escape(catalog.CatalogVersion)})[/]"));
         grid.AddRow(new Markup("[dim]target[/]"), new Markup($"[dim]{Escape(layout.PrimaryRoot.FullName)}[/]"));
 
@@ -955,7 +956,7 @@ internal static class ConsoleUi
         }
 
         lines.Add($"[green]dotnet skills install --auto[/] [dim]project-driven sync[/]");
-        lines.Add($"[green]dotnet skills recommend[/] [dim]scan .csproj signals[/]");
+        lines.Add($"[green]dotnet skills recommend[/] [dim]scan .NET and browser UI signals[/]");
 
         var alternateScope = scopeInventory.FirstOrDefault(row => row.Scope != layout.Scope);
         if (alternateScope is not null)

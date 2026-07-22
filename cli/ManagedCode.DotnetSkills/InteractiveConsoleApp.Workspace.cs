@@ -371,8 +371,9 @@ internal sealed partial class InteractiveConsoleApp
         var low = scan.Recommendations.Count(r => r.Confidence == RecommendationConfidence.Low);
 
         AddIdentityStrip(panel, "project scan", AccentDeepSkyBlue,
-            ("scanned", $"{scan.ProjectFiles.Count} project file(s)"),
-            ("frameworks", scan.TargetFrameworks.Count == 0 ? "[grey50]unknown[/]" : Escape(string.Join(", ", scan.TargetFrameworks))),
+            ("scanned", $"{scan.ProjectFiles.Count} .NET / {scan.FrontendManifestCount} frontend manifest(s)"),
+            ("frameworks", scan.TargetFrameworks.Count == 0 ? "[grey50]none[/]" : Escape(string.Join(", ", scan.TargetFrameworks))),
+            ("frontend", scan.FrontendFrameworks.Count == 0 ? "[grey50]none[/]" : Escape(string.Join(", ", scan.FrontendFrameworks))),
             ("recommendations", scan.Recommendations.Count.ToString()));
 
         // Confidence trio — 3 horizontal BarGraphs (high green, med yellow, low grey) so the
@@ -796,7 +797,7 @@ internal sealed partial class InteractiveConsoleApp
             "[grey]Skills / Installed[/] [grey50]browse, install, update, remove catalog skills[/]",
             "[grey]Collections / Bundles / Packages[/] [grey50]install grouped surfaces[/]",
             "[grey]Agents[/] [grey50]install orchestration agents into native agent directories[/]",
-            "[grey]Project[/] [grey50]scan .csproj signals and install recommended skills[/]",
+            "[grey]Project[/] [grey50]scan .NET and browser UI signals and install recommended skills[/]",
             "[grey]Analysis[/] [grey50]collection sizes, heaviest skills, package signals[/]");
 
         AddInfoBlock(panel, "notes",

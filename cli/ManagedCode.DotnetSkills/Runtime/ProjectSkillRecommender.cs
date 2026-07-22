@@ -1,39 +1,67 @@
+using System.Text.Json;
 using System.Xml.Linq;
 
 namespace ManagedCode.DotnetSkills.Runtime;
 
 internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
 {
+    private static readonly HashSet<string> IgnoredDirectoryNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".git",
+        ".next",
+        ".nuxt",
+        ".svelte-kit",
+        "artifacts",
+        "bin",
+        "coverage",
+        "dist",
+        "external-sources",
+        "node_modules",
+        "obj",
+        "third-party",
+        "third_party",
+        "vendor",
+    };
+
     public ProjectScanResult Analyze(string? projectDirectory)
     {
         var rootPath = string.IsNullOrWhiteSpace(projectDirectory)
             ? Path.GetFullPath(Directory.GetCurrentDirectory())
             : Path.GetFullPath(projectDirectory);
 
-        var projectFiles = Directory
-            .EnumerateFiles(rootPath, "*.csproj", SearchOption.AllDirectories)
-            .Where(path => !IsIgnoredPath(path))
+        var discoveredFiles = EnumerateProjectFiles(rootPath).ToArray();
+        var projectFiles = discoveredFiles
+            .Where(path => path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
             .Select(path => new FileInfo(path))
             .OrderBy(file => file.FullName, StringComparer.Ordinal)
             .ToArray();
 
-        if (projectFiles.Length == 0)
+        var inventory = ProjectInventory.Load(projectFiles, discoveredFiles);
+        if (projectFiles.Length == 0 && !inventory.HasBrowserUi)
         {
-            throw new InvalidOperationException($"No .csproj files were found under {rootPath}");
+            throw new InvalidOperationException($"No .csproj files or supported browser UI project signals were found under {rootPath}");
         }
 
-        var inventory = ProjectInventory.Load(projectFiles);
         var recommendations = BuildRecommendations(rootPath, projectFiles.Length, inventory);
 
-        return new ProjectScanResult(new DirectoryInfo(rootPath), projectFiles, inventory.TargetFrameworks.OrderBy(value => value, StringComparer.Ordinal).ToArray(), recommendations);
+        return new ProjectScanResult(
+            new DirectoryInfo(rootPath),
+            projectFiles,
+            inventory.FrontendManifestCount,
+            inventory.TargetFrameworks.OrderBy(value => value, StringComparer.Ordinal).ToArray(),
+            inventory.FrontendFrameworks.OrderBy(value => value, StringComparer.Ordinal).ToArray(),
+            recommendations);
     }
 
     private IReadOnlyList<ProjectSkillRecommendation> BuildRecommendations(string rootPath, int projectCount, ProjectInventory inventory)
     {
         var builders = new Dictionary<string, RecommendationBuilder>(StringComparer.OrdinalIgnoreCase);
 
-        Add("dotnet", RecommendationConfidence.Low, $"Detected {projectCount} .NET project file(s).", RecommendationSignalKind.Project, builders);
-        Add("modern-csharp", RecommendationConfidence.Low, FormatFrameworkReason(inventory.TargetFrameworks), RecommendationSignalKind.TargetFramework, builders);
+        if (projectCount > 0)
+        {
+            Add("dotnet", RecommendationConfidence.Low, $"Detected {projectCount} .NET project file(s).", RecommendationSignalKind.Project, builders);
+            Add("modern-csharp", RecommendationConfidence.Low, FormatFrameworkReason(inventory.TargetFrameworks), RecommendationSignalKind.TargetFramework, builders);
+        }
 
         if (projectCount > 1 || HasSolutionFile(rootPath))
         {
@@ -49,6 +77,24 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
         if (inventory.HasSdk("Microsoft.NET.Sdk.BlazorWebAssembly"))
         {
             Add("blazor", RecommendationConfidence.High, "Project uses Microsoft.NET.Sdk.BlazorWebAssembly.", RecommendationSignalKind.Sdk, builders);
+        }
+
+        if (inventory.UsesBlazor && !inventory.HasSdk("Microsoft.NET.Sdk.BlazorWebAssembly"))
+        {
+            Add("blazor", RecommendationConfidence.High, "Detected Blazor component or package signals.", RecommendationSignalKind.FrontendFramework, builders);
+        }
+
+        if (inventory.UsesAstro)
+        {
+            Add("astro-developer", RecommendationConfidence.High, "Detected Astro dependency, configuration, or component files.", RecommendationSignalKind.FrontendFramework, builders);
+        }
+
+        if (inventory.HasBrowserUi)
+        {
+            var frontendSummary = inventory.FrontendFrameworks.Count == 0
+                ? "browser UI files"
+                : string.Join(", ", inventory.FrontendFrameworks.OrderBy(value => value, StringComparer.Ordinal));
+            Add("playwright-visual-testing", RecommendationConfidence.Medium, $"Detected browser UI signals: {frontendSummary}.", RecommendationSignalKind.BrowserUi, builders);
         }
 
         if (inventory.HasSdk("Aspire.AppHost.Sdk"))
@@ -109,12 +155,43 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
             .ToArray();
     }
 
-    private static bool IsIgnoredPath(string path)
+    private static IEnumerable<string> EnumerateProjectFiles(string rootPath)
     {
-        var segments = path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        return segments.Contains("bin", StringComparer.OrdinalIgnoreCase)
-            || segments.Contains("obj", StringComparer.OrdinalIgnoreCase)
-            || segments.Contains(".git", StringComparer.OrdinalIgnoreCase);
+        var pendingDirectories = new Stack<string>();
+        pendingDirectories.Push(rootPath);
+
+        while (pendingDirectories.Count > 0)
+        {
+            var currentDirectory = pendingDirectories.Pop();
+            IEnumerable<string> files;
+            IEnumerable<string> directories;
+            try
+            {
+                files = Directory.EnumerateFiles(currentDirectory).ToArray();
+                directories = Directory.EnumerateDirectories(currentDirectory).ToArray();
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                continue;
+            }
+
+            foreach (var file in files)
+            {
+                yield return file;
+            }
+
+            foreach (var directory in directories)
+            {
+                var directoryInfo = new DirectoryInfo(directory);
+                if (IgnoredDirectoryNames.Contains(directoryInfo.Name)
+                    || directoryInfo.Attributes.HasFlag(FileAttributes.ReparsePoint))
+                {
+                    continue;
+                }
+
+                pendingDirectories.Push(directory);
+            }
+        }
     }
 
     private static bool HasSolutionFile(string rootPath)
@@ -216,7 +293,9 @@ internal sealed class ProjectSkillRecommender(SkillCatalogPackage catalog)
 internal sealed record ProjectScanResult(
     DirectoryInfo ProjectRoot,
     IReadOnlyList<FileInfo> ProjectFiles,
+    int FrontendManifestCount,
     IReadOnlyList<string> TargetFrameworks,
+    IReadOnlyList<string> FrontendFrameworks,
     IReadOnlyList<ProjectSkillRecommendation> Recommendations);
 
 internal sealed record ProjectSkillRecommendation(
@@ -226,7 +305,11 @@ internal sealed record ProjectSkillRecommendation(
     IReadOnlyList<RecommendationSignalKind> Signals)
 {
     public bool IsAutoInstallCandidate =>
-        Signals.Any(signal => signal is RecommendationSignalKind.Package or RecommendationSignalKind.Sdk or RecommendationSignalKind.ProjectProperty);
+        Signals.Any(signal => signal is RecommendationSignalKind.Package
+            or RecommendationSignalKind.Sdk
+            or RecommendationSignalKind.ProjectProperty
+            or RecommendationSignalKind.FrontendFramework
+            or RecommendationSignalKind.BrowserUi);
 }
 
 internal enum RecommendationConfidence
@@ -243,6 +326,8 @@ internal enum RecommendationSignalKind
     Sdk,
     Package,
     ProjectProperty,
+    FrontendFramework,
+    BrowserUi,
 }
 
 internal sealed class RecommendationBuilder(string skillName)
@@ -276,9 +361,37 @@ internal sealed class RecommendationBuilder(string skillName)
 
 internal sealed class ProjectInventory
 {
+    private static readonly IReadOnlyDictionary<string, string> BrowserPackageFrameworks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["@angular/core"] = "Angular",
+        ["@builder.io/qwik"] = "Qwik",
+        ["@remix-run/react"] = "Remix",
+        ["@sveltejs/kit"] = "Svelte",
+        ["astro"] = "Astro",
+        ["gatsby"] = "Gatsby",
+        ["lit"] = "Lit",
+        ["next"] = "Next.js",
+        ["nuxt"] = "Nuxt",
+        ["preact"] = "Preact",
+        ["react"] = "React",
+        ["react-dom"] = "React",
+        ["solid-js"] = "Solid",
+        ["svelte"] = "Svelte",
+        ["vue"] = "Vue",
+    };
+
+    private static readonly HashSet<string> DependencyPropertyNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "dependencies",
+        "devDependencies",
+        "optionalDependencies",
+        "peerDependencies",
+    };
+
     private readonly HashSet<string> sdks = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> packageIds = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> targetFrameworks = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> frontendFrameworks = new(StringComparer.OrdinalIgnoreCase);
 
     private ProjectInventory()
     {
@@ -290,7 +403,17 @@ internal sealed class ProjectInventory
 
     public bool UsesWindowsForms { get; private set; }
 
+    public bool UsesAstro => frontendFrameworks.Contains("Astro");
+
+    public bool UsesBlazor => frontendFrameworks.Contains("Blazor");
+
+    public bool HasBrowserUi => frontendFrameworks.Count > 0;
+
+    public int FrontendManifestCount { get; private set; }
+
     public IReadOnlyCollection<string> TargetFrameworks => targetFrameworks;
+
+    public IReadOnlyCollection<string> FrontendFrameworks => frontendFrameworks;
 
     public bool HasPackage(string packageId) => packageIds.Contains(packageId);
 
@@ -300,7 +423,7 @@ internal sealed class ProjectInventory
 
     public bool HasSdkPrefix(string sdkPrefix) => sdks.Any(sdk => sdk.StartsWith(sdkPrefix, StringComparison.OrdinalIgnoreCase));
 
-    public static ProjectInventory Load(IEnumerable<FileInfo> projectFiles)
+    public static ProjectInventory Load(IEnumerable<FileInfo> projectFiles, IEnumerable<string> discoveredFiles)
     {
         var inventory = new ProjectInventory();
 
@@ -368,7 +491,107 @@ internal sealed class ProjectInventory
             }
         }
 
+        inventory.ScanFrontendFiles(discoveredFiles);
+
+        if (inventory.HasSdk("Microsoft.NET.Sdk.BlazorWebAssembly")
+            || inventory.HasPackagePrefix("Microsoft.AspNetCore.Components"))
+        {
+            inventory.frontendFrameworks.Add("Blazor");
+        }
+
         return inventory;
+    }
+
+    private void ScanFrontendFiles(IEnumerable<string> discoveredFiles)
+    {
+        foreach (var filePath in discoveredFiles)
+        {
+            var fileName = Path.GetFileName(filePath);
+            if (fileName.Equals("package.json", StringComparison.OrdinalIgnoreCase))
+            {
+                FrontendManifestCount++;
+                ScanPackageManifest(filePath);
+                continue;
+            }
+
+            switch (Path.GetExtension(filePath).ToLowerInvariant())
+            {
+                case ".astro":
+                    frontendFrameworks.Add("Astro");
+                    break;
+                case ".razor":
+                    frontendFrameworks.Add("Blazor");
+                    break;
+                case ".jsx":
+                case ".tsx":
+                    frontendFrameworks.Add("React");
+                    break;
+                case ".vue":
+                    frontendFrameworks.Add("Vue");
+                    break;
+                case ".svelte":
+                    frontendFrameworks.Add("Svelte");
+                    break;
+                case ".cshtml":
+                    frontendFrameworks.Add("Razor Pages");
+                    break;
+                case ".html" when IsBrowserEntryPoint(filePath):
+                    frontendFrameworks.Add("Browser UI");
+                    break;
+            }
+
+            if (fileName.StartsWith("astro.config.", StringComparison.OrdinalIgnoreCase))
+            {
+                frontendFrameworks.Add("Astro");
+            }
+        }
+    }
+
+    private void ScanPackageManifest(string packageJsonPath)
+    {
+        try
+        {
+            using var stream = File.OpenRead(packageJsonPath);
+            using var document = JsonDocument.Parse(stream);
+            var root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
+            {
+                return;
+            }
+
+            if (root.TryGetProperty("name", out var nameElement)
+                && nameElement.ValueKind == JsonValueKind.String
+                && string.Equals(nameElement.GetString(), "astro", StringComparison.OrdinalIgnoreCase))
+            {
+                frontendFrameworks.Add("Astro");
+            }
+
+            foreach (var property in root.EnumerateObject())
+            {
+                if (!DependencyPropertyNames.Contains(property.Name)
+                    || property.Value.ValueKind != JsonValueKind.Object)
+                {
+                    continue;
+                }
+
+                foreach (var dependency in property.Value.EnumerateObject())
+                {
+                    if (BrowserPackageFrameworks.TryGetValue(dependency.Name, out var framework))
+                    {
+                        frontendFrameworks.Add(framework);
+                    }
+                }
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            // A malformed or unreadable frontend manifest should not hide valid .NET project signals.
+        }
+    }
+
+    private static bool IsBrowserEntryPoint(string filePath)
+    {
+        return Path.GetFileName(filePath).Equals("index.html", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsTrue(string value) => string.Equals(value.Trim(), "true", StringComparison.OrdinalIgnoreCase);

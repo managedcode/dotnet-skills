@@ -50,8 +50,8 @@ dotnet skills --version                     # alias for the same version view
 dotnet skills list                          # show installed and available skills
 dotnet skills bundle list                   # show focused bundles by collection and workflow
 dotnet skills list --local                  # only installed skills in the current target
-dotnet skills recommend                     # suggest skills from local .csproj files
-dotnet skills install --auto                # install skills for NuGet packages detected in local .csproj files
+dotnet skills recommend                     # suggest skills from local .NET and browser UI signals
+dotnet skills install --auto                # install skills from local .NET and browser UI project signals
 dotnet skills install --auto --prune        # remove stale auto-managed skills that no longer match the project
 dotnet skills install bundle quality        # install a focused .NET quality bundle
 dotnet skills install mcaf                  # install the opt-in MCAF governance skill
@@ -78,8 +78,8 @@ agents install router --auto                # same agent install flow without th
 | `dotnet skills version` | Show the current installed tool version and check whether NuGet has a newer release |
 | `dotnet skills list` | Show the current inventory, compare project/global scope when relevant, and keep the remaining catalog as a compact collection summary |
 | `dotnet skills bundle list` | Show the focused bundles that expand into related skills by collection or workflow |
-| `dotnet skills recommend` | Scan local `*.csproj` files, propose relevant skills, and let you decide what to install |
-| `dotnet skills install --auto` | Inspect local `*.csproj` files, detect NuGet packages and strong project signals, and install matching skills automatically |
+| `dotnet skills recommend` | Scan local `*.csproj`, `package.json`, and browser UI files, propose relevant skills, and let you decide what to install |
+| `dotnet skills install --auto` | Inspect local `*.csproj`, `package.json`, and browser UI files, detect strong project signals, and install matching skills automatically |
 | `dotnet skills install --auto --prune` | Remove stale auto-managed skills that no longer match the current project's NuGet packages or app-model signals |
 | `dotnet skills install <skill...>` | Install one or more skills |
 | `dotnet skills install bundle <bundle...>` | Install one or more focused bundles such as `quality`, `frontend-quality`, or `orleans` |
@@ -110,9 +110,9 @@ The [public catalog](https://skills.managed-code.com/) is the canonical browse s
 
 `dotnet skills bundle list` shows the ready-made focused bundles. Bundle installs are bulk shortcuts for related skill sets, so `dotnet skills install bundle quality`, `dotnet skills install bundle frontend-quality`, or `dotnet skills install bundle orleans` install every skill mapped to that focused bundle in one pass. MCAF is one opt-in governance skill and installs directly with `dotnet skills install mcaf`.
 
-`dotnet skills install --auto` inspects local `*.csproj` files, detects NuGet packages plus strong SDK and project-property signals, and installs the matching skills for that project automatically. Add `dotnet skills install --auto --prune` when you also want to remove stale auto-managed skills that no longer match the current project. Protected diagnostic skills and `graphify-dotnet` are not pruned.
+`dotnet skills install --auto` inspects local `*.csproj`, `package.json`, and browser UI files, detects NuGet packages plus strong .NET and frontend framework signals, and installs the matching skills for that project automatically. Add `dotnet skills install --auto --prune` when you also want to remove stale auto-managed skills that no longer match the current project. Protected diagnostic skills and `graphify-dotnet` are not pruned.
 
-`dotnet skills recommend` is a scan-only command: it inspects local project files, proposes a skill list, and prints the install command you can run if you agree with the recommendations. It does not install anything automatically.
+`dotnet skills recommend` is a scan-only command: it inspects local .NET projects plus Astro, React, Blazor, and other browser UI signals, proposes a skill list, and prints the install command you can run if you agree with the recommendations. It does not install anything automatically.
 
 The bare `dotnet skills` usage view and `help` path also perform the automatic self-update check, so an outdated tool still tells you to upgrade before it renders the command table.
 

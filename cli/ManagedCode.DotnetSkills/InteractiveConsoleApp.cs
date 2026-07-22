@@ -2859,14 +2859,16 @@ internal sealed partial class InteractiveConsoleApp
     {
         var summary = BuildRichPropertyGrid(
             ("project", $"[dim]{Escape(CompactPath(plan.ScanResult.ProjectRoot.FullName))}[/]"),
-            ("projects", plan.ScanResult.ProjectFiles.Count.ToString()),
+            (".NET projects", plan.ScanResult.ProjectFiles.Count.ToString()),
+            ("frontend manifests", plan.ScanResult.FrontendManifestCount.ToString()),
             ("matched", plan.DesiredSkills.Count.ToString()),
             ("new", newSkills.Count == 0 ? "[grey]0[/]" : $"[green]{newSkills.Count}[/]"),
             ("target", $"[dim]{Escape(CompactPath(layout.PrimaryRoot.FullName))}[/]"),
-            ("frameworks", Escape(string.Join(", ", plan.ScanResult.TargetFrameworks))));
+            (".NET frameworks", plan.ScanResult.TargetFrameworks.Count == 0 ? "[grey]none[/]" : Escape(string.Join(", ", plan.ScanResult.TargetFrameworks))),
+            ("frontend", plan.ScanResult.FrontendFrameworks.Count == 0 ? "[grey]none[/]" : Escape(string.Join(", ", plan.ScanResult.FrontendFrameworks))));
 
         var flow = BuildRichStack(
-            new Spectre.Console.Markup("[deepskyblue1]Signals[/] [dim]come from .csproj packages, SDKs, and project properties[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Signals[/] [dim]come from .csproj, package.json, and browser UI source files[/]"),
             new Spectre.Console.Markup("[deepskyblue1]New skills[/] [dim]will be previewed before any write happens[/]"),
             new Spectre.Console.Markup("[deepskyblue1]State[/] [dim]is saved only after a confirmed project-driven install[/]"));
 
@@ -2985,7 +2987,7 @@ internal sealed partial class InteractiveConsoleApp
             ("Skills", $"{ToolIdentity.SkillsDisplayCommand} install aspire", "Install or inspect one skill by alias"),
             ("About", $"{ToolIdentity.DisplayCommand} help", "Show the site-aligned surface map and command reference"),
             ("Tokens", $"{ToolIdentity.SkillsDisplayCommand} catalog tokens --catalog-root .", "Export per-skill token counts"),
-            ("Project", $"{ToolIdentity.SkillsDisplayCommand} install --auto", "Install from .csproj signals"),
+            ("Project", $"{ToolIdentity.SkillsDisplayCommand} install --auto", "Install from .NET and browser UI signals"),
             ("Installed", $"{ToolIdentity.SkillsDisplayCommand} list --installed-only", "Inspect the current target before review, remove, or clear"),
             ("Install", $"{ToolIdentity.SkillsDisplayCommand} install bundle quality", "Install a focused bundle"),
             ("Remove", $"{ToolIdentity.SkillsDisplayCommand} remove aspire", "Remove one installed skill"),
