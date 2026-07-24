@@ -22,7 +22,7 @@ Check the target project's Orleans packages before copying an API. This referenc
 - use `RegisterGrainTimer`, not the obsolete `RegisterTimer` API;
 - use standard .NET `BackgroundService` or `IHostedService` for normal host-owned work;
 - treat Orleans startup tasks as a lifecycle-specific compatibility surface;
-- treat `Microsoft.Orleans.DurableJobs` and `Microsoft.Orleans.DurableJobs.AzureStorage` as experimental because the 10.2.1 packages are versioned `10.2.1-alpha.1`;
+- treat `Microsoft.Orleans.DurableJobs` and `Microsoft.Orleans.DurableJobs.AzureStorage` as experimental because the 10.2.2 packages are versioned `10.2.2-alpha.1`;
 - use `IJobRunContext`, not the older `IDurableJobContext` name found in stale examples.
 
 ## Grain Timers
@@ -107,8 +107,8 @@ Purpose: schedule persistent one-time work to a target grain for execution aroun
 Install the experimental packages on the same Orleans line as the rest of the app:
 
 ```bash
-dotnet add package Microsoft.Orleans.DurableJobs --version 10.2.1-alpha.1
-dotnet add package Microsoft.Orleans.DurableJobs.AzureStorage --version 10.2.1-alpha.1
+dotnet add package Microsoft.Orleans.DurableJobs --version 10.2.2-alpha.1
+dotnet add package Microsoft.Orleans.DurableJobs.AzureStorage --version 10.2.2-alpha.1
 ```
 
 Configure volatile in-memory jobs only for development:
@@ -290,7 +290,7 @@ Use in-memory providers for fast behavioral tests only. Use the real production 
 - [Background services and startup tasks](https://learn.microsoft.com/dotnet/orleans/host/configuration-guide/startup-tasks)
 - [Silo lifecycle](https://learn.microsoft.com/dotnet/orleans/host/silo-lifecycle)
 - [Grain services](https://learn.microsoft.com/dotnet/orleans/grains/grainservices)
-- [Durable Jobs package README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.DurableJobs/README.md)
-- [Azure Storage Durable Jobs README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Azure/Orleans.DurableJobs.AzureStorage/README.md)
-- [Durable Jobs public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Orleans.DurableJobs/Orleans.DurableJobs.cs)
+- [Durable Jobs package README for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Orleans.DurableJobs/README.md)
+- [Azure Storage Durable Jobs README for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Azure/Orleans.DurableJobs.AzureStorage/README.md)
+- [Durable Jobs public API for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/api/Orleans.DurableJobs/Orleans.DurableJobs.cs)
 - [Orleans 10.2.0 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.0)

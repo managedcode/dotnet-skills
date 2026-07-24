@@ -15,6 +15,7 @@ Use this file when you need the smallest official proof that a pattern exists be
 | Need | Official Source Path | First Proof | Production Follow-Up |
 | --- | --- | --- | --- |
 | Basic single agent | `tutorials/agents/run-agent.md` | `AsAIAgent`, standard run flow | Decide thread model and middleware |
+| Batteries-included long-task agent | live `https://learn.microsoft.com/agent-framework/agents/harness` | `AsHarnessAgent`, session, plan/todo, compaction | Scope file, shell, web, approval, loop, and background-agent capabilities in `harness.md` |
 | Multi-turn conversation | `tutorials/agents/multi-turn-conversation.md` | `AgentThread` reuse | Persist the serialized thread |
 | Persist and resume conversations | `tutorials/agents/persisted-conversation.md` | serialize and restore thread | Design storage and compatibility rules |
 | Store history outside memory | `tutorials/agents/third-party-chat-history-storage.md` | custom `ChatMessageStore` | enforce keying and reduction strategy |

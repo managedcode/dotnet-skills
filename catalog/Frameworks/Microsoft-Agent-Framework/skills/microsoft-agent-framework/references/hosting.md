@@ -54,7 +54,7 @@ That means the hosting layer is not just for HTTP exposure. It is also the compo
 | Core hosting | `Microsoft.Agents.AI.Hosting` | DI registration and local hosting composition | Start here |
 | OpenAI-compatible HTTP | `Microsoft.Agents.AI.Hosting.OpenAI` | Chat Completions, Responses, Conversations endpoints | Prefer Responses for new work |
 | A2A | `Microsoft.Agents.AI.Hosting.A2A` and `.AspNetCore` | agent-to-agent interoperability | Agent cards and task semantics matter |
-| AG-UI | `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` | rich web/mobile UI protocols | Treat browser input as hostile unless mediated |
+| AG-UI | `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` plus focused `.AGUI.Client`, `.Server`, or `.Abstractions` packages as needed | rich web/mobile UI protocols | Use the split current packages and treat browser input as hostile unless mediated |
 | Azure Functions durable | `Microsoft.Agents.AI.Hosting.AzureFunctions` | long-running durable hosting | Choose only for real durability needs |
 
 ## Integration Capability Matrix
@@ -93,6 +93,8 @@ Choose Responses when:
 - you want richer response semantics
 - background responses or server-side conversation support matter
 
+The `dotnet-1.15.0` public protocol helpers can convert an OpenAI Responses request into an agent run request and write streaming or non-streaming responses. They reduce adapter boilerplate; the application still owns endpoint routing, authentication, authorization, session lookup, and persistence.
+
 Choose Chat Completions when:
 
 - integrating with existing clients that already speak that shape
@@ -129,7 +131,9 @@ AG-UI is for rich human-facing agent interfaces over HTTP plus SSE.
 Representative mapping:
 
 ```csharp
-app.MapAGUI("/", agent);
+builder.Services.AddAGUIServer();
+
+app.MapAGUIServer("/", agent);
 ```
 
 What AG-UI adds beyond direct agent usage:
@@ -143,6 +147,8 @@ What AG-UI adds beyond direct agent usage:
 Important security rule from the docs:
 
 - do not expose AG-UI directly to untrusted browser clients without a trusted frontend mediation layer
+
+The older `AddAGUI()` and `MapAGUI()` names and the former monolithic client package predate the `dotnet-1.14.0` package split. Use the current `AddAGUIServer()` and `MapAGUIServer()` server extensions and reference only the focused client/server/abstractions packages the application needs.
 
 ## Durable Azure Functions Hosting
 

@@ -601,7 +601,7 @@ public class MyTests
 | `Microsoft.Orleans.DurableJobs` | One-time persistent future delivery to target grains |
 | `Microsoft.Orleans.DurableJobs.AzureStorage` | Azure Blob-backed job journal/shards |
 
-The Orleans 10.2.1 packages are `10.2.1-alpha.1`. Pin them to the same release line as the rest of Orleans and review [scheduling-and-services.md](scheduling-and-services.md) before adoption.
+The Orleans 10.2.2 packages are `10.2.2-alpha.1`. Pin them to the same release line as the rest of Orleans and review [scheduling-and-services.md](scheduling-and-services.md) before adoption.
 
 ### Journaling (Experimental)
 
@@ -610,7 +610,7 @@ The Orleans 10.2.1 packages are `10.2.1-alpha.1`. Pin them to the same release l
 | `Microsoft.Orleans.Journaling` | Operation-journaled durable collections, values, and state |
 | `Microsoft.Orleans.Journaling.AzureStorage` | Azure Blob journal provider |
 
-The Orleans 10.2.1 packages are `10.2.1-alpha.1`. This surface is separate from `Microsoft.Orleans.EventSourcing` and `JournaledGrain`.
+The Orleans 10.2.2 packages are `10.2.2-alpha.1`. This surface is separate from `Microsoft.Orleans.EventSourcing` and `JournaledGrain`.
 
 ### Grain Directory
 

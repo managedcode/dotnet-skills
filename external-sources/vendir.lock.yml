@@ -2,21 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #598 from romanglogowski-volue/fix/claude-code-lsp-schema...'
-      sha: 5354047b0a20f484fde6aa43ac8c1887d2efaae6
+      commitTitle: Improve dotnet-test eval coverage and efficiency (#917)...
+      sha: 71414ce0003ea5c2c84329cea1e90c5133bbefe8
       tags:
-      - skill-validator-nightly-6-g5354047
+      - skill-validator-nightly-1-g71414ce
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Add missing `background` prop to `<Image />` component TypeScript
-        types (#17472)...
-      sha: 4dc590c8fcdd9207492914dddb8e861c532ed904
+      commitTitle: 'chore(deps): update `yargs` to v18 (#17447)'
+      sha: b01a6921cd8be574db2d82a6d2bbde7c7d319295
       tags:
-      - '@astrojs/language-server@2.16.13-4-g4dc590c8fc'
+      - '@astrojs/language-server@2.16.13-9-gb01a6921cd'
     path: astro
   path: upstreams
 kind: LockConfig

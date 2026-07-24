@@ -7,7 +7,7 @@ The local snapshot lives under `references/official-docs/`.
 ## Scope
 
 - Local curated docs snapshots: `100` markdown pages across overview, tutorials, user guide, integrations, migration, and support
-- Live-only Learn pages added into the mirror: `support/faq.md`, `support/troubleshooting.md`, and `support/upgrade/index.md`
+- Live-only current Learn pages tracked outside the mirror: Agent Harness plus `support/faq.md`, `support/troubleshooting.md`, and `support/upgrade/index.md`
 - Generated API references are not mirrored page-by-page; use the live `.NET` API landing page when exact symbols matter
 - Intentional exclusions: media files, TOC scaffolding, breadcrumb files, DocFX support files, and Python-only upgrade pages are not mirrored into the skill
 
@@ -27,6 +27,7 @@ The local snapshot lives under `references/official-docs/`.
 - Agent types: `official-docs/user-guide/agents/agent-types/index.md`
 - Azure provider pages: `official-docs/user-guide/agents/agent-types/microsoft-foundry-agents.md`, `official-docs/user-guide/agents/agent-types/azure-openai-chat-completion-agent.md`, and `official-docs/user-guide/agents/agent-types/azure-openai-responses-agent.md`
 - Running agents and conversations: `official-docs/user-guide/agents/running-agents.md`
+- Agent Harness: `https://learn.microsoft.com/agent-framework/agents/harness` and the curated `references/harness.md`
 - Tools: `official-docs/user-guide/agents/agent-tools.md`
 - Middleware, memory, and RAG: `official-docs/user-guide/agents/agent-middleware.md`, `official-docs/user-guide/agents/agent-memory.md`, and `official-docs/user-guide/agents/agent-rag.md`
 - MCP: `official-docs/user-guide/model-context-protocol/index.md`

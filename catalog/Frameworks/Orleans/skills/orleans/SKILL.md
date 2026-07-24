@@ -15,7 +15,7 @@ Do not begin with an Orleans API. First state:
 
 Then select the smallest Orleans primitive whose guarantees match those requirements. Reject Orleans when the problem is primarily shared-memory computation, a finite batch, relational querying, or global coordination with few independent entities.
 
-Inspect package versions for version-sensitive work. Orleans `10.2.1` ships `Microsoft.Orleans.DurableJobs*` and `Microsoft.Orleans.Journaling*` as `10.2.1-alpha.1`; treat them as experimental until that status changes.
+Inspect package versions for version-sensitive work. Orleans `10.2.2` ships `Microsoft.Orleans.DurableJobs*` and `Microsoft.Orleans.Journaling*` as `10.2.2-alpha.1`; treat them as experimental until that status changes.
 
 ## Mental Model
 
@@ -41,10 +41,6 @@ identity -> serialized decisions -> bounded current state -> messages/events/wor
 3. Choose state, communication, and time-based work from the tables below.
 4. Keep default non-reentrant scheduling and placement until a measured requirement justifies a change.
 5. Configure providers independently and test the failure model the design depends on.
-
-## Current Upstream Notes
-
-- The July 2026 docs still separate the core virtual-actor model from provider-dependent storage, streaming, clustering, and deployment. Route from the required guarantee to the narrow primitive, then validate its configured provider and topology rather than generalizing from in-memory defaults.
 
 ## Choose the State Owner
 

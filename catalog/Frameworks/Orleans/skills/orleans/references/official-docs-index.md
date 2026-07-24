@@ -27,22 +27,22 @@ These official sources cover newer 10.2 features that are not yet first-class pa
 
 ### Durable Jobs
 
-- [Durable Jobs README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.DurableJobs/README.md)
-- [Azure Storage Durable Jobs README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Azure/Orleans.DurableJobs.AzureStorage/README.md)
-- [Durable Jobs public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Orleans.DurableJobs/Orleans.DurableJobs.cs)
-- [Azure Storage Durable Jobs public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Azure/Orleans.DurableJobs.AzureStorage/Orleans.DurableJobs.AzureStorage.cs)
+- [Durable Jobs README for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Orleans.DurableJobs/README.md)
+- [Azure Storage Durable Jobs README for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Azure/Orleans.DurableJobs.AzureStorage/README.md)
+- [Durable Jobs public API for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/api/Orleans.DurableJobs/Orleans.DurableJobs.cs)
+- [Azure Storage Durable Jobs public API for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/api/Azure/Orleans.DurableJobs.AzureStorage/Orleans.DurableJobs.AzureStorage.cs)
 
 ### Orleans.Journaling
 
-- [Orleans.Journaling README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.Journaling/README.md)
-- [Azure Storage Journaling README for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Azure/Orleans.Journaling.AzureStorage/README.md)
-- [Orleans.Journaling public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Orleans.Journaling/Orleans.Journaling.cs)
-- [Azure Storage Journaling public API for Orleans 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/api/Azure/Orleans.Journaling.AzureStorage/Orleans.Journaling.AzureStorage.cs)
+- [Orleans.Journaling README for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Orleans.Journaling/README.md)
+- [Azure Storage Journaling README for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Azure/Orleans.Journaling.AzureStorage/README.md)
+- [Orleans.Journaling public API for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/api/Orleans.Journaling/Orleans.Journaling.cs)
+- [Azure Storage Journaling public API for Orleans 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/api/Azure/Orleans.Journaling.AzureStorage/Orleans.Journaling.AzureStorage.cs)
 
 ### Release Semantics
 
 - [Orleans 10.2.0 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.0) — Durable Jobs journal catalog, JSON Lines journaling default, observability, reminder lifecycle, and provider changes
-- [Orleans 10.2.1 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.1) — current 10.2 servicing release at this skill revision
+- [Orleans 10.2.2 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.2) — placement, membership and forwarding reliability; reminders and shutdown; TestingHost disposal; Event Hubs and streaming; `FrozenDictionary` and `FrozenSet` codecs
 
 ## Get Started
 

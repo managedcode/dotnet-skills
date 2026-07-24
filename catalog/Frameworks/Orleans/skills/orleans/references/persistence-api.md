@@ -175,7 +175,7 @@ public class MyStorage : IGrainStorage
 
 ## Experimental Orleans.Journaling
 
-`Microsoft.Orleans.Journaling` is a separate experimental persistence surface in Orleans 10.2. It records durable state operations in an ordered journal and replays them to recover durable collections and values. The `10.2.1` package is published as `10.2.1-alpha.1`, so require an explicit adoption decision and version pin.
+`Microsoft.Orleans.Journaling` is a separate experimental persistence surface in Orleans 10.2. It records durable state operations in an ordered journal and replays them to recover durable collections and values. The `10.2.2` package is published as `10.2.2-alpha.1`, so require an explicit adoption decision and version pin.
 
 Use it when operation-journaled durable collections or completion state solve a concrete need. Available durable shapes include dictionary, list, queue, set, value, persistent state, and durable task completion source. Do not confuse it with `JournaledGrain<TState,TEvent>`:
 
@@ -188,8 +188,8 @@ Use it when operation-journaled durable collections or completion state solve a 
 Install and configure a journaling provider on the same Orleans version:
 
 ```bash
-dotnet add package Microsoft.Orleans.Journaling --version 10.2.1-alpha.1
-dotnet add package Microsoft.Orleans.Journaling.AzureStorage --version 10.2.1-alpha.1
+dotnet add package Microsoft.Orleans.Journaling --version 10.2.2-alpha.1
+dotnet add package Microsoft.Orleans.Journaling.AzureStorage --version 10.2.2-alpha.1
 ```
 
 ```csharp
@@ -224,8 +224,8 @@ For trimming or Native AOT, register source-generated `System.Text.Json` metadat
 
 Official package sources:
 
-- [Orleans.Journaling README for 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Orleans.Journaling/README.md)
-- [Azure Storage Journaling README for 10.2.1](https://github.com/dotnet/orleans/blob/v10.2.1/src/Azure/Orleans.Journaling.AzureStorage/README.md)
+- [Orleans.Journaling README for 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Orleans.Journaling/README.md)
+- [Azure Storage Journaling README for 10.2.2](https://github.com/dotnet/orleans/blob/v10.2.2/src/Azure/Orleans.Journaling.AzureStorage/README.md)
 - [Orleans 10.2.0 release notes](https://github.com/dotnet/orleans/releases/tag/v10.2.0)
 
 ## Event Sourcing with JournaledGrain
