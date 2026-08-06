@@ -28,6 +28,25 @@ internal sealed class InstallPathContext
         return new DirectoryInfo(Path.GetFullPath(explicitTargetPath));
     }
 
+    public DirectoryInfo? ResolveConfiguredRoot(string environmentVariable, InstallScope scope)
+    {
+        var configuredPath = Environment.GetEnvironmentVariable(environmentVariable);
+        if (string.IsNullOrWhiteSpace(configuredPath))
+        {
+            return null;
+        }
+
+        var trimmedPath = configuredPath.Trim();
+        var basePath = scope == InstallScope.Project
+            ? ProjectRoot.FullName
+            : UserHome.FullName;
+        var resolvedPath = Path.IsPathRooted(trimmedPath)
+            ? Path.GetFullPath(trimmedPath)
+            : Path.GetFullPath(trimmedPath, basePath);
+
+        return new DirectoryInfo(resolvedPath);
+    }
+
     private static string ResolveProjectRoot(string? projectDirectory) => string.IsNullOrWhiteSpace(projectDirectory)
         ? Path.GetFullPath(Directory.GetCurrentDirectory())
         : Path.GetFullPath(projectDirectory);

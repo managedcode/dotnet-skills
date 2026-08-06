@@ -6,19 +6,20 @@ public sealed class AgentInstallTargetTests
 {
     [Theory]
     [MemberData(nameof(ProjectCases))]
-    public void ResolveAllDetectedProject_UsesOnlyNativeAgentRoots(
+    public void ResolveAllDetectedProject_UsesSharedRootOrNativeAgentRoots(
         bool hasCodex,
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempDirectory = new TemporaryDirectory();
-        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
         var layouts = AgentInstallTarget.ResolveAllDetected(tempDirectory.Path, InstallScope.Project);
-        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie);
+        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
         Assert.Equal(expected.Select(item => item.Platform).ToArray(), layouts.Select(layout => layout.Agent).ToArray());
         Assert.Equal(expected.Select(item => item.Path).ToArray(), layouts.Select(layout => layout.PrimaryRoot.FullName).ToArray());
@@ -27,30 +28,19 @@ public sealed class AgentInstallTargetTests
 
     [Theory]
     [MemberData(nameof(ProjectCases))]
-    public void ResolveAutoProject_SelectsFirstNativeRootOrThrows(
+    public void ResolveAutoProject_SelectsSharedRootFirstOrFallsBackToIt(
         bool hasCodex,
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempDirectory = new TemporaryDirectory();
-        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
-        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie);
-        if (expected.Count == 0)
-        {
-            var exception = Assert.Throws<InvalidOperationException>(() =>
-                AgentInstallTarget.Resolve(
-                    explicitTargetPath: null,
-                    agent: AgentPlatform.Auto,
-                    scope: InstallScope.Project,
-                    projectDirectory: tempDirectory.Path));
-
-            Assert.Equal("No native agent platform detected for project scope. Create a native agent directory first or specify --agent/--target.", exception.Message);
-            return;
-        }
+        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
         var layout = AgentInstallTarget.Resolve(
             explicitTargetPath: null,
@@ -65,12 +55,13 @@ public sealed class AgentInstallTargetTests
 
     [Theory]
     [MemberData(nameof(GlobalCases))]
-    public void ResolveAllDetectedGlobal_UsesOnlyNativeAgentRoots(
+    public void ResolveAllDetectedGlobal_UsesSharedRootOrNativeAgentRoots(
         bool hasCodex,
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempHome = new TemporaryDirectory();
@@ -83,10 +74,10 @@ public sealed class AgentInstallTargetTests
 
             try
             {
-                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
                 var layouts = AgentInstallTarget.ResolveAllDetected(tempHome.Path, InstallScope.Global);
-                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie);
+                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
                 Assert.Equal(expected.Select(item => item.Platform).ToArray(), layouts.Select(layout => layout.Agent).ToArray());
                 Assert.Equal(expected.Select(item => item.Path).ToArray(), layouts.Select(layout => layout.PrimaryRoot.FullName).ToArray());
@@ -103,12 +94,13 @@ public sealed class AgentInstallTargetTests
 
     [Theory]
     [MemberData(nameof(GlobalCases))]
-    public void ResolveAutoGlobal_SelectsFirstNativeRootOrThrows(
+    public void ResolveAutoGlobal_SelectsSharedRootFirstOrFallsBackToIt(
         bool hasCodex,
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempHome = new TemporaryDirectory();
@@ -121,21 +113,9 @@ public sealed class AgentInstallTargetTests
 
             try
             {
-                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
-                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie);
-                if (expected.Count == 0)
-                {
-                    var exception = Assert.Throws<InvalidOperationException>(() =>
-                        AgentInstallTarget.Resolve(
-                            explicitTargetPath: null,
-                            agent: AgentPlatform.Auto,
-                            scope: InstallScope.Global,
-                            projectDirectory: tempHome.Path));
-
-                    Assert.Equal("No native agent platform detected for global scope. Create a native agent directory first or specify --agent/--target.", exception.Message);
-                    return;
-                }
+                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
                 var layout = AgentInstallTarget.Resolve(
                     explicitTargetPath: null,
@@ -191,6 +171,37 @@ public sealed class AgentInstallTargetTests
         }
     }
 
+    [Fact]
+    public void ResolveAutoProject_UsesConfiguredDefaultTargetBeforeDetectedPlatforms()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+
+        lock (TestEnvironmentLocks.UserProfile)
+        {
+            var previousTarget = SetEnvironment("DOTNET_AGENTS_DEFAULT_TARGET", ".team/agents");
+
+            try
+            {
+                Directory.CreateDirectory(Path.Combine(tempDirectory.Path, ".codex"));
+
+                var layout = AgentInstallTarget.Resolve(
+                    explicitTargetPath: null,
+                    agent: AgentPlatform.Auto,
+                    scope: InstallScope.Project,
+                    projectDirectory: tempDirectory.Path);
+
+                Assert.Equal(AgentPlatform.Agents, layout.Agent);
+                Assert.Equal(Path.Combine(tempDirectory.Path, ".team", "agents"), layout.PrimaryRoot.FullName);
+                Assert.Equal(AgentInstallMode.MarkdownAgentFiles, layout.Mode);
+                Assert.False(layout.IsExplicitTarget);
+            }
+            finally
+            {
+                SetEnvironment("DOTNET_AGENTS_DEFAULT_TARGET", previousTarget);
+            }
+        }
+    }
+
     [Theory]
     [MemberData(nameof(ExplicitTargetCases))]
     public void Resolve_WithExplicitTarget_UsesProvidedPathAndPlatformMode(object agent, object scope, object expectedMode)
@@ -216,48 +227,55 @@ public sealed class AgentInstallTargetTests
     }
 
     [Fact]
-    public void Resolve_WithExplicitTargetAndAutoAgent_Throws()
+    public void Resolve_WithExplicitTargetAndAutoAgent_UsesSharedMarkdownFormat()
     {
         using var tempDirectory = new TemporaryDirectory();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            AgentInstallTarget.Resolve(
-                explicitTargetPath: Path.Combine(tempDirectory.Path, "explicit-agents-target"),
-                agent: AgentPlatform.Auto,
-                scope: InstallScope.Project,
-                projectDirectory: tempDirectory.Path));
+        var explicitPath = Path.Combine(tempDirectory.Path, "explicit-agents-target");
+        var layout = AgentInstallTarget.Resolve(
+            explicitTargetPath: explicitPath,
+            agent: AgentPlatform.Auto,
+            scope: InstallScope.Project,
+            projectDirectory: tempDirectory.Path);
 
-        Assert.Equal("Explicit agent targets require --agent because the installed file format depends on the target platform.", exception.Message);
+        Assert.Equal(AgentPlatform.Agents, layout.Agent);
+        Assert.Equal(AgentInstallMode.MarkdownAgentFiles, layout.Mode);
+        Assert.Equal(explicitPath, layout.PrimaryRoot.FullName);
+        Assert.True(layout.IsExplicitTarget);
     }
 
     public static IEnumerable<object[]> ProjectCases()
     {
         foreach (var hasCodex in new[] { false, true })
-        foreach (var hasClaude in new[] { false, true })
-        foreach (var hasCopilot in new[] { false, true })
-        foreach (var hasGemini in new[] { false, true })
-        foreach (var hasJunie in new[] { false, true })
-        foreach (var hasSharedFallback in new[] { false, true })
-        {
-            yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback];
-        }
+            foreach (var hasClaude in new[] { false, true })
+                foreach (var hasCopilot in new[] { false, true })
+                    foreach (var hasGemini in new[] { false, true })
+                        foreach (var hasJunie in new[] { false, true })
+                            foreach (var hasGrok in new[] { false, true })
+                                foreach (var hasSharedFallback in new[] { false, true })
+                                {
+                                    yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback];
+                                }
     }
 
     public static IEnumerable<object[]> GlobalCases()
     {
         foreach (var hasCodex in new[] { false, true })
-        foreach (var hasClaude in new[] { false, true })
-        foreach (var hasCopilot in new[] { false, true })
-        foreach (var hasGemini in new[] { false, true })
-        foreach (var hasJunie in new[] { false, true })
-        foreach (var hasSharedFallback in new[] { false, true })
-        {
-            yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback];
-        }
+            foreach (var hasClaude in new[] { false, true })
+                foreach (var hasCopilot in new[] { false, true })
+                    foreach (var hasGemini in new[] { false, true })
+                        foreach (var hasJunie in new[] { false, true })
+                            foreach (var hasGrok in new[] { false, true })
+                                foreach (var hasSharedFallback in new[] { false, true })
+                                {
+                                    yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback];
+                                }
     }
 
     public static IEnumerable<object[]> ExplicitTargetCases()
     {
+        yield return [AgentPlatform.Agents, InstallScope.Project, AgentInstallMode.MarkdownAgentFiles];
+        yield return [AgentPlatform.Agents, InstallScope.Global, AgentInstallMode.MarkdownAgentFiles];
         yield return [AgentPlatform.Codex, InstallScope.Project, AgentInstallMode.CodexRoleFiles];
         yield return [AgentPlatform.Codex, InstallScope.Global, AgentInstallMode.CodexRoleFiles];
         yield return [AgentPlatform.Claude, InstallScope.Project, AgentInstallMode.MarkdownAgentFiles];
@@ -268,6 +286,8 @@ public sealed class AgentInstallTargetTests
         yield return [AgentPlatform.Gemini, InstallScope.Global, AgentInstallMode.MarkdownAgentFiles];
         yield return [AgentPlatform.Junie, InstallScope.Project, AgentInstallMode.MarkdownAgentFiles];
         yield return [AgentPlatform.Junie, InstallScope.Global, AgentInstallMode.MarkdownAgentFiles];
+        yield return [AgentPlatform.Grok, InstallScope.Project, AgentInstallMode.MarkdownAgentFiles];
+        yield return [AgentPlatform.Grok, InstallScope.Global, AgentInstallMode.MarkdownAgentFiles];
     }
 
     private static IReadOnlyList<ResolvedLayout> BuildExpectedProjectLayouts(
@@ -276,8 +296,15 @@ public sealed class AgentInstallTargetTests
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
-        bool hasJunie)
+        bool hasJunie,
+        bool hasGrok,
+        bool hasSharedFallback)
     {
+        if (hasSharedFallback)
+        {
+            return [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(rootPath, ".agents", "agents"), AgentInstallMode.MarkdownAgentFiles)];
+        }
+
         var layouts = new List<ResolvedLayout>();
 
         if (hasCodex)
@@ -305,7 +332,14 @@ public sealed class AgentInstallTargetTests
             layouts.Add(new ResolvedLayout(AgentPlatform.Junie, Path.Combine(rootPath, ".junie", "agents"), AgentInstallMode.MarkdownAgentFiles));
         }
 
-        return layouts;
+        if (hasGrok)
+        {
+            layouts.Add(new ResolvedLayout(AgentPlatform.Grok, Path.Combine(rootPath, ".grok", "agents"), AgentInstallMode.MarkdownAgentFiles));
+        }
+
+        return layouts.Count > 0
+            ? layouts
+            : [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(rootPath, ".agents", "agents"), AgentInstallMode.MarkdownAgentFiles)];
     }
 
     private static IReadOnlyList<ResolvedLayout> BuildExpectedGlobalLayouts(
@@ -314,8 +348,15 @@ public sealed class AgentInstallTargetTests
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
-        bool hasJunie)
+        bool hasJunie,
+        bool hasGrok,
+        bool hasSharedFallback)
     {
+        if (hasSharedFallback)
+        {
+            return [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(homePath, ".agents", "agents"), AgentInstallMode.MarkdownAgentFiles)];
+        }
+
         var layouts = new List<ResolvedLayout>();
 
         if (hasCodex)
@@ -343,7 +384,14 @@ public sealed class AgentInstallTargetTests
             layouts.Add(new ResolvedLayout(AgentPlatform.Junie, Path.Combine(homePath, ".junie", "agents"), AgentInstallMode.MarkdownAgentFiles));
         }
 
-        return layouts;
+        if (hasGrok)
+        {
+            layouts.Add(new ResolvedLayout(AgentPlatform.Grok, Path.Combine(homePath, ".grok", "agents"), AgentInstallMode.MarkdownAgentFiles));
+        }
+
+        return layouts.Count > 0
+            ? layouts
+            : [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(homePath, ".agents", "agents"), AgentInstallMode.MarkdownAgentFiles)];
     }
 
     private static void CreatePlatformDirectories(
@@ -353,6 +401,7 @@ public sealed class AgentInstallTargetTests
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         if (hasCodex)
@@ -379,6 +428,11 @@ public sealed class AgentInstallTargetTests
         if (hasJunie)
         {
             Directory.CreateDirectory(Path.Combine(rootDirectory, ".junie"));
+        }
+
+        if (hasGrok)
+        {
+            Directory.CreateDirectory(Path.Combine(rootDirectory, ".grok"));
         }
 
         if (hasSharedFallback)

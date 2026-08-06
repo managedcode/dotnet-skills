@@ -32,6 +32,7 @@ compatibility: "Requires current Microsoft Agent Framework packages and a .NET a
 
 - `dotnet-1.15.0` adds public OpenAI Responses protocol helpers, session deletion, and hosted workflow state. The application still owns routing, authorization, and durable storage.
 - `dotnet-1.14.0` graduates the core Harness API but keeps its package and advanced options prerelease or experimental. It also makes file access opt-in, binds approvals to surfaced requests, and splits AG-UI packages and server registration. See [harness.md](references/harness.md) and [hosting.md](references/hosting.md).
+- The August 2026 documentation set now treats middleware, background responses, durable agents, AG-UI frontend and backend tools, MCP-hosted agents, observability, support, upgrades, and Semantic Kernel or AutoGen migration as first-class paths. Load the matching reference file before implementation and verify package maturity plus exact signatures against the linked official page; the expanded documentation does not make every provider or preview feature interchangeable.
 
 ## Architecture
 

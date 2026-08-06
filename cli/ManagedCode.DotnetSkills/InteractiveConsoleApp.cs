@@ -674,42 +674,42 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case SkillCatalogAction.Inspect:
-                {
-                    var selectedCollection = prompts.Select(
-                        "Browse a collection",
-                        collectionViews,
-                        BuildCollectionChoiceLabel);
-                    ShowCollectionDetail(selectedCollection.Collection);
-                    break;
-                }
+                    {
+                        var selectedCollection = prompts.Select(
+                            "Browse a collection",
+                            collectionViews,
+                            BuildCollectionChoiceLabel);
+                        ShowCollectionDetail(selectedCollection.Collection);
+                        break;
+                    }
                 case SkillCatalogAction.UpdateOutdated:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent)
-                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    ReviewOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        "No outdated skills are installed in this target.",
-                        "Review outdated skills",
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent)
+                            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        ReviewOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            "No outdated skills are installed in this target.",
+                            "Review outdated skills",
+                            record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
 
-                    break;
-                }
+                        break;
+                    }
                 case SkillCatalogAction.UpdateAllOutdated:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent)
-                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    UpdateAllOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        "No outdated skills are installed in this target.");
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent)
+                            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        UpdateAllOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            "No outdated skills are installed in this target.");
 
-                    break;
-                }
+                        break;
+                    }
                 case SkillCatalogAction.Back:
                     return;
             }
@@ -750,68 +750,68 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case SkillCatalogAction.Inspect:
-                {
-                    var selectedSkill = prompts.Select(
-                        "Inspect a skill",
-                        allSkills,
-                        skill => BuildSkillChoiceLabel(skill, installedSkills));
-                    ShowSkillDetail(selectedSkill);
-                    break;
-                }
+                    {
+                        var selectedSkill = prompts.Select(
+                            "Inspect a skill",
+                            allSkills,
+                            skill => BuildSkillChoiceLabel(skill, installedSkills));
+                        ShowSkillDetail(selectedSkill);
+                        break;
+                    }
                 case SkillCatalogAction.Install:
-                {
-                    var installableSkills = allSkills
-                        .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
-                        .ToArray();
-
-                    if (installableSkills.Length == 0)
                     {
-                        RenderInfo("Every catalog skill is already installed in this target.");
+                        var installableSkills = allSkills
+                            .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
+                            .ToArray();
+
+                        if (installableSkills.Length == 0)
+                        {
+                            RenderInfo("Every catalog skill is already installed in this target.");
+                            break;
+                        }
+
+                        var selectedSkills = prompts.MultiSelect(
+                            "Install skills",
+                            installableSkills,
+                            skill => BuildSkillChoiceLabel(skill, installedSkills));
+                        if (selectedSkills is null || selectedSkills.Count == 0)
+                        {
+                            break;
+                        }
+
+                        if (ConfirmSkillInstallPreview("Direct skill install", selectedSkills, layout, force: false))
+                        {
+                            InstallSkills(selectedSkills, layout, force: false);
+                        }
+
                         break;
                     }
-
-                    var selectedSkills = prompts.MultiSelect(
-                        "Install skills",
-                        installableSkills,
-                        skill => BuildSkillChoiceLabel(skill, installedSkills));
-                    if (selectedSkills is null || selectedSkills.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (ConfirmSkillInstallPreview("Direct skill install", selectedSkills, layout, force: false))
-                    {
-                        InstallSkills(selectedSkills, layout, force: false);
-                    }
-
-                    break;
-                }
                 case SkillCatalogAction.UpdateOutdated:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent)
-                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    ReviewOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        "No outdated skills are installed in this target.",
-                        "Review outdated skills",
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
-                    break;
-                }
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent)
+                            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        ReviewOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            "No outdated skills are installed in this target.",
+                            "Review outdated skills",
+                            record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
+                        break;
+                    }
                 case SkillCatalogAction.UpdateAllOutdated:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent)
-                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    UpdateAllOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        "No outdated skills are installed in this target.");
-                    break;
-                }
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent)
+                            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        UpdateAllOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            "No outdated skills are installed in this target.");
+                        break;
+                    }
                 case SkillCatalogAction.Back:
                     return;
             }
@@ -848,18 +848,18 @@ internal sealed partial class InteractiveConsoleApp
                     ShowCatalogTree(collectionViews);
                     break;
                 case CatalogAnalysisAction.HeavySkill:
-                {
-                    var selectedSkill = prompts.Select(
-                        "Inspect heaviest skill",
-                        skillCatalog.Skills
-                            .OrderByDescending(skill => skill.TokenCount)
-                            .ThenBy(skill => skill.Name, StringComparer.Ordinal)
-                            .Take(24)
-                            .ToArray(),
-                        skill => $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)");
-                    ShowSkillDetail(selectedSkill);
-                    break;
-                }
+                    {
+                        var selectedSkill = prompts.Select(
+                            "Inspect heaviest skill",
+                            skillCatalog.Skills
+                                .OrderByDescending(skill => skill.TokenCount)
+                                .ThenBy(skill => skill.Name, StringComparer.Ordinal)
+                                .Take(24)
+                                .ToArray(),
+                            skill => $"{ToAlias(skill.Name)} [{skill.Stack} / {skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)");
+                        ShowSkillDetail(selectedSkill);
+                        break;
+                    }
                 case CatalogAnalysisAction.PackageSignals:
                     ShowPackageSignals();
                     break;
@@ -933,81 +933,81 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case SkillCatalogAction.Inspect:
-                {
-                    var selectedLane = prompts.Select(
-                        "Inspect a lane",
-                        collectionView.Lanes,
-                        BuildLaneChoiceLabel);
-                    var selectedSkill = prompts.Select(
-                        "Inspect a skill",
-                        selectedLane.Skills.OrderBy(skill => skill.Name, StringComparer.Ordinal).ToArray(),
-                        skill => BuildSkillChoiceLabel(skill, installedSkills));
-                    ShowSkillDetail(selectedSkill);
-                    break;
-                }
+                    {
+                        var selectedLane = prompts.Select(
+                            "Inspect a lane",
+                            collectionView.Lanes,
+                            BuildLaneChoiceLabel);
+                        var selectedSkill = prompts.Select(
+                            "Inspect a skill",
+                            selectedLane.Skills.OrderBy(skill => skill.Name, StringComparer.Ordinal).ToArray(),
+                            skill => BuildSkillChoiceLabel(skill, installedSkills));
+                        ShowSkillDetail(selectedSkill);
+                        break;
+                    }
                 case SkillCatalogAction.Install:
-                {
-                    var selectedLane = prompts.Select(
-                        "Install from a lane",
-                        collectionView.Lanes,
-                        BuildLaneChoiceLabel);
-                    var installableSkills = selectedLane.Skills
-                        .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
-                        .OrderBy(skill => skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-
-                    if (installableSkills.Length == 0)
                     {
-                        RenderInfo($"Everything in {collectionView.Collection} / {selectedLane.Lane} is already installed in this target.");
+                        var selectedLane = prompts.Select(
+                            "Install from a lane",
+                            collectionView.Lanes,
+                            BuildLaneChoiceLabel);
+                        var installableSkills = selectedLane.Skills
+                            .Where(skill => installedSkills.All(record => !string.Equals(record.Skill.Name, skill.Name, StringComparison.OrdinalIgnoreCase)))
+                            .OrderBy(skill => skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+
+                        if (installableSkills.Length == 0)
+                        {
+                            RenderInfo($"Everything in {collectionView.Collection} / {selectedLane.Lane} is already installed in this target.");
+                            break;
+                        }
+
+                        var selectedSkills = prompts.MultiSelect(
+                            "Install skills",
+                            installableSkills,
+                            skill => $"{ToAlias(skill.Name)} [{skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)");
+                        if (selectedSkills is null || selectedSkills.Count == 0)
+                        {
+                            break;
+                        }
+
+                        if (ConfirmSkillInstallPreview($"Lane install: {collectionView.Collection} / {selectedLane.Lane}", selectedSkills, layout, force: false))
+                        {
+                            InstallSkills(selectedSkills, layout, force: false);
+                        }
+
                         break;
                     }
-
-                    var selectedSkills = prompts.MultiSelect(
-                        "Install skills",
-                        installableSkills,
-                        skill => $"{ToAlias(skill.Name)} [{skill.Lane}] ({FormatTokenCount(skill.TokenCount)} tokens)");
-                    if (selectedSkills is null || selectedSkills.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (ConfirmSkillInstallPreview($"Lane install: {collectionView.Collection} / {selectedLane.Lane}", selectedSkills, layout, force: false))
-                    {
-                        InstallSkills(selectedSkills, layout, force: false);
-                    }
-
-                    break;
-                }
                 case SkillCatalogAction.UpdateOutdated:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
-                        .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    ReviewOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        $"No outdated skills are installed in the {collectionView.Collection} collection.",
-                        "Review outdated skills",
-                        record => $"{ToAlias(record.Skill.Name)} [{record.Skill.Lane}] ({record.InstalledVersion} -> {record.Skill.Version})");
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase))
+                            .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
+                            .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        ReviewOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            $"No outdated skills are installed in the {collectionView.Collection} collection.",
+                            "Review outdated skills",
+                            record => $"{ToAlias(record.Skill.Name)} [{record.Skill.Lane}] ({record.InstalledVersion} -> {record.Skill.Version})");
 
-                    break;
-                }
+                        break;
+                    }
                 case SkillCatalogAction.UpdateAllOutdated:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
-                        .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    UpdateAllOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        $"No outdated skills are installed in the {collectionView.Collection} collection.");
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent && string.Equals(record.Skill.Stack, collectionView.Collection, StringComparison.OrdinalIgnoreCase))
+                            .OrderBy(record => record.Skill.Lane, StringComparer.Ordinal)
+                            .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        UpdateAllOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            $"No outdated skills are installed in the {collectionView.Collection} collection.");
 
-                    break;
-                }
+                        break;
+                    }
                 case SkillCatalogAction.Back:
                     return;
             }
@@ -1053,176 +1053,176 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case InstalledSkillsAction.Inspect:
-                {
-                    if (installedSkills.Count == 0)
                     {
-                        RenderInfo("No catalog skills are installed in this target yet.");
+                        if (installedSkills.Count == 0)
+                        {
+                            RenderInfo("No catalog skills are installed in this target yet.");
+                            break;
+                        }
+
+                        var selected = prompts.Select(
+                            "Inspect an installed skill",
+                            installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
+                            record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})");
+                        ShowSkillDetail(selected.Skill);
                         break;
                     }
-
-                    var selected = prompts.Select(
-                        "Inspect an installed skill",
-                        installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})");
-                    ShowSkillDetail(selected.Skill);
-                    break;
-                }
                 case InstalledSkillsAction.Repair:
-                {
-                    if (installedSkills.Count == 0)
                     {
-                        RenderInfo("No catalog skills are installed in this target yet.");
+                        if (installedSkills.Count == 0)
+                        {
+                            RenderInfo("No catalog skills are installed in this target yet.");
+                            break;
+                        }
+
+                        var selected = prompts.MultiSelect(
+                            "Repair/optimize installed skills",
+                            installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
+                            record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
+                            backLabel: "Back");
+                        if (selected is null || selected.Count == 0)
+                        {
+                            break;
+                        }
+
+                        if (prompts.Confirm($"Force reinstall {selected.Count} skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                        {
+                            RepairSkills(selected);
+                        }
+
                         break;
                     }
-
-                    var selected = prompts.MultiSelect(
-                        "Repair/optimize installed skills",
-                        installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
-                        backLabel: "Back");
-                    if (selected is null || selected.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (prompts.Confirm($"Force reinstall {selected.Count} skill(s) in {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        RepairSkills(selected);
-                    }
-
-                    break;
-                }
                 case InstalledSkillsAction.ReviewState:
-                {
-                    if (installedSkills.Count == 0)
                     {
-                        RenderInfo("No catalog skills are installed in this target yet.");
+                        if (installedSkills.Count == 0)
+                        {
+                            RenderInfo("No catalog skills are installed in this target yet.");
+                            break;
+                        }
+
+                        var orderedInstalled = installedSkills
+                            .OrderBy(record => record.Skill.Stack, StringComparer.Ordinal)
+                            .ThenBy(record => record.Skill.Lane, StringComparer.Ordinal)
+                            .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+
+                        var kept = prompts.MultiSelect(
+                            "Review installed set",
+                            orderedInstalled,
+                            BuildInstalledSkillChoiceLabel,
+                            orderedInstalled,
+                            backLabel: "Back");
+                        if (kept is null)
+                        {
+                            break;
+                        }
+                        var keptNames = kept
+                            .Select(record => record.Skill.Name)
+                            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                        var removed = orderedInstalled
+                            .Where(record => !keptNames.Contains(record.Skill.Name))
+                            .Select(record => record.Skill)
+                            .ToArray();
+
+                        if (removed.Length == 0)
+                        {
+                            RenderInfo("No removal plan was created. The reviewed installed set is unchanged.");
+                            break;
+                        }
+
+                        var confirmation = removed.Length == orderedInstalled.Length
+                            ? $"Remove all {removed.Length} installed skill(s) from {layout.PrimaryRoot.FullName}?"
+                            : $"Apply the reviewed installed set by removing {removed.Length} skill(s) from {layout.PrimaryRoot.FullName}?";
+                        if (prompts.Confirm(confirmation, defaultValue: false))
+                        {
+                            RemoveSkills(removed, layout, pause: true);
+                        }
+
                         break;
                     }
-
-                    var orderedInstalled = installedSkills
-                        .OrderBy(record => record.Skill.Stack, StringComparer.Ordinal)
-                        .ThenBy(record => record.Skill.Lane, StringComparer.Ordinal)
-                        .ThenBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-
-                    var kept = prompts.MultiSelect(
-                        "Review installed set",
-                        orderedInstalled,
-                        BuildInstalledSkillChoiceLabel,
-                        orderedInstalled,
-                        backLabel: "Back");
-                    if (kept is null)
-                    {
-                        break;
-                    }
-                    var keptNames = kept
-                        .Select(record => record.Skill.Name)
-                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
-                    var removed = orderedInstalled
-                        .Where(record => !keptNames.Contains(record.Skill.Name))
-                        .Select(record => record.Skill)
-                        .ToArray();
-
-                    if (removed.Length == 0)
-                    {
-                        RenderInfo("No removal plan was created. The reviewed installed set is unchanged.");
-                        break;
-                    }
-
-                    var confirmation = removed.Length == orderedInstalled.Length
-                        ? $"Remove all {removed.Length} installed skill(s) from {layout.PrimaryRoot.FullName}?"
-                        : $"Apply the reviewed installed set by removing {removed.Length} skill(s) from {layout.PrimaryRoot.FullName}?";
-                    if (prompts.Confirm(confirmation, defaultValue: false))
-                    {
-                        RemoveSkills(removed, layout, pause: true);
-                    }
-
-                    break;
-                }
                 case InstalledSkillsAction.CopyOrMove:
-                {
-                    if (installedSkills.Count == 0)
                     {
-                        RenderInfo("No catalog skills are installed in this target yet.");
+                        if (installedSkills.Count == 0)
+                        {
+                            RenderInfo("No catalog skills are installed in this target yet.");
+                            break;
+                        }
+
+                        var selected = prompts.MultiSelect(
+                            "Copy or move skills",
+                            installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
+                            record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
+                            backLabel: "Back");
+                        if (selected is null || selected.Count == 0)
+                        {
+                            break;
+                        }
+
+                        CopyOrMoveSkills(selected.Select(record => record.Skill).ToArray(), layout);
                         break;
                     }
-
-                    var selected = prompts.MultiSelect(
-                        "Copy or move skills",
-                        installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
-                        backLabel: "Back");
-                    if (selected is null || selected.Count == 0)
-                    {
-                        break;
-                    }
-
-                    CopyOrMoveSkills(selected.Select(record => record.Skill).ToArray(), layout);
-                    break;
-                }
                 case InstalledSkillsAction.Remove:
-                {
-                    if (installedSkills.Count == 0)
                     {
-                        RenderInfo("No catalog skills are installed in this target yet.");
+                        if (installedSkills.Count == 0)
+                        {
+                            RenderInfo("No catalog skills are installed in this target yet.");
+                            break;
+                        }
+
+                        var selected = prompts.MultiSelect(
+                            "Remove installed skills",
+                            installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
+                            record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
+                            backLabel: "Back");
+                        if (selected is null || selected.Count == 0)
+                        {
+                            break;
+                        }
+
+                        if (prompts.Confirm($"Remove {selected.Count} skill(s) from {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                        {
+                            RemoveSkills(selected.Select(record => record.Skill).ToArray());
+                        }
+
                         break;
                     }
-
-                    var selected = prompts.MultiSelect(
-                        "Remove installed skills",
-                        installedSkills.OrderBy(record => record.Skill.Name, StringComparer.Ordinal).ToArray(),
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion})",
-                        backLabel: "Back");
-                    if (selected is null || selected.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (prompts.Confirm($"Remove {selected.Count} skill(s) from {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        RemoveSkills(selected.Select(record => record.Skill).ToArray());
-                    }
-
-                    break;
-                }
                 case InstalledSkillsAction.RemoveAll:
-                {
-                    RemoveAllInstalledSkills(
-                        installedSkills,
-                        layout,
-                        "No catalog skills are installed in this target yet.");
+                    {
+                        RemoveAllInstalledSkills(
+                            installedSkills,
+                            layout,
+                            "No catalog skills are installed in this target yet.");
 
-                    break;
-                }
+                        break;
+                    }
                 case InstalledSkillsAction.Update:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent)
-                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    ReviewOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        "No outdated skills are installed in this target.",
-                        "Review outdated skills",
-                        record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent)
+                            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        ReviewOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            "No outdated skills are installed in this target.",
+                            "Review outdated skills",
+                            record => $"{ToAlias(record.Skill.Name)} ({record.InstalledVersion} -> {record.Skill.Version})");
 
-                    break;
-                }
+                        break;
+                    }
                 case InstalledSkillsAction.UpdateAll:
-                {
-                    var outdatedSkills = installedSkills
-                        .Where(record => !record.IsCurrent)
-                        .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
-                        .ToArray();
-                    UpdateAllOutdatedSkills(
-                        outdatedSkills,
-                        layout,
-                        "No outdated skills are installed in this target.");
+                    {
+                        var outdatedSkills = installedSkills
+                            .Where(record => !record.IsCurrent)
+                            .OrderBy(record => record.Skill.Name, StringComparer.Ordinal)
+                            .ToArray();
+                        UpdateAllOutdatedSkills(
+                            outdatedSkills,
+                            layout,
+                            "No outdated skills are installed in this target.");
 
-                    break;
-                }
+                        break;
+                    }
                 case InstalledSkillsAction.Back:
                     return;
             }
@@ -1319,28 +1319,28 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case PackageSignalAction.InspectSkill:
-                {
-                    var signal = prompts.Select(
-                        "Inspect a linked skill",
-                        packageSignals.ToArray(),
-                        BuildPackageSignalChoiceLabel);
-                    ShowSkillDetail(signal.Skill);
-                    break;
-                }
-                case PackageSignalAction.InstallSkill:
-                {
-                    var signal = prompts.Select(
-                        "Install from a package signal",
-                        packageSignals.ToArray(),
-                        BuildPackageSignalChoiceLabel);
-                    var layout = ResolveSkillLayout();
-                    if (ConfirmSkillInstallPreview($"Install from package signal: {signal.Signal}", [signal.Skill], layout, force: false))
                     {
-                        InstallSkills([signal.Skill], layout, force: false);
+                        var signal = prompts.Select(
+                            "Inspect a linked skill",
+                            packageSignals.ToArray(),
+                            BuildPackageSignalChoiceLabel);
+                        ShowSkillDetail(signal.Skill);
+                        break;
                     }
+                case PackageSignalAction.InstallSkill:
+                    {
+                        var signal = prompts.Select(
+                            "Install from a package signal",
+                            packageSignals.ToArray(),
+                            BuildPackageSignalChoiceLabel);
+                        var layout = ResolveSkillLayout();
+                        if (ConfirmSkillInstallPreview($"Install from package signal: {signal.Signal}", [signal.Skill], layout, force: false))
+                        {
+                            InstallSkills([signal.Skill], layout, force: false);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case PackageSignalAction.Back:
                     return;
             }
@@ -1368,47 +1368,47 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case PackageAction.Inspect:
-                {
-                    if (visibleBundles.Count == 0)
                     {
-                        RenderInfo("No focused bundles are available in this catalog version yet.");
+                        if (visibleBundles.Count == 0)
+                        {
+                            RenderInfo("No focused bundles are available in this catalog version yet.");
+                            break;
+                        }
+
+                        var selectedPackage = prompts.Select(
+                            "Inspect a focused bundle",
+                            visibleBundles.ToArray(),
+                            package => $"{package.Name} [{CatalogOrganization.ResolveBundleAreaLabel(package)}] ({package.Skills.Count} skills)");
+                        ShowPackageDetail(selectedPackage);
                         break;
                     }
-
-                    var selectedPackage = prompts.Select(
-                        "Inspect a focused bundle",
-                        visibleBundles.ToArray(),
-                        package => $"{package.Name} [{CatalogOrganization.ResolveBundleAreaLabel(package)}] ({package.Skills.Count} skills)");
-                    ShowPackageDetail(selectedPackage);
-                    break;
-                }
                 case PackageAction.Install:
-                {
-                    if (visibleBundles.Count == 0)
                     {
-                        RenderInfo("No focused bundles are available in this catalog version yet.");
+                        if (visibleBundles.Count == 0)
+                        {
+                            RenderInfo("No focused bundles are available in this catalog version yet.");
+                            break;
+                        }
+
+                        var selectedPackages = prompts.MultiSelect(
+                            "Install focused bundles",
+                            visibleBundles.ToArray(),
+                            package => $"{package.Name} [{CatalogOrganization.ResolveBundleAreaLabel(package)}] ({package.Skills.Count} skills)");
+                        if (selectedPackages is null || selectedPackages.Count == 0)
+                        {
+                            break;
+                        }
+
+                        var layout = ResolveSkillLayout();
+                        var installer = new SkillInstaller(skillCatalog);
+                        var selectedSkills = installer.SelectSkillsFromPackages(selectedPackages.Select(package => package.Name).ToArray());
+                        if (ConfirmSkillInstallPreview("Bundle install", selectedSkills, layout, force: false, bundles: selectedPackages))
+                        {
+                            InstallSkills(selectedSkills, layout, force: false);
+                        }
+
                         break;
                     }
-
-                    var selectedPackages = prompts.MultiSelect(
-                        "Install focused bundles",
-                        visibleBundles.ToArray(),
-                        package => $"{package.Name} [{CatalogOrganization.ResolveBundleAreaLabel(package)}] ({package.Skills.Count} skills)");
-                    if (selectedPackages is null || selectedPackages.Count == 0)
-                    {
-                        break;
-                    }
-
-                    var layout = ResolveSkillLayout();
-                    var installer = new SkillInstaller(skillCatalog);
-                    var selectedSkills = installer.SelectSkillsFromPackages(selectedPackages.Select(package => package.Name).ToArray());
-                    if (ConfirmSkillInstallPreview("Bundle install", selectedSkills, layout, force: false, bundles: selectedPackages))
-                    {
-                        InstallSkills(selectedSkills, layout, force: false);
-                    }
-
-                    break;
-                }
                 case PackageAction.Back:
                     return;
             }
@@ -1456,17 +1456,17 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case PackageDetailAction.Install:
-                {
-                    var layout = ResolveSkillLayout();
-                    var installer = new SkillInstaller(skillCatalog);
-                    var selectedSkills = installer.SelectSkillsFromPackages([package.Name]);
-                    if (ConfirmSkillInstallPreview($"Bundle install: {package.Name}", selectedSkills, layout, force: false, bundles: [package]))
                     {
-                        InstallSkills(selectedSkills, layout, force: false);
-                    }
+                        var layout = ResolveSkillLayout();
+                        var installer = new SkillInstaller(skillCatalog);
+                        var selectedSkills = installer.SelectSkillsFromPackages([package.Name]);
+                        if (ConfirmSkillInstallPreview($"Bundle install: {package.Name}", selectedSkills, layout, force: false, bundles: [package]))
+                        {
+                            InstallSkills(selectedSkills, layout, force: false);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case PackageDetailAction.Back:
                     return;
             }
@@ -1553,112 +1553,112 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case AgentAction.Inspect:
-                {
-                    if (agentCatalog.Agents.Count == 0)
                     {
-                        RenderInfo("No agents are available in the bundled catalog.");
+                        if (agentCatalog.Agents.Count == 0)
+                        {
+                            RenderInfo("No agents are available in the bundled catalog.");
+                            break;
+                        }
+
+                        var agent = prompts.Select(
+                            "Inspect an agent",
+                            agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal).ToArray(),
+                            entry => $"{ToAlias(entry.Name)} ({entry.Model})");
+                        ShowAgentDetail(agent);
                         break;
                     }
-
-                    var agent = prompts.Select(
-                        "Inspect an agent",
-                        agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal).ToArray(),
-                        entry => $"{ToAlias(entry.Name)} ({entry.Model})");
-                    ShowAgentDetail(agent);
-                    break;
-                }
                 case AgentAction.Install:
-                {
-                    if (layout is null)
                     {
-                        RenderInfo(layoutError ?? "Select a concrete agent platform before installing agents.");
+                        if (layout is null)
+                        {
+                            RenderInfo(layoutError ?? "Select a concrete agent platform before installing agents.");
+                            break;
+                        }
+
+                        var selectedAgents = prompts.MultiSelect(
+                            "Install agents",
+                            agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal).ToArray(),
+                            entry => $"{ToAlias(entry.Name)} ({entry.Model})");
+                        if (selectedAgents is null || selectedAgents.Count == 0)
+                        {
+                            break;
+                        }
+
+                        if (prompts.Confirm($"Install {selectedAgents.Count} agent(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                        {
+                            InstallAgents(selectedAgents, layout, force: false);
+                        }
+
                         break;
                     }
-
-                    var selectedAgents = prompts.MultiSelect(
-                        "Install agents",
-                        agentCatalog.Agents.OrderBy(entry => entry.Name, StringComparer.Ordinal).ToArray(),
-                        entry => $"{ToAlias(entry.Name)} ({entry.Model})");
-                    if (selectedAgents is null || selectedAgents.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (prompts.Confirm($"Install {selectedAgents.Count} agent(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        InstallAgents(selectedAgents, layout, force: false);
-                    }
-
-                    break;
-                }
                 case AgentAction.Repair:
-                {
-                    if (layout is null || installedAgents.Count == 0)
                     {
-                        RenderInfo("No installed agents are available in the current target.");
+                        if (layout is null || installedAgents.Count == 0)
+                        {
+                            RenderInfo("No installed agents are available in the current target.");
+                            break;
+                        }
+
+                        var selectedAgents = prompts.MultiSelect(
+                            "Repair/optimize installed agents",
+                            installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
+                            record => ToAlias(record.Agent.Name));
+                        if (selectedAgents is null || selectedAgents.Count == 0)
+                        {
+                            break;
+                        }
+
+                        if (prompts.Confirm($"Force reinstall {selectedAgents.Count} agent(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
+                        {
+                            InstallAgents(selectedAgents.Select(record => record.Agent).ToArray(), layout, force: true);
+                        }
+
                         break;
                     }
-
-                    var selectedAgents = prompts.MultiSelect(
-                        "Repair/optimize installed agents",
-                        installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
-                        record => ToAlias(record.Agent.Name));
-                    if (selectedAgents is null || selectedAgents.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (prompts.Confirm($"Force reinstall {selectedAgents.Count} agent(s) into {layout.PrimaryRoot.FullName}?", defaultValue: true))
-                    {
-                        InstallAgents(selectedAgents.Select(record => record.Agent).ToArray(), layout, force: true);
-                    }
-
-                    break;
-                }
                 case AgentAction.CopyOrMove:
-                {
-                    if (layout is null || installedAgents.Count == 0)
                     {
-                        RenderInfo("No installed agents are available in the current target.");
+                        if (layout is null || installedAgents.Count == 0)
+                        {
+                            RenderInfo("No installed agents are available in the current target.");
+                            break;
+                        }
+
+                        var selectedAgents = prompts.MultiSelect(
+                            "Copy or move agents",
+                            installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
+                            record => ToAlias(record.Agent.Name));
+                        if (selectedAgents is null || selectedAgents.Count == 0)
+                        {
+                            break;
+                        }
+
+                        CopyOrMoveAgents(selectedAgents.Select(record => record.Agent).ToArray(), layout);
                         break;
                     }
-
-                    var selectedAgents = prompts.MultiSelect(
-                        "Copy or move agents",
-                        installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
-                        record => ToAlias(record.Agent.Name));
-                    if (selectedAgents is null || selectedAgents.Count == 0)
-                    {
-                        break;
-                    }
-
-                    CopyOrMoveAgents(selectedAgents.Select(record => record.Agent).ToArray(), layout);
-                    break;
-                }
                 case AgentAction.Remove:
-                {
-                    if (layout is null || installedAgents.Count == 0)
                     {
-                        RenderInfo("No installed agents are available in the current target.");
+                        if (layout is null || installedAgents.Count == 0)
+                        {
+                            RenderInfo("No installed agents are available in the current target.");
+                            break;
+                        }
+
+                        var selectedAgents = prompts.MultiSelect(
+                            "Remove installed agents",
+                            installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
+                            record => ToAlias(record.Agent.Name));
+                        if (selectedAgents is null || selectedAgents.Count == 0)
+                        {
+                            break;
+                        }
+
+                        if (prompts.Confirm($"Remove {selectedAgents.Count} agent(s) from {layout.PrimaryRoot.FullName}?", defaultValue: false))
+                        {
+                            RemoveAgents(selectedAgents.Select(record => record.Agent).ToArray(), layout);
+                        }
+
                         break;
                     }
-
-                    var selectedAgents = prompts.MultiSelect(
-                        "Remove installed agents",
-                        installedAgents.OrderBy(record => record.Agent.Name, StringComparer.Ordinal).ToArray(),
-                        record => ToAlias(record.Agent.Name));
-                    if (selectedAgents is null || selectedAgents.Count == 0)
-                    {
-                        break;
-                    }
-
-                    if (prompts.Confirm($"Remove {selectedAgents.Count} agent(s) from {layout.PrimaryRoot.FullName}?", defaultValue: false))
-                    {
-                        RemoveAgents(selectedAgents.Select(record => record.Agent).ToArray(), layout);
-                    }
-
-                    break;
-                }
                 case AgentAction.Back:
                     return;
             }
@@ -1750,23 +1750,23 @@ internal sealed partial class InteractiveConsoleApp
             switch (action.Value)
             {
                 case SessionTargetAction.Platform:
-                {
-                    var selectedPlatform = prompts.Select(
-                        "Select a platform",
-                        Enum.GetValues<AgentPlatform>(),
-                        platform => platform.ToString());
-                    Session.Agent = selectedPlatform;
-                    break;
-                }
+                    {
+                        var selectedPlatform = prompts.Select(
+                            "Select a platform",
+                            Enum.GetValues<AgentPlatform>(),
+                            platform => platform.ToString());
+                        Session.Agent = selectedPlatform;
+                        break;
+                    }
                 case SessionTargetAction.Scope:
-                {
-                    var selectedScope = prompts.Select(
-                        "Select a scope",
-                        Enum.GetValues<InstallScope>(),
-                        scope => scope.ToString());
-                    Session.Scope = selectedScope;
-                    break;
-                }
+                    {
+                        var selectedScope = prompts.Select(
+                            "Select a scope",
+                            Enum.GetValues<InstallScope>(),
+                            scope => scope.ToString());
+                        Session.Scope = selectedScope;
+                        break;
+                    }
                 case SessionTargetAction.Back:
                     return;
             }
@@ -2918,8 +2918,8 @@ internal sealed partial class InteractiveConsoleApp
             ("installed", installedAgents.Count.ToString()));
 
         var flow = BuildRichStack(
-            new Spectre.Console.Markup("[deepskyblue1]Inspect[/] [dim]agent contracts before writing any native files[/]"),
-            new Spectre.Console.Markup("[deepskyblue1]Install[/] [dim]only when a native agent target exists[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Inspect[/] [dim]agent contracts before writing target files[/]"),
+            new Spectre.Console.Markup("[deepskyblue1]Install[/] [dim]into a shared or platform-specific agent target[/]"),
             new Spectre.Console.Markup("[deepskyblue1]Repair / move / remove[/] [dim]remain target-specific lifecycle actions[/]"));
 
         var agentCards = agentCatalog.Agents
@@ -2949,8 +2949,10 @@ internal sealed partial class InteractiveConsoleApp
         SpectreConsole.Write(BuildRichShellPanel(
             "status rail",
             new Spectre.Console.Markup(layout is null
-                ? "[dim]No native agent directory is available for the current session. Choose a concrete platform or create the native target first.[/]"
-                : "[dim]Agent install surfaces are native-target only. No shared fallback directory is used for agents.[/]")));
+                ? "[dim]No agent directory is available for the current session. Choose a platform or explicit target.[/]"
+                : layout.Agent == AgentPlatform.Agents
+                    ? "[dim]Portable Markdown agents will be written to the shared `.agents` target.[/]"
+                    : "[dim]Agents will be written using the selected platform adapter.[/]")));
     }
 
     private void RenderHelpPanel()
@@ -3284,7 +3286,7 @@ internal sealed partial class InteractiveConsoleApp
         var surfaceCards = new Spectre.Console.Rendering.IRenderable[]
         {
             BuildRichDetailCard(
-                "Native layout",
+                "Target layout",
                 layout is null ? "grey" : "deepskyblue1",
                 layout is null ? "[grey]target not ready[/]" : $"[dim]mode[/] {Escape(layout.Mode.ToString())}",
                 layout is null ? "[grey]no resolved file yet[/]" : $"[dim]agent file[/] {Escape($"{agent.Name}{layout.FileExtension}")}"),
@@ -3304,7 +3306,9 @@ internal sealed partial class InteractiveConsoleApp
         AnsiConsole.WriteLine();
         SpectreConsole.Write(BuildRichShellPanel(
             "status rail",
-            new Spectre.Console.Markup("[dim]Agents stay on native vendor targets only. No shared fallback directory is used for the agent surface.[/]")));
+            new Spectre.Console.Markup(layout?.Agent == AgentPlatform.Agents
+                ? "[dim]This agent uses the portable shared `.agents` Markdown layout.[/]"
+                : "[dim]This agent uses the selected platform-specific layout.[/]")));
     }
 
     private void RenderSessionTargetPanel()

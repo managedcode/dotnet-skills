@@ -313,7 +313,8 @@ internal sealed partial class InteractiveConsoleApp
                         Toast(msg, msg.Contains("failed", StringComparison.OrdinalIgnoreCase) ? NotificationSeverity.Danger : NotificationSeverity.Success);
                         BuildInstalledPage(ws, owner);
                     });
-            }));
+            }
+            ));
         }
         buttons.Add(("Reinstall (force)", () =>
         {
@@ -326,7 +327,8 @@ internal sealed partial class InteractiveConsoleApp
                     ToastResult(summary, "Reinstall failed", $"{ToAlias(record.Skill.Name)}: reinstalled");
                     BuildInstalledPage(ws, owner);
                 });
-        }));
+        }
+        ));
         buttons.Add(("Remove", () => ConfirmModal(ws, $"Remove {ToAlias(record.Skill.Name)}?", $"Deletes the skill directory from {ResolveSkillLayout().PrimaryRoot.FullName}.", () =>
         {
             var layout = ResolveSkillLayout();
@@ -438,7 +440,8 @@ internal sealed partial class InteractiveConsoleApp
                         Toast(failed ? "Install failed" : $"Installed {installedCount}, skipped {skippedCount}", failed ? NotificationSeverity.Danger : NotificationSeverity.Success);
                         BuildProjectPage(ws, panel);
                     });
-            }),
+            }
+        ),
             ("Browse installed", true, () => NavigateTo(HomeAction.ManageInstalled)));
         if (projectToolbar is not null) panel.AddControl(projectToolbar);
 
@@ -796,7 +799,7 @@ internal sealed partial class InteractiveConsoleApp
             "[grey]Home[/] [grey50]session, catalog telemetry, update notice[/]",
             "[grey]Skills / Installed[/] [grey50]browse, install, update, remove catalog skills[/]",
             "[grey]Collections / Bundles / Packages[/] [grey50]install grouped surfaces[/]",
-            "[grey]Agents[/] [grey50]install orchestration agents into native agent directories[/]",
+            "[grey]Agents[/] [grey50]install orchestration agents into shared or platform directories[/]",
             "[grey]Project[/] [grey50]scan .NET and browser UI signals and install recommended skills[/]",
             "[grey]Analysis[/] [grey50]collection sizes, heaviest skills, package signals[/]");
 

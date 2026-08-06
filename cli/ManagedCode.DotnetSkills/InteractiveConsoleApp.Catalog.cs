@@ -124,7 +124,8 @@ internal sealed partial class InteractiveConsoleApp
                             Toast($"{ToAlias(skill.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped", NotificationSeverity.Success);
                         BuildSkillBrowserPage(ws, owner);
                     });
-            }),
+            }
+        ),
             ("Force reinstall", () =>
             {
                 var layout = ResolveSkillLayout();
@@ -139,7 +140,8 @@ internal sealed partial class InteractiveConsoleApp
                             Toast($"{ToAlias(skill.Name)}: reinstalled ({summary.InstalledCount} written)", NotificationSeverity.Success);
                         BuildSkillBrowserPage(ws, owner);
                     });
-            }));
+            }
+        ));
     }
     // -------------------------------------------------------------------------
     // Collections
@@ -512,7 +514,8 @@ internal sealed partial class InteractiveConsoleApp
                         ToastResult(summary, $"Could not install bundle {package.Name}", summary is null ? string.Empty : $"{package.Name}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
                         BuildBundlesPage(ws, owner, primaryOnly);
                     });
-            }));
+            }
+        ));
     }
 
     // -------------------------------------------------------------------------
@@ -610,15 +613,14 @@ internal sealed partial class InteractiveConsoleApp
         }
 
         // Page toolbar at the top — "Install all into detected platforms" replaces the old
-        // bottom-of-page button so the bulk action is visible without scrolling. Disabled
-        // when no native agent directory resolved (the user must set the platform first).
+        // bottom-of-page button so the bulk action is visible without scrolling.
         var agentsToolbar = BuildPageToolbar(
             ("Install all into detected platforms", layout is not null, () =>
             {
                 var detected = SafeGet(() => AgentInstallTarget.ResolveAllDetected(Session.ProjectDirectory, Session.Scope), Array.Empty<AgentInstallLayout>());
                 if (detected.Count == 0)
                 {
-                    Toast("No native agent directories detected", NotificationSeverity.Warning);
+                    Toast("No shared or native agent directories resolved", NotificationSeverity.Warning);
                     return;
                 }
                 RunOperationQueued(
@@ -629,7 +631,8 @@ internal sealed partial class InteractiveConsoleApp
                         ToastResult(summary2, "Install failed", summary2 is null ? string.Empty : $"Installed {summary2.InstalledCount} agent file(s) across {detected.Count} platform(s)");
                         BuildAgentsPage(ws, panel);
                     });
-            }));
+            }
+        ));
         if (agentsToolbar is not null) panel.AddControl(agentsToolbar);
 
         // Status fits "○ available"/"✓ installed" (~11 cols); Agent gets a fixed width so it isn't
@@ -663,7 +666,7 @@ internal sealed partial class InteractiveConsoleApp
 
         if (layout is null)
         {
-            AddInlineNote(panel, "No native agent directory resolved. Set the platform on the Settings page, or create one of .codex/.claude/.github/.gemini/.junie.", NoteSeverity.Warning);
+            AddInlineNote(panel, "No agent directory resolved. Set the platform or target on the Settings page.", NoteSeverity.Warning);
         }
         // Bulk install lives in the page toolbar at the top.
     }
@@ -693,7 +696,8 @@ internal sealed partial class InteractiveConsoleApp
                         ToastResult(summary, "Install failed", summary is null ? string.Empty : $"{ToAlias(agent.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped");
                         BuildAgentsPage(ws, owner);
                     });
-            }));
+            }
+            ));
             buttons.Add(("Remove from current target", () =>
             {
                 RunOperationQueued(
@@ -704,7 +708,8 @@ internal sealed partial class InteractiveConsoleApp
                         ToastResult(summary, "Remove failed", summary is null ? string.Empty : $"Removed {ToAlias(agent.Name)} ({summary.RemovedCount} file(s))");
                         BuildAgentsPage(ws, owner);
                     });
-            }));
+            }
+            ));
         }
 
         ShowModalNative(ws, $"Agent · {ToAlias(agent.Name)}", detail, buttons.ToArray());

@@ -275,19 +275,20 @@ CLI naming rule:
 
 Agent target rule:
 
-- support Codex, Claude, Copilot, and Gemini target layouts through `--agent`
+- support shared Agents, Codex, Claude, Copilot, Gemini, Junie, and Grok Build target layouts through `--agent`
 - support global or repository-local installation through `--scope`
-- when `--agent` is omitted for skill installation, auto-detect native client roots in this order: `.codex`, `.claude`, `.github`, `.gemini`; install into every already existing native platform target you find, and only fall back to `.agents/skills` when none exist
+- when `.agents` exists, prefer its shared `skills` and `agents` targets; otherwise auto-detect native client roots in this order: `.codex`, `.claude`, `.github`, `.gemini`, `.junie`, `.grok`, and fall back to `.agents` when none exist
 - keep `--target` as an explicit override when a caller wants a custom path, including agent commands
 - copy skills as native skill directories for every supported CLI; do not generate Claude-specific skill adapters
 - for Codex, use `.codex/skills` and `.codex/agents` for project installs, and `$CODEX_HOME/skills` and `$CODEX_HOME/agents` (default `~/.codex/...`) for global installs
 - for Claude, use `.claude/skills` and `.claude/agents` for project installs, and `~/.claude/skills` and `~/.claude/agents` for global installs
 - for Copilot, use `.github/skills` and `.github/agents` for project installs, and `~/.copilot/skills` and `~/.copilot/agents` for global installs
 - for Gemini, use `.gemini/skills` and `.gemini/agents` for project installs, and `~/.gemini/skills` and `~/.gemini/agents` for global installs
-- for orchestration agents, auto-detect only vendor-native agent locations such as `.codex/agents`, `.claude/agents`, `.github/agents`, and `.gemini/agents`
-- do not treat `.agents` as a shared agent-install target and do not map it to Codex
-- if no native agent directory exists, require an explicit `--agent` or `--target` instead of inventing a fallback
-- if a caller uses `dotnet agents ... --target <path>` or `agents ... --target <path>`, require an explicit `--agent`; agent payload formats are platform-specific and must not be guessed
+- for Junie, use `.junie/skills` and `.junie/agents` for project installs, and `~/.junie/skills` and `~/.junie/agents` for global installs
+- for Grok Build, use `.grok/skills` and `.grok/agents` for project installs, and `~/.grok/skills` and `~/.grok/agents` for global installs
+- treat `.agents/skills` and `.agents/agents` as portable shared targets; do not map them to Codex
+- when an agent command uses `--target` without `--agent`, generate the portable Markdown format; require an explicit platform only for a platform-specific adapter
+- honor `DOTNET_SKILLS_DEFAULT_TARGET`, `DOTNET_AGENTS_DEFAULT_TARGET`, and `AGENTS_DEFAULT_TARGET`; explicit `--target` remains the highest-precedence override
 - when installing Codex globally, honor `CODEX_HOME` for both skills and agents
 
 Publishing is handled by [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml).

@@ -297,16 +297,16 @@ internal sealed partial class InteractiveConsoleApp
     /// </summary>
     private static string IconFor(HomeAction action) => action switch
     {
-        HomeAction.BrowseSkills      => "◇",
+        HomeAction.BrowseSkills => "◇",
         HomeAction.BrowseCollections => "⊞",
-        HomeAction.BrowseBundles     => "▣",
-        HomeAction.BrowsePackages    => "⬡",
-        HomeAction.BrowseAgents      => "⊕",
-        HomeAction.ManageInstalled   => "▤",
-        HomeAction.SyncProject       => "⌖",
-        HomeAction.Analysis          => "∿",
-        HomeAction.Workspace         => "⚙",  // Settings
-        HomeAction.About             => "ⓘ",
+        HomeAction.BrowseBundles => "▣",
+        HomeAction.BrowsePackages => "⬡",
+        HomeAction.BrowseAgents => "⊕",
+        HomeAction.ManageInstalled => "▤",
+        HomeAction.SyncProject => "⌖",
+        HomeAction.Analysis => "∿",
+        HomeAction.Workspace => "⚙",  // Settings
+        HomeAction.About => "ⓘ",
         _ => "›",
     };
 

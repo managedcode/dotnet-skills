@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.16",
   "category": "Cross-Platform UI",
   "compatibility": "Requires a .NET MAUI project or solution.",
   "package_prefix": "Microsoft.Maui"

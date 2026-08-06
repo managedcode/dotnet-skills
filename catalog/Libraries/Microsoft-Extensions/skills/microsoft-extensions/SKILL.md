@@ -24,7 +24,8 @@ compatibility: "Relevant to console apps, workers, ASP.NET Core apps, functions,
 
 ## Current Upstream Notes
 
-- `dotnet/extensions` `v10.8.2` updates only the `Microsoft.Extensions.VectorData.ConformanceTests` package and moves that test infrastructure to xUnit v3. It does not change the Generic Host, dependency injection, configuration, logging, options, `IHttpClientFactory`, or runtime AI composition patterns in this skill.
+- `dotnet/extensions` `v10.8.4` is an AI-template servicing release. It removes the retired GitHub Models provider and makes `--provider azureopenai`, `--provider ollama`, or `--provider openai` mandatory for `aichatweb` and `aiagent-webapi`; existing Generic Host, dependency injection, configuration, logging, options, and `IHttpClientFactory` patterns remain unchanged.
+- If repository automation creates those templates, pass the provider explicitly and validate the selected provider's secrets and local-development path. Do not retain scripts that depend on the removed default.
 - Keep Microsoft.Extensions package versions aligned within the repo's selected servicing line, then rerun host startup and options-validation tests after upgrading.
 
 ## Deliver

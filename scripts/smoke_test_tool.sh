@@ -12,6 +12,7 @@ hybrid_workspace="$workspace_path/hybrid"
 shared_workspace="$workspace_path/shared"
 plain_workspace="$workspace_path/plain"
 gemini_workspace="$workspace_path/gemini"
+grok_workspace="$workspace_path/grok"
 
 rm -rf "$tool_path" "$skills_path" "$bundle_path" "$workspace_path"
 mkdir -p \
@@ -29,7 +30,8 @@ mkdir -p \
   "$shared_workspace/.claude" \
   "$shared_workspace/.agents" \
   "$plain_workspace" \
-  "$gemini_workspace/.gemini"
+  "$gemini_workspace/.gemini" \
+  "$grok_workspace/.grok"
 
 shopt -s nullglob
 if [[ -f "$package_source" ]]; then
@@ -173,9 +175,9 @@ test -f "$hybrid_workspace/.claude/skills/aspire/SKILL.md"
 test ! -e "$hybrid_workspace/.agents"
 
 dotnet skills install aspire --bundled --project-dir "$shared_workspace"
-test -f "$shared_workspace/.codex/skills/aspire/SKILL.md"
-test -f "$shared_workspace/.claude/skills/aspire/SKILL.md"
-test ! -e "$shared_workspace/.agents/skills/aspire"
+test -f "$shared_workspace/.agents/skills/aspire/SKILL.md"
+test ! -e "$shared_workspace/.codex/skills/aspire"
+test ! -e "$shared_workspace/.claude/skills/aspire"
 
 auto_plain_target="$(dotnet skills where --project-dir "$plain_workspace")"
 case "$auto_plain_target" in
@@ -215,6 +217,33 @@ case "$auto_gemini_target" in
     exit 1
   ;;
 esac
+
+auto_grok_target="$(dotnet skills where --project-dir "$grok_workspace")"
+case "$auto_grok_target" in
+  */.grok/skills) ;;
+  *)
+    echo "Unexpected auto Grok target: $auto_grok_target" >&2
+    exit 1
+  ;;
+esac
+
+grok_agents_target="$(dotnet agents where --agent grok --scope project --project-dir "$grok_workspace")"
+case "$grok_agents_target" in
+  */.grok/agents) ;;
+  *)
+    echo "Unexpected Grok agents target: $grok_agents_target" >&2
+    exit 1
+  ;;
+esac
+
+configured_skills_target="$(DOTNET_SKILLS_DEFAULT_TARGET=.configured/skills dotnet skills where --scope project --project-dir "$plain_workspace")"
+test "$configured_skills_target" = "$plain_workspace/.configured/skills"
+
+configured_agents_target="$(DOTNET_AGENTS_DEFAULT_TARGET=.configured/agents dotnet agents where --scope project --project-dir "$plain_workspace")"
+test "$configured_agents_target" = "$plain_workspace/.configured/agents"
+
+configured_plain_agents_target="$(AGENTS_DEFAULT_TARGET=.standalone/agents agents where --scope project --project-dir "$plain_workspace")"
+test "$configured_plain_agents_target" = "$plain_workspace/.standalone/agents"
 
 claude_agents_target="$(dotnet agents where --agent claude --scope project --project-dir "$workspace_path")"
 case "$claude_agents_target" in
@@ -256,3 +285,13 @@ agents install router --agent claude --scope project --project-dir "$workspace_p
 test -f "$workspace_path/.claude/agents/dotnet-router.md"
 agents remove router --agent claude --scope project --project-dir "$workspace_path"
 test ! -e "$workspace_path/.claude/agents/dotnet-router.md"
+
+dotnet agents install router --scope project --project-dir "$plain_workspace"
+test -f "$plain_workspace/.agents/agents/dotnet-router.md"
+dotnet agents remove router --scope project --project-dir "$plain_workspace"
+test ! -e "$plain_workspace/.agents/agents/dotnet-router.md"
+
+agents install router --target "$plain_workspace/custom-agents"
+test -f "$plain_workspace/custom-agents/dotnet-router.md"
+agents remove router --target "$plain_workspace/custom-agents"
+test ! -e "$plain_workspace/custom-agents/dotnet-router.md"

@@ -1285,7 +1285,7 @@ internal static class Program
             layouts = AgentInstallTarget.ResolveAllDetected(projectDirectory, scope);
             if (layouts.Count == 0)
             {
-                Console.WriteLine("No native agent platforms detected. Create a native agent directory first or use --agent/--target.");
+                Console.WriteLine("No shared or native agent target could be resolved. Use --agent or --target.");
                 return 1;
             }
 

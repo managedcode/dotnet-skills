@@ -65,7 +65,7 @@ dotnet skills remove --all                  # remove installed catalog skills fr
 dotnet skills update                        # refresh installed catalog skills
 dotnet skills install blazor --agent claude # install for a specific agent
 dotnet agents list                          # show bundled orchestration agents
-dotnet agents install router --auto         # install agents to detected native agent folders
+dotnet agents install router --auto         # install agents to shared or detected agent folders
 agents list                                 # same agent-only catalog via the plain standalone command
 agents install router --auto                # same agent install flow without the dotnet-prefixed launcher
 ```
@@ -95,10 +95,10 @@ agents install router --auto                # same agent install flow without th
 | `dotnet agents install <agent...>` | Install orchestration agents |
 | `dotnet agents install router --auto` | Install agents to all detected platforms |
 | `dotnet agents remove <agent...>` | Remove installed agents |
-| `dotnet agents where` | Show native agent install paths |
+| `dotnet agents where` | Show resolved shared or platform agent install paths |
 | `agents list` | List available orchestration agents through the standalone `agents` tool |
 | `agents install <agent...>` | Install orchestration agents through the standalone `agents` tool |
-| `agents where` | Show native agent install paths through the standalone `agents` tool |
+| `agents where` | Show resolved agent install paths through the standalone `agents` tool |
 
 Use `--agent` to target a specific agent platform, `--scope` to choose global or project install. Use `dotnet skills list --installed-only` or the shorter `dotnet skills list --local` when you only want the installed inventory, or `--available-only` when you want the detailed collection-by-collection breakdown of the remaining catalog. The default `list` view stays compact: it shows the current target inventory, compares project/global scope when that comparison is meaningful, and keeps the remaining catalog as a short collection summary instead of dumping one giant description table. The CLI renders rich terminal tables by default so you can quickly see installed versions, update candidates, install commands, and when a newer `dotnet-skills`, `dotnet-agents`, or `agents` package is available on NuGet. `dotnet skills --version`, `dotnet agents --version`, and `agents --version` are shortcuts for the version view.
 
@@ -190,7 +190,8 @@ Install whichever dedicated agent package you prefer:
 | Gemini | `~/.gemini/skills/` | `.gemini/skills/` |
 | Codex | `$CODEX_HOME/skills/` (default: `~/.codex/skills/`) | `.codex/skills/` |
 | Junie | `~/.junie/skills/` | `.junie/skills/` |
-| Default shared root | `~/.agents/skills/` | `.agents/skills/` |
+| Grok Build | `~/.grok/skills/` | `.grok/skills/` |
+| Shared Agent Skills | `~/.agents/skills/` | `.agents/skills/` |
 
 ### Orchestration Agents Installation Paths
 
@@ -201,12 +202,14 @@ Install whichever dedicated agent package you prefer:
 | Gemini | `~/.gemini/agents/` | `.gemini/agents/` |
 | Codex | `$CODEX_HOME/agents/` (default: `~/.codex/agents/`) | `.codex/agents/` |
 | Junie | `~/.junie/agents/` | `.junie/agents/` |
+| Grok Build | `~/.grok/agents/` | `.grok/agents/` |
+| Shared agents | `~/.agents/agents/` | `.agents/agents/` |
 
-`dotnet agents install --auto` and `agents install --auto` write only to already existing native agent directories. They do not use `.agents` as a shared agent target; if no native agent directory exists yet, specify `--agent` or `--target`.
+If `.agents/` exists, automatic installs use its shared `skills/` or `agents/` directory. Otherwise the tool detects `.codex/`, `.claude/`, `.github/`, `.gemini/`, `.junie/`, and `.grok/`, installs into every existing native target, and falls back to `.agents/` when none exists. Use `--agent agents` for the shared target or `--agent grok` for Grok Build explicitly.
 
-`dotnet agents ... --target <path>` and `agents ... --target <path>` require an explicit `--agent` because the generated file format depends on the selected platform.
+An explicit `--target <path>` always wins. Agent commands use the portable Markdown format when `--agent` is omitted; pass a platform when you need its adapter format.
 
-When `--agent` is omitted for skill installation, the tool checks for `.codex/`, `.claude/`, `.github/`, `.gemini/`, and `.junie/` directories in that order, installs into every already existing native platform target it finds, and uses `.agents/skills/` only when no native platform folder exists yet.
+Set `DOTNET_SKILLS_DEFAULT_TARGET` or `DOTNET_AGENTS_DEFAULT_TARGET` to keep a default destination for `dotnet skills` and `dotnet agents`. The standalone `agents` tool uses `AGENTS_DEFAULT_TARGET`. Relative values resolve below the project root for project scope and below the user home for global scope.
 
 ## Orchestration Agents
 

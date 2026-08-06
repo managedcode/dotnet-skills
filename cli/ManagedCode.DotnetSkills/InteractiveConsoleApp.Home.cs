@@ -80,6 +80,6 @@ internal sealed partial class InteractiveConsoleApp
             "[grey]Skills[/] [grey50]browse and install individual catalog skills[/]",
             "[grey]Installed[/] [grey50]update or remove what is already installed[/]",
             "[grey]Project[/] [grey50]scan the current solution and install recommended skills[/]",
-            "[grey]Agents[/] [grey50]install orchestration agents into native agent directories[/]");
+            "[grey]Agents[/] [grey50]install orchestration agents into shared or platform directories[/]");
     }
 }

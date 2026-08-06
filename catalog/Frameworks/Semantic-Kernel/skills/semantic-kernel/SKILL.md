@@ -43,8 +43,9 @@ compatibility: "Requires Semantic Kernel 1.x packages (.NET 8+)."
 3. **Configure Function Calling** for automatic tool use
 4. **Handle Responses** and manage conversation state
 5. **Test and Observe** AI behavior with logging
-6. For Semantic Kernel `dotnet-1.78.0` and later, keep OpenAPI plugin server URL validation enabled, do not re-enable automatic redirects on the default `HttpPlugin` or `WebFileDownloadPlugin` clients without an explicit trusted-host policy, and use the current Microsoft Agent Framework-compatible migration samples when moving SK agent code to Agent Framework.
-7. Re-test custom file, document, and web plugin paths after upgrading to `1.78.0`; the release hardens path validation and updates vulnerable transitive dependencies, so local workarounds that weakened validation should be removed rather than carried forward.
+6. For Semantic Kernel `dotnet-1.79.0` and later, keep OpenAPI plugin server URL validation enabled, do not re-enable automatic redirects on the default `HttpPlugin` or `WebFileDownloadPlugin` clients without an explicit trusted-host policy, and use the current Microsoft Agent Framework-compatible migration samples when moving SK agent code to Agent Framework.
+7. Re-test Cosmos DB vector-store queries, file and document plugins, OpenAPI server-variable URLs, and Ollama reasoning settings after upgrading to `1.79.0`. The release fixes the Cosmos vector-store path, rejects mixed-separator UNC paths, URL-encodes OpenAPI server variables, adds Ollama `Think`, and allows deterministic `TimePlugin` tests through `TimeProvider` injection.
+8. Treat the Prompty.Core `2.0.0-beta.3` update in `1.79.0` as a breaking dependency change. Re-run prompt-template tests and remove security workarounds that are no longer needed after the vulnerable transitive version is gone.
 
 ## Kernel Setup
 

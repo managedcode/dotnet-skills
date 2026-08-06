@@ -45,10 +45,9 @@ compatibility: "Requires a .NET repository with frontend assets managed through 
 
 ## Current Upstream Notes
 
-- Biome CLI `2.5.5` fixes incomplete type-inference false positives and deadlocks, Astro/Svelte shorthand ARIA-role detection, unresolved package subpath imports, Vue argument-less `v-bind`, HTML embedded style/script removal, CSS comment/casing formatting, and shared-daemon disconnect behavior. It also adds `noNegationInEqualityCheck` and CSS `@custom-media` support.
-- Re-run the repo's existing `biome check` command after upgrading, especially when type-aware rules or `--write` are enabled. Remove suppressions only when the affected Astro/Svelte/Vue, HTML, CSS, resolver, or Promise-inference cases are covered by repository fixtures.
-- The watched Biome release is `@biomejs/js-api@6.0.0`, not a core CLI-only release. It adds `spanInBytesToSpanInCodeUnits` for converting Biome UTF-8 byte spans to JavaScript UTF-16 code unit spans.
-- Use that helper when custom JavaScript tooling slices source text from Biome diagnostics, especially with non-ASCII content. Normal `.NET` repos that only run the Biome CLI usually need no config change for this release.
+- Biome CLI `2.5.7` adds `ignoreIfStatements` to `useNullishCoalescing`, the nursery rules `noExtendNative` and `noTailwindArbitraryValue`, and broader HTML/CSS graph and formatter support.
+- The release fixes nested-config lookup for stdin paths, Vue and Svelte reference analysis, type-aware `noUnnecessaryConditions` and `noFloatingPromises` cases, HTML/Vue/Svelte parsing, accessibility suppressions, and several CSS and HTML formatting regressions. Re-run the repo's existing `biome check` command before removing suppressions or accepting formatter churn.
+- When `--stdin-file-path` is used, verify that the intended nested `biome.json` is selected and that ignored input produces the expected warning. Keep fixtures for Vue custom blocks, Svelte attachments, Tailwind class sorting, and non-ASCII diagnostic spans when those surfaces matter.
 - Recent Biome changes also continue expanding CSS/SCSS, HTML accessibility, import sorting, watch mode, and upgrade-command surfaces; verify actual CLI ownership before replacing ESLint or Stylelint.
 
 ## Bootstrap When Missing

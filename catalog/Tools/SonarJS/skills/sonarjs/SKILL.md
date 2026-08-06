@@ -52,8 +52,8 @@ flowchart LR
 
 ## Current Upstream Notes
 
-- SonarJS `13.3` adds test rules for explicit skips, Testing Library query presence/absence matching, handled async queries, `find*` for eventually available elements, promises passed to `fireEvent`, global regular expressions in queries, and explicit button types. It also imports Vue `require-v-for-key` and `valid-v-for` rules as external findings.
-- The release reduces false positives for `should` assertions, Vitest type-level assertions, framework-prefixed `test.expect` entry points, destructured component props, type-guarded string concatenation, side-effect constructors, and `RegExp` syntax-validation constructors. Re-run the server analysis before preserving old suppressions.
+- SonarJS `13.4` extends test-rule coverage to Bun and `node:test`, adds checks for trivially true assertions, empty parameterized datasets, duplicate parameterized cases, composite assertions, synchronous exception callbacks, and Testing Library debug utilities, and decorates Vue rules for prop constructors and duplicate keys.
+- The release raises the default nested-function threshold from four to five, aligns ARIA handling with the HTML specification, and reduces false positives for React `useId`, render-prop names, Vue 2, ref-to-ref assignments, and Jira-anchored TODO comments. Re-run server analysis before preserving suppressions or locally overriding the changed threshold.
 
 ## Bootstrap When Missing
 

@@ -613,7 +613,8 @@ internal static class ConsoleUi
             "[dim]The shell exposes[/] [green]Collection -> Lane -> Skill[/] [dim]browse, analysis views, and install preview.[/]",
             "[dim]Canonical skill ids work directly:[/] [green]aspire[/][dim],[/] [green]orleans[/][dim],[/] [green]microsoft-agent-framework[/][dim].[/]",
             "[dim]--bundled skips the network. --catalog-version pins a release. --refresh redownloads.[/]",
-            "[dim]Auto-detect probes .codex, .claude, .github, .gemini, .junie; if none exist yet, installs land in .agents/skills.[/]",
+            "[dim]Auto-detect prefers an existing .agents root, then probes .codex, .claude, .github, .gemini, .junie, .grok; otherwise it creates .agents.[/]",
+            $"[dim]Persistent defaults:[/] [green]{Escape(ToolIdentity.SkillsDefaultTargetEnvironmentVariable)}[/] [dim]and[/] [green]{Escape(ToolIdentity.AgentsDefaultTargetEnvironmentVariable)}[/][dim].[/]",
             $"[dim]Set[/] [green]{Escape(ToolIdentity.SkipUpdateEnvironmentVariable)}=1[/] [dim]to suppress update notices.[/]",
         };
 
@@ -634,9 +635,9 @@ internal static class ConsoleUi
         table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} help")}[/]", "Render the direct command reference for the agent-only tool.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} list")}[/]", "List available orchestration agents.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install router ai")}[/]", "Install one or more orchestration agents by name.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install --all --auto")}[/]", "Install all agents to every detected native agent directory.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} install --all --auto")}[/]", "Install all agents to the shared or detected agent directories.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} remove router")}[/]", "Remove one or more installed orchestration agents.");
-        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} where --agent codex")}[/]", "Print the resolved native agent install path.");
+        table.AddRow($"[green]{Escape($"{ToolIdentity.AgentDisplayCommand} where --agent agents")}[/]", "Print the shared agent install path.");
         table.AddRow($"[green]{Escape($"{ToolIdentity.DisplayCommand} version")}[/]", $"Show the current `{ToolIdentity.PackageId}` version and check whether NuGet has a newer release.");
         AnsiConsole.Write(table);
         AnsiConsole.WriteLine();
@@ -648,8 +649,9 @@ internal static class ConsoleUi
             $"- `{ToolIdentity.DisplayCommand} list` and bare `{ToolIdentity.DisplayCommand}` both show the bundled agent catalog.",
             $"- `{ToolIdentity.DisplayCommand} version` and `{ToolIdentity.DisplayCommand} --version` both show the current tool version.",
             $"- Set `{ToolIdentity.SkipUpdateEnvironmentVariable}=1` to suppress automatic tool update notices on startup.",
-            "- Agent auto-detect uses only native agent roots. If none exist yet, specify `--agent` or `--target`.",
-            "- Explicit `--target` still requires `--agent`, because the generated file format depends on the selected platform.");
+            "- Agent auto-detect prefers `.agents`, then native roots, and creates `.agents/agents` when no supported root exists.",
+            "- Explicit `--target` uses portable Markdown unless `--agent` selects a platform-specific adapter.",
+            $"- Set `{ToolIdentity.AgentsDefaultTargetEnvironmentVariable}` to keep a persistent default agent destination.");
 
         AnsiConsole.Write(new Panel(new Markup(Escape(notes))).Header("[dim]notes[/]").Border(BoxBorder.Rounded).Expand());
     }
@@ -973,7 +975,7 @@ internal static class ConsoleUi
             .Expand();
     }
 
-private static string BuildSkillCell(SkillEntry skill)
+    private static string BuildSkillCell(SkillEntry skill)
     {
         return $"[bold]{Escape(skill.Name)}[/] [dim]({Escape(ToAlias(skill.Name))})[/]";
     }

@@ -12,13 +12,14 @@ public sealed class SkillInstallTargetTests
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempDirectory = new TemporaryDirectory();
-        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
         var layouts = SkillInstallTarget.ResolveAllDetected(tempDirectory.Path, InstallScope.Project);
-        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie);
+        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
         Assert.Equal(expected.Select(item => item.Platform).ToArray(), layouts.Select(layout => layout.Agent).ToArray());
         Assert.Equal(expected.Select(item => item.Path).ToArray(), layouts.Select(layout => layout.PrimaryRoot.FullName).ToArray());
@@ -33,10 +34,11 @@ public sealed class SkillInstallTargetTests
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempDirectory = new TemporaryDirectory();
-        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+        CreatePlatformDirectories(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
         var layout = SkillInstallTarget.Resolve(
             explicitTargetPath: null,
@@ -44,7 +46,7 @@ public sealed class SkillInstallTargetTests
             scope: InstallScope.Project,
             projectDirectory: tempDirectory.Path);
 
-        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie)[0];
+        var expected = BuildExpectedProjectLayouts(tempDirectory.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback)[0];
 
         Assert.Equal(expected.Platform, layout.Agent);
         Assert.Equal(expected.Path, layout.PrimaryRoot.FullName);
@@ -59,6 +61,7 @@ public sealed class SkillInstallTargetTests
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempHome = new TemporaryDirectory();
@@ -71,10 +74,10 @@ public sealed class SkillInstallTargetTests
 
             try
             {
-                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
                 var layouts = SkillInstallTarget.ResolveAllDetected(tempHome.Path, InstallScope.Global);
-                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie);
+                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
                 Assert.Equal(expected.Select(item => item.Platform).ToArray(), layouts.Select(layout => layout.Agent).ToArray());
                 Assert.Equal(expected.Select(item => item.Path).ToArray(), layouts.Select(layout => layout.PrimaryRoot.FullName).ToArray());
@@ -97,6 +100,7 @@ public sealed class SkillInstallTargetTests
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         using var tempHome = new TemporaryDirectory();
@@ -109,7 +113,7 @@ public sealed class SkillInstallTargetTests
 
             try
             {
-                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback);
+                CreatePlatformDirectories(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback);
 
                 var layout = SkillInstallTarget.Resolve(
                     explicitTargetPath: null,
@@ -117,7 +121,7 @@ public sealed class SkillInstallTargetTests
                     scope: InstallScope.Global,
                     projectDirectory: tempHome.Path);
 
-                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie)[0];
+                var expected = BuildExpectedGlobalLayouts(tempHome.Path, hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback)[0];
 
                 Assert.Equal(expected.Platform, layout.Agent);
                 Assert.Equal(expected.Path, layout.PrimaryRoot.FullName);
@@ -167,6 +171,36 @@ public sealed class SkillInstallTargetTests
         }
     }
 
+    [Fact]
+    public void ResolveAutoProject_UsesConfiguredDefaultTargetBeforeDetectedPlatforms()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+
+        lock (TestEnvironmentLocks.UserProfile)
+        {
+            var previousTarget = SetEnvironment("DOTNET_SKILLS_DEFAULT_TARGET", ".team/skills");
+
+            try
+            {
+                Directory.CreateDirectory(Path.Combine(tempDirectory.Path, ".codex"));
+
+                var layout = SkillInstallTarget.Resolve(
+                    explicitTargetPath: null,
+                    agent: AgentPlatform.Auto,
+                    scope: InstallScope.Project,
+                    projectDirectory: tempDirectory.Path);
+
+                Assert.Equal(AgentPlatform.Agents, layout.Agent);
+                Assert.Equal(Path.Combine(tempDirectory.Path, ".team", "skills"), layout.PrimaryRoot.FullName);
+                Assert.False(layout.IsExplicitTarget);
+            }
+            finally
+            {
+                SetEnvironment("DOTNET_SKILLS_DEFAULT_TARGET", previousTarget);
+            }
+        }
+    }
+
     [Theory]
     [MemberData(nameof(ExplicitTargetCases))]
     public void Resolve_WithExplicitTarget_UsesProvidedPathAndDirectoryMode(object agent, object scope)
@@ -190,30 +224,39 @@ public sealed class SkillInstallTargetTests
         Assert.Equal(Path.GetFullPath(explicitPath), layout.PrimaryRoot.FullName);
     }
 
+    [Theory]
+    [MemberData(nameof(AgentAliasCases))]
+    public void ParseAgent_RecognizesSharedAndGrokAliases(string value, object expected)
+    {
+        Assert.Equal((AgentPlatform)expected, SkillInstallTarget.ParseAgent(value));
+    }
+
     public static IEnumerable<object[]> ProjectCases()
     {
         foreach (var hasCodex in new[] { false, true })
-        foreach (var hasClaude in new[] { false, true })
-        foreach (var hasCopilot in new[] { false, true })
-        foreach (var hasGemini in new[] { false, true })
-        foreach (var hasJunie in new[] { false, true })
-        foreach (var hasSharedFallback in new[] { false, true })
-        {
-            yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback];
-        }
+            foreach (var hasClaude in new[] { false, true })
+                foreach (var hasCopilot in new[] { false, true })
+                    foreach (var hasGemini in new[] { false, true })
+                        foreach (var hasJunie in new[] { false, true })
+                            foreach (var hasGrok in new[] { false, true })
+                                foreach (var hasSharedFallback in new[] { false, true })
+                                {
+                                    yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback];
+                                }
     }
 
     public static IEnumerable<object[]> GlobalCases()
     {
         foreach (var hasCodex in new[] { false, true })
-        foreach (var hasClaude in new[] { false, true })
-        foreach (var hasCopilot in new[] { false, true })
-        foreach (var hasGemini in new[] { false, true })
-        foreach (var hasJunie in new[] { false, true })
-        foreach (var hasSharedFallback in new[] { false, true })
-        {
-            yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasSharedFallback];
-        }
+            foreach (var hasClaude in new[] { false, true })
+                foreach (var hasCopilot in new[] { false, true })
+                    foreach (var hasGemini in new[] { false, true })
+                        foreach (var hasJunie in new[] { false, true })
+                            foreach (var hasGrok in new[] { false, true })
+                                foreach (var hasSharedFallback in new[] { false, true })
+                                {
+                                    yield return [hasCodex, hasClaude, hasCopilot, hasGemini, hasJunie, hasGrok, hasSharedFallback];
+                                }
     }
 
     public static IEnumerable<object[]> ExplicitTargetCases()
@@ -221,20 +264,31 @@ public sealed class SkillInstallTargetTests
         foreach (var agent in new[]
                  {
                      AgentPlatform.Auto,
+                     AgentPlatform.Agents,
                      AgentPlatform.Codex,
                      AgentPlatform.Claude,
                      AgentPlatform.Copilot,
                      AgentPlatform.Gemini,
                      AgentPlatform.Junie,
+                     AgentPlatform.Grok,
                  })
-        foreach (var scope in new[]
-                 {
+            foreach (var scope in new[]
+                     {
                      InstallScope.Project,
                      InstallScope.Global,
                  })
-        {
-            yield return [agent, scope];
-        }
+            {
+                yield return [agent, scope];
+            }
+    }
+
+    public static IEnumerable<object[]> AgentAliasCases()
+    {
+        yield return ["agents", AgentPlatform.Agents];
+        yield return ["shared", AgentPlatform.Agents];
+        yield return ["grok", AgentPlatform.Grok];
+        yield return ["grok-build", AgentPlatform.Grok];
+        yield return ["xai", AgentPlatform.Grok];
     }
 
     private static IReadOnlyList<ResolvedLayout> BuildExpectedProjectLayouts(
@@ -243,8 +297,15 @@ public sealed class SkillInstallTargetTests
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
-        bool hasJunie)
+        bool hasJunie,
+        bool hasGrok,
+        bool hasSharedFallback)
     {
+        if (hasSharedFallback)
+        {
+            return [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(rootPath, ".agents", "skills"))];
+        }
+
         var layouts = new List<ResolvedLayout>();
 
         if (hasCodex)
@@ -272,12 +333,17 @@ public sealed class SkillInstallTargetTests
             layouts.Add(new ResolvedLayout(AgentPlatform.Junie, Path.Combine(rootPath, ".junie", "skills")));
         }
 
+        if (hasGrok)
+        {
+            layouts.Add(new ResolvedLayout(AgentPlatform.Grok, Path.Combine(rootPath, ".grok", "skills")));
+        }
+
         if (layouts.Count > 0)
         {
             return layouts;
         }
 
-        return [new ResolvedLayout(AgentPlatform.Auto, Path.Combine(rootPath, ".agents", "skills"))];
+        return [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(rootPath, ".agents", "skills"))];
     }
 
     private static IReadOnlyList<ResolvedLayout> BuildExpectedGlobalLayouts(
@@ -286,8 +352,15 @@ public sealed class SkillInstallTargetTests
         bool hasClaude,
         bool hasCopilot,
         bool hasGemini,
-        bool hasJunie)
+        bool hasJunie,
+        bool hasGrok,
+        bool hasSharedFallback)
     {
+        if (hasSharedFallback)
+        {
+            return [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(homePath, ".agents", "skills"))];
+        }
+
         var layouts = new List<ResolvedLayout>();
 
         if (hasCodex)
@@ -315,12 +388,17 @@ public sealed class SkillInstallTargetTests
             layouts.Add(new ResolvedLayout(AgentPlatform.Junie, Path.Combine(homePath, ".junie", "skills")));
         }
 
+        if (hasGrok)
+        {
+            layouts.Add(new ResolvedLayout(AgentPlatform.Grok, Path.Combine(homePath, ".grok", "skills")));
+        }
+
         if (layouts.Count > 0)
         {
             return layouts;
         }
 
-        return [new ResolvedLayout(AgentPlatform.Auto, Path.Combine(homePath, ".agents", "skills"))];
+        return [new ResolvedLayout(AgentPlatform.Agents, Path.Combine(homePath, ".agents", "skills"))];
     }
 
     private static void CreatePlatformDirectories(
@@ -330,6 +408,7 @@ public sealed class SkillInstallTargetTests
         bool hasCopilot,
         bool hasGemini,
         bool hasJunie,
+        bool hasGrok,
         bool hasSharedFallback)
     {
         if (hasCodex)
@@ -356,6 +435,11 @@ public sealed class SkillInstallTargetTests
         if (hasJunie)
         {
             Directory.CreateDirectory(Path.Combine(rootDirectory, ".junie"));
+        }
+
+        if (hasGrok)
+        {
+            Directory.CreateDirectory(Path.Combine(rootDirectory, ".grok"));
         }
 
         if (hasSharedFallback)

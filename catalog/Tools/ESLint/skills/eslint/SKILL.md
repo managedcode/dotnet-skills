@@ -45,8 +45,8 @@ compatibility: "Requires a .NET repository with Node-based frontend assets such 
 
 ## Current Upstream Notes
 
-- ESLint `v10.7.0` adds `errorClassNames` to `preserve-caught-error`, constructor-callback handling to `max-nested-callbacks`, computed `Number.parseInt` support in `radix`, and suggestions for `no-compare-neg-zero`.
-- The `v10.7.0` fixes also reduce false positives when built-ins such as `RegExp`, `NaN`, or `Number` are shadowed and tighten `eqeqeq`, `radix`, and `no-implicit-coercion` behavior. Re-run the real lint suite before changing suppressions or snapshot expectations.
+- ESLint `v10.8.0` exports `ConfigObject` from `eslint/config`, fixes reserved-character handling in HTML formatter rule ids, and prevents a `no-unreachable-loop` crash when every loop type is ignored.
+- The release also fixes `prefer-object-spread` semicolon insertion, a quadratic-time `prefer-template` regular expression, computed-method ignores in `class-methods-use-this`, and parenthesized constructors in `preserve-caught-error`. Re-run the real lint suite and formatter snapshots before changing suppressions or generated reports.
 - Current docs clarify parser option precedence over `languageOptions` and document the v9/v10 migration codemods; review flat-config migrations that mix legacy parser settings with new config shapes.
 
 ## Bootstrap When Missing

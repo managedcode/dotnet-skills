@@ -1325,11 +1325,13 @@ def render_surface_distinction_section(
 def render_support_panel(root_prefix: str) -> str:
     """Render a compact supported-platforms panel."""
     platforms = [
+        ("Agent Skills", "AS", "Portable `.agents` roots shared by compatible tools for project and personal installs."),
         ("Claude Code", "CC", "Native personal and project folders for skills and agents."),
         ("GitHub Copilot", "GH", "Repository-friendly skill layouts for team workflows and check-ins."),
         ("Gemini", "GM", "Consistent directory conventions for personal and repo-local installs."),
         ("Codex", "CX", "Native `.codex` roots plus auto-detect support in the CLI."),
         ("Junie", "JN", "JetBrains-native `.junie` roots for project and personal skill and agent installs."),
+        ("Grok Build", "GB", "xAI-native `.grok` roots for project and personal skill and agent installs."),
     ]
 
     cards = []

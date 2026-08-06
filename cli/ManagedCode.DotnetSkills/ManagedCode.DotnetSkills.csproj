@@ -62,6 +62,8 @@
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.ToolCommandName" Value="$(ToolCommandName)" />
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.DisplayCommand" Value="dotnet skills" />
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.SkipUpdateEnvironmentVariable" Value="DOTNET_SKILLS_SKIP_UPDATE_CHECK" />
+    <AssemblyMetadata Include="ManagedCode.DotnetSkills.SkillsDefaultTargetEnvironmentVariable" Value="DOTNET_SKILLS_DEFAULT_TARGET" />
+    <AssemblyMetadata Include="ManagedCode.DotnetSkills.AgentsDefaultTargetEnvironmentVariable" Value="DOTNET_AGENTS_DEFAULT_TARGET" />
     <AssemblyMetadata Include="ManagedCode.DotnetSkills.CacheDirectoryName" Value="dotnet-skills" />
   </ItemGroup>
 

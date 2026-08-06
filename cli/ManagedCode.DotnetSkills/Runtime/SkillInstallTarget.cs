@@ -3,11 +3,13 @@ namespace ManagedCode.DotnetSkills.Runtime;
 internal enum AgentPlatform
 {
     Auto,
+    Agents,
     Codex,
     Claude,
     Copilot,
     Gemini,
     Junie,
+    Grok,
 }
 
 internal enum InstallScope
@@ -33,11 +35,13 @@ internal sealed record SkillInstallLayout(
     public string ReloadHint => Agent switch
     {
         AgentPlatform.Auto => "Restart your agent session to pick up new skills.",
+        AgentPlatform.Agents => "Restart your agent session to pick up shared Agent Skills.",
         AgentPlatform.Codex => "Restart Codex to pick up new skills.",
         AgentPlatform.Claude => "Restart Claude Code or start a new session to pick up new skills.",
         AgentPlatform.Copilot => "Restart Copilot CLI or your IDE agent session to pick up new skills.",
         AgentPlatform.Gemini => "Run /skills reload or restart Gemini CLI to pick up new skills.",
         AgentPlatform.Junie => "Restart Junie or reload the project to pick up new skills.",
+        AgentPlatform.Grok => "Restart Grok Build to pick up new skills.",
         _ => "Restart your agent session to pick up new skills.",
     };
 }
@@ -57,6 +61,14 @@ internal static class SkillInstallTarget
 
         var context = InstallPathContext.Create(projectDirectory);
 
+        var configuredRoot = context.ResolveConfiguredRoot(ToolIdentity.SkillsDefaultTargetEnvironmentVariable, scope);
+        if (configuredRoot is not null)
+        {
+            var configuredPlatform = agent == AgentPlatform.Auto ? AgentPlatform.Agents : agent;
+            return InstallPlatformRegistry.Get(configuredPlatform)
+                .CreateSkillLayout(scope, configuredRoot, isExplicitTarget: false);
+        }
+
         if (agent == AgentPlatform.Auto)
         {
             return ResolveDetected(context, scope)[0];
@@ -69,6 +81,8 @@ internal static class SkillInstallTarget
     public static AgentPlatform ParseAgent(string value) => value.ToLowerInvariant() switch
     {
         "auto" => AgentPlatform.Auto,
+        "agents" => AgentPlatform.Agents,
+        "shared" => AgentPlatform.Agents,
         "codex" => AgentPlatform.Codex,
         "openai" => AgentPlatform.Codex,
         "claude" => AgentPlatform.Claude,
@@ -81,7 +95,10 @@ internal static class SkillInstallTarget
         "google-gemini" => AgentPlatform.Gemini,
         "junie" => AgentPlatform.Junie,
         "jetbrains" => AgentPlatform.Junie,
-        _ => throw new InvalidOperationException("Unsupported agent: " + value + ". Expected auto, codex, openai, claude, anthropic, copilot, github-copilot, gemini, google-gemini, junie, or jetbrains."),
+        "grok" => AgentPlatform.Grok,
+        "grok-build" => AgentPlatform.Grok,
+        "xai" => AgentPlatform.Grok,
+        _ => throw new InvalidOperationException("Unsupported agent: " + value + ". Expected auto, agents, shared, codex, openai, claude, anthropic, copilot, github-copilot, gemini, google-gemini, junie, jetbrains, grok, grok-build, or xai."),
     };
 
     public static InstallScope ParseScope(string value) => value.ToLowerInvariant() switch
@@ -93,7 +110,18 @@ internal static class SkillInstallTarget
 
     public static IReadOnlyList<SkillInstallLayout> ResolveAllDetected(string? projectDirectory, InstallScope scope)
     {
-        return ResolveDetected(InstallPathContext.Create(projectDirectory), scope);
+        var context = InstallPathContext.Create(projectDirectory);
+        var configuredRoot = context.ResolveConfiguredRoot(ToolIdentity.SkillsDefaultTargetEnvironmentVariable, scope);
+        if (configuredRoot is not null)
+        {
+            return
+            [
+                InstallPlatformRegistry.Get(AgentPlatform.Agents)
+                    .CreateSkillLayout(scope, configuredRoot, isExplicitTarget: false),
+            ];
+        }
+
+        return ResolveDetected(context, scope);
     }
 
     private static SkillInstallLayout ResolveExplicit(AgentPlatform agent, InstallScope scope, string explicitTargetPath)
@@ -121,7 +149,14 @@ internal static class SkillInstallTarget
 
     private static IReadOnlyList<SkillInstallLayout> ResolveNativeLayouts(InstallPathContext context, InstallScope scope)
     {
+        var sharedStrategy = InstallPlatformRegistry.Get(AgentPlatform.Agents);
+        if (sharedStrategy.HasNativeRoot(context, scope))
+        {
+            return [sharedStrategy.CreateSkillLayout(scope, sharedStrategy.GetSkillRoot(context, scope), isExplicitTarget: false)];
+        }
+
         return InstallPlatformRegistry.StrategiesInDetectionOrder
+            .Where(strategy => strategy.Platform != AgentPlatform.Agents)
             .Where(strategy => strategy.HasNativeRoot(context, scope))
             .Select(strategy => strategy.CreateSkillLayout(scope, strategy.GetSkillRoot(context, scope), isExplicitTarget: false))
             .DistinctBy(layout => layout.PrimaryRoot.FullName, StringComparer.OrdinalIgnoreCase)
@@ -130,15 +165,10 @@ internal static class SkillInstallTarget
 
     private static SkillInstallLayout CreateDefaultFallbackLayout(InstallPathContext context, InstallScope scope)
     {
-        var root = scope == InstallScope.Project
-            ? new DirectoryInfo(Path.Combine(context.ProjectRoot.FullName, ".agents", "skills"))
-            : new DirectoryInfo(Path.Combine(context.UserHome.FullName, ".agents", "skills"));
-
-        return new SkillInstallLayout(
-            AgentPlatform.Auto,
+        var sharedStrategy = InstallPlatformRegistry.Get(AgentPlatform.Agents);
+        return sharedStrategy.CreateSkillLayout(
             scope,
-            SkillInstallMode.SkillDirectories,
-            root,
-            IsExplicitTarget: false);
+            sharedStrategy.GetSkillRoot(context, scope),
+            isExplicitTarget: false);
     }
 }

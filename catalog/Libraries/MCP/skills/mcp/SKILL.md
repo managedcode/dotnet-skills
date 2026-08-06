@@ -1,7 +1,7 @@
 ---
 name: mcp
 description: "Build or consume Model Context Protocol (MCP) servers and clients in .NET using the official MCP C# SDK, including stdio, Streamable HTTP, tools, prompts, resources, and capability negotiation. USE FOR: .NET MCP servers or clients; stdio versus HTTP transport choices; tools, resources, prompts, completions, and capability negotiation. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
-compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v1.4.x SDK."
+compatibility: "Requires the official MCP C# SDK packages (`ModelContextProtocol.Core`, `ModelContextProtocol`, or `ModelContextProtocol.AspNetCore`) on .NET 8+; current guidance targets the v2.1 SDK and MCP 2026-07-28."
 ---
 
 # MCP C# SDK for .NET
@@ -56,10 +56,12 @@ Load only what the task needs:
 | `HttpClientTransport` + `HttpTransportMode.StreamableHttp` | The server is remote or should be reachable over HTTP. | Recommended HTTP transport; supports streaming and session resumption. |
 | `HttpTransportMode.Sse` | You must connect to an older SSE-only server. | Legacy compatibility only; do not choose this for new servers. |
 
-## Current v1.4 Notes
+## Current v2.1 Notes
 
 - The July 2026 `.NET AI` MCP documentation now separates a getting-started hub, client and server quickstarts, MCP Registry publishing, and a server-resource index. Use those pages to bootstrap a vertical slice, then return to the C# SDK docs here for exact transport, capability, authorization, and lifecycle behavior.
-- Upgrade HTTP/SSE servers to at least `v1.4.1`: it releases the `StreamableHttpServerTransport` SSE response reference when a GET ends, preventing disconnected long-lived clients from retaining Kestrel connections and their memory-pool buffers until session disposal.
+- SDK `v2.0.0` aligns with MCP `2026-07-28`: HTTP is stateless by default, clients negotiate with `server/discover` before falling back to legacy `initialize`, Tasks move to `ModelContextProtocol.Extensions.Tasks`, and Roots, Sampling, and Logging are deprecated for the new protocol. Set `HttpServerTransportOptions.Stateless = false` only for an intentional stateful compatibility requirement.
+- SDK `v2.1.0` adds an opt-in `subscriptions/listen` server handler, keeps AutoDetect usable after a provisional SSE failure, preserves HTTP status codes across target frameworks, and falls back to `initialize` when `server/discover` fails at the HTTP layer. Add custom notification streams only when both peers negotiate the extension.
+- Before moving from `v1.4.x`, update structured-result consumers to accept non-object values directly, require `Tool.inputSchema` in custom payloads, move Tasks to the extension package, and test PKCE S256 plus issuer validation in OAuth metadata.
 - Enterprise managed authorization now has an SDK surface through `IdentityAssertionGrantProvider` for the Identity Assertion Authorization Grant flow. Use it only when the enterprise SSO and MCP authorization-server contract is part of the actual scenario.
 - `StdioClientTransportOptions.InheritEnvironmentVariables` controls whether child-process MCP servers inherit the parent environment. Set it intentionally when launching untrusted or third-party servers.
 - Streamable HTTP session `DELETE` is hardened to require the same authenticated user that opened the session. Do not build custom session cleanup paths that bypass that authorization check.

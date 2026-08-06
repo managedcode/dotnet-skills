@@ -39,6 +39,10 @@ internal static class ToolIdentity
 
     public static string SkipUpdateEnvironmentVariable { get; } = GetMetadata("SkipUpdateEnvironmentVariable", "DOTNET_SKILLS_SKIP_UPDATE_CHECK");
 
+    public static string SkillsDefaultTargetEnvironmentVariable { get; } = GetMetadata("SkillsDefaultTargetEnvironmentVariable", "DOTNET_SKILLS_DEFAULT_TARGET");
+
+    public static string AgentsDefaultTargetEnvironmentVariable { get; } = GetMetadata("AgentsDefaultTargetEnvironmentVariable", "DOTNET_AGENTS_DEFAULT_TARGET");
+
     public static string CacheDirectoryName { get; } = GetMetadata("CacheDirectoryName", PackageId);
 
     private static string GetMetadata(string key, string fallback)

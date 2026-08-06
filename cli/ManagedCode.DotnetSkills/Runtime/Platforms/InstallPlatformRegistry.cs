@@ -4,11 +4,13 @@ internal static class InstallPlatformRegistry
 {
     private static readonly IInstallPlatformStrategy[] Strategies =
     [
+        new AgentsInstallPlatformStrategy(),
         new CodexInstallPlatformStrategy(),
         new ClaudeInstallPlatformStrategy(),
         new CopilotInstallPlatformStrategy(),
         new GeminiInstallPlatformStrategy(),
         new JunieInstallPlatformStrategy(),
+        new GrokInstallPlatformStrategy(),
     ];
 
     public static IReadOnlyList<IInstallPlatformStrategy> StrategiesInDetectionOrder => Strategies;
