@@ -15,9 +15,9 @@ This article shows you how to deploy and run the [Chat with your own data sample
 
 In this article, you:
 
-- Deploy a chat app to Azure.
-- Get answers about employee benefits.
-- Change settings to change behavior of responses.
+* Deploy a chat app to Azure.
+* Get answers about employee benefits.
+* Change settings to change behavior of responses.
 
 Once you complete this procedure, start modifying the new project with your custom code.
 
@@ -25,9 +25,9 @@ This article is part of a collection of articles that show you how to build a ch
 
 Other articles in the collection include:
 
-- [Python](/azure/developer/python/get-started-app-chat-template)
-- [JavaScript](/azure/developer/javascript/get-started-app-chat-template)
-- [Java](/azure/developer/java/quickstarts/get-started-app-chat-template)
+* [Python](/azure/developer/python/get-started-app-chat-template)
+* [JavaScript](/azure/developer/javascript/get-started-app-chat-template)
+* [Java](/azure/developer/java/quickstarts/get-started-app-chat-template)
 
 ## Architectural overview
 
@@ -35,11 +35,12 @@ In this sample application, a fictitious company called Contoso Electronics prov
 
 The architecture of the chat app is shown in the following diagram:
 
+:::image type="content" source="./media/get-started-app-chat-template/simple-architecture-diagram.png" lightbox="./media/get-started-app-chat-template/simple-architecture-diagram.png" alt-text="Diagram showing architecture from client to backend app.":::
 
-- **User interface** - The application's chat interface is a [Blazor WebAssembly](/aspnet/core/blazor/) application. This interface is what accepts user queries, routes request to the application backend, and displays generated responses.
-- **Backend** - The application backend is an [ASP.NET Core Minimal API](/aspnet/core/fundamentals/minimal-apis/overview). The backend hosts the Blazor static web application and is what orchestrates the interactions among the different services. Services used in this application include:
-  - [**Azure AI Search**](/azure/search/search-what-is-azure-search) – Indexes documents from the data stored in an Azure Storage Account. This makes the documents searchable using [vector search](/azure/search/search-get-started-vector) capabilities.
-  - [**Azure OpenAI Service**](/azure/ai-services/openai/overview) – Provides the Large Language Models (LLM) to generate responses. [Microsoft Agent Framework](/agent-framework/overview/agent-framework-overview) is used in conjunction with the Azure OpenAI Service to orchestrate the more complex AI workflows.
+* **User interface** - The application's chat interface is a [Blazor WebAssembly](/aspnet/core/blazor/) application. This interface is what accepts user queries, routes requests to the application backend, and displays generated responses.
+* **Backend** - The application backend is an [ASP.NET Core Minimal API](/aspnet/core/fundamentals/minimal-apis/overview). The backend hosts the Blazor static web application and is what orchestrates the interactions among the different services. Services used in this application include:
+  * [**Azure AI Search**](/azure/search/search-what-is-azure-search) – Indexes documents from the data stored in an Azure Storage Account. This makes the documents searchable using [vector search](/azure/search/search-get-started-vector) capabilities.
+  * [**Azure OpenAI Service**](/azure/ai-services/openai/overview) – Provides the Large Language Models (LLM) to generate responses. [Microsoft Agent Framework](/agent-framework/overview/agent-framework-overview) is used in conjunction with the Azure OpenAI Service to orchestrate the more complex AI workflows.
 
 ## Cost
 
@@ -88,6 +89,7 @@ Begin now with a development environment that has all the dependencies installed
 
 1. On the **Create codespace** page, review the codespace configuration settings and then select **Create new codespace**:
 
+    :::image type="content" source="./media/get-started-app-chat-template/github-create-codespace.png" alt-text="Screenshot of the confirmation screen before creating a new codespace.":::
 
 1. Wait for the codespace to start. This startup process can take a few minutes.
 
@@ -160,6 +162,7 @@ The sample repository contains all the code and configuration files you need to 
 1. After the application deploys successfully, a URL appears in the terminal.
 1. Select that URL labeled `Deploying service web` to open the chat application in a browser.
 
+    :::image type="content" source="./media/get-started-app-chat-template/browser-chat-with-your-data.png" alt-text="Screenshot of chat app in browser showing several suggestions for chat input and the chat text box to enter a question.":::
 
 ### Use chat app to get answers from PDF files
 
@@ -168,9 +171,11 @@ The chat app is preloaded with employee benefits information from [PDF files](ht
 1. In the browser, navigate to the **Chat** page using the left navigation.
 1. Select or enter "What is included in my Northwind Health Plus plan that is not in standard?" in the chat text box. Your response is _similar_ to the following image.
 
+    :::image type="content" source="./media/get-started-app-chat-template/browser-chat-initial-answer.png" lightbox="./media/get-started-app-chat-template/browser-chat-initial-answer.png" alt-text="Screenshot of chat app's first answer.":::
 
 1. From the answer, select a citation. A pop-up window opens displaying the source of the information.
 
+    :::image type="content" source="./media/get-started-app-chat-template/browser-chat-initial-answer-citation-highlighted.png" lightbox="./media/get-started-app-chat-template/browser-chat-initial-answer-citation-highlighted.png" alt-text="Screenshot of chat app's first answer with its citation highlighted in a red box.":::
 
 1. Navigate between the tabs at the top of the answer box to understand how the answer was generated.
 
@@ -186,6 +191,7 @@ The chat app is preloaded with employee benefits information from [PDF files](ht
 
 The intelligence of the chat is determined by the OpenAI model and the settings that are used to interact with the model.
 
+:::image type="content" source="./media/get-started-app-chat-template/browser-chat-developer-settings-chat-pane.png" alt-text="Screenshot of chat developer settings.":::
 
 | Setting                     | Description                                                        |
 |-----------------------------|--------------------------------------------------------------------|
@@ -246,9 +252,11 @@ Deleting the GitHub Codespaces environment ensures that you can maximize the amo
 
 1. Locate your currently running codespaces sourced from the [`Azure-Samples/azure-search-openai-demo-csharp`](https://github.com/Azure-Samples/azure-search-openai-demo-csharp) GitHub repository.
 
+    :::image type="content" source="./media/get-started-app-chat-template/github-codespace-dashboard.png" alt-text="Screenshot of all the running codespaces including their status and templates.":::
 
 1. Open the context menu for the codespace and then select **Delete**.
 
+    :::image type="content" source="./media/get-started-app-chat-template/github-codespace-delete.png" alt-text="Screenshot of the context menu for a single codespace with the delete option highlighted.":::
 
 #### [Visual Studio Code](#tab/visual-studio-code)
 
@@ -256,6 +264,7 @@ You don't need to clean up your local environment, but you can stop the running 
 
 1. Open the **Command Palette**, search for the **Dev Containers** commands, and then select **Dev Containers: Reopen Folder Locally**.
 
+    :::image type="content" source="./media/get-started-app-chat-template/reopen-local-command-palette.png" alt-text="Screenshot of the Command Palette option to reopen the current folder within your local environment.":::
 
 > [!TIP]
 > Visual Studio Code stops the running development container, but the container still exists in Docker in a stopped state. You can also delete the container instance, container image, and volumes from Docker to free up more space on your local machine.
@@ -270,8 +279,8 @@ If your issue isn't addressed, log your issue to the repository's [Issues](https
 
 ## Next steps
 
-- [Get the source code for the sample used in this article](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
-- [Build a chat app with Azure OpenAI](https://aka.ms/azai/chat) best practice solution architecture
-- [Access control in Generative AI Apps with Azure AI Search](https://techcommunity.microsoft.com/t5/azure-ai-services-blog/access-control-in-generative-ai-applications-with-azure/ba-p/3956408)
-- [Build an Enterprise ready OpenAI solution with Azure API Management](https://techcommunity.microsoft.com/t5/apps-on-azure-blog/build-an-enterprise-ready-azure-openai-solution-with-azure-api/bc-p/3935407)
-- [Outperforming vector search with hybrid retrieval and ranking capabilities](https://techcommunity.microsoft.com/t5/azure-ai-services-blog/azure-cognitive-search-outperforming-vector-search-with-hybrid/ba-p/3929167)
+* [Get the source code for the sample used in this article](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
+* [Build a chat app with Azure OpenAI](https://aka.ms/azai/chat) best practice solution architecture
+* [Access control in Generative AI Apps with Azure AI Search](https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/access-control-in-generative-ai-applications-with-azure-ai-search/3956408)
+* [Build an Enterprise ready OpenAI solution with Azure API Management](https://techcommunity.microsoft.com/blog/appsonazureblog/build-an-enterprise-ready-azure-openai-solution-with-azure-api-management/3907562)
+* [Outperforming vector search with hybrid retrieval and ranking capabilities](https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/azure-ai-search-outperforming-vector-search-with-hybrid-retrieval-and-reranking/3929167)

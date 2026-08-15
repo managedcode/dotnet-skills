@@ -24,8 +24,9 @@ compatibility: "Relevant to console apps, workers, ASP.NET Core apps, functions,
 
 ## Current Upstream Notes
 
-- `dotnet/extensions` `v10.8.4` is an AI-template servicing release. It removes the retired GitHub Models provider and makes `--provider azureopenai`, `--provider ollama`, or `--provider openai` mandatory for `aichatweb` and `aiagent-webapi`; existing Generic Host, dependency injection, configuration, logging, options, and `IHttpClientFactory` patterns remain unchanged.
-- If repository automation creates those templates, pass the provider explicitly and validate the selected provider's secrets and local-development path. Do not retain scripts that depend on the removed default.
+- `dotnet/extensions` `v10.9.0` adds experimental AI routing and failover clients and includes HTTP diagnostics/source-logging fixes. Generic Host, dependency injection, configuration, logging, options, and `IHttpClientFactory` patterns remain unchanged; route AI-specific architecture to `microsoft-extensions-ai`.
+- The MCP server project template moved out of `dotnet/extensions` and into the ASP.NET Core/.NET SDK distribution. Update scaffolding automation to use the SDK-provided template instead of pinning the removed extensions template package.
+- If repository automation creates AI templates from the prior `v10.8.4` change, pass `--provider azureopenai`, `--provider ollama`, or `--provider openai` explicitly and validate the selected provider's secrets and local-development path.
 - Keep Microsoft.Extensions package versions aligned within the repo's selected servicing line, then rerun host startup and options-validation tests after upgrading.
 
 ## Deliver

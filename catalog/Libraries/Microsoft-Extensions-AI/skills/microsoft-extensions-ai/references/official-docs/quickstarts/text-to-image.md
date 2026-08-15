@@ -63,6 +63,7 @@ Complete the following steps to create a .NET console application that generates
 
 1. Update the `Program.cs` file with the following code to get the configuration data and create the <xref:Azure.AI.OpenAI.AzureOpenAIClient>:
 
+   :::code language="csharp" source="snippets/text-to-image/azure-openai/Program.cs" id="ConfigClient":::
 
    The preceding code:
 
@@ -72,6 +73,7 @@ Complete the following steps to create a .NET console application that generates
 
 1. Add the following code to implement basic text-to-image generation:
 
+   :::code language="csharp" source="snippets/text-to-image/azure-openai/Program.cs" id="GenerateImage":::
 
    The preceding code:
 
@@ -83,6 +85,7 @@ Complete the following steps to create a .NET console application that generates
 
    The application generates an image and outputs the file path to the image. Open the file to view the generated image. The following image shows one example of a generated image.
 
+   :::image type="content" source="media/text-to-image/jungle-tennis.png" alt-text="AI-generated image of a tennis court in a jungle.":::
 
 ## Configure image generation options
 
@@ -114,8 +117,9 @@ The `Aspire.Azure.AI.OpenAI` package provides extension methods to register Azur
 
 1. Configure the Azure OpenAI client and image generator in your `Program.cs` file:
 
+   :::code language="csharp" source="snippets/text-to-image/hosting/Program.cs" id="SnippetSetup":::
 
-   The <xref:Microsoft.Extensions.Hosting.AspireAzureOpenAIExtensions.AddAzureOpenAIClient(Microsoft.Extensions.Hosting.IHostApplicationBuilder,System.String,System.Action{Aspire.Azure.AI.OpenAI.AzureOpenAISettings},System.Action{Azure.Core.Extensions.IAzureClientBuilder{Azure.AI.OpenAI.AzureOpenAIClient,Azure.AI.OpenAI.AzureOpenAIClientOptions}})> method registers the Azure OpenAI client with dependency injection. The connection string (named `"openai"`) is retrieved from configuration, typically from `appsettings.json` or environment variables:
+   The [AddAzureOpenAIClient](https://aspire.dev/reference/api/csharp/aspire.azure.ai.openai/aspireazureopenaiextensions/methods/#addazureopenaiclient) method registers the Azure OpenAI client with dependency injection. The connection string (named `"openai"`) is retrieved from configuration, typically from `appsettings.json` or environment variables:
 
    ```json
    {
@@ -127,11 +131,13 @@ The `Aspire.Azure.AI.OpenAI` package provides extension methods to register Azur
 
 1. Register the <xref:Microsoft.Extensions.AI.IImageGenerator> service with dependency injection:
 
+   :::code language="csharp" source="snippets/text-to-image/hosting/Program.cs" id="SnippetAddImageGenerator":::
 
    The <xref:Microsoft.Extensions.DependencyInjection.ImageGeneratorBuilderServiceCollectionExtensions.AddImageGenerator*> method registers the image generator as a singleton service that can be injected into controllers, services, or minimal API endpoints.
 
 1. Add options and logging::
 
+   :::code language="csharp" source="snippets/text-to-image/hosting/Program.cs" id="SnippetConfigureOptions":::
 
    The preceding code:
 
@@ -142,6 +148,7 @@ The `Aspire.Azure.AI.OpenAI` package provides extension methods to register Azur
 
 Once registered, you can inject `IImageGenerator` into your endpoints or services:
 
+:::code language="csharp" source="snippets/text-to-image/hosting/Program.cs" id="SnippetUseImageGenerator":::
 
 This hosting approach provides several benefits:
 
@@ -149,7 +156,7 @@ This hosting approach provides several benefits:
 - **Dependency injection**: The image generator is available throughout your application via DI.
 - **Lifecycle management**: Services are properly initialized and disposed of by the hosting infrastructure.
 - **Testability**: Mock implementations can be easily substituted for testing.
-- **Integration with .NET Aspire**: When using .NET Aspire, the `AddAzureOpenAIClient` method integrates with service discovery and telemetry.
+- **Integration with Aspire**: When using Aspire, the `AddAzureOpenAIClient` method integrates with service discovery and telemetry.
 
 ## Best practices
 

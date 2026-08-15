@@ -15,6 +15,7 @@ This article introduces the core concepts behind agents, why they matter, and ho
 
 **Agents are systems that accomplish objectives.**
 
+![Components of an agent](../media/agents/agent-components.png)
 
 Agents become more capable when equipped with the following:
 
@@ -67,21 +68,25 @@ Agentic workflows can be orchestrated in a variety of ways. The following are a 
 
 Agents process tasks one after another, passing results forward.
 
+![Sequential agent orchestration: Task Input → Agent A → Agent B → Agent C → Final Output](../media/agents/sequential-workflow.png)
 
 #### Concurrent
 
 Agents work in parallel, each handling different aspects of the task.
 
+![Concurrent agent orchestration: Task Input → Agents A, B, C → Aggregate Results → Final Output](../media/agents/concurrent-workflow.png)
 
 #### Handoff
 
 Responsibility shifts from one agent to another based on conditions or outcomes.
 
+![Handoff orchestration: Task Input → Agent A Decision → Agent B or Agent A → Agent B Decision → Agent C or Agent B → Final Output](../media/agents/handoff-workflow.png)
 
 #### Group chat
 
 Agents collaborate in a shared conversation, exchanging insights in real-time.
 
+![Group chat orchestration: User and Agents A, B, C collaborate via GroupChat to produce final output](../media/agents/groupchat-workflow.png)
 
 #### Magentic
 

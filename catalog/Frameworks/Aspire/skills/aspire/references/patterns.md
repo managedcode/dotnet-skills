@@ -63,7 +63,7 @@ Use `aspire add` when it improves repeatability, especially for:
 
 ## Servicing patch posture
 
-Aspire `13.4.4` is the current servicing release in the 13.4 line, not a new application model. Treat 13.4.x updates as CLI, AppHost, DCP, and MCP-tooling servicing work that should preserve the existing topology and only refine the toolchain surface.
+Aspire `13.4.6` is the current servicing release in the 13.4 line, not a new application model. It fixes CLI/SDK binding for polyglot code generation, isolated resource-service port collisions, and a MongoDB driver dependency chain. The preceding `13.4.5` clears a transitive MessagePack advisory and fails fast on invalid `playwrightCliVersion` values. Treat 13.4.x updates as CLI, AppHost, DCP, dependency, and MCP-tooling servicing work that should preserve the existing topology and only refine the toolchain surface.
 
 When you roll a 13.4.x patch:
 

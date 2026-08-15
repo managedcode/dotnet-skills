@@ -57,15 +57,18 @@ Complete the following steps to create a console app that connects to the `gpt-5
 
 1. Define the enumeration that describes the different sentiments.
 
+   :::code language="csharp" source="./snippets/structured-output/Program.cs" id="SentimentEnum":::
 
 1. Create the <xref:Microsoft.Extensions.AI.IChatClient> that will communicate with the model.
 
+   :::code language="csharp" source="./snippets/structured-output/Program.cs" id="GetChatClient":::
 
    > [!NOTE]
    > <xref:Azure.Identity.DefaultAzureCredential> searches for authentication credentials from your environment or local tooling. You'll need to assign the `Azure AI Developer` role to the account you used to sign in to Visual Studio or the Azure CLI. For more information, see [Authenticate to Foundry tools with .NET](../azure-ai-services-authentication.md).
 
 1. Send a request to the model with a single product review, and then print the analyzed sentiment to the console. You declare the requested structured output type by passing it as the type argument to the <xref:Microsoft.Extensions.AI.ChatClientStructuredOutputExtensions.GetResponseAsync``1(Microsoft.Extensions.AI.IChatClient,System.String,Microsoft.Extensions.AI.ChatOptions,System.Nullable{System.Boolean},System.Threading.CancellationToken)?displayProperty=nameWithType> extension method.
 
+   :::code language="csharp" source="./snippets/structured-output/Program.cs" id="SimpleRequest":::
 
    This code produces output similar to:
 
@@ -75,6 +78,7 @@ Complete the following steps to create a console app that connects to the `gpt-5
 
 1. Instead of just analyzing a single review, you can analyze a collection of reviews.
 
+   :::code language="csharp" source="./snippets/structured-output/Program.cs" id="MultipleReviews":::
 
    This code produces output similar to:
 
@@ -90,11 +94,13 @@ Complete the following steps to create a console app that connects to the `gpt-5
 
    Define a [record type](../../csharp/language-reference/builtin-types/record.md) to contain the text response and analyzed sentiment:
 
+   :::code language="csharp" source="./snippets/structured-output/Program.cs" id="InputOutputRecord":::
 
    (This record type is defined using [primary constructor](../../csharp/programming-guide/classes-and-structs/instance-constructors.md#primary-constructors) syntax. Primary constructors combine the type definition with the parameters necessary to instantiate any instance of the class. The C# compiler generates public properties for the primary constructor parameters.)
 
    Send the request using the record type as the type argument to `GetResponseAsync<T>`:
 
+   :::code language="csharp" source="./snippets/structured-output/Program.cs" id="RecordRequest":::
 
    This code produces output similar to:
 

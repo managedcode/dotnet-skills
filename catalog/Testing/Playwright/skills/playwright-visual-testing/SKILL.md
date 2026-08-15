@@ -26,7 +26,7 @@ compatibility: "Requires a browser-facing app or static site plus a Node-based P
 
 ## Current Upstream Notes
 
-- The July 2026 Playwright CI and visual-comparison docs still require browser dependencies to be installed explicitly in CI and warn that screenshot rendering varies by host OS, browser build, fonts, headless mode, and hardware. Generate and review baselines in the same environment used for comparison.
+- The August 2026 Playwright CI and visual-comparison docs still require browser dependencies to be installed explicitly in CI and warn that screenshot rendering varies by host OS, browser build, fonts, headless mode, and hardware. Generate and review baselines in the same environment used for comparison.
 - Playwright `v1.62.1` fixes TypeScript configuration resolution regressions, accessibility snapshots that dropped names or image-style actionable elements, and branded primitive arguments passed to `page.evaluate()`. Re-run config discovery, accessibility snapshots, and TypeScript compile checks before accepting new visual baselines.
 - Keep `--update-snapshots` as an intentional local review action. Pull-request CI should retain expected, actual, diff, trace, and report artifacts instead of silently accepting a new baseline.
 

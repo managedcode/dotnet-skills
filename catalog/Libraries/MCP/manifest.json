@@ -1,6 +1,10 @@
 {
   "name": "MCP",
   "title": "MCP",
-  "description": "",
-  "links": {}
+  "description": "Official Model Context Protocol C# SDK guidance for .NET clients and servers.",
+  "links": {
+    "repository": "https://github.com/modelcontextprotocol/csharp-sdk",
+    "docs": "https://csharp.sdk.modelcontextprotocol.io/",
+    "nuget": "https://www.nuget.org/packages/ModelContextProtocol"
+  }
 }

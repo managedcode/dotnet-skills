@@ -155,8 +155,9 @@ If you require cleanup:
 
 ## Source Pages
 
-- `references/official-docs/user-guide/agents/multi-turn-conversation.md`
-- `references/official-docs/user-guide/agents/agent-memory.md`
-- `references/official-docs/tutorials/agents/persisted-conversation.md`
-- `references/official-docs/tutorials/agents/third-party-chat-history-storage.md`
-- `references/official-docs/tutorials/agents/memory.md`
+- `references/official-docs/get-started/multi-turn.md`
+- `references/official-docs/get-started/memory.md`
+- `references/official-docs/concepts/agents/conversations/storage.md`
+- `references/official-docs/concepts/agents/conversations/chat-history-memory-provider.md`
+- `references/official-docs/concepts/agents/conversations/session.md`
+- `references/official-docs/get-started/memory.md`

@@ -187,9 +187,9 @@ For `.NET`:
 
 ## Source Pages
 
-- `references/official-docs/user-guide/workflows/overview.md`
-- `references/official-docs/user-guide/workflows/core-concepts/overview.md`
-- `references/official-docs/user-guide/workflows/requests-and-responses.md`
-- `references/official-docs/user-guide/workflows/checkpoints.md`
-- `references/official-docs/user-guide/workflows/as-agents.md`
-- `references/official-docs/user-guide/workflows/orchestrations/overview.md`
+- `references/official-docs/workflows/index.md`
+- `references/official-docs/concepts/workflows/index.md`
+- `references/official-docs/workflows/human-in-the-loop.md`
+- `references/official-docs/workflows/checkpoints.md`
+- `references/official-docs/workflows/as-agents.md`
+- `references/official-docs/workflows/orchestrations/index.md`

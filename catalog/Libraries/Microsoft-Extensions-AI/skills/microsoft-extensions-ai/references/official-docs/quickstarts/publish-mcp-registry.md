@@ -59,6 +59,7 @@ The Official MCP Registry is an *upstream data source* for the MCP ecosystem. Ot
 
    ::: zone-end
 2. Use this content to start with and fill in the placeholders.
+   :::code language="json" source="snippets/mcp-registry/server.json":::
 3. Save the file.
 
 Use this reference to understand more about the fields:

@@ -1,6 +1,10 @@
 {
   "name": "Microsoft-Extensions-AI",
   "title": "Microsoft Extensions AI",
-  "description": "",
-  "links": {}
+  "description": "Provider-agnostic .NET AI abstractions, middleware, vector data, ingestion, and evaluation guidance.",
+  "links": {
+    "repository": "https://github.com/dotnet/extensions",
+    "docs": "https://learn.microsoft.com/dotnet/ai/microsoft-extensions-ai",
+    "nuget": "https://www.nuget.org/packages/Microsoft.Extensions.AI"
+  }
 }

@@ -37,8 +37,8 @@ compatibility: "Requires a WPF project on .NET or .NET Framework."
 
 ## Current Upstream Notes
 
-- The July 2026 WPF overview refresh reiterates WPF as a Windows desktop UI stack with XAML, data binding, styling, templates, resources, and vector/rich-media composition. Keep WPF-specific guidance separate from WinUI or MAUI unless the task is explicitly a migration or comparison.
-- For modernization work, check both `.NET Framework` compatibility constraints and current .NET desktop migration docs before moving project files or XAML resource dictionaries.
+- The August 2026 WPF overview reiterates WPF as a Windows-only desktop UI stack with XAML, data binding, styling, templates, resources, and vector/rich-media composition. Keep WPF-specific guidance separate from WinUI or MAUI unless the task is explicitly a migration or comparison.
+- WPF exists on both .NET Framework and modern .NET. For modernization work, inventory compatibility constraints and use the current desktop migration guidance before moving project files, interop, deployment, or XAML resource dictionaries.
 
 ## Project Structure
 

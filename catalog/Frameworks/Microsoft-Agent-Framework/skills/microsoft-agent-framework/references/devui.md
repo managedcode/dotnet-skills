@@ -57,7 +57,7 @@ So for `.NET` work:
 
 ## Source Pages
 
-- `references/official-docs/user-guide/devui/index.md`
-- `references/official-docs/user-guide/devui/security.md`
-- `references/official-docs/user-guide/devui/tracing.md`
-- `references/official-docs/user-guide/devui/directory-discovery.md`
+- `references/official-docs/integrations/by-component/ui/devui/index.md`
+- `references/official-docs/integrations/by-component/ui/devui/security.md`
+- `references/official-docs/integrations/by-component/ui/devui/tracing.md`
+- `references/official-docs/integrations/by-component/ui/devui/directory-discovery.md`

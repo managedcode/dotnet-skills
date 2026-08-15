@@ -193,10 +193,10 @@ This is not a universal default. It is a targeted enterprise control layer.
 
 ## Source Pages
 
-- `references/official-docs/user-guide/hosting/index.md`
-- `references/official-docs/user-guide/hosting/openai-integration.md`
-- `references/official-docs/user-guide/hosting/agent-to-agent-integration.md`
-- `references/official-docs/integrations/ag-ui/index.md`
-- `references/official-docs/integrations/ag-ui/security-considerations.md`
-- `references/official-docs/tutorials/agents/create-and-run-durable-agent.md`
-- `references/official-docs/tutorials/plugins/use-purview-with-agent-framework-sdk.md`
+- `references/official-docs/hosting/index.md`
+- `references/official-docs/hosting/self-hosting/openai-endpoints.md`
+- `references/official-docs/hosting/self-hosting/a2a/dotnet.md`
+- `references/official-docs/integrations/by-component/ui/ag-ui/index.md`
+- `references/official-docs/integrations/by-component/ui/ag-ui/security-considerations.md`
+- `references/official-docs/hosting/azure-functions.md`
+- `references/official-docs/integrations/by-component/middleware/purview.md`

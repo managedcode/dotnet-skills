@@ -55,6 +55,7 @@ compatibility: "Requires a WinUI 3, Windows App SDK, or MAUI-on-Windows integrat
 ## Current Upstream Notes
 
 - Windows App SDK `2.3.1` adds schema-constrained Phi Silica JSON output, `XamlOptionalChanges`, ARM64EC support for Windows ML, Video Super Resolution improvements, and opt-in XAML startup/style/resource-lookup optimizations.
+- Windows App SDK `1.8.11` is the current 1.8 servicing patch. It restores focus after storage pickers, fixes MRT fallback resolution, and isolates runtime base-directory environment state; retest picker return focus, resource fallback, and side-by-side runtime activation when maintaining the 1.8 line.
 - For unpackaged apps, prefer `ApplicationData.GetForUnpackaged()` over registry or custom folder conventions when the app needs first-class app data storage.
 - When upgrading to 2.3.1, retest unpackaged `LocalSettings`, background tasks, side-placement flyouts, `MediaPlayerPresenter` device loss, popup pointer replay, `ItemsRepeater` layouts, Windows ML, and any opted-in XAML change IDs.
 

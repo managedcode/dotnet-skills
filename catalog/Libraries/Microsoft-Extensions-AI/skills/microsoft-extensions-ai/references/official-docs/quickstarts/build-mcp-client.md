@@ -57,6 +57,7 @@ Complete the following steps to create a .NET console app. The app acts as a hos
 
 Replace the contents of `Program.cs` with the following code:
 
+:::code language="csharp" source="snippets/mcp-client/program.cs" :::
 
 The preceding code accomplishes the following tasks:
 

@@ -23,6 +23,7 @@ Without proper error handling, these issues can cause your application to fail o
 
 By default, when a function invocation fails, the AI model receives a generic error message. You can enable detailed error reporting using the <xref:Microsoft.Extensions.AI.FunctionInvokingChatClient.IncludeDetailedErrors?displayProperty=nameWithType> property. When this property is set to `true` and an error occurs during function invocation, the full exception message is added to the chat history. This allows the AI model to see what went wrong and potentially self-correct in subsequent attempts.
 
+:::code language="csharp" source="snippets/handle-invalid-tool-input/csharp/IncludeDetailedErrors.cs" id="BasicUsage":::
 
 > [!NOTE]
 > Setting `IncludeDetailedErrors` to `true` can expose internal system details to the AI model and potentially to end users. Ensure exception messages don't contain secrets, connection strings, or other sensitive information. To avoid leaking sensitive information, consider disabling detailed errors in production environments.
@@ -33,6 +34,7 @@ For more control over error handling, you can set a custom <xref:Microsoft.Exten
 
 The following example shows how to implement a custom function invoker that catches serialization errors and provides helpful feedback:
 
+:::code language="csharp" source="snippets/handle-invalid-tool-input/csharp/FunctionInvoker.cs" id="BasicInvoker":::
 
 By returning descriptive error messages instead of throwing exceptions, you allow the AI model to see what went wrong and try again with corrected input.
 
@@ -51,6 +53,7 @@ When using OpenAI models, you can enable strict JSON schema mode to enforce that
 
 Enable strict mode using the `Strict` additional property on your function metadata. When enabled, OpenAI models try to ensure their output matches your schema exactly:
 
+:::code language="csharp" source="snippets/handle-invalid-tool-input/csharp/StrictSchema.cs" id="StrictMode":::
 
 For the latest list of models that support strict JSON schema, check the [OpenAI documentation](https://platform.openai.com/docs/guides/structured-outputs).
 

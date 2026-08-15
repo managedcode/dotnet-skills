@@ -45,8 +45,8 @@ compatibility: "Requires a .NET repository with Node-based frontend assets such 
 
 ## Current Upstream Notes
 
-- ESLint `v10.8.0` exports `ConfigObject` from `eslint/config`, fixes reserved-character handling in HTML formatter rule ids, and prevents a `no-unreachable-loop` crash when every loop type is ignored.
-- The release also fixes `prefer-object-spread` semicolon insertion, a quadratic-time `prefer-template` regular expression, computed-method ignores in `class-methods-use-this`, and parenthesized constructors in `preserve-caught-error`. Re-run the real lint suite and formatter snapshots before changing suppressions or generated reports.
+- ESLint `v10.8.1` fixes autofix automatic-semicolon-insertion hazards in `no-unused-labels` and `no-unused-vars`, plus false positives in `getter-return`, `accessor-pairs`, and identifier rules around meta properties.
+- Re-run the real lint suite and autofix snapshots before accepting churn, especially in semicolon-free code or generated output. Keep the `v10.8.0` flat-config type exports and formatter changes in mind when updating tooling integrations.
 - Current docs clarify parser option precedence over `languageOptions` and document the v9/v10 migration codemods; review flat-config migrations that mix legacy parser settings with new config shapes.
 
 ## Bootstrap When Missing

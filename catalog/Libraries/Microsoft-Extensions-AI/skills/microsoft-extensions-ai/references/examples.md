@@ -9,7 +9,7 @@
 | Stream responses in UI | `official-docs/ichatclient.md` | `GetStreamingResponseAsync` | Use `IAsyncEnumerable<ChatResponseUpdate>` all the way to the UI |
 | Request structured output | `official-docs/quickstarts/structured-output.md` | typed `GetResponseAsync<T>` helpers | Prefer typed enums or records over manual JSON parsing |
 | Execute local tools | `official-docs/quickstarts/use-function-calling.md` | `AIFunction`, `FunctionInvokingChatClient` | Add invalid-input handling from `official-docs/how-to/handle-invalid-tool-input.md` |
-| Build vector search or RAG | `official-docs/quickstarts/build-vector-search-app.md` | `IEmbeddingGenerator`, `Microsoft.Extensions.VectorData.Abstractions` | Keep chunking and embedding model/version stable |
+| Build vector search or RAG | `official-docs/vector-stores/how-to/build-vector-search-app.md` | `IEmbeddingGenerator`, `Microsoft.Extensions.VectorData.Abstractions` | Keep chunking and embedding model/version stable |
 | Process data for RAG | `official-docs/quickstarts/process-data.md` | `Microsoft.Extensions.DataIngestion`, `IngestionPipeline<T>` | Use when the ingestion pipeline matters as much as inference |
 | Chat with a local model | `official-docs/quickstarts/chat-local-model.md` | local provider adapter + `IChatClient` | Good for dev, lower cost, and offline workflows |
 | Generate images | `official-docs/quickstarts/text-to-image.md` | experimental `IImageGenerator` or provider client | Treat image generation as a separate capability surface |

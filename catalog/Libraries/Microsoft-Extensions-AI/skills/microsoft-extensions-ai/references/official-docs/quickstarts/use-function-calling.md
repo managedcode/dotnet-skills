@@ -101,19 +101,23 @@ The app uses the [`Microsoft.Extensions.AI`](https://www.nuget.org/packages/Micr
 
     :::zone target="docs" pivot="azure-openai"
 
+    :::code language="csharp" source="snippets/function-calling/azure-openai/Program.cs" id="GetChatClient":::
 
     :::zone-end
 
     :::zone target="docs" pivot="openai"
 
+    :::code language="csharp" source="snippets/function-calling/openai/program.cs" id="GetChatClient":::
 
     :::zone-end
 
 1. Create a new `ChatOptions` object that contains an inline function the AI model can call to get the current weather. The function declaration includes a delegate to run logic, and name and description parameters to describe the purpose of the function to the AI model.
 
+    :::code language="csharp" source="snippets/function-calling/openai/program.cs" id="AddOptions":::
 
 1. Add a system prompt to the `chatHistory` to provide context and instructions to the model. Send a user prompt with a question that requires the AI model to call the registered function to properly answer the question.
 
+    :::code language="csharp" source="snippets/function-calling/openai/program.cs" id="PromptModel":::
 
 1. Use the `dotnet run` command to run the app:
 

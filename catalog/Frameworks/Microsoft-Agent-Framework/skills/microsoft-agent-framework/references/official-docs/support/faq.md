@@ -1,3 +1,13 @@
+---
+title: Frequently Asked Questions
+description: Frequently asked questions about Agent Framework.
+author: eavanvalkenburg
+ms.topic: article
+ms.author: edvan
+ms.date: 02/09/2026
+ms.service: agent-framework
+---
+
 # Frequently Asked Questions
 
 ## General
@@ -17,8 +27,13 @@ Yes, Agent Framework is open source and available on [GitHub](https://github.com
 ## Getting Help
 
 | Your preference | What's available |
-| --- | --- |
-| Read the docs | [This learning site](https://learn.microsoft.com/en-us/agent-framework/) is the home of the latest information for developers |
+|---|---|
+| Read the docs | [This learning site](/agent-framework/) is the home of the latest information for developers |
 | Visit the repo | Our open-source [GitHub repository](https://github.com/microsoft/agent-framework) is available for perusal and suggestions |
 | Connect with the Agent Framework Team | Visit our [GitHub Discussions](https://github.com/microsoft/agent-framework/discussions) |
 | Office Hours | We host regular office hours; details at [Community.MD](https://github.com/microsoft/agent-framework/blob/main/COMMUNITY.md) |
+
+## Next steps
+
+> [!div class="nextstepaction"]
+> [Troubleshooting](./troubleshooting.md)

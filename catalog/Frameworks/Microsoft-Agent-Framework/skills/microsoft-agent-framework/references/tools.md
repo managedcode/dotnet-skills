@@ -178,8 +178,8 @@ Never assume a tool result is safe just because your agent called it.
 
 ## Source Pages
 
-- `references/official-docs/user-guide/agents/agent-tools.md`
-- `references/official-docs/tutorials/agents/function-tools.md`
-- `references/official-docs/tutorials/agents/function-tools-approvals.md`
-- `references/official-docs/tutorials/agents/agent-as-function-tool.md`
-- `references/official-docs/tutorials/agents/agent-as-mcp-tool.md`
+- `references/official-docs/agents/tools/index.md`
+- `references/official-docs/agents/tools/function-tools.md`
+- `references/official-docs/agents/tools/tool-approval.md`
+- `references/official-docs/journey/agents-as-tools.md`
+- `references/official-docs/agents/tools/hosted-mcp-tools.md`

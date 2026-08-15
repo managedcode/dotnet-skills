@@ -4,7 +4,7 @@ Use this reference when official first-party Aspire integrations do not cover th
 
 Last verified against:
 
-- `CommunityToolkit/Aspire` 13.4 line, repository README package index, and Aspire 13.4 first-party Go and Bun guidance, verified on `2026-07-20`
+- `CommunityToolkit/Aspire` 13.4 line, repository README package index, and Aspire 13.4 first-party polyglot guidance, verified on `2026-08-16`
 - Microsoft Learn Community Toolkit pages
 
 ## Table of Contents
@@ -40,7 +40,7 @@ Do not reach for it simply because it exists. First-party Aspire remains the def
 - you want extra dev-time tools such as MailPit, ngrok, k6, McpInspector, Adminer, or DbGate in the topology
 - you need community-maintained integrations such as Meilisearch, MinIO, RavenDB, SurrealDB, KurrentDB, LavinMQ, or Zitadel
 - you need extension packages around existing first-party resources, such as Redis, PostgreSQL, SQL Server, MySQL, MongoDB, Keycloak, Elasticsearch, or OpenTelemetry Collector support
-- you need newer 13.4 toolkit additions such as DuckDB hosting/client support, the bacon hosting integration, or analyzer support around Aspire integration usage
+- you need newer 13.4 toolkit additions such as DuckDB, Floci, Bitwarden, bacon hosting, or analyzer support around Aspire integration usage
 - you need local Kubernetes cluster resources through `CommunityToolkit.Aspire.Hosting.Kind` or `CommunityToolkit.Aspire.Hosting.K3s`
 
 ## Package families
@@ -58,7 +58,7 @@ Use these when the AppHost must orchestrate non-.NET executable projects that cu
 - `CommunityToolkit.Aspire.Hosting.Deno`
 - `CommunityToolkit.Aspire.Hosting.Rust`
 
-Aspire 13.4 adds first-party Go and Bun hosting. Prefer those official surfaces for new resources; treat `CommunityToolkit.Aspire.Hosting.Golang` and `CommunityToolkit.Aspire.Hosting.Bun` as legacy compatibility signals, not current defaults. Java and several other polyglot hosts still use toolkit integrations, while JavaScript has first-party coverage and Python often routes through the toolkit extension path.
+Aspire 13.4 adds first-party Go and Bun hosting. Prefer those official surfaces for new resources. `CommunityToolkit.Aspire.Hosting.Bun` is deprecated in favor of `Aspire.Hosting.JavaScript` and `AddBunApp`; keep the toolkit package only for an intentional compatibility constraint. Verify whether older `CommunityToolkit.Aspire.Hosting.Golang` usage can move to first-party Go support. Java and several other polyglot hosts still use toolkit integrations, while JavaScript has first-party coverage and Python often routes through the toolkit extension path.
 
 ### Databases, object stores, and search
 

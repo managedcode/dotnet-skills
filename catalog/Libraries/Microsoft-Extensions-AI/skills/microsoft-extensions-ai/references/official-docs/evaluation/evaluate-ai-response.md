@@ -1,8 +1,9 @@
 ---
 title: Quickstart - Evaluate the quality of a model's response
 description: Learn how to create an MSTest app to evaluate the AI chat response of a language model.
-ms.date: 03/18/2025
+ms.date: 04/09/2026
 ms.topic: quickstart
+ai-usage: ai-assisted
 ---
 
 # Quickstart: Evaluate response quality
@@ -39,7 +40,7 @@ Complete the following steps to create an MSTest project that connects to an AI 
     dotnet add package Microsoft.Extensions.AI.Abstractions
     dotnet add package Microsoft.Extensions.AI.Evaluation
     dotnet add package Microsoft.Extensions.AI.Evaluation.Quality
-    dotnet add package Microsoft.Extensions.AI.OpenAI --prerelease
+    dotnet add package Microsoft.Extensions.AI.OpenAI
     dotnet add package Microsoft.Extensions.Configuration
     dotnet add package Microsoft.Extensions.Configuration.UserSecrets
     ```
@@ -52,7 +53,7 @@ Complete the following steps to create an MSTest project that connects to an AI 
     dotnet user-secrets set AZURE_TENANT_ID <your-tenant-ID>
     ```
 
-   (Depending on your environment, the tenant ID might not be needed. In that case, remove it from the code that instantiates the <xref:Azure.Identity.DefaultAzureCredential>.)
+   (Depending on your environment, you might not need the tenant ID. In that case, remove it from the code that instantiates the <xref:Azure.Identity.DefaultAzureCredential>.)
 
 1. Open the new app in your editor of choice.
 
@@ -61,9 +62,11 @@ Complete the following steps to create an MSTest project that connects to an AI 
 1. Rename the *Test1.cs* file to *MyTests.cs*, and then open the file and rename the class to `MyTests`.
 1. Add the private <xref:Microsoft.Extensions.AI.Evaluation.ChatConfiguration> and chat message and response members to the `MyTests` class. The `s_messages` field is a list that contains two <xref:Microsoft.Extensions.AI.ChatMessage> objects&mdash;one instructs the behavior of the chat bot, and the other is the question from the user.
 
+   :::code language="csharp" source="./snippets/evaluate-ai-responses/MyTests.cs" id="PrivateMembers":::
 
 1. Add the `InitializeAsync` method to the `MyTests` class.
 
+   :::code language="csharp" source="./snippets/evaluate-ai-responses/MyTests.cs" id="Initialize":::
 
     This method accomplishes the following tasks:
 
@@ -73,13 +76,15 @@ Complete the following steps to create an MSTest project that connects to an AI 
 
 1. Add the `GetAzureOpenAIChatConfiguration` method, which creates the <xref:Microsoft.Extensions.AI.IChatClient> that the evaluator uses to communicate with the model.
 
+   :::code language="csharp" source="./snippets/evaluate-ai-responses/MyTests.cs" id="GetChatConfig":::
 
 1. Add a test method to evaluate the model's response.
 
+   :::code language="csharp" source="./snippets/evaluate-ai-responses/MyTests.cs" id="TestCoherence":::
 
    This method does the following:
 
-   - Invokes the <xref:Microsoft.Extensions.AI.Evaluation.Quality.CoherenceEvaluator> to evaluate the *coherence* of the response. The <xref:Microsoft.Extensions.AI.Evaluation.IEvaluator.EvaluateAsync(System.Collections.Generic.IEnumerable{Microsoft.Extensions.AI.ChatMessage},Microsoft.Extensions.AI.ChatResponse,Microsoft.Extensions.AI.Evaluation.ChatConfiguration,System.Collections.Generic.IEnumerable{Microsoft.Extensions.AI.Evaluation.EvaluationContext},System.Threading.CancellationToken)> method returns an <xref:Microsoft.Extensions.AI.Evaluation.EvaluationResult> that contains a <xref:Microsoft.Extensions.AI.Evaluation.NumericMetric>. A `NumericMetric` contains a numeric value that's typically used to represent numeric scores that fall within a well-defined range.
+   - Invokes the <xref:Microsoft.Extensions.AI.Evaluation.Quality.CoherenceEvaluator> to evaluate the *coherence* of the response. The <xref:Microsoft.Extensions.AI.Evaluation.IEvaluator.EvaluateAsync(System.Collections.Generic.IEnumerable{Microsoft.Extensions.AI.ChatMessage},Microsoft.Extensions.AI.ChatResponse,Microsoft.Extensions.AI.Evaluation.ChatConfiguration,System.Collections.Generic.IEnumerable{Microsoft.Extensions.AI.Evaluation.EvaluationContext},System.Threading.CancellationToken)> method returns an <xref:Microsoft.Extensions.AI.Evaluation.EvaluationResult> that contains a <xref:Microsoft.Extensions.AI.Evaluation.NumericMetric>. A `NumericMetric` contains a numeric value that typically represents numeric scores that fall within a well-defined range.
    - Retrieves the coherence score from the <xref:Microsoft.Extensions.AI.Evaluation.EvaluationResult>.
    - Validates the *default interpretation* for the returned coherence metric. Evaluators can include a default interpretation for the metrics they return. You can also change the default interpretation to suit your specific requirements, if needed.
    - Validates that no diagnostics are present on the returned coherence metric. Evaluators can include diagnostics on the metrics they return to indicate errors, warnings, or other exceptional conditions encountered during evaluation.

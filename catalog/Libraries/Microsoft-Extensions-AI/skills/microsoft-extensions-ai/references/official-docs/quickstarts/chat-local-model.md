@@ -84,6 +84,7 @@ In the steps ahead, you'll create a simple app that connects to the local AI and
 
 1. Open the _Program.cs_ file and replace the contents of the file with the following code:
 
+    :::code language="csharp" source="snippets/local-ai/program.cs" :::
 
     The preceding code accomplishes the following:
 

@@ -163,11 +163,10 @@ Before you commit to a local or custom model path, verify:
 
 ## Source Pages
 
-- `references/official-docs/user-guide/agents/agent-types/index.md`
-- `references/official-docs/user-guide/agents/agent-types/chat-client-agent.md`
-- `references/official-docs/user-guide/agents/agent-types/azure-openai-chat-completion-agent.md`
-- `references/official-docs/user-guide/agents/agent-types/azure-openai-responses-agent.md`
-- `references/official-docs/user-guide/agents/agent-types/openai-chat-completion-agent.md`
-- `references/official-docs/user-guide/agents/agent-types/openai-responses-agent.md`
-- `references/official-docs/user-guide/agents/agent-types/microsoft-foundry-agents.md`
-- `references/official-docs/user-guide/agents/agent-types/anthropic-agent.md`
+- `references/official-docs/integrations/by-component/agent-services/index.md`
+- `references/official-docs/integrations/by-component/model-providers/index.md`
+- `references/official-docs/integrations/by-component/model-providers/azure-openai.md`
+- `references/official-docs/integrations/by-component/model-providers/openai.md`
+- `references/official-docs/integrations/by-component/agent-services/foundry.md`
+- `references/official-docs/integrations/by-component/model-providers/microsoft-foundry.md`
+- `references/official-docs/integrations/by-component/agent-services/anthropic-claude.md`

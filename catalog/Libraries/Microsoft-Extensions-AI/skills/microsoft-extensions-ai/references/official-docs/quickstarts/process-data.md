@@ -83,52 +83,63 @@ The data ingestion pipeline consists of several components that work together to
 
 1. In the `Program.cs` file, delete any existing code and add the following code to configure the document reader:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureReader":::
 
    The <xref:Microsoft.Extensions.DataIngestion.MarkdownReader> class reads Markdown documents and converts them into a unified format that works well with large language models.
 
 1. Add code to configure logging for the pipeline:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureLogging":::
 
 1. Add code to configure the AI client for enrichment and chat:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureChatClient":::
 
 1. Add code to configure the document processor that enriches images with AI-generated descriptions:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureDocumentProcessor":::
 
    The <xref:Microsoft.Extensions.DataIngestion.ImageAlternativeTextEnricher> uses large language models to generate descriptive alternative text for images within documents. That text makes them more accessible and improves their semantic meaning.
 
 1. Add code to configure the embedding generator for creating vector representations:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureEmbeddingGenerator":::
 
    [Embeddings](../conceptual/embeddings.md) are numerical representations of the semantic meaning of text, which enables vector similarity search.
 
 1. Add code to configure the chunker that splits documents into semantic chunks:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureChunker":::
 
    The <xref:Microsoft.Extensions.DataIngestion.Chunkers.SemanticSimilarityChunker> intelligently splits documents by analyzing the semantic similarity between sentences, ensuring that related content stays together. This process produces chunks that preserve meaning and context better than simple character or token-based chunking.
 
 1. Add code to configure the chunk processor that generates summaries:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureChunkProcessor":::
 
    The <xref:Microsoft.Extensions.DataIngestion.SummaryEnricher> automatically generates concise summaries for each chunk, which can improve retrieval accuracy by providing a high-level overview of the content.
 
 1. Add code to configure the SQLite vector store for storing embeddings:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ConfigureVectorStore":::
 
    The vector store stores chunks along with their embeddings, enabling fast semantic search capabilities.
 
 1. Add code to compose all the components into a complete pipeline:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ComposePipeline":::
 
    The <xref:Microsoft.Extensions.DataIngestion.IngestionPipeline`1> combines all the components into a cohesive workflow that processes documents from start to finish.
 
 1. Add code to process documents from a directory:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="ProcessDocuments":::
 
    The pipeline processes all Markdown files in the `./data` directory and reports the status of each document.
 
 1. Add code to enable interactive search of the processed documents:
 
+   :::code language="csharp" source="snippets/process-data/Program.cs" id="SearchVectorStore":::
 
    The search functionality converts user queries into embeddings and finds the most semantically similar chunks in the vector store.
 
@@ -162,5 +173,5 @@ If you no longer need them, delete the Azure OpenAI resource and model deploymen
 ## Next steps
 
 - [Data ingestion concepts](../conceptual/data-ingestion.md)
-- [Implement RAG using vector search](../tutorials/tutorial-ai-vector-search.md)
-- [Build a .NET AI vector search app](build-vector-search-app.md)
+- [Implement RAG using vector search](../vector-stores/tutorial-vector-search.md)
+- [Build a .NET AI vector search app](../vector-stores/how-to/build-vector-search-app.md)

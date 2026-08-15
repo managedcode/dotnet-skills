@@ -34,6 +34,7 @@ If you want to access either the `AIFunctionArguments` or the `IServiceProvider`
 
 The following code shows an example:
 
+:::code language="csharp" source="snippets/access-data/ArgumentsExample.cs" id="UseAIFunctionArguments":::
 
 <xref:System.Threading.CancellationToken> is also special-cased: if the `AIFunctionFactory.Create` delegate or lambda has a `CancellationToken` parameter, it will be bound to the `CancellationToken` that was passed to `AIFunction.InvokeAsync()`.
 
@@ -43,6 +44,7 @@ The following code shows an example:
 
 The following code shows an example:
 
+:::code language="csharp" source="snippets/access-data/ArgumentsExample.cs" id="UseAdditionalProperties":::
 
 #### Dependency injection
 

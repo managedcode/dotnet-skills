@@ -15,5 +15,12 @@ ms.service: agent-framework
 |---|---|
 | Read the docs | [This learning site](/agent-framework/) is the home of the latest information for developers |
 | Visit the repo | Our open-source [GitHub repository](https://github.com/microsoft/agent-framework) is available for perusal and suggestions |
+| Report an issue | [Create a new issue](https://github.com/microsoft/agent-framework/issues/new/choose) to report bugs or request features |
+| Start a discussion | [Open a discussion](https://github.com/microsoft/agent-framework/discussions/new/choose) to ask questions or share ideas |
 | Connect with the Agent Framework Team | Visit our [GitHub Discussions](https://github.com/microsoft/agent-framework/discussions) to get supported quickly with our [CoC](https://github.com/microsoft/agent-framework/blob/main/CODE_OF_CONDUCT.md) actively enforced |
 |  Office Hours | We will be hosting regular office hours; the calendar invites and cadence are located here: [Community.MD](https://github.com/microsoft/agent-framework/blob/main/COMMUNITY.md) |
+
+## Next steps
+
+> [!div class="nextstepaction"]
+> [FAQ](faq.md)

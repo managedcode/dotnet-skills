@@ -105,7 +105,7 @@ Avoid MCP when:
 
 ## Source Pages
 
-- `references/official-docs/user-guide/model-context-protocol/index.md`
-- `references/official-docs/user-guide/model-context-protocol/using-mcp-tools.md`
-- `references/official-docs/user-guide/model-context-protocol/using-mcp-with-foundry-agents.md`
-- `references/official-docs/tutorials/agents/agent-as-mcp-tool.md`
+- `references/official-docs/agents/tools/index.md`
+- `references/official-docs/agents/tools/local-mcp-tools.md`
+- `references/official-docs/agents/tools/hosted-mcp-tools.md`
+- `references/official-docs/agents/tools/hosted-mcp-tools.md`

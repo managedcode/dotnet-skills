@@ -53,7 +53,7 @@ compatibility: "Requires a worker, hosted service, or background-processing scen
 
 ## Current Upstream Notes
 
-- `.NET runtime` `v10.0.10` is servicing. For workers, rerun cancellation, graceful shutdown, long-running GC/pinning, EventPipe diagnostics, NativeAOT, and platform-specific filesystem/drive checks after upgrading rather than changing architecture by default.
+- `.NET runtime` `v10.0.11` is servicing. For workers, rerun cgroup-v2 memory-limit detection, cancellation, graceful shutdown, long-running thread-static and GC paths, NativeAOT/WASM startup where relevant, and Windows directory enumeration after upgrading rather than changing architecture by default.
 - Use the refreshed Worker Services and hosted-service Learn pages for exact current hosting and health-check APIs when adding new worker entry points.
 
 ## Basic BackgroundService Pattern

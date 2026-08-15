@@ -98,6 +98,7 @@ The app uses the [`Microsoft.Extensions.AI`](https://www.nuget.org/packages/Micr
 
    :::zone target="docs" pivot="azure-openai"
 
+   :::code language="csharp" source="snippets/prompt-completion/azure-openai/program.cs" id="CreateChatClient":::
 
    > [!NOTE]
    > <xref:Azure.Identity.DefaultAzureCredential> searches for authentication credentials from your local tooling. If you aren't using the `azd` template to provision the Azure OpenAI resource, you'll need to assign the `Azure AI Developer` role to the account you used to sign in to Visual Studio or the Azure CLI. For more information, see [Authenticate to Foundry tools with .NET](../azure-ai-services-authentication.md).
@@ -106,14 +107,17 @@ The app uses the [`Microsoft.Extensions.AI`](https://www.nuget.org/packages/Micr
 
    :::zone target="docs" pivot="openai"
 
+   :::code language="csharp" source="snippets/prompt-completion/openai/program.cs" id="CreateChatClient":::
 
    :::zone-end
 
 1. Add code to read the `benefits.md` file content and then create a prompt for the model. The prompt instructs the model to summarize the file's text content in 20 words or less.
 
+   :::code language="csharp" source="snippets/prompt-completion/openai/program.cs" id="CreatePrompt":::
 
 1. Call the `GetResponseAsync` method to send the prompt to the model to generate a response.
 
+   :::code language="csharp" source="snippets/prompt-completion/openai/program.cs" id="GetResponse":::
 
 1. Run the app:
 

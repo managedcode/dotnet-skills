@@ -38,6 +38,7 @@ Managed identities provide an automatically managed identity in Microsoft Entra 
 1. Select **Identity**.
 1. On the **System assigned** tab, toggle *Status* to **On**, and then select **Save**.
 
+    :::image type="content" source="../media/azure-hosted-apps/system-assigned-managed-identity-in-azure-portal.png" alt-text="A screenshot showing how to add a system assigned managed identity to an app.":::
 
     > [!NOTE]
     > The preceding screenshot demonstrates this process on an Azure App Service, but the steps are similar on other hosts such as Azure Container Apps.
@@ -55,6 +56,7 @@ To add a user-assigned identity to your app, create the identity, and then add i
     > [!IMPORTANT]
     > After you select **Add**, the app restarts.
 
+    :::image type="content" source="../media/azure-hosted-apps/user-assigned-managed-identity-in-azure-portal.png" alt-text="A screenshot showing how to add a system assigned managed identity to an app.":::
 
     > [!NOTE]
     > The preceding screenshot demonstrates this process on an Azure App Service, but the steps are similar on other hosts such as Azure Container Apps.
@@ -99,6 +101,7 @@ az webapp identity assign --name <appName> --resource-group <groupName>
 1. In the left navigation pane, select **Access control (IAM)**.
 1. Select **Add**, then select **Add role assignment**.
 
+    :::image type="content" source="../media/azure-hosted-apps/add-entra-role.png" alt-text="A screenshot showing how to add an RBAC role.":::
 
 1. On the **Role** tab, select the **Cognitive Services OpenAI User** role.
 1. On the **Members** tab, select the managed identity.
@@ -168,12 +171,15 @@ az role assignment create --assignee "<managedIdentityObjectID>" \
 
 1. In the `Program.cs` file of your app, create a `DefaultAzureCredential` object to discover and configure available credentials:
 
+    :::code language="csharp" source="./snippets/hosted-app-auth/program.cs" range="13-22":::
 
 1. Create an AI service and register it with the service collection:
 
+    :::code language="csharp" source="./snippets/hosted-app-auth/program.cs" range="24-30":::
 
 1. Inject the registered service for use in your endpoints:
 
+    :::code language="csharp" source="./snippets/hosted-app-auth/program.cs" range="41-46":::
 
     > [!TIP]
     > For more information about ASP.NET Core dependency injection and registering other AI service types, see the Azure SDK for .NET [dependency injection](../../azure/sdk/dependency-injection.md) documentation.

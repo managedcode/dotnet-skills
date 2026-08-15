@@ -43,8 +43,8 @@ compatibility: "Requires an MCP-capable .NET agent/app or repo with a browser-de
 
 ## Current Upstream Notes
 
-- Chrome DevTools MCP `v1.6.0` adds heap-snapshot aggregate filters and object-count/total-size details, `--allow-unrestricted-paths`, experimental GCF-encoded responses, and Lighthouse 13.4.0.
-- The same release fixes page-id reuse across reconnects, snapshot element resolution, first-page pagination, selected-page fallback behavior, held modifier cleanup, and daemon startup races. Reproduce browser-state bugs after upgrading before adding client-side retries or page-id workarounds.
+- Chrome DevTools MCP `v1.7.0` expands heap inspection with object details, native-context information, and filtering; it also adds telemetry, Lighthouse 13.4.1, and bounded network-request retention.
+- The release validates session/version mismatches and fixes daemon lifecycle, dialog stalls, worker cleanup, and screenshot-handle cleanup. Reproduce browser-state bugs after upgrading before adding client-side retries or lifecycle workarounds.
 - Use the memory tools only when heap snapshots are the actual debugging need; close snapshots when finished so the browser session does not keep unnecessary memory pressure.
 - For sensitive or scoped browser automation, prefer `allowedUrlPattern` / `blockedUrlPattern` over relying only on prompt instructions.
 - When enabling category extensions, prompt the user for the category instead of silently broadening the tool surface.

@@ -96,6 +96,7 @@ Complete the following steps to create a .NET console app to connect to an AI mo
 
     :::zone target="docs" pivot="azure-openai"
 
+    :::code language="csharp" source="snippets/image-generation/azure-openai/program.cs" :::
 
     > [!NOTE]
     > <xref:Azure.Identity.DefaultAzureCredential> searches for authentication credentials from your local tooling. If you aren't using the `azd` template to provision the Azure OpenAI resource, you'll need to assign the `Azure AI Developer` role to the account you used to sign in to Visual Studio or the Azure CLI. For more information, see [Authenticate to Foundry tools with .NET](../azure-ai-services-authentication.md).
@@ -104,6 +105,7 @@ Complete the following steps to create a .NET console app to connect to an AI mo
 
     :::zone target="docs" pivot="openai"
 
+    :::code language="csharp" source="snippets/image-generation/openai/program.cs" :::
 
     :::zone-end
 

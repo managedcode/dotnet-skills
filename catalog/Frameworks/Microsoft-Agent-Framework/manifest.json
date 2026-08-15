@@ -1,6 +1,10 @@
 {
   "name": "Microsoft-Agent-Framework",
   "title": "Microsoft Agent Framework",
-  "description": "",
-  "links": {}
+  "description": "Official Microsoft Agent Framework guidance for .NET agents, workflows, tools, sessions, and hosting.",
+  "links": {
+    "repository": "https://github.com/microsoft/agent-framework",
+    "docs": "https://learn.microsoft.com/agent-framework/",
+    "nuget": "https://www.nuget.org/packages/Microsoft.Agents.AI"
+  }
 }

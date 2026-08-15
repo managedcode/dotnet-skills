@@ -23,8 +23,8 @@ compatibility: "Requires an ASP.NET Core API project that uses or should use con
 
 ## Current Upstream Notes
 
-- `dotnet/aspnetcore` `v10.0.10` is servicing. It fixes nullable `DescriptionAttribute` handling and duplicate generic-property/reference IDs in OpenAPI generation; controller-based API guidance still depends on conventions, advanced model binding, OData, JsonPatch, and existing filters.
-- The July 2026 `aspnetcore-10.0` overview keeps controller APIs alongside Minimal APIs rather than replacing them. Use the dedicated routing, OpenAPI, auth, and hosting pages before changing public API contracts.
+- `dotnet/aspnetcore` `v10.0.11` is servicing and updates the OpenAPI stack to `2.7.5`; controller-based API guidance still depends on conventions, advanced model binding, OData, JsonPatch, and existing filters. Re-run generated-document and client contract checks after upgrading.
+- The August 2026 `aspnetcore-10.0` overview keeps controller APIs alongside Minimal APIs rather than replacing them. Use the dedicated routing, OpenAPI, auth, and hosting pages before changing public API contracts.
 
 ## Deliver
 

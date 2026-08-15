@@ -37,8 +37,8 @@ compatibility: "Requires EF Core 7+ (preferably 8/9 for latest features)."
 
 ## Current Upstream Notes
 
-- EF Core `v10.0.10` is a servicing release. It fixes an AOT build fork-bomb caused by EF file generation during design-time or command-line builds and an `ordinal -1 is invalid` crash when nested JSON complex sub-collections grow. Re-run AOT publishing and provider-backed JSON query/update tests when those paths apply.
-- The July 2026 EF Core vs EF6 comparison refresh remains the first stop for migration decisions. EF Core is the active cross-platform stack, but EF6-only EDMX/ObjectContext-heavy code should not move without a feature inventory and database-backed equivalence tests.
+- EF Core `v10.0.11` is a servicing release. It fixes Azure SQL compatibility-level 170 JSON translation so nested `OPENJSON` projections retain `AS JSON`, and keeps EF compatible with .NET 11 `MemoryExtensions.Min`/`Max` overload additions. Re-run provider-backed JSON queries and compile against the repository's selected target framework after upgrading.
+- The August 2026 EF Core vs EF6 comparison remains the first stop for migration decisions. EF Core is the active cross-platform stack, but EF6-only EDMX/ObjectContext-heavy code should not move without a feature inventory and database-backed equivalence tests.
 
 ## DbContext Patterns
 

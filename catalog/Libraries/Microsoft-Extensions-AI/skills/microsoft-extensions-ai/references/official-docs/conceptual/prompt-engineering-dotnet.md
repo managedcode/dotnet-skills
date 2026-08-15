@@ -46,6 +46,7 @@ A *cue* is text that conveys the desired structure or format of output. Like an 
 
 Consider the following code example:
 
+:::code language="csharp" source="../snippets/prompt-engineering/multi-turn-chat.cs":::
 
 The preceding code:
 

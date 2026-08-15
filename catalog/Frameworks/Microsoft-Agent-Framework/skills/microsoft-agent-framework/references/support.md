@@ -86,7 +86,7 @@ At minimum re-check:
 
 ## Source Pages
 
-- `references/official-docs/overview/agent-framework-overview.md`
+- `references/official-docs/overview/index.md`
 - `references/official-docs/support/index.md`
 - `references/official-docs/support/faq.md`
 - `references/official-docs/support/troubleshooting.md`

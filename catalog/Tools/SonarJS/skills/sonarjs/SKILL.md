@@ -52,8 +52,8 @@ flowchart LR
 
 ## Current Upstream Notes
 
-- SonarJS `13.4` extends test-rule coverage to Bun and `node:test`, adds checks for trivially true assertions, empty parameterized datasets, duplicate parameterized cases, composite assertions, synchronous exception callbacks, and Testing Library debug utilities, and decorates Vue rules for prop constructors and duplicate keys.
-- The release raises the default nested-function threshold from four to five, aligns ARIA handling with the HTML specification, and reduces false positives for React `useId`, render-prop names, Vue 2, ref-to-ref assignments, and Jira-anchored TODO comments. Re-run server analysis before preserving suppressions or locally overriding the changed threshold.
+- SonarJS `13.6` adds rules for shallow-clone mutation, Vue class/mixin and state mutation, native alternatives to jQuery, Testing Library disappearance and synchronous-query patterns, Vitest `vi.mock` scope, and Playwright `networkidle` usage.
+- The release also reduces false positives across Vue, React, testing, and TypeScript analysis. Re-run server analysis before preserving suppressions, and review new findings as behavior-specific guidance rather than enabling every new rule blindly.
 
 ## Bootstrap When Missing
 

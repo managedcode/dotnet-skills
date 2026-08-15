@@ -155,6 +155,6 @@ If the goal is human approval or escalation, request/response workflows are usua
 
 ## Source Pages
 
-- `references/official-docs/user-guide/agents/agent-middleware.md`
-- `references/official-docs/tutorials/agents/middleware.md`
-- `references/official-docs/tutorials/agents/function-tools-approvals.md`
+- `references/official-docs/concepts/agents/middleware/index.md`
+- `references/official-docs/journey/adding-middleware.md`
+- `references/official-docs/agents/tools/tool-approval.md`

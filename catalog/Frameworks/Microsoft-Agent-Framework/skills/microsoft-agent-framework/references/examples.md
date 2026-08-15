@@ -6,60 +6,60 @@ Use this file when you need the smallest official proof that a pattern exists be
 
 | Need | Official Source Path | First Proof | Production Follow-Up |
 | --- | --- | --- | --- |
-| Understand the framework split | `overview/agent-framework-overview.md` | Agent versus workflow guidance | Route the architecture in `patterns.md` |
-| Get a minimal install and first run | `tutorials/quick-start.md` | Smallest working setup | Convert the sample to your real provider and state model |
-| See the tutorial families | `tutorials/overview.md` | Discover supported paths | Pick the smallest targeted walkthrough below |
+| Understand the framework split | `overview/index.md` | Agent versus workflow guidance | Route the architecture in `patterns.md` |
+| Get a minimal install and first run | `get-started/your-first-agent.md` | Smallest working setup | Convert the sample to your real provider and state model |
+| See the guided starting points | `get-started/index.md` | Discover supported paths | Pick the smallest targeted walkthrough below |
 
 ## Agent Recipes
 
 | Need | Official Source Path | First Proof | Production Follow-Up |
 | --- | --- | --- | --- |
-| Basic single agent | `tutorials/agents/run-agent.md` | `AsAIAgent`, standard run flow | Decide thread model and middleware |
+| Basic single agent | `get-started/your-first-agent.md` | standard run flow | Decide session model and middleware |
 | Batteries-included long-task agent | live `https://learn.microsoft.com/agent-framework/agents/harness` | `AsHarnessAgent`, session, plan/todo, compaction | Scope file, shell, web, approval, loop, and background-agent capabilities in `harness.md` |
-| Multi-turn conversation | `tutorials/agents/multi-turn-conversation.md` | `AgentThread` reuse | Persist the serialized thread |
-| Persist and resume conversations | `tutorials/agents/persisted-conversation.md` | serialize and restore thread | Design storage and compatibility rules |
-| Store history outside memory | `tutorials/agents/third-party-chat-history-storage.md` | custom `ChatMessageStore` | enforce keying and reduction strategy |
-| Add memory augmentation | `tutorials/agents/memory.md` | `AIContextProvider` hooks | separate memory from raw chat history |
-| Add function tools | `tutorials/agents/function-tools.md` | direct tool registration | narrow contracts, hide runtime-only values from the schema, and add approval rules |
-| Add approval to tools | `tutorials/agents/function-tools-approvals.md` | tool approval flow | decide whether approval belongs in middleware or workflows |
-| Structured output | `tutorials/agents/structured-output.md` | typed output shape | keep schema contracts explicit |
-| Images or multimodal input | `tutorials/agents/images.md` | non-text content path | verify backend multimodal support |
-| Add middleware | `user-guide/agents/agent-middleware.md` | run/function/client interception with the current `AgentSession` callback signatures | separate policy by layer |
-| Use an agent as a tool | `tutorials/agents/agent-as-function-tool.md` | bounded delegation via the legacy alias page | escalate to workflows if control flow matters |
-| Expose an agent as an MCP tool | `tutorials/agents/agent-as-mcp-tool.md` | MCP-facing tool wrapper | use A2A if the remote thing should stay an agent |
-| Enable observability | `tutorials/agents/enable-observability.md` | tracing and instrumentation | add repo-specific correlation and policy spans |
-| Durable hosted agent | `tutorials/agents/create-and-run-durable-agent.md` | Azure Functions durable path | only keep it if durability is genuinely required |
-| Orchestrate durable agents | `tutorials/agents/orchestrate-durable-agents.md` | deterministic multi-agent orchestration | compare against ordinary workflows first |
+| Multi-turn conversation | `concepts/agents/conversations/session.md` | `AgentSession` reuse | Persist the serialized session through the provider's supported contract |
+| Persist and resume conversations | `concepts/agents/conversations/storage.md` | serialize and restore session state | Design storage and compatibility rules |
+| Store history outside memory | `concepts/agents/conversations/chat-history-memory-provider.md` | chat-history memory provider | enforce keying and reduction strategy |
+| Add memory augmentation | `get-started/memory.md` | `AIContextProvider` hooks | separate memory from raw chat history |
+| Add function tools | `agents/tools/function-tools.md` | direct tool registration | narrow contracts, hide runtime-only values from the schema, and add approval rules |
+| Add approval to tools | `agents/tools/tool-approval.md` | tool approval flow | decide whether approval belongs in middleware or workflows |
+| Structured output | `agents/structured-outputs.md` | typed output shape | keep schema contracts explicit |
+| Images or multimodal input | `agents/multimodal.md` | non-text content path | verify backend multimodal support |
+| Add middleware | `concepts/agents/middleware/index.md` | run/function/client interception with the current `AgentSession` callback signatures | separate policy by layer |
+| Use an agent as a tool | `journey/agents-as-tools.md` | bounded delegation | escalate to workflows if control flow matters |
+| Expose an agent as an MCP tool | `agents/tools/hosted-mcp-tools.md` | MCP-facing tool wrapper | use A2A if the remote thing should stay an agent |
+| Enable observability | `agents/observability.md` | tracing and instrumentation | add repo-specific correlation and policy spans |
+| Durable hosted agent | `hosting/azure-functions.md` | Azure Functions durable path | only keep it if durability is genuinely required |
+| Orchestrate durable agents | `hosting/azure-functions.md` | durable hosted execution | compare against ordinary workflows first |
 
 ## Workflow Recipes
 
 | Need | Official Source Path | First Proof | Production Follow-Up |
 | --- | --- | --- | --- |
-| Sequential workflow | `user-guide/workflows/orchestrations/sequential.md` | ordered stage execution, context flow, and approval requests | verify stage boundaries, context policy, and error handling |
-| Concurrent workflow | `tutorials/workflows/simple-concurrent-workflow.md` | fan-out and aggregation | make aggregation deterministic |
-| Agents inside workflows | `tutorials/workflows/agents-in-workflows.md` | specialist composition | keep agent versus executor responsibilities clear |
-| Branching logic | `tutorials/workflows/workflow-with-branching-logic.md` | conditional routing | move branch policy out of prompts |
-| Builder with factories | `tutorials/workflows/workflow-builder-with-factories.md` | construction patterns | watch state isolation and reuse |
-| External requests and responses | `tutorials/workflows/requests-and-responses.md` | `InputPort` and `RequestInfoEvent` | use this for approval and async callbacks |
-| Checkpointing and resuming | `tutorials/workflows/checkpointing-and-resuming.md` | save and restore flow state | explicitly checkpoint custom executor state |
+| Sequential workflow | `workflows/orchestrations/sequential.md` | ordered stage execution and context flow | verify stage boundaries, context policy, and error handling |
+| Concurrent workflow | `workflows/orchestrations/concurrent.md` | fan-out and aggregation | make aggregation deterministic |
+| Agents inside workflows | `workflows/agents-in-workflows.md` | specialist composition | keep agent versus executor responsibilities clear |
+| Branching logic | `concepts/workflows/edges.md` | conditional routing | move branch policy out of prompts |
+| Builder and execution | `concepts/workflows/builder-and-execution.md` | construction patterns | watch state isolation and reuse |
+| External requests and responses | `workflows/human-in-the-loop.md` | request and approval events | use this for approval and async callbacks |
+| Checkpointing and resuming | `workflows/checkpoints.md` | save and restore flow state | explicitly checkpoint custom executor state |
 
 ## Hosting And Integration Recipes
 
 | Need | Official Source Path | First Proof | Production Follow-Up |
 | --- | --- | --- | --- |
-| Integration discovery | `user-guide/hosting/index.md` | choose hosted-agent, UI, history, memory, RAG, or vector-store capability | verify .NET availability and maturity for the selected provider |
-| OpenAI-compatible endpoint | `user-guide/hosting/openai-integration.md` | map Chat Completions or Responses | prefer Responses for new clients |
-| A2A endpoint | `user-guide/hosting/agent-to-agent-integration.md` | `MapA2A` and agent card | decide discovery and task semantics |
-| AG-UI surface | `integrations/ag-ui/index.md` | SSE and UI protocol mapping | treat browser trust boundaries explicitly |
-| Purview integration | `tutorials/plugins/use-purview-with-agent-framework-sdk.md` | policy/governance flow | use only when governance is a real requirement |
-| Workflow as agent | `user-guide/workflows/as-agents.md` | wrap workflow behind `AIAgent` API | keep the workflow explicit in code and docs |
-| DevUI smoke testing | `user-guide/devui/index.md` | local sample-driven testing | do not let it become production architecture |
+| Integration discovery | `integrations/index.md` | choose hosted-agent, UI, history, memory, RAG, or vector-store capability | verify .NET availability and maturity for the selected provider |
+| OpenAI-compatible endpoint | `hosting/self-hosting/openai-endpoints.md` | map Chat Completions or Responses | prefer Responses for new clients |
+| A2A endpoint | `hosting/self-hosting/a2a/dotnet.md` | A2A endpoint and agent card | decide discovery and task semantics |
+| AG-UI surface | `integrations/by-component/ui/ag-ui/index.md` | SSE and UI protocol mapping | treat browser trust boundaries explicitly |
+| Purview integration | `integrations/by-component/middleware/purview.md` | policy/governance flow | use only when governance is a real requirement |
+| Workflow as agent | `workflows/as-agents.md` | wrap workflow behind `AIAgent` API | keep the workflow explicit in code and docs |
+| DevUI smoke testing | `integrations/by-component/ui/devui/index.md` | local sample-driven testing | do not let it become production architecture |
 
 ## Source Pages
 
-- `references/official-docs/tutorials/overview.md`
-- `references/official-docs/tutorials/quick-start.md`
-- `references/official-docs/tutorials/agents/run-agent.md`
-- `references/official-docs/user-guide/workflows/orchestrations/sequential.md`
-- `references/official-docs/user-guide/hosting/index.md`
-- `references/official-docs/integrations/ag-ui/index.md`
+- `references/official-docs/get-started/index.md`
+- `references/official-docs/get-started/your-first-agent.md`
+- `references/official-docs/get-started/multi-turn.md`
+- `references/official-docs/workflows/orchestrations/sequential.md`
+- `references/official-docs/hosting/index.md`
+- `references/official-docs/integrations/by-component/ui/ag-ui/index.md`

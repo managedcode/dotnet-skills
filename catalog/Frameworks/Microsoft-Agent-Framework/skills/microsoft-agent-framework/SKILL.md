@@ -32,7 +32,8 @@ compatibility: "Requires current Microsoft Agent Framework packages and a .NET a
 
 - `dotnet-1.15.0` adds public OpenAI Responses protocol helpers, session deletion, and hosted workflow state. The application still owns routing, authorization, and durable storage.
 - `dotnet-1.14.0` graduates the core Harness API but keeps its package and advanced options prerelease or experimental. It also makes file access opt-in, binds approvals to surfaced requests, and splits AG-UI packages and server registration. See [harness.md](references/harness.md) and [hosting.md](references/hosting.md).
-- The August 2026 documentation set now treats middleware, background responses, durable agents, AG-UI frontend and backend tools, MCP-hosted agents, observability, support, upgrades, and Semantic Kernel or AutoGen migration as first-class paths. Load the matching reference file before implementation and verify package maturity plus exact signatures against the linked official page; the expanded documentation does not make every provider or preview feature interchangeable.
+- Current AG-UI hosting uses `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` with `AddAGUIServer()` and `MapAGUIServer(...)`; the client uses `AGUI.Client`, and conversation state flows through `AgentSession`. Do not copy older `AddAGUI`/`MapAGUI` or `AgentThread` hosting examples into current applications.
+- The August 2026 documentation set is mirrored as `172` current markdown pages and now treats middleware, function tools and approvals, sessions, multimodal input, background responses, Azure Functions durable agents, AG-UI frontend and backend tools, MCP-hosted agents, observability, support, upgrades, and Semantic Kernel or AutoGen migration as first-class paths. Load the matching reference file before implementation and verify package maturity plus exact signatures against the linked official page; the expanded documentation does not make every provider or preview feature interchangeable.
 
 ## Architecture
 
@@ -127,7 +128,7 @@ When a decision depends on exact wording, long-tail feature coverage, or a less-
 
 ## References
 
-- [official-docs-index.md](references/official-docs-index.md) - Slim local Microsoft Learn snapshot map with direct links to every mirrored page, live-only support pages, and API-reference pointers
+- [official-docs-index.md](references/official-docs-index.md) - Complete current local snapshot map covering agents, concepts, get-started guides, hosting, integrations, journeys, migration, support, and workflows
 - [patterns.md](references/patterns.md) - Architecture routing, agent types, provider and thread model selection, and durable-agent guidance
 - [harness.md](references/harness.md) - `HarnessAgent` selection, options, compaction, approvals, file/shell boundaries, and validation
 - [providers.md](references/providers.md) - Provider, SDK, endpoint, package, and Responses-vs-ChatCompletions selection

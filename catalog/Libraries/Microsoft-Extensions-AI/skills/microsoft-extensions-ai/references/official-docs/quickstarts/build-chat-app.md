@@ -100,6 +100,7 @@ This app uses the [`Microsoft.Extensions.AI`](https://www.nuget.org/packages/Mic
 
     :::zone target="docs" pivot="azure-openai"
 
+    :::code language="csharp" source="snippets/build-chat-app/azure-openai/program.cs" id="GetChatClient":::
 
     > [!NOTE]
     > <xref:Azure.Identity.DefaultAzureCredential> searches for authentication credentials from your local tooling. If you aren't using the `azd` template to provision the Azure OpenAI resource, you'll need to assign the `Azure AI Developer` role to the account you used to sign in to Visual Studio or the Azure CLI. For more information, see [Authenticate to Foundry tools with .NET](../azure-ai-services-authentication.md).
@@ -108,14 +109,17 @@ This app uses the [`Microsoft.Extensions.AI`](https://www.nuget.org/packages/Mic
 
     :::zone target="docs" pivot="openai"
 
+    :::code language="csharp" source="snippets/build-chat-app/openai/program.cs" id="GetChatClient":::
 
     :::zone-end
 
 1. Create a system prompt to provide the AI model with initial role context and instructions about hiking recommendations:
 
+    :::code language="csharp" source="snippets/build-chat-app/openai/program.cs" id="FirstMessage":::
 
 1. Create a conversational loop that accepts an input prompt from the user, sends the prompt to the model, and prints the response completion:
 
+    :::code language="csharp" source="snippets/build-chat-app/openai/program.cs" id="ChatLoop":::
 
 1. Use the `dotnet run` command to run the app:
 

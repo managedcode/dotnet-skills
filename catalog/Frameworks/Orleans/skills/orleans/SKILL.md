@@ -17,6 +17,8 @@ Then select the smallest Orleans primitive whose guarantees match those requirem
 
 Inspect package versions for version-sensitive work. Orleans `10.2.2` ships `Microsoft.Orleans.DurableJobs*` and `Microsoft.Orleans.Journaling*` as `10.2.2-alpha.1`; treat them as experimental until that status changes.
 
+The August 2026 Orleans overview highlights the built-in dashboard and stable Redis providers in the Orleans 10 line. Use the dashboard for development and operational visibility, but keep production telemetry and alerting explicit; select Redis providers only when their persistence, clustering, or streaming guarantees match the workload.
+
 ## Mental Model
 
 - A **grain** is a virtual actor: a logical entity with stable identity, behavior, and optional state. It is not a process, row, DTO, controller, or background job.

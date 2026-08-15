@@ -62,22 +62,26 @@ In this quickstart, you create a minimal Model Context Protocol (MCP) server usi
 
 1. Open Visual Studio, and select **Create a new project** in the start window (or select **File** > **New** > **Project/Solution** from inside Visual Studio).
 
+    ![Create a new project dialog window](../media/build-mcp-server/start-window-create-new-project.png)
 
 1. In the **Create a new project** window, select **C#** from the Language list and **AI** from the **All project types** list.  After you apply the language and project type filters, select the **MCP Server App** template, and then select **Next**.
 
+    ![Create a new MCP Server app project in project dialog window](../media/build-mcp-server/create-new-project-mcp-server-app.png)
 
 1. In the **Configure your new project** window, enter **MyMcpServer** in the **Project name** field.  Then, select **Next**.
 
+    ![Name your new MCP Server app project in the Configure your new project dialog window](../media/build-mcp-server/naming-mcp-server-project.png)
 
 1. In the **Additional information** window, you can configure the following options:
 
     - **Framework**: Select the target .NET framework.
     - **MCP Server Transport Type**: Choose between creating a **local** (stdio) or a **remote** (http) MCP server.
     - **Enable native AOT (Ahead-Of-Time) publish**: Enable your MCP server to be self-contained and compiled to native code. For more information, see the [Native AOT deployment guide](../../core/deploying/native-aot/index.md).
-    - **Enable self-contained publish**: Enable your MCP server to be published as a self-contained executable. For more information, see the [Self-contained deployment section of the .NET application publishing guide](../../core/deploying/index.md#self-contained-deployment).
+    - **Enable self-contained publish**: Enable your MCP server to be published as a self-contained executable. For more information, see the [Self-contained deployment section of the .NET application publishing guide](../../core/deploying/index.md#publish-as-self-contained).
 
     Choose your preferred options or keep the default ones, and then select **Create**.
 
+    ![Select additional options including framework and transport for your MCP server](../media/build-mcp-server/additional-information-new-mcp-server.png)
 
     Visual Studio opens your new project.
 
@@ -102,13 +106,16 @@ In this quickstart, you create a minimal Model Context Protocol (MCP) server usi
 
     This action will bring up a dropdown list of .NET projects.
 
+    ![Dropdown list of .NET projects](../media/build-mcp-server/vscode-command-palette-dotnet-projects.png)
 
 1. After selecting the command, use the Search bar in the Command Palette or scroll down to locate the **MCP Server App** template.
 
+    ![Create an MCP Server App template](../media/build-mcp-server/vscode-create-new-mcp-server-project.png)
 
 1. Select the location where you would like the new project to be created.
 
 1. Give your new project a name, **MyMCPServer**. Press **Enter**.
+    ![Name your MCP Server](../media/build-mcp-server/vscode-naming-mcp-server.png)
 
 1. Select your solution file format (`.sln` or `.slnx`).
 
@@ -117,8 +124,9 @@ In this quickstart, you create a minimal Model Context Protocol (MCP) server usi
     - **Framework**: Select the target .NET framework.
     - **MCP Server Transport Type**: Choose between creating a **local** (stdio) or a **remote** (http) MCP server.
     - **Enable native AOT (Ahead-Of-Time) publish**: Enable your MCP server to be self-contained and compiled to native code. For more information, see the [Native AOT deployment guide](../../core/deploying/native-aot/index.md).
-    - **Enable self-contained publish**: Enable your MCP server to be published as a self-contained executable. For more information, see the [Self-contained deployment section of the .NET application publishing guide](../../core/deploying/index.md#self-contained-deployment).
+    - **Enable self-contained publish**: Enable your MCP server to be published as a self-contained executable. For more information, see the [Self-contained deployment section of the .NET application publishing guide](../../core/deploying/index.md#publish-as-self-contained).
 
+    ![MCP Server Template Options](../media/build-mcp-server/vscode-mcp-server-template-options.png)
 
     Choose your preferred options or keep the default ones, and then select **Create Project**.
 
@@ -143,8 +151,9 @@ In this quickstart, you create a minimal Model Context Protocol (MCP) server usi
     - **Framework**: Select the target .NET framework.
     - **MCP Server Transport Type**: Choose between creating a **local** (stdio) or a **remote** (http) MCP server.
     - **Enable native AOT (Ahead-Of-Time) publish**: Enable your MCP server to be self-contained and compiled to native code. For more information, see the [Native AOT deployment guide](../../core/deploying/native-aot/index.md).
-    - **Enable self-contained publish**: Enable your MCP server to be published as a self-contained executable. For more information, see the [Self-contained deployment section of the .NET application publishing guide](../../core/deploying/index.md#self-contained-deployment).
+    - **Enable self-contained publish**: Enable your MCP server to be published as a self-contained executable. For more information, see the [Self-contained deployment section of the .NET application publishing guide](../../core/deploying/index.md#publish-as-self-contained).
 
+    ![Template options for an MCP Server in .NET CLI](../media/build-mcp-server/cli-mcp-server-template-options.png)
 
 1. Navigate to the `SampleMcpServer` directory:
 
@@ -175,11 +184,13 @@ Creating your MCP server project via the template gives you the following major 
 
 ::: zone pivot="visualstudio"
 
+![MCP Server Project Structure (stdio)](../media/build-mcp-server/vs-mcp-server-project-structure.png)
 
 ::: zone-end
 
 ::: zone pivot="cli,vscode"
 
+![MCP Server Project Structure (stdio)](../media/build-mcp-server/mcp-server-stdio-project-structure.png)
 
 ::: zone-end
 
@@ -193,6 +204,7 @@ Configure GitHub Copilot for Visual Studio to use your custom MCP server.
 
 1. In the GitHub Copilot Chat window, click the **Select Tools** wrench icon followed by the plus icon in the top right corner.
 
+    ![Select MCP Tools window and Plus Icon](../media/build-mcp-server/vs-mcp-tools-popup.png)
 
 1. In the **Add Custom MCP Server** dialog window, enter the following info:
 
@@ -205,6 +217,7 @@ Configure GitHub Copilot for Visual Studio to use your custom MCP server.
     * **URL (HTTP transport only)**: The address of your HTTP MCP server
     * **Environment Variables (optional)**
 
+    ![Add Custom MCP Server dialog window](../media/build-mcp-server/vs-add-custom-mcp-server.png)
 
 1. Select **Save**.  A `.mcp.json` file will be added to the specified destination.
 
@@ -256,6 +269,7 @@ Configure GitHub Copilot for Visual Studio Code to use your custom MCP server, e
 
 1. Select the type of MCP server to add (typically the transport type you selected at project creation).
 
+    ![Select the MCP server type to add via Command Palette](../media/build-mcp-server/add-mcp-server-select-type.png)
 
 1. If adding a **stdio** MCP server, enter a command and optional arguments.  For this example, use `dotnet run --project`.
 
@@ -269,6 +283,7 @@ Configure GitHub Copilot for Visual Studio Code to use your custom MCP server, e
 
     * **Workspace**: Make the MCP server available only from within the current workspace.  The generated `mcp.json` file will appear under the `.vscode` folder within your workspace.
 
+    ![Add configuration target for MCP server](../media/build-mcp-server/add-mcp-server-config-target.png)
 
 1. After you complete the previous steps, an `.mcp.json` file will be created in the location specified by the configuration target.
 
@@ -344,6 +359,7 @@ The MCP server template includes a tool called `get_random_number` you can use f
 
 1. Select the **Select tools** icon to verify your **MyMCPServer** is available with the sample tool listed.
 
+    ![MCP Tools List in GitHub Copilot Chat](../media/build-mcp-server/vs-mcp-tools-list.png)
 
 1. Enter a prompt to run the **get_random_number** tool:
 
@@ -373,6 +389,7 @@ The MCP server template includes a tool called `get_random_number` you can use f
 
 1. Select the **Select tools** icon to verify your **MyMCPServer** is available with the sample tool listed.
 
+    ![MCP Tools List in GitHub Copilot Chat](../media/build-mcp-server/vscode-mcp-tools-list.png)
 
 1. Enter a prompt to run the **get_random_number** tool:
 
@@ -400,6 +417,7 @@ In this example, you enhance the MCP server to use a configuration value set in 
 
 1. Add another tool method after the `GetRandomNumber` method in `Tools/RandomNumberTools.cs`. Update the tool code to use an environment variable.
 
+   :::code language="csharp" source="snippets/mcp-server/Tools/RandomNumberTools.cs" range="19-36":::
 
 1. Update the `.vscode/mcp.json` to set the `WEATHER_CHOICES` environment variable for testing.
 
@@ -436,6 +454,7 @@ In this example, you enhance the MCP server to use a configuration value set in 
 
    - Use the `packageArguments` property to define CLI arguments that will be passed to your app. For more examples, see the [MCP Registry project](https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/server-json/generic-server-json.md#examples).
 
+   :::code language="json" source="snippets/mcp-server/.mcp/server.json":::
 
    The only information used by NuGet.org in the `server.json` is the first `packages` array item with the `registryType` value matching `nuget`. The other top-level properties aside from the `packages` property are currently unused and are intended for the upcoming central MCP Registry. You can leave the placeholder values until the MCP Registry is live and ready to accept MCP server entries.
 
@@ -471,9 +490,11 @@ For more information, see [Publish a package](/nuget/nuget-org/publish-a-package
 
 1. Search for your MCP server package on [NuGet.org](https://www.nuget.org/packages?packagetype=mcpserver) (or [int.nugettest.org](https://int.nugettest.org/packages?packagetype=mcpserver) if you published to the integration environment) and select it from the list.
 
+   :::image type="content" source="../media/mcp/nuget-mcp-search.png" alt-text="A screenshot showing a search for MCP servers on NuGet.org.":::
 
 1. View the package details and copy the JSON from the "MCP Server" tab.
 
+   :::image type="content" source="../media/mcp/nuget-mcp-display.png" alt-text="A screenshot showing a specific MCP server displayed on NuGet.org.":::
 
 1. In your `mcp.json` file in the `.vscode` folder, add the copied JSON, which looks like this:
 
@@ -526,6 +547,7 @@ For more information, see [Publish a package](/nuget/nuget-org/publish-a-package
 
 If VS Code shows this error when starting the MCP server, you need to install a compatible version of the .NET SDK.
 
+:::image type="content" source="../media/mcp/missing-dnx.png" alt-text="A screenshot showing the missing dnx command in VS Code.":::
 
 The `dnx` command is shipped as part of the .NET SDK, starting with version 10. [Install the .NET 10 SDK](https://dotnet.microsoft.com/download/dotnet) to resolve this issue.
 
@@ -539,6 +561,7 @@ If your tool is not being used, check the following:
 1. Explicitly reference the name of the tool in your prompt. In VS Code, you can reference your tool by name. For example, `Using #get_random_weather, what is the weather in Redmond?`.
 1. Verify your MCP server is able to start. You can check this by clicking the "Start" button visible above your MCP server configuration in the VS Code user or workspace settings.
 
+:::image type="content" source="../media/mcp/started-mcp-server.png" alt-text="A screenshot showing an MCP server in VS Code configuration that is started.":::
 
 ## Related content
 

@@ -5,10 +5,10 @@ This skill keeps a slim, markdown-only snapshot of the official `.NET AI` docs t
 ## Snapshot Summary
 
 - Local root: `references/official-docs/`
-- Coverage: `48` useful markdown pages
+- Coverage: `64` current markdown pages
 - Scope: `Microsoft.Extensions.AI`, adjacent `VectorData` and `DataIngestion` guidance, evaluation libraries, MCP quickstarts, RAG guidance, and the surrounding `.NET AI` concept pages
 - Boundary: Microsoft Agent Framework is linked from this docs tree, but its dedicated authored snapshot and deeper routing guidance live in the separate `microsoft-agent-framework` skill
-- Intentional exclusions: snippet trees, project files, TOC scaffolding, DocFX support files, JSON helpers, media folders, and other low-signal assets are not mirrored into the skill
+- Intentional exclusions: project files, TOC scaffolding, DocFX support files, JSON helpers, media folders, and non-markdown source assets are not mirrored. Markdown include and example fragments referenced by the primary pages are retained.
 
 ## Start Here
 
@@ -20,13 +20,13 @@ This skill keeps a slim, markdown-only snapshot of the official `.NET AI` docs t
 
 ## Section Map
 
-- Root pages: `overview.md`, `dotnet-ai-ecosystem.md`, `microsoft-extensions-ai.md`, `ichatclient.md`, `iembeddinggenerator.md`, `get-started-mcp.md`, `get-started-app-chat-template.md`, `get-started-app-chat-scaling-with-azure-container-apps.md`, `azure-ai-services-authentication.md`
-- Concepts: [`official-docs/conceptual/`](official-docs/conceptual/) with `11` pages covering agents, tools, tokens, embeddings, vector databases, ingestion, prompt engineering, zero-shot and few-shot, chain-of-thought, and RAG
-- Quickstarts: [`official-docs/quickstarts/`](official-docs/quickstarts/) with `14` pages covering prompting, chat apps, structured output, vector search, function calling, local models, assistants, MCP client and server, templates, text-to-image, and data processing
+- Root pages: `overview.md`, `dotnet-ai-ecosystem.md`, `microsoft-extensions-ai.md`, `ichatclient.md`, `iembeddinggenerator.md`, `get-started-mcp.md`, `get-started-app-chat-template.md`, and `azure-ai-services-authentication.md`
+- Concepts: [`official-docs/conceptual/`](official-docs/conceptual/) with `12` pages covering agents, tool calling, tokens, embeddings, DataIngestion, VectorData, ingestion, prompt engineering, zero-shot, chain-of-thought, and RAG
+- Quickstarts: [`official-docs/quickstarts/`](official-docs/quickstarts/) with `13` primary pages plus `11` markdown include/example fragments covering prompting, chat apps, structured output, function calling, local models, assistants, MCP client and server, templates, text-to-image, and data processing
 - How-to: [`official-docs/how-to/`](official-docs/how-to/) with `5` pages covering function data access, invalid tool input, content filtering, Azure-hosted auth, and tokenizers
 - Evaluation: [`official-docs/evaluation/`](official-docs/evaluation/) with `5` pages covering responsible AI, libraries, response quality, reporting, and safety evaluation
-- Resources: [`official-docs/resources/`](official-docs/resources/) with `3` pages for general `.NET AI`, Azure AI, and MCP resource lists
-- Tutorial: [`official-docs/tutorials/tutorial-ai-vector-search.md`](official-docs/tutorials/tutorial-ai-vector-search.md) for the deeper vector-search walkthrough
+- Resources: [`official-docs/resources/`](official-docs/resources/) with `2` pages for Azure AI and MCP resource lists
+- Vector stores: [`official-docs/vector-stores/`](official-docs/vector-stores/) with `8` pages covering models, data management, search, ingestion, implementation, and the end-to-end tutorial
 
 ## Complete Local File Map
 
@@ -34,7 +34,6 @@ This skill keeps a slim, markdown-only snapshot of the official `.NET AI` docs t
 
 - [`official-docs/azure-ai-services-authentication.md`](official-docs/azure-ai-services-authentication.md)
 - [`official-docs/dotnet-ai-ecosystem.md`](official-docs/dotnet-ai-ecosystem.md)
-- [`official-docs/get-started-app-chat-scaling-with-azure-container-apps.md`](official-docs/get-started-app-chat-scaling-with-azure-container-apps.md)
 - [`official-docs/get-started-app-chat-template.md`](official-docs/get-started-app-chat-template.md)
 - [`official-docs/get-started-mcp.md`](official-docs/get-started-mcp.md)
 - [`official-docs/ichatclient.md`](official-docs/ichatclient.md)
@@ -45,15 +44,16 @@ This skill keeps a slim, markdown-only snapshot of the official `.NET AI` docs t
 ### Conceptual
 
 - [`official-docs/conceptual/agents.md`](official-docs/conceptual/agents.md)
-- [`official-docs/conceptual/ai-tools.md`](official-docs/conceptual/ai-tools.md)
+- [`official-docs/conceptual/calling-tools.md`](official-docs/conceptual/calling-tools.md)
 - [`official-docs/conceptual/chain-of-thought-prompting.md`](official-docs/conceptual/chain-of-thought-prompting.md)
 - [`official-docs/conceptual/data-ingestion.md`](official-docs/conceptual/data-ingestion.md)
 - [`official-docs/conceptual/embeddings.md`](official-docs/conceptual/embeddings.md)
 - [`official-docs/conceptual/how-genai-and-llms-work.md`](official-docs/conceptual/how-genai-and-llms-work.md)
+- [`official-docs/conceptual/medi-library.md`](official-docs/conceptual/medi-library.md)
+- [`official-docs/conceptual/mevd-library.md`](official-docs/conceptual/mevd-library.md)
 - [`official-docs/conceptual/prompt-engineering-dotnet.md`](official-docs/conceptual/prompt-engineering-dotnet.md)
 - [`official-docs/conceptual/rag.md`](official-docs/conceptual/rag.md)
 - [`official-docs/conceptual/understanding-tokens.md`](official-docs/conceptual/understanding-tokens.md)
-- [`official-docs/conceptual/vector-databases.md`](official-docs/conceptual/vector-databases.md)
 - [`official-docs/conceptual/zero-shot-learning.md`](official-docs/conceptual/zero-shot-learning.md)
 
 ### How-To
@@ -70,7 +70,6 @@ This skill keeps a slim, markdown-only snapshot of the official `.NET AI` docs t
 - [`official-docs/quickstarts/build-chat-app.md`](official-docs/quickstarts/build-chat-app.md)
 - [`official-docs/quickstarts/build-mcp-client.md`](official-docs/quickstarts/build-mcp-client.md)
 - [`official-docs/quickstarts/build-mcp-server.md`](official-docs/quickstarts/build-mcp-server.md)
-- [`official-docs/quickstarts/build-vector-search-app.md`](official-docs/quickstarts/build-vector-search-app.md)
 - [`official-docs/quickstarts/chat-local-model.md`](official-docs/quickstarts/chat-local-model.md)
 - [`official-docs/quickstarts/create-assistant.md`](official-docs/quickstarts/create-assistant.md)
 - [`official-docs/quickstarts/generate-images.md`](official-docs/quickstarts/generate-images.md)
@@ -92,12 +91,32 @@ This skill keeps a slim, markdown-only snapshot of the official `.NET AI` docs t
 ### Resources
 
 - [`official-docs/resources/azure-ai.md`](official-docs/resources/azure-ai.md)
-- [`official-docs/resources/get-started.md`](official-docs/resources/get-started.md)
 - [`official-docs/resources/mcp-servers.md`](official-docs/resources/mcp-servers.md)
 
-### Tutorials
+### Quickstart Includes And Examples
 
-- [`official-docs/tutorials/tutorial-ai-vector-search.md`](official-docs/tutorials/tutorial-ai-vector-search.md)
+- [`official-docs/quickstarts/includes/ai-templates-azure-openai.md`](official-docs/quickstarts/includes/ai-templates-azure-openai.md)
+- [`official-docs/quickstarts/includes/ai-templates-explore-app.md`](official-docs/quickstarts/includes/ai-templates-explore-app.md)
+- [`official-docs/quickstarts/includes/ai-templates-ollama.md`](official-docs/quickstarts/includes/ai-templates-ollama.md)
+- [`official-docs/quickstarts/includes/ai-templates-openai.md`](official-docs/quickstarts/includes/ai-templates-openai.md)
+- [`official-docs/quickstarts/includes/create-ai-service.md`](official-docs/quickstarts/includes/create-ai-service.md)
+- [`official-docs/quickstarts/includes/prerequisites-azure-openai.md`](official-docs/quickstarts/includes/prerequisites-azure-openai.md)
+- [`official-docs/quickstarts/includes/prerequisites-openai.md`](official-docs/quickstarts/includes/prerequisites-openai.md)
+- [`official-docs/quickstarts/snippets/mcp-server/README.md`](official-docs/quickstarts/snippets/mcp-server/README.md)
+- [`official-docs/quickstarts/snippets/process-data/data/sample.md`](official-docs/quickstarts/snippets/process-data/data/sample.md)
+- [`official-docs/quickstarts/snippets/prompt-completion/azure-openai/benefits.md`](official-docs/quickstarts/snippets/prompt-completion/azure-openai/benefits.md)
+- [`official-docs/quickstarts/snippets/prompt-completion/openai/benefits.md`](official-docs/quickstarts/snippets/prompt-completion/openai/benefits.md)
+
+### Vector Stores
+
+- [`official-docs/vector-stores/define-your-data-model.md`](official-docs/vector-stores/define-your-data-model.md)
+- [`official-docs/vector-stores/how-to/build-vector-search-app.md`](official-docs/vector-stores/how-to/build-vector-search-app.md)
+- [`official-docs/vector-stores/how-to/use-vector-stores.md`](official-docs/vector-stores/how-to/use-vector-stores.md)
+- [`official-docs/vector-stores/how-to/vector-store-data-ingestion.md`](official-docs/vector-stores/how-to/vector-store-data-ingestion.md)
+- [`official-docs/vector-stores/manage-data.md`](official-docs/vector-stores/manage-data.md)
+- [`official-docs/vector-stores/overview.md`](official-docs/vector-stores/overview.md)
+- [`official-docs/vector-stores/tutorial-vector-search.md`](official-docs/vector-stores/tutorial-vector-search.md)
+- [`official-docs/vector-stores/vector-search.md`](official-docs/vector-stores/vector-search.md)
 
 ## API Reference Landing Pages
 

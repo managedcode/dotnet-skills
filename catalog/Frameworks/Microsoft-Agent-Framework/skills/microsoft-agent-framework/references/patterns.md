@@ -122,9 +122,9 @@ If you are building a new `.NET` agentic feature and do not have a service-impos
 
 ## Source Pages
 
-- `references/official-docs/overview/agent-framework-overview.md`
-- `references/official-docs/user-guide/agents/agent-types/index.md`
-- `references/official-docs/user-guide/agents/running-agents.md`
-- `references/official-docs/user-guide/workflows/overview.md`
-- `references/official-docs/user-guide/workflows/as-agents.md`
-- `references/official-docs/user-guide/hosting/index.md`
+- `references/official-docs/overview/index.md`
+- `references/official-docs/concepts/agents/index.md`
+- `references/official-docs/concepts/agents/running-agents.md`
+- `references/official-docs/workflows/index.md`
+- `references/official-docs/workflows/as-agents.md`
+- `references/official-docs/hosting/index.md`

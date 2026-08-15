@@ -43,9 +43,9 @@ compatibility: "Requires a .NET repository, solution, or project tree."
 
 ## Current Upstream Notes
 
-- `.NET 10.0.10` runtime and ASP.NET Core releases are servicing updates. Re-test affected paths such as heavily pinned GC heaps, NativeAOT, macOS drive enumeration, cookie-auth return URLs, data-protection cold starts, Blazor disposal/virtualization, and OpenAPI generation rather than changing architecture by default.
-- `.NET SDK 10.0.302` is the current 10.0.3xx servicing SDK and enables the file-based app `#:include` / `#:exclude` flow without feature flags. `.NET SDK 8.0.423` remains an 8.0 servicing SDK; do not infer C# 13 or C# 14 availability from that line.
-- The July 2026 "Build apps with .NET" Learn refresh remains broad routing context across web, cloud, desktop, mobile, AI, and console workloads; hand off to `project-setup`, `worker-services`, `aspnet-core`, `modern-csharp`, or another narrow skill as soon as the app model is known.
+- `.NET 10.0.11` runtime and ASP.NET Core releases are servicing updates. Re-test affected paths such as cgroup-v2 memory limits, Mono native-library resolution, Windows directory enumeration, WASM AOT/lazy-load startup, thread-static initialization, Blazor persisted circuits, and OpenAPI generation rather than changing architecture by default.
+- `.NET SDK 10.0.400` is the current 10.0.4xx feature band. It expands file-based app support, adds Microsoft.Testing.Platform project/solution selection to `dotnet test`, accepts `@` as the `dotnet new` option separator, and includes hardlink and up-to-date build fixes. Keep `global.json`, workloads, and CI images aligned before adopting the new band.
+- The August 2026 "Build apps with .NET" Learn overview remains broad routing context across web, cloud, desktop, mobile, AI, and console workloads; hand off to `project-setup`, `worker-services`, `aspnet-core`, `modern-csharp`, or another narrow skill as soon as the app model is known.
 
 ## Routing Heuristics
 
