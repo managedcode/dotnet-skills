@@ -113,7 +113,7 @@ using ModelContextProtocol.Client;
 
 var transport = new HttpClientTransport(new HttpClientTransportOptions
 {
-    Endpoint = new Uri("https://example.com/mcp"),
+    Endpoint = new Uri("https://example.com/"), // Replace with the final MCP endpoint.
     TransportMode = HttpTransportMode.StreamableHttp,
     ConnectionTimeout = TimeSpan.FromSeconds(30),
     AdditionalHeaders = new Dictionary<string, string>
@@ -138,7 +138,7 @@ Use this only for Streamable HTTP sessions:
 ```csharp
 var transport = new HttpClientTransport(new HttpClientTransportOptions
 {
-    Endpoint = new Uri("https://example.com/mcp"),
+    Endpoint = new Uri("https://example.com/"), // Replace with the final MCP endpoint.
     KnownSessionId = previousSessionId
 });
 

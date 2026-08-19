@@ -16,7 +16,7 @@ compatibility: "Requires a .NET application, service layer, or API boundary that
 
 ## Install
 
-Use the package that matches the boundary. Current upstream release reviewed: `v10.0.4`.
+Use the package that matches the boundary. Current upstream release reviewed: `v10.1.1`.
 
 ```bash
 dotnet add package ManagedCode.Communication
@@ -28,10 +28,10 @@ dotnet add package ManagedCode.Communication.Orleans
 For pinned project files:
 
 ```xml
-<PackageReference Include="ManagedCode.Communication" Version="10.0.4" />
-<PackageReference Include="ManagedCode.Communication.AspNetCore" Version="10.0.4" />
-<PackageReference Include="ManagedCode.Communication.Extensions" Version="10.0.4" />
-<PackageReference Include="ManagedCode.Communication.Orleans" Version="10.0.4" />
+<PackageReference Include="ManagedCode.Communication" Version="10.1.1" />
+<PackageReference Include="ManagedCode.Communication.AspNetCore" Version="10.1.1" />
+<PackageReference Include="ManagedCode.Communication.Extensions" Version="10.1.1" />
+<PackageReference Include="ManagedCode.Communication.Orleans" Version="10.1.1" />
 ```
 
 ## Workflow
@@ -118,7 +118,7 @@ Use railway-style composition when each step can return a result and the caller 
 - `CollectionResult<T>` plus `PaginationRequest` / `PaginationOptions` should own paged API metadata instead of ad-hoc `(items, total)` tuples.
 - Minimal APIs can use `WithCommunicationResults()` on one endpoint or an entire group. Prefer the group form only when every child endpoint follows the same result contract.
 - `ManagedCode.Communication.Orleans` is for grain-call integration and serialization boundaries; use it with the Orleans skill when reviewing grain APIs.
-- `v10.0.4` release notes call out error-handling fixes and dependency maintenance. Re-test negative paths after upgrading.
+- `v10.1.1` aligns HTTP results with raw payloads. Re-test successful and failed response bodies, status codes, and problem-detail mapping after upgrading.
 
 ## Deliver
 

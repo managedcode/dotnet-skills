@@ -31,6 +31,10 @@ flowchart LR
   C --> D["Blob or object storage backend"]
 ```
 
+## Current Upstream Notes
+
+- `ManagedCode.Storage` `10.0.7` fixes Azure upload metadata. Upgrade all selected provider packages together, then verify Azure upload/download paths preserve the intended content type and custom metadata rather than relying on a successful byte upload alone.
+
 ## Deliver
 
 - concrete guidance on when ManagedCode.Storage is the right abstraction
@@ -42,3 +46,4 @@ flowchart LR
 - the project really benefits from a storage abstraction and is not hiding provider-specific behavior it still needs
 - storage configuration is centralized and explicit
 - code reviews check real read and write paths, not only registration snippets
+- after a `10.0.7` upgrade, Azure upload metadata and content-type round trips are covered by a focused integration test

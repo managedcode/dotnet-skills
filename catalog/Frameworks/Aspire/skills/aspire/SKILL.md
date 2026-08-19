@@ -50,9 +50,9 @@ flowchart LR
 
 - AppHost shape: recognize three current first-class forms: an SDK-style C# AppHost project using `Aspire.AppHost.Sdk/<version>`, a file-based C# `apphost.cs`, or a TypeScript `apphost.mts`. For TypeScript, `aspire init --language typescript` writes `aspire.config.json` and the generated `.aspire/modules/` SDK; do not hand-edit generated modules, and run `aspire restore` after package/integration changes.
 - TypeScript AppHosts: use the async lower-camel-case app model (`createBuilder`, `addNodeApp`, `addViteApp`, `withReference`, `waitFor`, `build().run()`). In an existing repository with a root `package.json`, expect the CLI to create a nested `aspire-apphost/` package so the application and orchestration toolchains stay separate.
-- Polyglot hosting: Aspire 13.4 adds first-party Go and Bun support. Prefer the official hosting surface for new Go or Bun resources before considering older toolkit integrations; keep community integrations for languages and capabilities that still have a real first-party gap.
-- CLI entry points: use `aspire new` for starter projects, `aspire init` to add Aspire support to an existing solution or create a single-file AppHost, `aspire add` to add integrations or starter pieces, `aspire run` for local orchestration, `aspire start`/`aspire stop`/`aspire ps` for detached lifecycle management, `aspire describe` for live resource inspection, `aspire doctor` for environment diagnostics, `aspire secret` for user secrets, `aspire docs` for terminal documentation lookup, `aspire agent` for AI agent integration, `aspire deploy` for the current CLI deploy pipeline, `aspire restore` for AppHost and TypeScript resource refresh, and `aspire update` for version-aware upgrades. `aspire publish` still exists for explicit artifact-generation flows and remains preview-sensitive.
-- Patch posture: Aspire `13.4.6` is the current 13.4 servicing release. It fixes polyglot code-generator binding when CLI and SDK patches differ, isolated AppHost resource-service port collisions, and the MongoDB driver dependency chain. The preceding `13.4.5` clears a transitive MessagePack advisory and validates Playwright CLI overrides as strict SemVer. Align package versions, rerun `aspire update`, then revalidate local orchestration and the chosen deployment path.
+- Polyglot hosting: Aspire 13.4 adds first-party Go and Bun support, and 13.5 makes TypeScript AppHosts generally available. Prefer the official hosting surface for new Go, Bun, or TypeScript resources before considering older toolkit integrations; keep community integrations for languages and capabilities that still have a real first-party gap.
+- CLI entry points: use `aspire new` for starter projects, `aspire init` to add Aspire support to an existing solution or create a single-file AppHost, `aspire add` to add integrations or starter pieces, `aspire run` for local orchestration, `aspire start`/`aspire stop`/`aspire ps` for detached lifecycle management, `aspire describe` for live resource inspection, `aspire doctor` for environment diagnostics, `aspire secret` for user secrets, `aspire docs` for terminal documentation lookup, `aspire agent` for AI agent integration, `aspire deploy` for the current CLI deploy pipeline, `aspire restore` for AppHost and TypeScript resource refresh, and `aspire update` for version-aware upgrades. `aspire terminal` attaches to an opt-in `WithTerminal()` resource; do not make an interactive terminal a hidden dependency of normal orchestration. `aspire publish` still exists for explicit artifact-generation flows and remains preview-sensitive.
+- Upgrade posture: Aspire `13.5.0` adds cross-language interaction controls, experimental `WithTerminal()` resources, a refreshed dashboard, and more deployment modeling. Before upgrading, audit its breaking changes: hosting-context `ServiceProvider` became `Services`, `PublishAsConnectionString` is superseded by `AddConnectionString`, and the removed `aspire ps --resources` / `--include-hidden` views become `aspire describe`. Align package versions, run `aspire update --migrate` when it applies, then revalidate local orchestration and the chosen deployment path.
 - MCP and agent tooling: `ExcludeFromMcp()` filtering is now consistently honored by CLI MCP tools such as resource, log, command, and trace listings. Use it deliberately for resources that should not leak into agent context.
 - DCP reliability: current 13.4 servicing retries dropped DCP requests and lets isolated AppHosts bind distinct resource-service ports. If AppHost resource commands or dashboard-backed CLI calls were flaky, upgrade before adding local retry wrappers.
 - App model wiring: use `WithReference(...)` for dependency and configuration flow, and `WaitFor(...)` for startup ordering. Use `WithExternalHttpEndpoints()` only when the resource truly needs an externally reachable endpoint for the chosen runtime or publish target.
@@ -72,14 +72,14 @@ flowchart LR
 ## Official Sources
 
 - [Aspire docs home](https://aspire.dev/docs/)
-- [What's new in Aspire 13.4](https://aspire.dev/whats-new/aspire-13-4/)
+- [What's new in Aspire 13.5](https://aspire.dev/whats-new/aspire-13-5/)
 - [AppHost](https://aspire.dev/get-started/app-host/)
 - [Service defaults](https://aspire.dev/fundamentals/service-defaults/)
 - [Integrations overview](https://aspire.dev/integrations/overview/)
 - [Build your first app](https://aspire.dev/get-started/first-app/)
 - [Aspire CLI reference](https://aspire.dev/reference/cli/commands/aspire/)
 - [TypeScript AppHost project structure](https://aspire.dev/app-host/typescript-apphost/)
-- [Aspire 13.4.6 release](https://github.com/microsoft/aspire/releases/tag/v13.4.6)
+- [Aspire 13.5.0 release](https://github.com/microsoft/aspire/releases/tag/v13.5.0)
 - [Testing overview](https://aspire.dev/testing/overview/)
 - [microsoft/aspire](https://github.com/microsoft/aspire)
 - [CommunityToolkit/Aspire](https://github.com/CommunityToolkit/Aspire)

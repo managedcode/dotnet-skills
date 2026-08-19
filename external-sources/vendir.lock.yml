@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1002 from dotnet/abhitejjohn-cautious-meme...'
-      sha: 7c1ae3fdf2eb64b758bb3a7b7f92cad3fbd95868
+      commitTitle: 'Merge pull request #1024 from dotnet/dependabot/github_actions/github-actions-dependencies-7a5a078ad4...'
+      sha: ab79dbe83ba0a2c771326e2fa4da1702510c13f3
       tags:
       - skill-validator-nightly
     path: dotnet-skills
@@ -12,10 +12,10 @@ directories:
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'fix(ts-plugin): only inject Astro types into Astro projects (#17668)'
-      sha: bef9db51186d7201604fc561e1c599a0610d54b0
+      commitTitle: '[ci] format'
+      sha: aeda8105de7a5f15c88654cafdeef5f3c97fde96
       tags:
-      - '@astrojs/node@11.1.2-9-gbef9db5118'
+      - '@astrojs/cloudflare@14.2.2-9-gaeda8105de'
     path: astro
   path: upstreams
 kind: LockConfig

@@ -46,6 +46,7 @@ compatibility: "Requires a .NET repository with frontend assets managed through 
 ## Current Upstream Notes
 
 - Biome CLI `2.5.8` adds `useReactCompiler`, `noSvelteLegacyConst`, and `noInvalidPropertyInitValue`, and parses HTML `style` attributes as CSS. Enable new rules deliberately because React Compiler and Svelte legacy checks can change an existing migration plan.
+- Biome CLI `2.5.9` adds the Nursery rules `useNamedLayer`, `useTailwindShorthandClasses`, `useControlLabel`, `noUnsafeTypeAssertion`, and `useAstroClientOnlyDirectiveValue`. Enable them explicitly; validate CSS/HTML formatting plus Tailwind, Astro, Svelte, and Vue diagnostics before accepting a broad CI change.
 - The release improves import-cycle performance and fixes Vue globals, Svelte object literals, CSS comments, and related formatter/parser paths. Re-run the repo's existing `biome check` command before removing suppressions or accepting formatter churn.
 - When `--stdin-file-path` is used, verify that the intended nested `biome.json` is selected and that ignored input produces the expected warning. Keep fixtures for Vue custom blocks, Svelte attachments, Tailwind class sorting, and non-ASCII diagnostic spans when those surfaces matter.
 - Recent Biome changes also continue expanding CSS/SCSS, HTML accessibility, import sorting, watch mode, and upgrade-command surfaces; verify actual CLI ownership before replacing ESLint or Stylelint.

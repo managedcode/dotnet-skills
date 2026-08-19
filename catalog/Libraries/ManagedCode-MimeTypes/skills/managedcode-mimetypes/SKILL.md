@@ -94,7 +94,7 @@ if (!MimeHelper.MatchesMimeTypeByContent(stream, upload.ContentType) ||
 
 - Unknown extensions resolve to `MimeHelper.DefaultMimeType`, initially `application/octet-stream`; use `SetDefaultMimeType` only when the whole application owns a different fallback contract.
 - Prefer `MimeHelper.Instance` through `IMimeHelper` when dependency injection and test substitution are useful; use static calls for small, deterministic mapping boundaries.
-- The `10.0.10` release refreshes the generated MIME database. It adds mappings such as `aaud`, `aimg`, `avid`, `coswid`, `mmdb`, `multitrack`, and `zdoc`; changes mappings including `dpkg`, `vsc`, and `wv`; and removes stale entries such as `ac2`, `cbor`, `docjson`, and `sarif-external-properties`. Re-run product-specific mapping tests because preferred mappings can change without an API change.
+- The `10.0.11` release refreshes the generated MIME database again. Do not assume the previous mapping list is still complete; re-run product-specific mapping tests because preferred mappings can change without an API change.
 - Never trust MIME classification alone for authorization, file execution, archive extraction, or active-content rendering.
 
 ```mermaid
@@ -115,6 +115,6 @@ flowchart LR
 - MIME mapping is not duplicated across multiple services or controllers
 - important file types are verified explicitly
 - response or storage code uses the resolved type consistently
-- `dotnet restore` resolves `ManagedCode.MimeTypes` `10.0.10` or the repository-approved newer version
+- `dotnet restore` resolves `ManagedCode.MimeTypes` `10.0.11` or the repository-approved newer version
 - focused tests cover known extensions, unknown fallbacks, reverse lookup, upload signature mismatches, and any runtime registrations
 - `dotnet test` passes for the projects that own upload, download, or storage behavior

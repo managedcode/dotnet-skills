@@ -19,6 +19,7 @@ compatibility: "Requires Semantic Kernel 1.x packages (.NET 8+)."
 - [Plugins and Functions](https://learn.microsoft.com/en-us/semantic-kernel/concepts/plugins/)
 - [Agent Functions](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-functions)
 - [GitHub Repository](https://github.com/microsoft/semantic-kernel)
+- [Semantic Kernel .NET 1.80.0 release](https://github.com/microsoft/semantic-kernel/releases/tag/dotnet-1.80.0)
 - [Microsoft Agent Framework](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/)
 
 ### References
@@ -46,6 +47,7 @@ compatibility: "Requires Semantic Kernel 1.x packages (.NET 8+)."
 6. For Semantic Kernel `dotnet-1.79.0` and later, keep OpenAPI plugin server URL validation enabled, do not re-enable automatic redirects on the default `HttpPlugin` or `WebFileDownloadPlugin` clients without an explicit trusted-host policy, and use the current Microsoft Agent Framework-compatible migration samples when moving SK agent code to Agent Framework.
 7. Re-test Cosmos DB vector-store queries, file and document plugins, OpenAPI server-variable URLs, and Ollama reasoning settings after upgrading to `1.79.0`. The release fixes the Cosmos vector-store path, rejects mixed-separator UNC paths, URL-encodes OpenAPI server variables, adds Ollama `Think`, and allows deterministic `TimePlugin` tests through `TimeProvider` injection.
 8. Treat the Prompty.Core `2.0.0-beta.3` update in `1.79.0` as a breaking dependency change. Re-run prompt-template tests and remove security workarounds that are no longer needed after the vulnerable transitive version is gone.
+9. In `1.80.0`, re-test OpenAPI plugin HTTP-client defaults and Gemini calls that restrict `FunctionChoiceBehavior` to a supplied function list. The migrated .NET MEVD providers are no longer owned by Semantic Kernel; follow their redirect guidance and keep vector-provider package references explicit during upgrades.
 
 ## Kernel Setup
 
