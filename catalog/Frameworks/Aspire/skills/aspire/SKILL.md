@@ -1,7 +1,7 @@
 ---
 name: aspire
-description: "Build, upgrade, and operate Aspire 13.4.x C# or TypeScript application hosts with the current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, MCP, and deployment patterns for distributed apps. USE FOR: Aspire.AppHost.Sdk, Aspire.Hosting.*, DistributedApplication.CreateBuilder, apphost.mts, createBuilder, WithReference, WaitFor, AddProject, AddRedis, AddPostgres, aspire run, aspire init, aspire. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
-compatibility: "Best for current Aspire 13.4.x tooling with .NET 10 or a supported Node.js runtime for TypeScript AppHosts; use version-aware upgrade guidance for older 8.x or 9.x solutions."
+description: "Build, upgrade, and operate Aspire 13.5.x C# or TypeScript application hosts with the current CLI, AppHost, ServiceDefaults, integrations, dashboard, testing, MCP, and deployment patterns for distributed apps. USE FOR: Aspire.AppHost.Sdk, Aspire.Hosting.*, DistributedApplication.CreateBuilder, apphost.mts, createBuilder, WithReference, WaitFor, AddProject, AddRedis, AddPostgres, aspire run, aspire init, aspire. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
+compatibility: "Best for current Aspire 13.5.x tooling with .NET 10 or a supported Node.js runtime for TypeScript AppHosts; use version-aware upgrade guidance for older 8.x or 9.x solutions."
 ---
 
 # Aspire
@@ -19,8 +19,8 @@ compatibility: "Best for current Aspire 13.4.x tooling with .NET 10 or a support
 ## Workflow
 
 1. Classify the task first: new AppHost creation, existing-solution enlistment, integration wiring, testing and observability, deployment, or version upgrade.
-2. Prefer the current Aspire toolchain. Choose a C# AppHost for .NET-first repositories or a TypeScript `apphost.mts` for JavaScript/TypeScript-first repositories; both are first-class in 13.4. Use the Aspire CLI and current SDK-generated app model instead of writing new guidance around the deprecated legacy workload.
-3. Treat 13.4.x releases as servicing and feature updates for the current CLI-first app model, not a topology rewrite. Keep the Aspire CLI, `Aspire.AppHost.Sdk`, and closely coupled hosting or testing packages on the same line, then rerun the AppHost and deployment checks after `aspire update`.
+2. Prefer the current Aspire toolchain. Choose a C# AppHost for .NET-first repositories or a TypeScript `apphost.mts` for JavaScript/TypeScript-first repositories; both are first-class in 13.5. Use the Aspire CLI and current SDK-generated app model instead of writing new guidance around the deprecated legacy workload.
+3. Treat 13.5.x releases as the current CLI-first app model. Keep the Aspire CLI, `Aspire.AppHost.Sdk`, and closely coupled hosting or testing packages on the same line, then rerun the AppHost and deployment checks after `aspire update`.
 4. Keep the AppHost code-first and topology-focused. Model services, resources, dependencies, endpoints, lifetimes, and parameters there; keep business logic out.
 5. Keep `ServiceDefaults` narrow. It exists for telemetry, health checks, resilience, and service discovery, not shared domain models or general utility code.
 6. Prefer official first-party Aspire integrations when they cover the requirement. Use `CommunityToolkit/Aspire` only when the capability gap is real: unsupported language hosts, extra dev infrastructure, or extension packages the official project does not provide.
@@ -54,7 +54,7 @@ flowchart LR
 - CLI entry points: use `aspire new` for starter projects, `aspire init` to add Aspire support to an existing solution or create a single-file AppHost, `aspire add` to add integrations or starter pieces, `aspire run` for local orchestration, `aspire start`/`aspire stop`/`aspire ps` for detached lifecycle management, `aspire describe` for live resource inspection, `aspire doctor` for environment diagnostics, `aspire secret` for user secrets, `aspire docs` for terminal documentation lookup, `aspire agent` for AI agent integration, `aspire deploy` for the current CLI deploy pipeline, `aspire restore` for AppHost and TypeScript resource refresh, and `aspire update` for version-aware upgrades. `aspire terminal` attaches to an opt-in `WithTerminal()` resource; do not make an interactive terminal a hidden dependency of normal orchestration. `aspire publish` still exists for explicit artifact-generation flows and remains preview-sensitive.
 - Upgrade posture: Aspire `13.5.0` adds cross-language interaction controls, experimental `WithTerminal()` resources, a refreshed dashboard, and more deployment modeling. Before upgrading, audit its breaking changes: hosting-context `ServiceProvider` became `Services`, `PublishAsConnectionString` is superseded by `AddConnectionString`, and the removed `aspire ps --resources` / `--include-hidden` views become `aspire describe`. Align package versions, run `aspire update --migrate` when it applies, then revalidate local orchestration and the chosen deployment path.
 - MCP and agent tooling: `ExcludeFromMcp()` filtering is now consistently honored by CLI MCP tools such as resource, log, command, and trace listings. Use it deliberately for resources that should not leak into agent context.
-- DCP reliability: current 13.4 servicing retries dropped DCP requests and lets isolated AppHosts bind distinct resource-service ports. If AppHost resource commands or dashboard-backed CLI calls were flaky, upgrade before adding local retry wrappers.
+- Servicing posture: use at least Aspire `13.5.3`. `13.5.1` fixes macOS startup crashes for polyglot AppHosts and older-CLI compatibility, while `13.5.3` fixes Dashboard Graph crashes for multi-path resource icons and restores DevTunnel public URLs in the dashboard and MCP snapshots. Upgrade the CLI and SDK together before adding local lifecycle, graph, or endpoint workarounds.
 - App model wiring: use `WithReference(...)` for dependency and configuration flow, and `WaitFor(...)` for startup ordering. Use `WithExternalHttpEndpoints()` only when the resource truly needs an externally reachable endpoint for the chosen runtime or publish target.
 - ServiceDefaults boundaries: `AddServiceDefaults()` should stay focused on OpenTelemetry, health endpoints, service discovery, `HttpClient` resilience, and related cross-cutting infrastructure.
 - Testing model: prefer Aspire closed-box testing when you need to run the distributed application as a system. Use `DistributedApplicationTestingBuilder` plus a shared fixture for AppHost lifecycle, `App.CreateHttpClient(...)` for resource-bound clients, and a `WebApplicationFactory<TEntryPoint>` wrapper only when the test must resolve DI services or in-process runtime state from the hosted app. For UI flows, initialize Playwright once in the shared fixture, create a fresh browser context per test, and capture failure artifacts.
@@ -65,7 +65,7 @@ flowchart LR
 
 - Use first-party Aspire when the package and docs exist for the resource or platform, especially for core .NET, Azure, cache, database, messaging, Microsoft Foundry, and standard local-container flows.
 - Treat C# and TypeScript as AppHost-language choices, not different orchestration products. Keep topology semantics aligned while using the API casing, generated SDK, validation, and package-manager workflow native to the chosen host language.
-- Use `CommunityToolkit/Aspire` when you need polyglot app hosts beyond official coverage, extra dev-time tools around a resource, or community-maintained integrations such as SQLite, Java, PowerShell, Deno, Rust, k6, MailPit, MinIO, or Meilisearch.
+- Use `CommunityToolkit/Aspire` when you need polyglot app hosts beyond official coverage, extra dev-time tools around a resource, or community-maintained integrations. Toolkit `13.5.0` aligns with Aspire 13.5 and adds integrations such as Logto, RustFs, dbx, SeaweedFS, Bitwarden, Squad, K3s, Kind, Redpanda, listmonk, Posta, stable-diffusion.cpp, and Mosquitto. Add only the focused integration package the topology actually needs.
 - Prefer the smallest surface that solves the problem. Do not add a broad toolkit extension pack when an existing first-party integration plus a normal library already fits.
 - Treat toolkit packages as community-supported. Verify maturity, maintenance, external container images, and security or licensing assumptions before making them part of a production baseline.
 
@@ -79,7 +79,8 @@ flowchart LR
 - [Build your first app](https://aspire.dev/get-started/first-app/)
 - [Aspire CLI reference](https://aspire.dev/reference/cli/commands/aspire/)
 - [TypeScript AppHost project structure](https://aspire.dev/app-host/typescript-apphost/)
-- [Aspire 13.5.0 release](https://github.com/microsoft/aspire/releases/tag/v13.5.0)
+- [Aspire 13.5.3 release](https://github.com/microsoft/aspire/releases/tag/v13.5.3)
+- [CommunityToolkit/Aspire 13.5.0 release](https://github.com/CommunityToolkit/Aspire/releases/tag/v13.5.0)
 - [Testing overview](https://aspire.dev/testing/overview/)
 - [microsoft/aspire](https://github.com/microsoft/aspire)
 - [CommunityToolkit/Aspire](https://github.com/CommunityToolkit/Aspire)

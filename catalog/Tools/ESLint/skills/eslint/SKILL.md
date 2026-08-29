@@ -45,7 +45,7 @@ compatibility: "Requires a .NET repository with Node-based frontend assets such 
 
 ## Current Upstream Notes
 
-- ESLint `v10.8.1` fixes autofix automatic-semicolon-insertion hazards in `no-unused-labels` and `no-unused-vars`, plus false positives in `getter-return`, `accessor-pairs`, and identifier rules around meta properties.
+- ESLint `v10.9.1` includes the `v10.8.1` autofix and false-positive corrections and fixes `no-loss-of-precision` so numeric literals with a trailing decimal point are not reported incorrectly. Re-run focused rule fixtures before retaining a suppression for that syntax.
 - Re-run the real lint suite and autofix snapshots before accepting churn, especially in semicolon-free code or generated output. Keep the `v10.8.0` flat-config type exports and formatter changes in mind when updating tooling integrations.
 - Current docs clarify parser option precedence over `languageOptions` and document the v9/v10 migration codemods; review flat-config migrations that mix legacy parser settings with new config shapes.
 

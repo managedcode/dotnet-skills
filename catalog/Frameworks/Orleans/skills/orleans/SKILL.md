@@ -15,26 +15,22 @@ Do not begin with an Orleans API. First state:
 
 Then select the smallest Orleans primitive whose guarantees match those requirements. Reject Orleans when the problem is primarily shared-memory computation, a finite batch, relational querying, or global coordination with few independent entities.
 
-Inspect package versions for version-sensitive work. Orleans `10.2.2` ships `Microsoft.Orleans.DurableJobs*` and `Microsoft.Orleans.Journaling*` as `10.2.2-alpha.1`; treat them as experimental until that status changes.
+Inspect package versions for version-sensitive work. Orleans `10.3.1` ships `Microsoft.Orleans.DurableJobs*` and `Microsoft.Orleans.Journaling*` as `10.3.1-alpha.1`; treat them as experimental until that status changes.
 
-The August 2026 Orleans overview highlights the built-in dashboard and stable Redis providers in the Orleans 10 line. Use the dashboard for development and operational visibility, but keep production telemetry and alerting explicit; select Redis providers only when their persistence, clustering, or streaming guarantees match the workload.
+Orleans 10.3 changes three upgrade boundaries: Newtonsoft storage now enforces the Orleans type allow-list, RPC telemetry keys changed, and custom grain-context activators must apply configurators before construction. Prefer generated/allowed types over global permissive JSON, and update persisted-state tests, dashboards, and custom activators together. The release also adds streaming, checkpoint, journal, transaction, file-storage, and System.Text.Json providers; select them by guarantees. `10.3.1` services analyzer contract identities.
+
+The August 2026 overview highlights the built-in dashboard and stable Redis providers. Keep production telemetry explicit, and select Redis only when its guarantees match the workload.
 
 ## Mental Model
 
-- A **grain** is a virtual actor: a logical entity with stable identity, behavior, and optional state. It is not a process, row, DTO, controller, or background job.
+- A **grain** is a virtual actor with stable identity, behavior, and optional state, not a process, row, DTO, controller, or background job.
 - A **grain reference** is a location-transparent address. Getting a reference does not create a durable record or prove that an activation exists.
 - An **activation** is an ephemeral in-memory execution instance. Orleans creates, places, moves, deactivates, and recreates it. Never equate activation lifetime with entity lifetime.
 - A normal grain has at most one activation in the cluster by default and processes turns one at a time. This makes the grain a natural owner of per-identity invariants.
 - A **silo** hosts activations. Silos form a cluster; external clients or a co-hosted `IGrainFactory` call grains.
 - Calls are asynchronous messages even when they look like C# method calls. Network failure, timeout, serialization, retries, and duplicate side effects still matter.
-- A grain can model a **digital twin** when its identity and behavior correspond to a device, user, order, room, account, or other real/domain entity. Digital twin is a use case, not the definition of every grain.
+- A grain can model a **digital twin** when its identity and behavior map to a real or domain entity; that is a use case, not every grain's definition.
 - Orleans gives logical ownership and turn-based execution. It does not make external side effects transactional, turn arbitrary data into a queryable database, or provide exactly-once execution by default.
-
-Model a grain as a tiny, always-addressable service per business identity:
-
-```text
-identity -> serialized decisions -> bounded current state -> messages/events/work
-```
 
 ## Workflow
 
@@ -53,13 +49,13 @@ identity -> serialized decisions -> bounded current state -> messages/events/wor
 | External database/repository | Queryable, indexed, relational, bulk, shared, or externally owned data | The system needs joins, search, reporting, set-based updates, independent access, or an existing system of record | A replacement for grain ownership when serialized per-entity decisions are still required |
 | Grain plus database/read model | Separate command ownership from query/storage concerns | A grain owns invariants and a small control snapshot while a database owns large records, history, projections, or reporting | Two competing sources of truth without an explicit contract |
 | `JournaledGrain<TState,TEvent>` | Persist domain events and reconstruct state | Audit history, business-event replay, log consistency, or multi-cluster event-sourced replication is a requirement | A default persistence choice for ordinary CRUD state |
-| `Orleans.Journaling` durable states | Replay durable collection/value operations through a journal | The experimental 10.2 journaling model, durable collections, or durable completion state solves a measured need | Stable default persistence; it is distinct from `JournaledGrain` business event sourcing |
+| `Orleans.Journaling` durable states | Replay durable collection/value operations through a journal | The experimental 10.3 journaling model, durable collections, or durable completion state solves a measured need | Stable default persistence; it is distinct from `JournaledGrain` business event sourcing |
 | `ITransactionalState<T>` | ACID, serializable all-or-nothing changes across transactional grain state | A short operation must atomically update multiple grain-owned states and compensation is unacceptable | Long-running workflows or atomicity with arbitrary external systems |
 | Saga/process manager | Durable progress with compensation across steps and external systems | Work is long-running, spans services, waits for events, or cannot share one transaction | Instant atomic commit |
 
 ### Grain State Versus a Database
 
-Use grain state for bounded current state and invariants owned and accessed by one identity. Use a database/read model for joins, search, reports, scans, bulk updates, large/history data, shared access, or an external system of record. Use both when a grain owns commands while the database owns query shape, but define one authority per field and recovery rules.
+Use grain state for bounded current state and per-identity invariants. Use a database/read model for joins, search, reporting, bulk work, history, shared access, or an external system of record. When using both, define one authority per field and recovery rules.
 
 Never query or mutate another grain's persistence record behind the grain, or expose provider storage as the public query model merely because it uses SQL/Cosmos/Redis. Before using transactions, try one bounded grain owner; use a saga for external effects or long waits. Read [references/persistence-api.md](references/persistence-api.md) for the full boundary.
 

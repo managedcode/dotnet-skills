@@ -52,8 +52,8 @@ flowchart LR
 
 ## Current Upstream Notes
 
-- SonarJS `13.6` adds rules for shallow-clone mutation, Vue class/mixin and state mutation, native alternatives to jQuery, Testing Library disappearance and synchronous-query patterns, Vitest `vi.mock` scope, and Playwright `networkidle` usage.
-- The release also reduces false positives across Vue, React, testing, and TypeScript analysis. Re-run server analysis before preserving suppressions, and review new findings as behavior-specific guidance rather than enabling every new rule blindly.
+- SonarJS `13.8` adds guidance to prefer native APIs over Axios utility methods and retryable Cypress assertions. It also fixes false positives for deferred Promise chains, ordinary class members, and `Deno.test` declarations, and narrows related test-file and form analysis heuristics.
+- Re-run server analysis before preserving suppressions, and review new findings as behavior-specific guidance rather than enabling every new rule blindly. Self-hosted builds now require JDK 21 rather than JDK 17.
 
 ## Bootstrap When Missing
 

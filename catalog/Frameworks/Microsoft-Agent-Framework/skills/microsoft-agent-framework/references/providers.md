@@ -64,7 +64,7 @@ The official C# docs make these differences explicit:
 | Anthropic on Azure Foundry | No | Yes |
 | Other `IChatClient` implementations | Varies | Varies |
 
-This table matters more than it looks. It decides whether your `AgentThread` stores full messages, a remote conversation ID, or custom serialized store state.
+This table matters more than it looks. It decides whether your `AgentSession` stores full messages, a remote conversation ID, or custom serialized provider state.
 
 Current Learn docs also consolidate the old Azure AI Foundry Agent and Foundry Models Chat/Responses URLs into one canonical Microsoft Foundry Agents page. Keep the architectural distinction between persistent Foundry agents and app-owned model clients, but do not treat those redirected page names as separate product families anymore.
 

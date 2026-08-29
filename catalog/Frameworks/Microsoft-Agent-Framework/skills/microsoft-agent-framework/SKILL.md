@@ -1,6 +1,6 @@
 ---
 name: microsoft-agent-framework
-description: "Build .NET AI agents, harnesses, and multi-agent workflows with Microsoft Agent Framework using the right agent type, sessions, tools, workflows, hosting protocols, and enterprise guardrails. USE FOR: building or reviewing .NET code that uses Microsoft.Agents.*, Microsoft.Extensions.AI, AIAgent, HarnessAgent, AgentThread, AgentSession, or Agent Framework hosting packages; choosing agent, harness, workflow, and hosting shapes. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
+description: "Build .NET AI agents, harnesses, and multi-agent workflows with Microsoft Agent Framework using the right agent type, sessions, tools, workflows, hosting protocols, and enterprise guardrails. USE FOR: building or reviewing .NET code that uses Microsoft.Agents.*, Microsoft.Extensions.AI, AIAgent, HarnessAgent, AgentSession, or Agent Framework hosting packages; choosing agent, harness, workflow, and hosting shapes. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
 compatibility: "Requires current Microsoft Agent Framework packages and a .NET application that truly needs agentic or workflow orchestration; declarative, hosting, and advanced Harness surfaces may remain preview or experimental."
 ---
 
@@ -8,7 +8,7 @@ compatibility: "Requires current Microsoft Agent Framework packages and a .NET a
 
 ## Trigger On
 
-- building or reviewing `.NET` code that uses `Microsoft.Agents.*`, `Microsoft.Extensions.AI`, `AIAgent`, `HarnessAgent`, `AgentThread`, `AgentSession`, or Agent Framework hosting packages
+- building or reviewing `.NET` code that uses `Microsoft.Agents.*`, `Microsoft.Extensions.AI`, `AIAgent`, `HarnessAgent`, `AgentSession`, or Agent Framework hosting packages
 - choosing between `ChatClientAgent`, Responses agents, hosted agents, custom agents, Anthropic agents, workflows, or durable agents
 - adding the batteries-included `Microsoft.Agents.AI.Harness` surface for planning, todos, compaction, file memory/access, tool approvals, skills, shell execution, or background agents
 - authoring preview-era `Microsoft.Agents.AI.Workflows.Declarative*` packages or wrapping a workflow with `workflow.AsAIAgent()`
@@ -21,7 +21,7 @@ compatibility: "Requires current Microsoft Agent Framework packages and a .NET a
 1. Decide whether the problem should stay deterministic. If plain code or a typed workflow without LLM autonomy is enough, do that instead of adding an agent.
 2. Choose the execution shape first: single `AIAgent`, batteries-included `HarnessAgent`, explicit programmatic `Workflow`, workflow-as-agent wrapper, declarative workflow when YAML portability is explicitly required, Azure Functions durable agent, ASP.NET Core hosted agent, AG-UI remote UI, or DevUI local debugging.
 3. Choose the agent type and provider intentionally. Prefer the simplest agent that satisfies the threading, tooling, and hosting requirements.
-4. Keep agents stateless and keep conversation or long-lived state in provider-owned session objects. Most persistence guidance still centers on `AgentThread`, while newer middleware and background-response examples may surface `AgentSession`. Treat both as opaque provider-specific state.
+4. Keep agents stateless and keep conversation or long-lived state in `AgentSession`. Treat the session as opaque provider-owned state, serialize it through the owning agent, and never accept a raw service conversation ID as an end-user authorization boundary.
 5. Add only the tools and middleware that the scenario needs. Narrow the tool surface, require approval for side effects, and treat MCP, A2A, and third-party services as trust boundaries.
 6. For workflows, model executors, edges, typed `RequestPort` boundaries, checkpoints, shared state, and human-in-the-loop explicitly rather than hiding control flow in prompts.
 7. Prefer Responses-based protocols for new remote/OpenAI-compatible integrations unless you specifically need Chat Completions compatibility.
@@ -30,8 +30,9 @@ compatibility: "Requires current Microsoft Agent Framework packages and a .NET a
 
 ## Current Upstream Notes
 
-- `dotnet-1.15.0` adds public OpenAI Responses protocol helpers, session deletion, and hosted workflow state. The application still owns routing, authorization, and durable storage.
-- `dotnet-1.14.0` graduates the core Harness API but keeps its package and advanced options prerelease or experimental. It also makes file access opt-in, binds approvals to surfaced requests, and splits AG-UI packages and server registration. See [harness.md](references/harness.md) and [hosting.md](references/hosting.md).
+- `dotnet-1.19.0` adds persisted routing and sessions, resilient/steerable hosted agents, AG-UI forwarding, and experimental agent hooks. It makes a breaking move to the MCP `2026-07-28` Tasks extension; update both peers and resume tests together.
+- `dotnet-1.18.0` adds concurrent tool invocation, usage aggregation, Cosmos history/vector examples, hosted storage, and session-scoped background-task release. Its breaking isolation rename is `AgentIsolationKeyProvider`.
+- `dotnet-1.16.0`-`1.17.0` stabilize Copilot agents, sessions, A2A forwarding, and declarative workflow failure paths. See the focused references for older Harness, hosting, and protocol changes.
 - Current AG-UI hosting uses `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` with `AddAGUIServer()` and `MapAGUIServer(...)`; the client uses `AGUI.Client`, and conversation state flows through `AgentSession`. Do not copy older `AddAGUI`/`MapAGUI` or `AgentThread` hosting examples into current applications.
 - The August 2026 documentation set is mirrored as `172` current markdown pages and now treats middleware, function tools and approvals, sessions, multimodal input, background responses, Azure Functions durable agents, AG-UI frontend and backend tools, MCP-hosted agents, observability, support, upgrades, and Semantic Kernel or AutoGen migration as first-class paths. Load the matching reference file before implementation and verify package maturity plus exact signatures against the linked official page; the expanded documentation does not make every provider or preview feature interchangeable.
 
@@ -61,10 +62,10 @@ flowchart LR
 ## Core Knowledge
 
 - `AIAgent` is the common runtime abstraction. It should stay mostly stateless.
-- `AgentThread` still anchors most persisted conversation guidance, but some newer runtime surfaces now pass `AgentSession` instead. Treat either state object as opaque provider-owned data and verify exact callback signatures against the current official page.
+- `AgentSession` owns conversation state. Create, reuse, serialize, and restore it through the owning agent; keep service IDs server-side and verify user or tenant ownership before resumption.
 - `AgentResponse` and `AgentResponseUpdate` are not just text containers. They can include tool calls, tool results, structured output, reasoning-like updates, and response metadata.
 - `ChatClientAgent` is the safest default when you already have an `IChatClient` and do not need a hosted-agent service.
-- `HarnessAgent` is an opinionated `ChatClientAgent` composition from the prerelease `Microsoft.Agents.AI.Harness` package. Its core API is stable, while advanced options can remain experimental. It adds automatic tool loops, per-service-call history persistence, plan/execute modes, todos, optional token-budget compaction, file memory, opt-in file access, tool approval, OpenTelemetry, web search, and optional skills, shell, looping, and background agents. Enable and scope only the capabilities that the task needs.
+- `HarnessAgent` is a prerelease packaged `ChatClientAgent` composition for tool loops, planning, todos, compaction, memory, approvals, telemetry, and optional file, web, shell, skill, loop, or background-agent capabilities. Enable only what the task needs.
 - Microsoft Foundry Agents is the canonical Azure-hosted persistent-agent surface. Azure OpenAI Responses is the app-composed Azure option for tool approval, code interpreter, file search, web search, and MCP.
 - `Workflow` is an explicit graph of executors and edges. Use it when the control flow must stay inspectable, typed, resumable, or human-steerable.
 - `workflow.AsAIAgent()` is the escape hatch when a complex workflow needs to present a normal agent surface. It keeps sessions, streaming, and agent response APIs, but the workflow start executor still needs chat-message-compatible input.
@@ -97,7 +98,7 @@ flowchart LR
 ## Common Failure Modes
 
 - Adding an agent where deterministic code or a plain typed workflow would be clearer and cheaper.
-- Assuming agent instance fields are the durable source of truth instead of storing real state in `AgentThread`, stores, or workflow state.
+- Assuming agent instance fields are the durable source of truth instead of storing real state in `AgentSession`, stores, or workflow state.
 - Picking Chat Completions when the scenario really needs Responses features such as background execution or service-backed response chains.
 - Treating hosted-agent services and local `IChatClient` agents as if they share the same thread and tool guarantees.
 - Hiding orchestration inside prompts instead of modeling executors, edges, requests, checkpoints, and HITL explicitly.
@@ -116,9 +117,9 @@ flowchart LR
 ## Validate
 
 - the scenario really needs agentic behavior and is not better served by deterministic code
-- the selected agent type matches the provider, thread model, and tool model
+- the selected agent type matches the provider, session model, and tool model
 - Harness capabilities are individually scoped or disabled, file access is opt-in through `FileAccessStore`, compaction has explicit token budgets when needed, and shell/file boundaries are not treated as security sandboxes
-- `AgentThread` or `AgentSession` lifecycle, serialization, and compatibility boundaries are explicit for the chosen provider surface
+- `AgentSession` lifecycle, serialization, service-ID ownership, and compatibility boundaries are explicit for the chosen provider surface
 - tool approval, MCP headers, and third-party trust boundaries are handled safely
 - workflows define checkpoints, request-response, shared state, and HITL paths deliberately
 - DevUI is treated as a development sample, not a production surface
@@ -129,11 +130,11 @@ When a decision depends on exact wording, long-tail feature coverage, or a less-
 ## References
 
 - [official-docs-index.md](references/official-docs-index.md) - Complete current local snapshot map covering agents, concepts, get-started guides, hosting, integrations, journeys, migration, support, and workflows
-- [patterns.md](references/patterns.md) - Architecture routing, agent types, provider and thread model selection, and durable-agent guidance
+- [patterns.md](references/patterns.md) - Architecture routing, agent types, provider and session model selection, and durable-agent guidance
 - [harness.md](references/harness.md) - `HarnessAgent` selection, options, compaction, approvals, file/shell boundaries, and validation
 - [providers.md](references/providers.md) - Provider, SDK, endpoint, package, and Responses-vs-ChatCompletions selection
 - [tools.md](references/tools.md) - Function tools, hosted tools, tool approval, agent-as-tool, and service limitations
-- [sessions.md](references/sessions.md) - `AgentThread`, chat history storage, reducers, context providers, and thread serialization
+- [sessions.md](references/sessions.md) - `AgentSession`, chat history providers, reducers, context providers, ownership, and serialization
 - [middleware.md](references/middleware.md) - Agent, function-calling, and `IChatClient` middleware with guardrail patterns
 - [workflows.md](references/workflows.md) - Executors, edges, requests and responses, checkpoints, orchestrations, and declarative workflow notes
 - [mcp.md](references/mcp.md) - MCP integration, agent-as-MCP, security rules, and MCP-vs-A2A guidance

@@ -24,6 +24,8 @@ Agent Framework can attach remote MCP servers as tools for agents. In practice t
 
 The agent sees MCP as tool capability, not as a separate execution runtime.
 
+Microsoft Agent Framework `dotnet-1.19.0` moves its long-running MCP task support to the MCP `2026-07-28` Tasks extension. Do not combine the former task contract with a current peer: align Agent Framework and MCP SDK versions, negotiate the extension, persist the owning `AgentSession`, and test start, resume, cancellation, and terminal results end to end.
+
 ## The Security Model Matters More Than The API
 
 The official docs are very explicit here:
@@ -42,7 +44,7 @@ Custom headers should be:
 
 - injected per run
 - short-lived where possible
-- excluded from durable thread state
+- excluded from durable session state
 - excluded from source code and static agent definitions
 
 Common safe pattern:
@@ -93,7 +95,7 @@ Use A2A instead when the remote thing should remain an agent with its own protoc
 - Keep auth request-scoped.
 - Audit the prompt and tool data exchanged with remote servers.
 - Treat MCP output as untrusted input before using it in downstream tools.
-- Do not persist third-party secrets inside thread state.
+- Do not persist third-party secrets inside session state.
 
 ## When To Avoid MCP
 

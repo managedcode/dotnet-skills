@@ -455,7 +455,7 @@ Inject `IReminderRegistry` instead of using `Grain` base class methods.
 |---|---|
 | High-frequency ticks (seconds) | Timer |
 | Recurring schedule must survive deactivation/restart | Reminder |
-| One-time future execution must survive deactivation/restart | Durable Job (experimental on Orleans 10.2) |
+| One-time future execution must survive deactivation/restart | Durable Job (experimental on Orleans 10.3) |
 | Activation-local periodic work | Timer |
 | Durable low-frequency wakeups | Reminder |
 | Should prevent deactivation | Timer with `KeepAlive = true` |

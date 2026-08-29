@@ -16,7 +16,7 @@ compatibility: "Requires a .NET application, service layer, or API boundary that
 
 ## Install
 
-Use the package that matches the boundary. Current upstream release reviewed: `v10.1.1`.
+Use the package that matches the boundary. Current upstream release reviewed: `v10.2.2`.
 
 ```bash
 dotnet add package ManagedCode.Communication
@@ -28,10 +28,10 @@ dotnet add package ManagedCode.Communication.Orleans
 For pinned project files:
 
 ```xml
-<PackageReference Include="ManagedCode.Communication" Version="10.1.1" />
-<PackageReference Include="ManagedCode.Communication.AspNetCore" Version="10.1.1" />
-<PackageReference Include="ManagedCode.Communication.Extensions" Version="10.1.1" />
-<PackageReference Include="ManagedCode.Communication.Orleans" Version="10.1.1" />
+<PackageReference Include="ManagedCode.Communication" Version="10.2.2" />
+<PackageReference Include="ManagedCode.Communication.AspNetCore" Version="10.2.2" />
+<PackageReference Include="ManagedCode.Communication.Extensions" Version="10.2.2" />
+<PackageReference Include="ManagedCode.Communication.Orleans" Version="10.2.2" />
 ```
 
 ## Workflow
@@ -118,7 +118,9 @@ Use railway-style composition when each step can return a result and the caller 
 - `CollectionResult<T>` plus `PaginationRequest` / `PaginationOptions` should own paged API metadata instead of ad-hoc `(items, total)` tuples.
 - Minimal APIs can use `WithCommunicationResults()` on one endpoint or an entire group. Prefer the group form only when every child endpoint follows the same result contract.
 - `ManagedCode.Communication.Orleans` is for grain-call integration and serialization boundaries; use it with the Orleans skill when reviewing grain APIs.
-- `v10.1.1` aligns HTTP results with raw payloads. Re-test successful and failed response bodies, status codes, and problem-detail mapping after upgrading.
+- `v10.2.2` adds native `ICommandExecutor` reliability: bounded retry/backoff and jitter, whole-sequence timeouts, circuit breaking, rate limiting, idempotency, OpenTelemetry signals, and an `IHttpClientFactory` resilience handler. Keep one retry owner, honor `Retry-After`, and require idempotent side effects before enabling retries.
+- `Task` and `ValueTask` result and railway paths are now symmetric, and primitive failures have dedicated coverage. Use `ValueTask` only for operations that frequently complete synchronously and are consumed once; test both success and failure shapes after upgrading.
+- Orleans command execution can use distributed rate limiting and durable idempotency, but it requires the documented `commandStore` grain storage and explicit `UseOrleansCommandExecution()` configuration. Do not silently replace application-owned operation identity or retry policy.
 
 ## Deliver
 

@@ -5,7 +5,7 @@
 Current Microsoft Learn docs now route middleware content through a single canonical page under `agents/middleware/`.
 
 - the old tutorial URL and the old user-guide URL now resolve to the same live page
-- newer examples on that page use `AgentSession? session` in run middleware callbacks even though broader persistence guidance still talks about `AgentThread`
+- current examples use `AgentSession? session` in run middleware callbacks, matching the current conversation-state model
 - function-calling middleware is currently supported only for agents that use `FunctionInvokingChatClient`, such as `ChatClientAgent`
 
 Treat the old paths as aliases and verify callback signatures against the current canonical article when exact code matters.

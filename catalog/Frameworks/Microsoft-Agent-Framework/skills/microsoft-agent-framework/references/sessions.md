@@ -1,163 +1,119 @@
-# Threads, Chat History, and Memory
+# Sessions, Chat History, and Memory
 
-## `AgentThread` Is The Real Conversation State
+## `AgentSession` Is The Conversation State
 
-`AIAgent` instances are reusable and effectively stateless. The durable, resumable part of the interaction lives in `AgentThread`.
+`AIAgent` instances are reusable and should remain effectively stateless. The resumable interaction state lives in an `AgentSession` created by the agent that owns it.
 
 ```csharp
-AgentThread thread = await agent.GetNewThreadAsync();
+AgentSession session = await agent.CreateSessionAsync();
 
-AgentResponse first = await agent.RunAsync("My name is Alice.", thread);
-AgentResponse second = await agent.RunAsync("What is my name?", thread);
+AgentResponse first = await agent.RunAsync("My name is Alice.", session);
+AgentResponse second = await agent.RunAsync("What is my name?", session);
 ```
 
-If you run without a thread, the framework creates a throwaway thread for that single invocation.
+Concrete session implementations can add provider-specific state such as a remote conversation ID. The base session also exposes a `StateBag` for session-scoped application or provider state. Treat the whole object as opaque and use the owning agent's APIs to persist it.
 
-## Thread Lifecycle
+## Lifecycle And Ownership
 
-1. Create the thread from the agent with `GetNewThreadAsync()`.
-2. Reuse that thread for follow-up runs.
-3. Serialize the entire thread for persistence.
-4. Resume the thread with the same agent configuration.
-5. Clean up any provider-owned remote thread resources through the provider SDK if required.
-
-## Compatibility Rules
-
-- Treat `AgentThread` as opaque provider-owned state.
-- Do not assume a thread created by one agent can safely be reused with another.
-- Do not assume that two agents backed by similar models share the same thread semantics.
-- If you change provider, mode, tool setup, or history store configuration, assume old serialized threads are incompatible until proven otherwise.
-
-This is especially important for service-backed thread IDs. A response-chain ID from one backend cannot be replayed against another backend.
-
-## Conversation Storage Models
-
-| Model | Typical Backends | What The Serialized Thread Contains | Your Responsibility |
-| --- | --- | --- | --- |
-| In-memory history | Chat Completions-style agents | Full message list plus store state | Limit prompt growth and persist serialized thread |
-| Service-backed history | Foundry Agents, Assistants, many Responses modes | Remote conversation or response-chain ID | Track remote lifecycle and provider cleanup |
-| Third-party message store | Custom `ChatMessageStore` over non-service-backed agents | Store-specific state and identifiers | Implement retrieval, storage, and reduction |
-
-## In-Memory History
-
-With in-memory history:
-
-- the thread holds the actual chat messages
-- each new call sends the relevant history back to the model
-- you can inspect or mutate the messages if you knowingly rely on in-memory storage
-
-This is the common path for Chat Completions-style agents and many custom `IChatClient` integrations.
-
-## Reducers And Prompt Growth
-
-The built-in `InMemoryChatMessageStore` can use a reducer to manage context size.
+1. Create the session from the agent with `CreateSessionAsync()`.
+2. Reuse that session for follow-up runs.
+3. Serialize the session after important turns.
+4. Restore it through the same compatible agent configuration.
+5. Release provider-owned remote resources or background work when the provider requires it.
 
 ```csharp
-AIAgent agent = openAIClient.GetChatClient(modelName).AsAIAgent(new ChatClientAgentOptions
+var serialized = agent.SerializeSession(session);
+AgentSession resumed = await agent.DeserializeSessionAsync(serialized);
+```
+
+Compatibility and authorization rules:
+
+- Do not assume a session created by one agent, provider mode, tool set, or history configuration is reusable with another.
+- Service-side identifiers such as `resp_*`, `conv_*`, A2A context IDs, or task IDs are opaque references, not user authorization tokens.
+- In a multi-user service that shares a provider key or project, keep remote IDs in trusted server-side storage, map them from an application-owned session ID, and verify the authenticated user or tenant before resuming.
+- Persist the entire serialized session rather than only visible messages; the session can contain remote IDs, provider state, context-provider state, approvals, todos, or background-task state.
+
+## Local Versus Service-Managed History
+
+| Model | Typical shape | Application responsibility |
+| --- | --- | --- |
+| Local history | `InMemoryChatHistoryProvider` stores messages in session state | Persist the session, bound prompt growth, and choose retention |
+| Service-managed history | A concrete session stores a remote conversation or response ID | Protect ownership mapping, manage remote lifecycle, and follow provider retention |
+| Custom history provider | Application storage loads and saves messages around each run | Own partitioning, concurrency, reduction, retention, and failure behavior |
+
+For local history, retrieve or configure the provider through the agent rather than mutating session internals:
+
+```csharp
+var provider = agent.GetService<InMemoryChatHistoryProvider>();
+List<ChatMessage>? messages = provider?.GetMessages(session);
+```
+
+Use a reducer when local history can exceed the model context window:
+
+```csharp
+AIAgent agent = chatClient.AsAIAgent(new ChatClientAgentOptions
 {
-    Name = "Joker",
-    ChatOptions = new() { Instructions = "You are good at telling jokes." },
-    ChatMessageStoreFactory = (ctx, ct) => new ValueTask<ChatMessageStore>(
-        new InMemoryChatMessageStore(
-            new MessageCountingChatReducer(12),
-            ctx.SerializedState,
-            ctx.JsonSerializerOptions,
-            InMemoryChatMessageStore.ChatReducerTriggerEvent.AfterMessageAdded))
+    Name = "Assistant",
+    ChatOptions = new() { Instructions = "Be concise." },
+    ChatHistoryProvider = new InMemoryChatHistoryProvider(
+        new InMemoryChatHistoryProviderOptions
+        {
+            ChatReducer = new MessageCountingChatReducer(20)
+        })
 });
 ```
 
-Use reducers when:
+Reducers apply to the configured local history provider. A service-managed conversation follows the provider's reduction and retention rules.
 
-- the service does not own history
-- the conversation can grow indefinitely
-- the model context window matters
+## Existing Service Conversations
 
-Remember that reducers apply only to the built-in in-memory store. If the provider owns history, provider rules win.
+Only construct a session from an existing remote identifier after resolving that identifier from trusted application storage and checking ownership.
 
-## Custom `ChatMessageStore`
+```csharp
+AgentSession chatSession = await chatClientAgent.CreateSessionAsync(conversationId);
+AgentSession a2aSession = await a2aAgent.CreateSessionAsync(contextId, taskId);
+```
 
-Use a custom store when:
+Do not echo raw service IDs to an untrusted client and accept them back as sufficient proof that the caller owns the conversation.
 
-- you need persistent chat history outside process memory
-- the provider does not already own history
-- you need repo-specific control over storage, partition keys, or retention
+## Harness Sessions
 
-Implementation rules:
+Harness uses the same `AgentSession` lifecycle. Reuse one session across turns so history, todos, operating mode, file memory, surfaced approvals, and background-task state remain connected.
 
-- every thread needs a unique store key
-- the store must serialize enough state to be reopened later
-- `InvokingAsync` should return the messages to send to the model
-- `InvokedAsync` should persist newly produced messages
-- the store should police history size if prompt growth matters
+```csharp
+HarnessAgent agent = chatClient.AsHarnessAgent();
+AgentSession session = await agent.CreateSessionAsync();
 
-If the provider already manages thread history, your custom store will be ignored.
+await agent.RunAsync("Plan the migration.", session);
+await agent.RunAsync("Continue with the next step.", session);
+
+var serialized = await agent.SerializeSessionAsync(session);
+AgentSession resumed = await agent.DeserializeSessionAsync(serialized);
+```
+
+Harness persists local history after each service call inside a tool loop. Configure `HarnessAgentOptions.ChatHistoryProvider` when the default `InMemoryChatHistoryProvider` does not meet durability or retention requirements.
 
 ## Long-Term Memory And Context Providers
 
-Use `AIContextProvider` for memory that is more than raw chat history.
+Use context or memory providers for data that is not raw chat history, such as a user profile, retrieved knowledge, dynamic instructions, or request-scoped auxiliary tools. Keep the source ID and session-state keys stable, and decide whether the provider loads messages, injects context, or extracts state after a run.
 
-Typical uses:
+Memory does not replace session persistence. Persist session state after important turns and keep durable user knowledge in an application-owned store with explicit authorization and retention.
 
-- user profile and preferences
-- RAG or retrieval augmentation
-- memory extraction after a run
-- dynamic instruction injection
-- request-scoped auxiliary tools
+## Validation
 
-The main hooks are:
-
-- `InvokingAsync` to inject context before the run
-- `InvokedAsync` to inspect the completed interaction and extract memory afterward
-
-This is the correct extension point for semantic memory, not ad hoc mutation of thread internals.
-
-## Serialize The Entire Thread
-
-Always persist the whole thread, not only the visible message text.
-
-```csharp
-JsonElement serialized = thread.Serialize();
-AgentThread resumed = await agent.DeserializeThreadAsync(serialized);
-```
-
-Why this matters:
-
-- service-backed threads may only contain remote IDs
-- custom stores may attach their own serialized state
-- context providers may attach memory state
-- future agent runs may depend on state that is not visible in plain messages
-
-## Cleanup Responsibilities
-
-For some providers, creating a thread or response chain creates remote state in the service. Agent Framework does not centralize deletion because not all providers support deletion and not all threads are remote resources.
-
-If you require cleanup:
-
-- keep track of provider-specific remote identifiers
-- delete remote threads through the provider SDK
-- do not assume `AgentThread` itself exposes universal cleanup APIs
-
-## Practical Rules
-
-- Create threads from the agent that will actually use them.
-- Store serialized threads in your own persistence layer after important turns.
-- Resume with the same provider mode and tool configuration.
-- Keep history reduction explicit when the provider does not own history.
-- Use context providers for memory augmentation, not hidden global state.
-
-## Common Failure Modes
-
-- Reusing one serialized thread with a differently configured agent.
-- Storing only visible chat messages and losing provider-specific thread state.
-- Assuming service-backed history can be summarized or trimmed locally without provider involvement.
-- Using a custom message store and forgetting to serialize its own keying state.
-- Treating context providers as if they were a replacement for thread persistence.
+- One authenticated user or tenant cannot resume another user's service-side conversation ID.
+- Serialize/deserialize round trips preserve the selected provider's session and history state.
+- Restored sessions use a compatible agent, provider mode, tools, and history-provider configuration.
+- Local history has an explicit reducer or other growth bound.
+- Harness approvals and background work remain bound to the session that surfaced them.
+- Provider cleanup or `ReleaseSessionAsync` paths run when remote or background resources require release.
 
 ## Source Pages
 
-- `references/official-docs/get-started/multi-turn.md`
-- `references/official-docs/get-started/memory.md`
+- `references/official-docs/concepts/agents/conversations/session.md`
 - `references/official-docs/concepts/agents/conversations/storage.md`
 - `references/official-docs/concepts/agents/conversations/chat-history-memory-provider.md`
-- `references/official-docs/concepts/agents/conversations/session.md`
+- `references/official-docs/concepts/agents/conversations/context-providers.md`
+- `references/official-docs/get-started/multi-turn.md`
 - `references/official-docs/get-started/memory.md`
+- `references/official-docs/concepts/harness.md`

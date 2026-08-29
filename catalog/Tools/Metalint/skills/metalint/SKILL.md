@@ -43,7 +43,7 @@ compatibility: "Requires a .NET repository with a Node-based frontend and multip
 
 ## Current Upstream Notes
 
-- Metalint `v0.22.0` adds Bun and Deno project support, links source and types for JSR slow-type compatibility, and supports npm-check-updates 21.
+- Metalint `v0.22.1` keeps the Bun, Deno, JSR, and npm-check-updates 21 support from `v0.22.0` and fixes the formatter so console output preserves the intended column order. Re-run snapshot or parser tests for any CI integration that consumes Metalint's human-readable output.
 - Secretlint now ignores `.gitignore`. Re-run secret scanning against representative ignored and tracked fixtures after upgrading so the wrapper's effective file scope remains intentional.
 
 ## Bootstrap When Missing

@@ -60,24 +60,24 @@ The `.NET` takeaway is to translate concepts, not to fabricate `.NET` APIs from 
    - single `ChatClientAgent`
    - typed `Workflow`
    - durable orchestration
-3. Replace thread creation and persistence first.
+3. Replace session creation and persistence first.
 4. Replace tool registration next.
 5. Re-test streaming and non-streaming behavior.
 6. Revisit hosting last.
 
 ## High-Risk Areas During Migration
 
-- Assuming old thread IDs map cleanly to new thread models
+- Assuming old thread IDs map cleanly to current session models
 - Blindly porting plugin catalogs into giant tool sets
 - Treating Responses and Chat Completions as interchangeable
-- Forgetting provider-specific cleanup for hosted threads
+- Forgetting provider-specific cleanup for hosted sessions or conversations
 - Hiding old orchestration loops inside prompts instead of moving them to workflows
 
 ## Migration Checklist
 
 - Is the target architecture smaller or clearer than the source one?
 - Are tool approvals and side-effect rules still explicit?
-- Are serialized threads stored as full opaque objects?
+- Are serialized sessions stored as full opaque objects through the owning agent?
 - Have streaming and non-streaming response consumers been updated?
 - Has the hosting surface been re-chosen deliberately instead of copied forward?
 

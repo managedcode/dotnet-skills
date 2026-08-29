@@ -45,7 +45,7 @@ compatibility: "Requires .NET MAUI workload (.NET 8+)."
 
 ## Current Upstream Notes
 
-- `.NET MAUI` `10.0.90` is a broad quality release for the 10.0 line. It fixes grouped `CollectionView` scrolling, layout, selection, and retention paths; Android `BlazorWebView` back handling; WebView rendering and lifecycle leaks; Shell/navigation regressions; and several shared-resource, handler, map, SafeArea, and accessibility issues.
+- `.NET MAUI` `10.0.100` is a broad quality release for the 10.0 line. It fixes Android WebView gestures inside `SwipeView`, RenderThread crashes and synthetic `about:blank` history; iOS WebView file/reload behavior; Shell regressions; XAML source-generation AOT paths; adaptive-trigger leaks; shared/custom `Platforms` mappings; status-bar contrast, window metrics, and SafeArea behavior.
 - After upgrading MAUI packages, smoke-test grouped and virtualized `CollectionView` flows, Shell/modal/back navigation, tabs, keyboard and SafeArea interactions, maps, WebView/HybridWebView lifecycle, memory retention, and accessibility narration on every shipped target.
 - The August 2026 `.NET MAUI` Learn overview for `net-maui-10.0` still frames the platform around a shared single-project app, native API access, handlers, and optional Blazor Hybrid UI. Verify each target platform rather than treating shared code as identical runtime behavior.
 

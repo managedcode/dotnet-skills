@@ -63,9 +63,9 @@ Use `aspire add` when it improves repeatability, especially for:
 
 ## Servicing patch posture
 
-Aspire `13.4.6` is the current servicing release in the 13.4 line, not a new application model. It fixes CLI/SDK binding for polyglot code generation, isolated resource-service port collisions, and a MongoDB driver dependency chain. The preceding `13.4.5` clears a transitive MessagePack advisory and fails fast on invalid `playwrightCliVersion` values. Treat 13.4.x updates as CLI, AppHost, DCP, dependency, and MCP-tooling servicing work that should preserve the existing topology and only refine the toolchain surface.
+Aspire `13.5.3` is the current servicing release in the 13.5 line. `13.5.1` fixes macOS startup for polyglot AppHosts and makes 13.5-generated polyglot code tolerate an older CLI; `13.5.3` fixes Dashboard Graph crashes on multi-path icons and restores DevTunnel public URLs in dashboard and MCP snapshots. Treat 13.5.x updates as coordinated CLI, SDK, AppHost, DCP, dashboard, and MCP-tooling work.
 
-When you roll a 13.4.x patch:
+When you roll a 13.5.x patch:
 
 1. Keep the Aspire CLI and `Aspire.AppHost.Sdk` on the same patch line.
 2. Update adjacent Aspire packages that move with the AppHost, especially hosting and testing packages.
@@ -78,7 +78,7 @@ Do not re-architect the AppHost just because a servicing release shipped.
 
 ## AppHost shapes
 
-Current Aspire supports two valid AppHost styles.
+Current Aspire supports three first-class AppHost styles.
 
 ### Project-based AppHost
 
@@ -119,6 +119,26 @@ builder.Build().Run();
 ```
 
 File-based AppHosts are useful for experimentation, smaller repos, and incremental adoption. They do not automatically include a ServiceDefaults project, so create one when the services need it.
+
+### TypeScript AppHost
+
+Use `apphost.mts` for JavaScript or TypeScript-first repositories. Aspire 13.5 makes this surface generally available:
+
+```typescript
+import { createBuilder } from "./.aspire/modules/aspire.mjs";
+
+const builder = await createBuilder();
+
+const cache = await builder.addRedis("cache");
+const api = await builder
+    .addNodeApp("api", "./api", "src/index.ts")
+    .withHttpEndpoint({ env: "PORT" })
+    .withReference(cache);
+
+await builder.build().run();
+```
+
+Let `aspire init --language typescript` create `aspire.config.json` and the generated `.aspire/modules/` SDK. Do not hand-edit generated modules; run `aspire restore` after integration or package changes.
 
 ## Current AppHost modeling patterns
 

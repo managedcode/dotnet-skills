@@ -43,8 +43,8 @@ compatibility: "Requires an MCP-capable .NET agent/app or repo with a browser-de
 
 ## Current Upstream Notes
 
-- Chrome DevTools MCP `v1.7.0` expands heap inspection with object details, native-context information, and filtering; it also adds telemetry, Lighthouse 13.4.1, and bounded network-request retention.
-- The release validates session/version mismatches and fixes daemon lifecycle, dialog stalls, worker cleanup, and screenshot-handle cleanup. Reproduce browser-state bugs after upgrading before adding client-side retries or lifecycle workarounds.
+- Chrome DevTools MCP `v1.8.0` adds PWA automation, `query_heapsnapshot`, richer heap-edge and native-context inspection, console stack traces, multi-file upload, and a stable-DOM bypass for `evaluate_script`. Enable memory-debugging tools explicitly and keep heap output bounded to the investigation.
+- Page-scoped tools now require `pageId` by default. Update callers to select and pass the intended page instead of relying on ambient tab state. The release also fixes CLI default handling, remote-path validation, HiDPI screenshot bounds, slow-client root listing, and lifecycle regressions; reproduce the real browser path before adding client-side workarounds.
 - Use the memory tools only when heap snapshots are the actual debugging need; close snapshots when finished so the browser session does not keep unnecessary memory pressure.
 - For sensitive or scoped browser automation, prefer `allowedUrlPattern` / `blockedUrlPattern` over relying only on prompt instructions.
 - When enabling category extensions, prompt the user for the category instead of silently broadening the tool surface.

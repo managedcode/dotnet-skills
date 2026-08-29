@@ -26,7 +26,7 @@ If you reverse this order, you usually end up with the wrong abstraction and the
 
 - `AIAgent` is the base runtime abstraction.
 - `AIAgent` instances are designed to be stateless and reusable.
-- `AgentThread` carries conversation state and provider-specific thread state.
+- `AgentSession` carries conversation state and provider-specific session state.
 - `AgentResponse` and `AgentResponseUpdate` can contain much more than final text:
   - tool calls
   - tool results
@@ -106,7 +106,7 @@ If you are building a new `.NET` agentic feature and do not have a service-impos
 1. Start with an `IChatClient`.
 2. Wrap it as a `ChatClientAgent`.
 3. Add only the function tools you actually need.
-4. Use an `AgentThread` and serialize it.
+4. Use an `AgentSession` and serialize it through the owning agent.
 5. Add middleware for policy and logging.
 6. Escalate to a workflow only when the flow becomes explicit and typed.
 7. Add OpenAI/A2A/AG-UI hosting only after the in-process behavior is already correct.
@@ -114,8 +114,8 @@ If you are building a new `.NET` agentic feature and do not have a service-impos
 ## Architecture Smells
 
 - Choosing a provider first and then forcing the runtime model to fit it.
-- Treating `AgentThread` as a reusable universal object across providers.
-- Keeping business state in singleton services or agent fields instead of thread or workflow state.
+- Treating `AgentSession` as a reusable universal object across providers.
+- Keeping business state in singleton services or agent fields instead of session or workflow state.
 - Using prompts to fake branching, retries, approvals, or escalation logic that should be explicit.
 - Adding every available tool to one agent because "the model will decide".
 - Treating hosted services and local `IChatClient` agents as if they have the same guarantees.
