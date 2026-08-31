@@ -1,4 +1,5 @@
 {
-  "version": "1.0.0",
-  "category": "Code Quality"
+  "version": "1.1.0",
+  "category": "Code Quality",
+  "compatibility": "Requires a trusted .NET SDK-based project or solution and follows the repository's existing AGENTS.md and formatter configuration."
 }

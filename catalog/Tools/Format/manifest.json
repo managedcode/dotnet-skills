@@ -1,6 +1,9 @@
 {
   "name": "Format",
-  "title": "Format",
-  "description": "",
-  "links": {}
+  "title": "dotnet format",
+  "description": "First-party .NET SDK formatter for EditorConfig-driven whitespace, code-style, analyzer-fix, and CI verification workflows.",
+  "links": {
+    "repository": "https://github.com/dotnet/sdk",
+    "docs": "https://learn.microsoft.com/dotnet/core/tools/dotnet-format"
+  }
 }

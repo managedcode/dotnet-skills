@@ -1,187 +1,89 @@
-# dotnet format CLI Commands
+# dotnet format Commands
 
-Use this reference for all `dotnet format` command patterns, options, and CI integration.
+Use the repository's documented workspace and SDK. Replace `MySolution.slnx` and paths below with real values from the checkout.
 
-## Basic Commands
-
-```bash
-# Format entire solution
-dotnet format MySolution.sln
-
-# Format specific project
-dotnet format MyProject.csproj
-
-# Format current directory (finds solution or project automatically)
-dotnet format
-```
-
-## Verification Mode (CI)
+## Inspect Before Running
 
 ```bash
-# Fail if any files would change (CI gate)
-dotnet format --verify-no-changes
-
-# Verify with specific target
-dotnet format MySolution.sln --verify-no-changes
-
-# Verify with diagnostics output
-dotnet format --verify-no-changes --verbosity diagnostic
+dotnet --version
+dotnet format --version
+git status --short
 ```
 
-## Subcommands
+Run only against trusted code. The formatter can restore, compile, and load analyzers from the selected project or solution.
+
+## Verify Or Apply The Intended Surface
 
 ```bash
-# Format whitespace only (indentation, line endings)
-dotnet format whitespace MySolution.sln
+# Read-only CI/local gate across all applicable formatter surfaces.
+dotnet format MySolution.slnx --verify-no-changes --verbosity diagnostic
 
-# Format code style only (editorconfig style rules)
-dotnet format style MySolution.sln
+# Apply all configured formatting and fixable diagnostics.
+dotnet format MySolution.slnx --verbosity normal
 
-# Apply analyzer code fixes
-dotnet format analyzers MySolution.sln
+# Limit the operation to one surface.
+dotnet format whitespace MySolution.slnx --verify-no-changes
+dotnet format style MySolution.slnx --verify-no-changes
+dotnet format analyzers MySolution.slnx --verify-no-changes
 ```
 
-## Subcommand Verification
+The workspace can also precede the subcommand, for example `dotnet format MySolution.slnx whitespace`. Prefer one command shape consistently within a repository.
+
+## Narrow By Path Or Diagnostic
+
+`--include` and `--exclude` accept space-separated paths relative to the workspace. They are not glob expressions.
 
 ```bash
-# Verify whitespace only
-dotnet format whitespace MySolution.sln --verify-no-changes
+# Format only selected source and test directories.
+dotnet format MySolution.slnx --include ./src/FeatureA/ ./tests/FeatureA.Tests/
 
-# Verify style only
-dotnet format style MySolution.sln --verify-no-changes
+# Exclude generated or vendored directories.
+dotnet format MySolution.slnx --exclude ./src/Generated/ ./vendor/
 
-# Verify analyzers only
-dotnet format analyzers MySolution.sln --verify-no-changes
+# Apply one built-in code-style fix.
+dotnet format style MySolution.slnx --diagnostics IDE0005 --severity info
+
+# Apply one fixable non-style analyzer diagnostic.
+dotnet format analyzers MySolution.slnx --diagnostics CA1831 --severity warn
 ```
 
-## Filtering Options
+The default diagnostic threshold is `warn`. Set `--severity info` only when the repository intends informational diagnostics to participate.
+
+## Restore, Reports, And Build Logs
 
 ```bash
-# Include only specific files (glob pattern)
-dotnet format --include "src/**/*.cs"
+# Skip restore only after a successful restore for this checkout.
+dotnet format MySolution.slnx --no-restore --verify-no-changes
 
-# Exclude specific files (glob pattern)
-dotnet format --exclude "**/*.Designer.cs"
+# Write a JSON report into the specified directory.
+dotnet format MySolution.slnx --report ./artifacts/format-report/
 
-# Combine include and exclude
-dotnet format --include "src/**/*.cs" --exclude "**/Generated/**"
-
-# Multiple includes
-dotnet format --include "src/**/*.cs" --include "tests/**/*.cs"
+# Capture project/solution loading details when formatter loading fails.
+dotnet format MySolution.slnx --binarylog ./artifacts/format.binlog --verbosity diagnostic
 ```
 
-## Diagnostic Options
+## CI
 
-```bash
-# Apply fixes for specific diagnostic IDs
-dotnet format analyzers --diagnostics IDE0005
-
-# Apply fixes for multiple diagnostics
-dotnet format analyzers --diagnostics IDE0005 IDE0051 IDE0052
-
-# Apply fixes for specific severity
-dotnet format analyzers --severity error
-dotnet format analyzers --severity warn
-dotnet format analyzers --severity info
-```
-
-## Verbosity Options
-
-```bash
-# Quiet output
-dotnet format --verbosity quiet
-
-# Minimal output
-dotnet format --verbosity minimal
-
-# Normal output (default)
-dotnet format --verbosity normal
-
-# Detailed output
-dotnet format --verbosity detailed
-
-# Diagnostic output (most verbose)
-dotnet format --verbosity diagnostic
-```
-
-## Report Generation
-
-```bash
-# Generate JSON report
-dotnet format --report format-report.json
-
-# Generate report with verification
-dotnet format --verify-no-changes --report format-report.json
-```
-
-## Binary Log Support
-
-```bash
-# Use existing binary log for analysis
-dotnet format --binarylog build.binlog
-```
-
-## No Restore Option
-
-```bash
-# Skip restore (use when already restored)
-dotnet format --no-restore
-```
-
-## CI Workflow Examples
-
-### GitHub Actions
+Pin the SDK using the repository's `global.json` or CI setup, restore once, and run the non-mutating gate:
 
 ```yaml
-- name: Verify formatting
-  run: dotnet format --verify-no-changes --verbosity diagnostic
+- name: Restore
+  run: dotnet restore MySolution.slnx
+
+- name: Verify .NET formatting
+  run: dotnet format MySolution.slnx --no-restore --verify-no-changes --verbosity diagnostic
 ```
 
-### Azure DevOps
+Do not make pull-request CI apply and commit formatter changes. CI should fail with evidence; a developer or authorized automation can apply and review them separately.
 
-```yaml
-- script: dotnet format --verify-no-changes --verbosity diagnostic
-  displayName: 'Verify code formatting'
-```
+## Troubleshooting
 
-### Pre-commit Hook
-
-```bash
-#!/bin/bash
-dotnet format --verify-no-changes
-if [ $? -ne 0 ]; then
-  echo "Code formatting issues detected. Run 'dotnet format' to fix."
-  exit 1
-fi
-```
-
-## Common Patterns
-
-```bash
-# Full verification pipeline
-dotnet format whitespace --verify-no-changes && \
-dotnet format style --verify-no-changes && \
-dotnet format analyzers --verify-no-changes
-
-# Fix all formatting issues
-dotnet format
-
-# Fix and report
-dotnet format --report format-changes.json
-
-# Targeted analyzer fixes
-dotnet format analyzers --diagnostics IDE0005 --severity warn
-```
-
-## Exit Codes
-
-| Code | Meaning |
-|------|---------|
-| 0 | Success (no changes needed or changes applied) |
-| 1 | Error occurred |
-| 2 | Changes detected (with `--verify-no-changes`) |
+- If project loading fails, verify the selected SDK, restore, workload availability, and exact solution/project path before changing source code.
+- If the diff is much larger than expected, narrow by subcommand, paths, or diagnostic IDs and inspect line-ending changes.
+- If output says a diagnostic cannot be fixed, do not treat repeated full-solution runs as progress. Use the analyzer/build output to decide whether a targeted manual fix is required.
+- If verification fails immediately after a mutating run, inspect files the formatter could not load, generated files, analyzer limitations, and concurrent edits.
 
 ## Sources
 
-- [dotnet format command](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-format)
-- [Code style rule options](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-style-rule-options)
+- [dotnet format command](https://learn.microsoft.com/dotnet/core/tools/dotnet-format)
+- [Code analysis configuration](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/configuration-options)

@@ -45,6 +45,29 @@ class CatalogIndexTests(unittest.TestCase):
         self.assertEqual(metadata["disable-model-invocation"], "true")
         self.assertIn("# Find Untested Sources", body)
 
+    def test_validate_skill_entrypoint_links_accepts_existing_relative_links(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_root_value:
+            skill_dir = Path(temp_root_value)
+            references_dir = skill_dir / "references"
+            references_dir.mkdir()
+            (references_dir / "commands.md").write_text("# Commands\n", encoding="utf-8")
+            skill_path = skill_dir / "SKILL.md"
+
+            CATALOG_INDEX.validate_skill_entrypoint_links(
+                skill_path,
+                "Read [commands](references/commands.md), [the docs](https://example.com), and [this section](#section).",
+            )
+
+    def test_validate_skill_entrypoint_links_rejects_missing_relative_links(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_root_value:
+            skill_path = Path(temp_root_value) / "SKILL.md"
+
+            with self.assertRaisesRegex(ValueError, r"missing relative path `references/missing\.md`"):
+                CATALOG_INDEX.validate_skill_entrypoint_links(
+                    skill_path,
+                    "Read [missing commands](references/missing.md).",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

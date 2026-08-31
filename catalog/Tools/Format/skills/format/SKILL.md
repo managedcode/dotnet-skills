@@ -1,111 +1,36 @@
 ---
 name: format
-description: "Use the free first-party `dotnet format` CLI for .NET formatting and analyzer fixes. USE FOR: the repo uses dotnet format; you need a CI-safe formatting check for .NET; the repo wants .editorconfig-driven style enforcement. DO NOT USE FOR: repositories that intentionally use CSharpier as the only formatter; analyzer strategy with no formatting command change. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
-compatibility: "Requires a .NET SDK-based repository; respects the repo's `AGENTS.md` commands first."
+description: "Format or verify trusted .NET projects with the SDK-provided `dotnet format` command. USE FOR: applying or checking `.editorconfig`-driven whitespace, code-style, or analyzer fixes; adding a `--verify-no-changes` CI gate; diagnosing formatter scope or load failures. DO NOT USE FOR: repositories where another formatter exclusively owns the affected files; analyzer policy with no formatter work; mutating files when the user requested only diagnosis."
 ---
 
 # dotnet format
 
-## Trigger On
-
-- the repo uses `dotnet format`
-- you need a CI-safe formatting check for .NET
-- the repo wants `.editorconfig`-driven style enforcement
-
-## Value
-
-- produce a concrete project delta: code, docs, config, tests, CI, or review artifact
-- reduce ambiguity through explicit planning, verification, and final validation skills
-- leave reusable project context so future tasks are faster and safer
-
-## Do Not Use For
-
-- repositories that intentionally use `CSharpier` as the only formatter
-- analyzer strategy with no formatting command change
-
-## Inputs
-
-- the nearest `AGENTS.md`
-- the solution or project path
-- the current `.editorconfig`
-
-## Quick Start
-
-1. Read the nearest `AGENTS.md` and confirm scope and constraints.
-2. Run this skill's `Workflow` through the `Ralph Loop` until outcomes are acceptable.
-3. Return the `Required Result Format` with concrete artifacts and verification evidence.
+Use the formatter already shipped with the selected .NET SDK. Preserve the repository's formatter ownership, existing changes, and configured style instead of introducing new preferences.
 
 ## Workflow
 
-1. Prefer the SDK-provided `dotnet format` command instead of inventing custom format scripts.
-2. Start with verify mode in CI: `dotnet format TARGET --verify-no-changes`.
-3. Use narrower subcommands only when the repo needs them:
-   - `whitespace`
-   - `style`
-   - `analyzers`
-4. Keep `.editorconfig` as the source of truth for style preferences.
-5. If the repo also uses `CSharpier`, document which tool owns which file types or rules.
+1. Read the nearest `AGENTS.md`, `global.json`, solution/project files, `.editorconfig`, and current Git status.
+2. Confirm the exact trusted workspace to load. `dotnet format` may restore, compile, and run analyzers from that workspace.
+3. Determine whether the request is read-only verification or permission to apply fixes. Do not run a mutating command for a review, explanation, or diagnosis request.
+4. Preserve the current diff before formatting. When scope is uncertain, begin with `--verify-no-changes` or a narrow `--include` list.
+5. Choose the smallest formatter surface that matches the request:
+   - `whitespace` for indentation, spacing, and line-ending rules;
+   - `style` for built-in .NET code-style diagnostics;
+   - `analyzers` for fixable non-style analyzer diagnostics;
+   - the command without a subcommand only when all applicable surfaces are intended.
+6. Treat `--include` and `--exclude` values as workspace-relative file or directory paths, not shell globs. Use `--diagnostics` to narrow style or analyzer fixes by rule ID.
+7. After a mutating run, inspect `git diff --stat`, representative diffs, line endings, and every changed file. If scope is unexpectedly broad, stop and narrow the command; never discard pre-existing user changes.
+8. Rerun the matching command with `--verify-no-changes`. When analyzer fixes were applied, also build and run the tests relevant to the changed behavior.
 
-## Bootstrap When Missing
+## Invariants
 
-If `dotnet format` is requested but not available yet:
+- `.editorconfig` and existing MSBuild analyzer configuration are the source of truth. Do not add an arbitrary style template unless the user asks for one.
+- Use `--no-restore` only after dependencies have already been restored successfully.
+- Generated files stay excluded unless the repository explicitly owns and formats them.
+- A successful formatter process does not prove that every diagnostic has an automatic fix. Review its output or JSON report and use build/analyzer results as the final evidence.
+- Keep formatter responsibilities explicit when CSharpier, ReSharper cleanup, generated-code tools, or other formatters coexist.
 
-1. Detect current state:
-   - `dotnet --info`
-   - `dotnet format --version`
-2. Treat `dotnet format` as SDK-provided, not as a separate repo-local tool by default.
-3. If the command is missing, install or upgrade to a supported .NET SDK, then recheck `dotnet format --version`.
-4. Add explicit local and CI commands to `AGENTS.md`, usually:
-   - `dotnet format TARGET --verify-no-changes`
-5. Run the chosen command once and return `status: configured` or `status: improved`.
-6. If the repo intentionally uses only `CSharpier` for formatting ownership, return `status: not_applicable`.
+## References
 
-## Deliver
-
-- explicit `dotnet format` commands for local and CI runs
-- formatting that follows `.editorconfig`
-
-## Validate
-
-- formatting is reproducible on CI
-- no overlapping formatter ownership is left ambiguous
-
-## Ralph Loop
-
-Use the Ralph Loop for every task, including docs, architecture, testing, and tooling work.
-
-1. Plan first (mandatory):
-   - analyze current state
-   - define target outcome, constraints, and risks
-   - write a detailed execution plan
-   - list final validation skills to run at the end, with order and reason
-2. Execute one planned step and produce a concrete delta.
-3. Review the result and capture findings with actionable next fixes.
-4. Apply fixes in small batches and rerun the relevant checks or review steps.
-5. Update the plan after each iteration.
-6. Repeat until outcomes are acceptable or only explicit exceptions remain.
-7. If a dependency is missing, bootstrap it or return `status: not_applicable` with explicit reason and fallback path.
-
-### Required Result Format
-
-- `status`: `complete` | `clean` | `improved` | `configured` | `not_applicable` | `blocked`
-- `plan`: concise plan and current iteration step
-- `actions_taken`: concrete changes made
-- `validation_skills`: final skills run, or skipped with reasons
-- `verification`: commands, checks, or review evidence summary
-- `remaining`: top unresolved items or `none`
-
-For setup-only requests with no execution, return `status: configured` and exact next commands.
-
-## Load References
-
-- [references/format.md](references/format.md)
-- [references/dotnet-format.md](references/dotnet-format.md)
-- [references/commands.md](references/commands.md)
-- [references/config.md](references/config.md)
-
-## Example Requests
-
-- "Add `dotnet format` to this repo."
-- "Make formatting fail CI if files drift."
-- "Explain when to use `dotnet format` versus `CSharpier`."
+- Read [references/commands.md](references/commands.md) for precise local, CI, filtering, and troubleshooting commands.
+- Read [references/config.md](references/config.md) when changing `.editorconfig`, analyzer severity, or formatter ownership.

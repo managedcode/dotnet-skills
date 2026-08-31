@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import urllib.parse
 from functools import lru_cache
 from pathlib import Path
 
@@ -11,8 +12,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_ROOT = ROOT / "catalog"
 CLI_PROJECT = ROOT / "cli" / "ManagedCode.DotnetSkills" / "ManagedCode.DotnetSkills.csproj"
+EXTERNAL_IMPORT_CONFIG_ROOT = ROOT / "external-sources" / "imports"
 
 LINK_KEYS = ("repository", "docs", "nuget")
+MARKDOWN_LINK_PATTERN = re.compile(r"(?<!!)\[[^\]]+\]\((?P<target><[^>]+>|[^)\s]+)")
 
 CURATED_BUNDLES = [
     {
@@ -801,6 +804,37 @@ def parse_title(body: str, path: Path, fallback_title: str) -> str:
     return fallback_title
 
 
+@lru_cache(maxsize=1)
+def imported_package_prefixes() -> tuple[str, ...]:
+    prefixes: set[str] = set()
+    for config_path in EXTERNAL_IMPORT_CONFIG_ROOT.glob("*.json"):
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        prefix = config.get("managedPackagePrefix")
+        if isinstance(prefix, str) and prefix.strip():
+            prefixes.add(prefix.strip())
+    return tuple(sorted(prefixes))
+
+
+def is_imported_package_name(package_name: str) -> bool:
+    return any(package_name.startswith(prefix) for prefix in imported_package_prefixes())
+
+
+def validate_skill_entrypoint_links(skill_path: Path, body: str) -> None:
+    for match in MARKDOWN_LINK_PATTERN.finditer(body):
+        raw_target = match.group("target").strip()
+        target = raw_target[1:-1] if raw_target.startswith("<") and raw_target.endswith(">") else raw_target
+        if target.startswith(("#", "/", "~/")) or re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", target):
+            continue
+
+        relative_target = urllib.parse.unquote(target.split("#", 1)[0].split("?", 1)[0])
+        if not relative_target:
+            continue
+
+        resolved_target = skill_path.parent / relative_target
+        if not resolved_target.exists():
+            raise ValueError(f"{skill_path} links to missing relative path `{target}`")
+
+
 def load_package_manifest(package_dir: Path) -> tuple[Path, dict]:
     manifest_path = package_dir / "manifest.json"
     if not manifest_path.exists():
@@ -990,6 +1024,8 @@ def collect_skills(include_token_counts: bool = False) -> list[dict[str, object]
                 skill_manifest_path, skill_manifest = load_optional_entity_manifest(skill_dir)
 
                 metadata, body = parse_frontmatter(skill_path)
+                if not is_imported_package_name(package_name):
+                    validate_skill_entrypoint_links(skill_path, body)
                 title = parse_title(body, skill_path, metadata["name"])
 
                 required = ["name", "description"]
