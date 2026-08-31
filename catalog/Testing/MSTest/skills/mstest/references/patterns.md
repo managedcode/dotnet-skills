@@ -203,21 +203,24 @@ public class IndependentTestsB
 }
 ```
 
-### Disabling Parallelism for Specific Tests
+### Isolating A Destructive Shared-State Test
+
+Keep the assembly and independent classes parallel. Opt out only the smallest test that destructively changes shared state and cannot be isolated with unique data:
 
 ```csharp
 [TestClass]
-[DoNotParallelize]
-public class SequentialDatabaseTests
+public class DatabaseMaintenanceTests
 {
-    // Tests in this class run sequentially
     [TestMethod]
-    public void Test1_CreateRecord() { /* ... */ }
+    [DoNotParallelize]
+    public void ResetSharedSchema() { /* drops and recreates the shared schema */ }
 
     [TestMethod]
-    public void Test2_UpdateRecord() { /* ... */ }
+    public void ReadHealthStatus() { /* remains eligible for normal parallel execution */ }
 }
 ```
+
+Do not put `[DoNotParallelize]` on an entire class merely because it uses a shared fixture, database, or expensive host. Prefer unique records, transactions, schemas, containers, and ports so ordinary create/update/delete tests remain parallel.
 
 ### Thread-Safe Test Fixtures
 

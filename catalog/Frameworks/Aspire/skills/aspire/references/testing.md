@@ -4,6 +4,8 @@ Use this reference when the task is about AppHost-backed integration tests, `Dis
 
 These patterns are grounded in working production-style test harnesses used in `AIBase` and `WA.Storied.Agents`: one shared AppHost fixture per test session, optional `WebApplicationFactory` layering for Host DI/grains, and browser contexts created per test rather than per session.
 
+The shared fixture amortizes startup; it must not serialize the suite. Keep test modules and test methods parallel, make fixture helpers concurrency-safe, and allocate unique mutable state per test. Constrain only a narrowly keyed test group that performs destructive changes to the same shared resource.
+
 ## Fixture Selection
 
 ```mermaid
@@ -125,9 +127,6 @@ public sealed class TestApplication
         _overrides["ConnectionStrings:Tables"] = tables;
         _overrides["ConnectionStrings:Blobs"] = blobs;
 
-        Environment.SetEnvironmentVariable("ConnectionStrings__Tables", tables);
-        Environment.SetEnvironmentVariable("ConnectionStrings__Blobs", blobs);
-
         CreateClient();
     }
 
@@ -149,6 +148,7 @@ public sealed class TestApplication
 Rules that matter:
 
 - boot Aspire once, not per test
+- keep consuming tests parallel; shared AppHost lifetime is not a reason for `[NotInParallel]` or a single-worker test run
 - resolve connection strings and endpoints from `SharedFixture.App`, not from copied local config
 - keep `WebApplicationFactory` focused on DI/runtime access, not infrastructure provisioning
 - adapt the lifecycle surface to the active test framework: xUnit `IAsyncLifetime`, TUnit `IAsyncInitializer`, or the repo's own fixture abstraction
@@ -233,4 +233,5 @@ catch
 - Use Aspire testing when the assertion depends on real resource wiring, service discovery, health, or cross-service flows.
 - Mix Aspire with `WebApplicationFactory` only when the test needs direct access to DI, grains, or in-process runtime services.
 - Keep one shared AppHost fixture per test session and one browser context per UI test.
+- Give every parallel test unique mutable resource identifiers; serialize only a keyed destructive collision against the exact same shared state.
 - Prefer explicit resource names and explicit `WaitForResourceHealthyAsync(...)` checks so failures point to the right resource quickly.

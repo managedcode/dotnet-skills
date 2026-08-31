@@ -118,6 +118,14 @@ public class PinnedGrain : Grain, IPinnedGrain { }
 | Stateless Worker | `[StatelessWorker]` | Multiple activations per server |
 | Silo-Role-Based | `[SiloRoleBasedPlacement]` | Deterministic on silos with role |
 
+### Placement Hints in Orleans 10.3.1
+
+Built-in placement directors can honor a placement hint for a new activation and for activation migration. Choose a target only from the current active membership snapshot and let Orleans apply grain-version and placement compatibility filtering.
+
+The hint is not a command to relocate an activation that already exists. For an existing activation, invoke `MigrateOnIdle` or pass a migration-specific request-context dictionary to `IGrainContext.Migrate`. Because request context flows across grain calls, restore or remove the caller's placement-hint value after the targeted call so a receiving grain does not accidentally propagate it to unrelated outgoing calls.
+
+Source: [Orleans 10.3.1 placement-hint guidance](https://github.com/dotnet/orleans/blob/v10.3.1/docs/site/src/content/docs/grains/grain-placement.md).
+
 ### Custom Placement
 
 ```csharp

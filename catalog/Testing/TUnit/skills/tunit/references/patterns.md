@@ -109,7 +109,9 @@ Use `Shared = SharedType.PerTestSession` for expensive integration fixtures such
 
 ## Parallel Testing
 
-TUnit runs tests in parallel by default. Design tests for isolation.
+TUnit runs tests in parallel by default. Preserve that behavior at both levels: .NET 10 runs test modules in parallel up to `Environment.ProcessorCount`, and TUnit schedules eligible tests concurrently within each module.
+
+Do not set `--max-parallel-test-modules 1`, `TUNIT_MAX_PARALLEL_TESTS=1`, `[assembly: NotInParallel]`, or a class-wide `[NotInParallel]` as a normal setup. Sharing an expensive fixture does not imply serialization. Make the fixture concurrency-safe and isolate each test's mutable records, resource names, tenants, files, and browser contexts.
 
 ### Default Parallel Execution
 
@@ -128,71 +130,44 @@ public class ParallelTests
 }
 ```
 
-### Controlling Parallelism
+### Destructive Shared-State Collisions
 
-Disable parallelism for a specific test:
+Constrain only the smallest tests that destructively modify the same shared state. Always name the collision domain so unrelated tests remain parallel:
 
 ```csharp
 public class SharedResourceTests
 {
     [Test]
-    [NotInParallel]
-    public async Task Test_ThatModifiesGlobalState()
+    [NotInParallel("shared-schema-reset")]
+    public async Task Reset_shared_schema()
     {
-        // Runs alone, not in parallel with other [NotInParallel] tests
+        // This test drops/recreates the same schema used by other reset tests.
     }
 }
 ```
 
-Group tests that must not run together:
+Tests sharing the same destructive collision domain do not overlap, while every other test still can:
 
 ```csharp
 public class DatabaseTests
 {
     [Test]
-    [NotInParallel("Database")]
-    public async Task CreateUser_InsertsRecord()
+    [NotInParallel("shared-database-reset")]
+    public async Task Reset_database_to_empty()
     {
-        // Other tests with [NotInParallel("Database")] wait
+        // Destructively resets the shared database.
     }
 
     [Test]
-    [NotInParallel("Database")]
-    public async Task DeleteUser_RemovesRecord()
+    [NotInParallel("shared-database-reset")]
+    public async Task Restore_database_snapshot()
     {
-        // Runs sequentially with other "Database" group tests
+        // Mutates the same shared database wholesale.
     }
 }
 ```
 
-### Parallel Limits
-
-Limit concurrent test execution:
-
-```csharp
-[assembly: ParallelLimiter<MaxParallelTests>]
-
-public class MaxParallelTests : IParallelLimit
-{
-    public int Limit => Environment.ProcessorCount;
-}
-```
-
-### Class-Level Parallelism Control
-
-```csharp
-[NotInParallel]
-public class SequentialTestClass
-{
-    [Test]
-    public async Task Test1() { }
-
-    [Test]
-    public async Task Test2() { }
-
-    // All tests in this class run sequentially
-}
-```
+Ordinary create/update/delete tests should still run concurrently when they use unique IDs, tenants, schemas, containers, or transactions. Fix accidental state sharing instead of widening the non-parallel group.
 
 ## Assertions
 
@@ -562,16 +537,16 @@ public class RepeatTests
 
 ## Running Tests
 
-TUnit uses Microsoft.Testing.Platform. Prefer `dotnet run` over `dotnet test` for full CLI flag access.
+TUnit uses Microsoft.Testing.Platform. On .NET 10, prefer `dotnet test` for solution, project, multi-targeted, and filtered runs; use `dotnet run` when invoking the generated test application directly.
 
 ### Basic Execution
 
 ```bash
-# Run via test host (recommended)
+# Run the generated test application directly
 dotnet run --project Tests.csproj
 
-# Run via dotnet test
-dotnet test Tests.csproj
+# Run through the .NET 10 test driver
+dotnet test --project Tests.csproj
 ```
 
 ### Filtering with --treenode-filter
@@ -580,28 +555,28 @@ TUnit uses `--treenode-filter`, not `--filter`. Syntax: `/<Assembly>/<Namespace>
 
 ```bash
 # All tests in a class
-dotnet run --project Tests.csproj -- --treenode-filter "/*/*/CalculatorTests/*"
+dotnet test --project Tests.csproj --treenode-filter "/*/*/CalculatorTests/*"
 
 # Specific test method
-dotnet run --project Tests.csproj -- --treenode-filter "/*/*/CalculatorTests/Add_ReturnsSum"
+dotnet test --project Tests.csproj --treenode-filter "/*/*/CalculatorTests/Add_ReturnsSum"
 
 # Filter by namespace
-dotnet run --project Tests.csproj -- --treenode-filter "/*/MyApp.Tests.Unit/*/*"
+dotnet test --project Tests.csproj --treenode-filter "/*/MyApp.Tests.Unit/*/*"
 
 # Filter by category
-dotnet run --project Tests.csproj -- --treenode-filter "/*/*/*/*[Category=Unit]"
+dotnet test --project Tests.csproj --treenode-filter "/*/*/*/*[Category=Unit]"
 
 # Exclude category
-dotnet run --project Tests.csproj -- --treenode-filter "/*/*/*/*[Category!=Slow]"
+dotnet test --project Tests.csproj --treenode-filter "/*/*/*/*[Category!=Slow]"
 
 # Multiple filters (OR)
-dotnet run --project Tests.csproj -- --treenode-filter "/*/*/ClassA/*|/*/*/ClassB/*"
+dotnet test --project Tests.csproj --treenode-filter "/*/*/ClassA/*|/*/*/ClassB/*"
 
 # Combine filters (AND)
-dotnet run --project Tests.csproj -- --treenode-filter "/*/*/*/*[Category=Unit][Priority=High]"
+dotnet test --project Tests.csproj --treenode-filter "/*/*/*/*[Category=Unit][Priority=High]"
 
 # Custom property filter
-dotnet run --project Tests.csproj -- --treenode-filter "/*/*/*/*[Owner=TeamA]"
+dotnet test --project Tests.csproj --treenode-filter "/*/*/*/*[Owner=TeamA]"
 ```
 
 ### Other CLI Options

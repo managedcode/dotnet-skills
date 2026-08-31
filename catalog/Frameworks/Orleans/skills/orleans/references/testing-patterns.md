@@ -4,6 +4,8 @@ Use this reference when the task is about testing Orleans grains together with r
 
 These patterns are grounded in working test harnesses used in `AIBase` and `WA.Storied.Agents`: one shared AppHost fixture for the distributed topology, an optional `WebApplicationFactory` layer for direct Host DI/grain access, and separate browser contexts per UI test.
 
+Sharing the AppHost reduces startup cost and does not make the suite sequential. Keep tests parallel, make fixture helpers concurrency-safe, and use unique grain IDs, tenant IDs, storage prefixes, database keys, connections, and browser contexts per test. Constrain only the smallest keyed group that performs destructive changes to the exact same shared state.
+
 ## Choose The Harness First
 
 | Need | Best Harness | Why |
@@ -108,9 +110,6 @@ public sealed class TestApplication
         _overrides["ConnectionStrings:Tables"] = tables;
         _overrides["ConnectionStrings:Blobs"] = blobs;
 
-        Environment.SetEnvironmentVariable("ConnectionStrings__Tables", tables);
-        Environment.SetEnvironmentVariable("ConnectionStrings__Blobs", blobs);
-
         CreateClient();
     }
 
@@ -157,6 +156,8 @@ public sealed class OrderGrainIntegrationTests(TestApplication app)
 ```
 
 The same pattern works for API-only tests with `ClassDataSource<AspireTestFixture>(Shared = SharedType.PerTestSession)`.
+
+Do not add `[NotInParallel]` to the class or force one test module/worker merely because the fixture is shared. If a maintenance test drops a shared schema or resets the whole cluster, give only those destructive tests the same keyed non-parallel constraint.
 
 ## SignalR And Browser Flows
 

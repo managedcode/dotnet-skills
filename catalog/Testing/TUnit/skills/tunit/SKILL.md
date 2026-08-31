@@ -1,7 +1,6 @@
 ---
 name: tunit
-description: "Write, run, or repair .NET tests that use TUnit. Use when a repo uses `TUnit`, `TUnit.Playwright`, `[Test]`, `[Arguments]`, `ClassDataSource`, `SharedType.PerTestSession`, or Microsoft.Testing.Platform-based. USE FOR: the repo uses TUnit; you need to add, run, debug, or repair TUnit tests; the repo uses Microsoft.Testing.Platform-based test execution. DO NOT USE FOR: xUnit projects; MSTest projects. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
-compatibility: "Requires a .NET solution or project with TUnit packages; respects the repo's `AGENTS.md` commands first."
+description: "Write, run, or repair .NET tests that use TUnit. Use when a repo uses `TUnit`, `TUnit.Playwright`, `[Test]`, `[Arguments]`, `ClassDataSource`, `SharedType.PerTestSession`, or Microsoft.Testing.Platform-based execution. Preserve TUnit's parallel-by-default model and constrain only destructive shared-state collisions. DO NOT USE FOR: xUnit projects; MSTest projects."
 ---
 
 # TUnit
@@ -11,13 +10,7 @@ compatibility: "Requires a .NET solution or project with TUnit packages; respect
 - the repo uses TUnit
 - you need to add, run, debug, or repair TUnit tests
 - the repo uses Microsoft.Testing.Platform-based test execution
-- the repo uses `ClassDataSource<...>(Shared = SharedType.PerTestSession)`, `ParallelLimiter`, `TUnit.Playwright`, or `--treenode-filter`
-
-## Value
-
-- produce a concrete project delta: code, docs, config, tests, CI, or review artifact
-- reduce ambiguity through explicit planning, verification, and final validation skills
-- leave reusable project context so future tasks are faster and safer
+- the repo uses `ClassDataSource<...>(Shared = SharedType.PerTestSession)`, `TUnit.Playwright`, or `--treenode-filter`
 
 ## Do Not Use For
 
@@ -31,12 +24,6 @@ compatibility: "Requires a .NET solution or project with TUnit packages; respect
 - the test project file and package references
 - the repo's current TUnit execution command
 
-## Quick Start
-
-1. Read the nearest `AGENTS.md` and confirm scope and constraints.
-2. Run this skill's `Workflow` through the `Ralph Loop` until outcomes are acceptable.
-3. Return the `Required Result Format` with concrete artifacts and verification evidence.
-
 ## Workflow
 
 1. Confirm the project really uses TUnit and not a different MTP-based framework.
@@ -44,16 +31,18 @@ compatibility: "Requires a .NET solution or project with TUnit packages; respect
 3. Keep the TUnit execution model intact:
    - tests are source-generated at build time
    - tests run in parallel by default
+   - on .NET 10, test modules also run in parallel by default up to `Environment.ProcessorCount`
    - built-in analyzers should remain enabled
 4. Choose the fixture level deliberately:
    - plain TUnit tests for isolated logic
    - shared AppHost/Aspire fixtures for HTTP, SignalR, SSE, or UI flows
    - `WebApplicationFactory` layered over shared Aspire infra when tests need Host DI services, `IGrainFactory`, or other runtime internals
-5. Reuse expensive fixtures with `ClassDataSource<Fixture>(Shared = SharedType.PerTestSession)` instead of booting distributed infrastructure per test.
-6. Fix isolation bugs instead of globally serializing the suite unless the repo already documented a justified exception.
-7. Run the narrowest useful scope first with `dotnet test ... -- --treenode-filter "..."`. Keep TUnit arguments after `--`.
-8. Capture useful failure evidence: host log dumps, focused console output, coverage files, and Playwright screenshots/HTML for UI tests.
-9. Use `[Test]`, `[Arguments]`, hooks, and dependencies only when they make the scenario clearer, not because the framework allows it.
+5. Reuse expensive fixtures with `ClassDataSource<Fixture>(Shared = SharedType.PerTestSession)` instead of booting distributed infrastructure per test. Fixture reuse does not serialize consumers: keep the fixture concurrency-safe and give each test unique mutable state.
+6. Keep tests and test modules parallel. Do not add `--max-parallel-test-modules 1`, `TUNIT_MAX_PARALLEL_TESTS=1`, `[assembly: NotInParallel]`, a class-wide `[NotInParallel]`, or an equivalent global restriction.
+7. Use keyed `[NotInParallel("collision-domain")]` only on the smallest tests that perform destructive changes to the same shared state and can corrupt one another. A shared read-only fixture, expensive startup, module boundary, or vague CI-stability concern is not a reason to limit parallelism.
+8. Run the narrowest useful scope first with `dotnet test ... --treenode-filter "..."` on .NET 10. Use the older `--` separator only when the repository is pinned to an SDK that requires it.
+9. Capture useful failure evidence: host log dumps, focused console output, coverage files, and Playwright screenshots/HTML for UI tests.
+10. Use `[Test]`, `[Arguments]`, hooks, and dependencies only when they make the scenario clearer, not because the framework allows it.
 
 ## Bootstrap When Missing
 
@@ -63,7 +52,7 @@ If `TUnit` is requested but not configured yet:
    - `rg -n "TUnit|Microsoft\\.Testing\\.Platform" -g '*.csproj' -g 'Directory.Build.*' .`
 2. Add the minimal package set to the test project:
    - `dotnet add TEST_PROJECT.csproj package TUnit`
-   - add `Microsoft.NET.Test.Sdk` only when the repo's chosen TUnit project shape requires it; do not blindly duplicate runner packages
+   - do not add `Microsoft.NET.Test.Sdk` to a current TUnit project; it selects the VSTest path and conflicts with the normal Microsoft.Testing.Platform setup
 3. Keep the runner model explicit in `AGENTS.md` and CI:
    - record that the repo uses Microsoft.Testing.Platform-compatible execution for this test project
    - record the exact `dotnet test TEST_PROJECT.csproj` command the repo will use
@@ -82,8 +71,11 @@ If `TUnit` is requested but not configured yet:
 
 - the command matches the repo's TUnit runner style
 - focused runs use `--treenode-filter` rather than VSTest-style `--filter`
+- .NET 10 runs pass MTP options directly without a `--` separator
+- no global or assembly-wide single-thread setting has been introduced
+- any keyed non-parallel group is limited to tests with a named destructive shared-state collision
 - shared distributed fixtures use `SharedType.PerTestSession` or an equivalent reuse pattern
-- shared state is isolated or explicitly controlled
+- fixture and shared infrastructure are safe for concurrent consumers; mutable data is isolated per test
 - built-in TUnit analyzers remain active
 - coverage tooling matches Microsoft.Testing.Platform if coverage is enabled
 - UI failures capture artifacts and server-side failures expose enough logs to avoid blind reruns
@@ -101,33 +93,6 @@ flowchart LR
   G --> H["Capture logs, artifacts, and coverage"]
 ```
 
-## Ralph Loop
-
-Use the Ralph Loop for every task, including docs, architecture, testing, and tooling work.
-
-1. Plan first (mandatory):
-   - analyze current state
-   - define target outcome, constraints, and risks
-   - write a detailed execution plan
-   - list final validation skills to run at the end, with order and reason
-2. Execute one planned step and produce a concrete delta.
-3. Review the result and capture findings with actionable next fixes.
-4. Apply fixes in small batches and rerun the relevant checks or review steps.
-5. Update the plan after each iteration.
-6. Repeat until outcomes are acceptable or only explicit exceptions remain.
-7. If a dependency is missing, bootstrap it or return `status: not_applicable` with explicit reason and fallback path.
-
-### Required Result Format
-
-- `status`: `complete` | `clean` | `improved` | `configured` | `not_applicable` | `blocked`
-- `plan`: concise plan and current iteration step
-- `actions_taken`: concrete changes made
-- `validation_skills`: final skills run, or skipped with reasons
-- `verification`: commands, checks, or review evidence summary
-- `remaining`: top unresolved items or `none`
-
-For setup-only requests with no execution, return `status: configured` and exact next commands.
-
 ## Load References
 
 - [references/patterns.md](references/patterns.md)
@@ -137,23 +102,23 @@ For setup-only requests with no execution, return `status: configured` and exact
 
 ## Running Tests
 
-TUnit uses Microsoft.Testing.Platform. Use `--treenode-filter` for filtering (not `--filter`), and keep runner switches after `--`.
+TUnit uses Microsoft.Testing.Platform. Use `--treenode-filter` for filtering, not VSTest `--filter`. On .NET 10, pass MTP switches directly; older SDKs may require `--`.
 
 ```bash
 # Run all tests
-dotnet test MySolution.sln
+dotnet test --solution MySolution.sln
 
 # Run one test project
-dotnet test tests/MyProject.Tests/MyProject.Tests.csproj
+dotnet test --project tests/MyProject.Tests/MyProject.Tests.csproj
 
 # Filter by class
-dotnet test tests/MyProject.Tests/MyProject.Tests.csproj -- --treenode-filter "/*/*/CalculatorTests/*"
+dotnet test --project tests/MyProject.Tests/MyProject.Tests.csproj --treenode-filter "/*/*/CalculatorTests/*"
 
 # Filter by category
-dotnet test tests/MyProject.Tests/MyProject.Tests.csproj -- --treenode-filter "/*/*/*/*[Category=Integration]"
+dotnet test --project tests/MyProject.Tests/MyProject.Tests.csproj --treenode-filter "/*/*/*/*[Category=Integration]"
 
 # Coverage on Microsoft.Testing.Platform
-dotnet test MySolution.sln -- --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
+dotnet test --solution MySolution.sln --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
 
 # Raw runner help when the repo needs direct TUnit app switches
 dotnet run --project tests/MyProject.Tests/MyProject.Tests.csproj -- --help

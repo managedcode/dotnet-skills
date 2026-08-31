@@ -17,9 +17,7 @@ Then select the smallest Orleans primitive whose guarantees match those requirem
 
 Inspect package versions for version-sensitive work. Orleans `10.3.1` ships `Microsoft.Orleans.DurableJobs*` and `Microsoft.Orleans.Journaling*` as `10.3.1-alpha.1`; treat them as experimental until that status changes.
 
-Orleans 10.3 changes three upgrade boundaries: Newtonsoft storage now enforces the Orleans type allow-list, RPC telemetry keys changed, and custom grain-context activators must apply configurators before construction. Prefer generated/allowed types over global permissive JSON, and update persisted-state tests, dashboards, and custom activators together. The release also adds streaming, checkpoint, journal, transaction, file-storage, and System.Text.Json providers; select them by guarantees. `10.3.1` services analyzer contract identities.
-
-The August 2026 overview highlights the built-in dashboard and stable Redis providers. Keep production telemetry explicit, and select Redis only when its guarantees match the workload.
+Orleans 10.3 makes Newtonsoft storage enforce the type allow-list, changes RPC telemetry keys, and requires custom grain-context activators to apply configurators before construction. Prefer generated/allowed types over permissive JSON and update affected tests, dashboards, and activators together. `10.3.1` services analyzer contract identities and documents placement hints.
 
 ## Mental Model
 
@@ -110,6 +108,7 @@ Read [references/scheduling-and-services.md](references/scheduling-and-services.
 | `[Reentrant]` | Allow turns from other calls while the grain awaits | Use for call cycles or measured concurrency needs after auditing every invariant |
 | `[AlwaysInterleave]` / `[MayInterleave]` | Selectively admit interleaving | Prefer narrow scheduling exceptions over making the whole grain reentrant |
 | Placement strategy/filter | Constrain or optimize activation location | Keep the resource-optimized default unless locality, hardware, zone, compliance, or role requirements are proven |
+| Placement hint | Suggest a target silo for activation or migration | Choose an active compatible silo and scope the request-context hint; it does not move an existing activation |
 | Heterogeneous silo/versioning | Run different grain sets or versions during rollout | Use explicit compatibility/version selection for safe rolling deployments |
 
 Turn-based execution is single-threaded, not magically race-free. Reentrancy allows another turn to run while the first awaits; any state observed before the `await` can be stale afterward. Avoid blocking calls, `.Result`, `.Wait()`, thread-affine work, and unbounded CPU loops on the grain scheduler.

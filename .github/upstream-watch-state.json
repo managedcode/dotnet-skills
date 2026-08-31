@@ -958,13 +958,13 @@
       "value": "v10.0.10"
     },
     "astro-main-head": {
-      "etag": "W/\"4bd05cc9f6128e5fbe0548b1a0f233ef533ce076f78af5fc453edf2a808ed133\"",
-      "human": "ETag W/\"4bd05cc9f6128e5fbe0548b1a0f233ef533ce076f78af5fc453edf2a808ed133\"",
+      "etag": "W/\"9b848e811b8dfa498c635ecd37352ca380cd133eba27dfe1ca9040058da197c3\"",
+      "human": "ETag W/\"9b848e811b8dfa498c635ecd37352ca380cd133eba27dfe1ca9040058da197c3\"",
       "kind": "http_document",
-      "last_modified": "Thu, 06 Aug 2026 10:41:25 GMT",
+      "last_modified": "Sun, 30 Aug 2026 03:19:47 GMT",
       "source_url": "https://api.github.com/repos/withastro/astro/commits/main",
       "title": null,
-      "value": "W/\"4bd05cc9f6128e5fbe0548b1a0f233ef533ce076f78af5fc453edf2a808ed133\""
+      "value": "W/\"9b848e811b8dfa498c635ecd37352ca380cd133eba27dfe1ca9040058da197c3\""
     },
     "asynkron-profiler-release": {
       "human": "v0.1.25 (2026-01-13T21:20:43Z)",
@@ -1576,11 +1576,11 @@
       "value": "v10.0.7"
     },
     "managedcode-mcaf-release": {
-      "human": "v1.2.67 (2026-06-25T20:33:13Z)",
+      "human": "v1.3.68 (2026-08-29T11:45:02Z)",
       "kind": "github_release",
-      "published_at": "2026-06-25T20:33:13Z",
-      "source_url": "https://github.com/managedcode/MCAF/releases/tag/v1.2.67",
-      "value": "v1.2.67"
+      "published_at": "2026-08-29T11:45:02Z",
+      "source_url": "https://github.com/managedcode/MCAF/releases/tag/v1.3.68",
+      "value": "v1.3.68"
     },
     "managedcode-mimetypes-release": {
       "human": "v10.0.10 (2026-07-22T10:05:06Z)",
@@ -1620,13 +1620,13 @@
       "value": "\"4CVDHG+sNs0BGxX3XNn2y5VLV/A=\""
     },
     "mcaf-managed-code-com-root-docs": {
-      "etag": "\"6a3d9094-a283\"",
-      "human": "MCAF - Coding AI Framework - Build Real Software with Coding AI Agents | ETag \"6a3d9094-a283\"",
+      "etag": "\"6a92c63f-dd12\"",
+      "human": "MCAF - Coding AI Framework - Build Real Software with Coding AI Agents | ETag \"6a92c63f-dd12\"",
       "kind": "http_document",
-      "last_modified": "Thu, 25 Jun 2026 20:33:24 GMT",
+      "last_modified": "Sat, 29 Aug 2026 11:45:03 GMT",
       "source_url": "https://mcaf.managed-code.com/",
       "title": "MCAF - Coding AI Framework - Build Real Software with Coding AI Agents",
-      "value": "\"6a3d9094-a283\""
+      "value": "\"6a92c63f-dd12\""
     },
     "mcp-csharp-sdk-docs": {
       "etag": "\"6a72b381-176\"",
@@ -1668,20 +1668,20 @@
       "value": "\"usl6KmAd+eGc/aSZr8sRV4LRsC8=\""
     },
     "orleans-release": {
-      "human": "v10.2.2 (2026-07-21T23:08:58Z)",
+      "human": "v10.3.1 (2026-08-28T23:01:45Z)",
       "kind": "github_release",
-      "published_at": "2026-07-21T23:08:58Z",
-      "source_url": "https://github.com/dotnet/orleans/releases/tag/v10.2.2",
-      "value": "v10.2.2"
+      "published_at": "2026-08-28T23:01:45Z",
+      "source_url": "https://github.com/dotnet/orleans/releases/tag/v10.3.1",
+      "value": "v10.3.1"
     },
     "playwright-ci-docs": {
-      "etag": "\"6a718bf8-271cf\"",
-      "human": "ETag \"6a718bf8-271cf\"",
+      "etag": "\"6a8f49de-271cf\"",
+      "human": "ETag \"6a8f49de-271cf\"",
       "kind": "http_document",
-      "last_modified": "Tue, 04 Aug 2026 06:51:36 GMT",
+      "last_modified": "Wed, 26 Aug 2026 20:17:34 GMT",
       "source_url": "https://playwright.dev/docs/ci",
       "title": null,
-      "value": "\"6a718bf8-271cf\""
+      "value": "\"6a8f49de-271cf\""
     },
     "playwright-release": {
       "human": "v1.62.1 (2026-07-30T16:35:55Z)",
@@ -1691,13 +1691,13 @@
       "value": "v1.62.1"
     },
     "playwright-visual-comparisons-docs": {
-      "etag": "\"6a718bf8-1166d\"",
-      "human": "ETag \"6a718bf8-1166d\"",
+      "etag": "\"6a8f49de-1166d\"",
+      "human": "ETag \"6a8f49de-1166d\"",
       "kind": "http_document",
-      "last_modified": "Tue, 04 Aug 2026 06:51:36 GMT",
+      "last_modified": "Wed, 26 Aug 2026 20:17:34 GMT",
       "source_url": "https://playwright.dev/docs/test-snapshots",
       "title": null,
-      "value": "\"6a718bf8-1166d\""
+      "value": "\"6a8f49de-1166d\""
     },
     "pvanalyze-readme-docs": {
       "etag": "\"fc0fd818caebd7523ae2c00e53adc7cb5fd791e79fabc7c618b4b8a75e449473\"",

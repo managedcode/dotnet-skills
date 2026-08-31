@@ -4,6 +4,8 @@ Use this reference when the repo uses TUnit for integration, API, SignalR, Orlea
 
 The patterns below are grounded in working suites from `AIBase` and `WA.Storied.Agents`: shared per-session fixtures, Aspire-backed distributed application boot, optional `WebApplicationFactory` layering for DI/grain access, and concrete artifact capture on failures.
 
+Per-session means one expensive boot, not one test at a time. All consuming tests remain parallel. The fixture must support concurrent clients, and every test must use unique mutable state such as a new tenant, grain key, database row key, storage prefix, or browser context. Apply keyed `[NotInParallel("...")]` only to a test that destructively changes the same shared state as another test.
+
 ## Pick The Right Fixture Level
 
 | Need | Recommended Pattern |
@@ -38,6 +40,8 @@ This is the right shape for:
 - SignalR or SSE flows
 - Playwright-backed UI tests
 - AppHost resource graph and startup validation
+
+Do not put `[NotInParallel]` on the fixture or consuming test class merely because the AppHost is shared. A shared host is the throughput optimization; isolation belongs in the data and per-test client/context state.
 
 ## Mix TUnit With `WebApplicationFactory`
 
@@ -98,23 +102,23 @@ Keep hooks small, explicit, and local to the test concern.
 
 ## Focused Commands
 
-For TUnit on Microsoft.Testing.Platform, keep the repo's command shape and pass framework switches after `--`:
+For TUnit on Microsoft.Testing.Platform, keep the repo's command shape. On .NET 10, pass MTP switches directly:
 
 ```bash
 # Full project
 dotnet test --project Tests/MyProject.Tests/MyProject.Tests.csproj
 
 # One class
-dotnet test --project Tests/MyProject.Tests/MyProject.Tests.csproj -- --treenode-filter "/*/*/ChatControllerTests/*"
+dotnet test --project Tests/MyProject.Tests/MyProject.Tests.csproj --treenode-filter "/*/*/ChatControllerTests/*"
 
 # One category
-dotnet test --project Tests/MyProject.Tests/MyProject.Tests.csproj -- --treenode-filter "/*/*/*/*[Category=Integration]"
+dotnet test --project Tests/MyProject.Tests/MyProject.Tests.csproj --treenode-filter "/*/*/*/*[Category=Integration]"
 
 # Coverage
-dotnet test --project Tests/MyProject.Tests/MyProject.Tests.csproj -- --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
+dotnet test --project Tests/MyProject.Tests/MyProject.Tests.csproj --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
 ```
 
-Do not use VSTest-style `--filter` for TUnit suites. Do not put TUnit switches before `--`.
+Do not use VSTest-style `--filter` for TUnit suites. Use the older `--` separator only when the repository is pinned to an SDK that requires it.
 
 ## Playwright In TUnit Suites
 
@@ -193,6 +197,8 @@ catch
 ## Practical Rules
 
 - Prefer `ClassDataSource<...>(Shared = SharedType.PerTestSession)` for expensive distributed fixtures.
+- Keep consuming tests parallel; never add a module-wide or assembly-wide single-thread setting for fixture reuse.
+- Give each test unique mutable resource keys. Use a keyed non-parallel constraint only for destructive operations against the exact same shared state.
 - Keep fixture code responsible for startup, teardown, and shared helpers only; assertions belong in the test classes.
 - Resolve real connection strings and endpoints from the Aspire fixture instead of copying appsettings into the test project.
 - Use coverage and filter switches that match Microsoft.Testing.Platform, not VSTest conventions.

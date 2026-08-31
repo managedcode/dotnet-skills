@@ -10,7 +10,7 @@ Sources reviewed:
 - Playwright CI setup: https://playwright.dev/docs/ci
 - Playwright GitHub Actions setup: https://playwright.dev/docs/ci-intro
 
-The official CI and visual-comparison pages were re-reviewed in July 2026. Their core operational contract is unchanged: install the exact browser/dependency set in CI, keep the rendering environment stable, and update snapshot baselines only through an explicit reviewed command.
+The official CI and visual-comparison pages were re-reviewed in August 2026. Their core operational contract is unchanged: install the exact browser/dependency set in CI, keep the rendering environment stable, and update snapshot baselines only through an explicit reviewed command. The current CI workflow examples use `actions/checkout@v6`, `actions/setup-node@v6`, and `actions/upload-artifact@v5`.
 
 ## Preferred Built-In Snapshot Path
 
@@ -39,7 +39,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  workers: process.env.CI ? 1 : undefined,
+  fullyParallel: true,
   use: {
     baseURL: process.env.APP_BASE_URL ?? 'http://127.0.0.1:5000',
     trace: 'retain-on-failure',
@@ -61,6 +61,8 @@ export default defineConfig({
   ]
 });
 ```
+
+Do not set `workers: 1` as a CI default. Visual tests are read-heavy and should remain parallel when every test owns its data and browser context. If a test destructively resets a shared external environment, isolate or key only that collision; do not slow the unrelated suite.
 
 Use a stability stylesheet for volatile areas:
 
@@ -189,8 +191,12 @@ jobs:
   visual:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
@@ -204,13 +210,13 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run visual tests
-        run: npx playwright test --project=chromium
+        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/4
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 30
 
@@ -218,7 +224,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-test-results
+          name: playwright-test-results-${{ matrix.shard }}
           path: test-results/
           retention-days: 30
 ```
@@ -235,6 +241,8 @@ For pull requests, a preliminary `--only-changed` run can surface likely failure
 ```
 
 Use `fetch-depth: 0` on `actions/checkout` when the job needs the base ref for `--only-changed`. Treat the result as a heuristic only. Visual baselines must still be generated and compared in the same rendering environment; pin an official Playwright container image when runner-level browser, font, or OS drift remains noisy.
+
+For a tiny suite, omit the shard matrix and run the normal parallel worker pool in one job. For a large suite, sharding reduces wall-clock time without changing baseline semantics; merge blob reports afterward only when one consolidated HTML report is required.
 
 For a standalone Pixelmatch script, run the compare step after screenshot capture and upload image folders:
 

@@ -1,6 +1,7 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "category": "Testing",
+  "compatibility": "Requires NUnit 3.x or 4.x packages and an appropriate test adapter.",
   "packages": [
     "NUnit",
     "NUnit3TestAdapter"

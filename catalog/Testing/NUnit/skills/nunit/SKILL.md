@@ -1,7 +1,6 @@
 ---
 name: nunit
 description: "Write, run, or repair .NET tests that use NUnit. Use when a repo uses `NUnit`, `[Test]`, `[TestCase]`, `[TestFixture]`, or NUnit3TestAdapter for VSTest or Microsoft.Testing.Platform execution. USE FOR: writing or reviewing NUnit tests; using [Test], [TestCase], [TestFixture], [SetUp], [TearDown] attributes; configuring NUnit3TestAdapter or NUnit.Analyzers. DO NOT USE FOR: unrelated stacks; generic tasks that do not need this specific guidance. INVOKES: inspect the repository context, edit targeted files, and run relevant build, test, lint, or validation commands when changes are made."
-compatibility: "Requires NUnit 3.x or 4.x packages and appropriate test adapter."
 ---
 
 # NUnit Testing

@@ -13,8 +13,9 @@ Remove:
 Add:
 ```xml
 <PackageReference Include="TUnit" Version="*" />
-<PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
 ```
+
+Do not carry `Microsoft.NET.Test.Sdk` into a current TUnit project. TUnit uses Microsoft.Testing.Platform directly.
 
 ### Attribute Mappings
 
@@ -26,7 +27,7 @@ Add:
 | `[MemberData(...)]` | `[MethodDataSource(...)]` |
 | `[ClassData(...)]` | `[ClassDataSource<T>]` |
 | `[Trait("Category", "...")]` | `[Category("...")]` |
-| `[Collection("...")]` | `[NotInParallel("...")]` |
+| `[Collection("...")]` | Share the fixture with `ClassDataSource<T>`; add keyed `[NotInParallel("...")]` only when the collection performed destructive changes to the same shared state |
 
 ### Constructor Injection
 
@@ -239,10 +240,9 @@ public class DatabaseTests
     }
 
     [Test]
-    [NotInParallel("Database")]
     public async Task DatabaseTest()
     {
-        // Use _fixture
+        // Use a unique database/schema key so other tests stay parallel.
     }
 }
 ```
@@ -278,8 +278,9 @@ Remove:
 Add:
 ```xml
 <PackageReference Include="TUnit" Version="*" />
-<PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
 ```
+
+Remove `Microsoft.NET.Test.Sdk` when moving to the current TUnit/Microsoft.Testing.Platform runner.
 
 ### Attribute Mappings
 
@@ -297,7 +298,7 @@ Add:
 | `[Timeout(...)]` | `[Timeout(...)]` |
 | `[Retry(...)]` | `[Retry(...)]` |
 | `[Order(...)]` | `[DependsOn(...)]` |
-| `[NonParallelizable]` | `[NotInParallel]` |
+| `[NonParallelizable]` | Re-evaluate the reason; use keyed `[NotInParallel("...")]` only for a real destructive shared-state collision |
 
 ### Basic Test Conversion
 
@@ -480,7 +481,7 @@ public class DatabaseTests
 | `Assert.That(() => x, Throws.TypeOf<T>())` | `await Assert.That(() => x).ThrowsException().OfType<T>()` |
 | `Assert.Multiple(() => { ... })` | `await Assert.Multiple(() => { ... })` |
 
-### Parallelism Control
+### Parallelism Review
 
 NUnit:
 ```csharp
@@ -500,29 +501,23 @@ public class SequentialTests
 public class AnotherSequentialTests { }
 ```
 
+Do not mechanically copy assembly-wide or class-wide serialization into TUnit. First isolate mutable state so these classes can run concurrently. If both classes destructively reset the exact same shared database, constrain only those reset tests with one named key:
+
 TUnit:
 ```csharp
-[NotInParallel]
-public class SequentialTests
+public class DestructiveMaintenanceTests
 {
     [Test]
-    public async Task Test1() { }
+    [NotInParallel("shared-database-reset")]
+    public async Task ResetSchema() { }
 
     [Test]
-    public async Task Test2() { }
-}
-
-// Or at the test level:
-public class MixedParallelTests
-{
-    [Test]
-    [NotInParallel]
-    public async Task SequentialTest() { }
-
-    [Test]
-    public async Task ParallelTest() { }
+    [NotInParallel("shared-database-reset")]
+    public async Task RestoreSnapshot() { }
 }
 ```
+
+Every unrelated test remains parallel. A shared fixture or prior framework attribute alone is not evidence that serialization is still required.
 
 ---
 
@@ -533,7 +528,7 @@ public class MixedParallelTests
 3. **Convert assertions** to async TUnit assertions
 4. **Update lifecycle hooks** from interfaces to attributes
 5. **Add async/await** to test methods (TUnit assertions are async)
-6. **Review parallelism** - TUnit is parallel by default
+6. **Review parallelism** - remove inherited global/class serialization; keep a keyed constraint only for destructive shared-state collisions
 7. **Run tests** and fix any remaining compilation errors
 
 ### Automated Find-Replace Patterns

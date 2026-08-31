@@ -1,7 +1,6 @@
 ---
 name: playwright-visual-testing
 description: "Add, repair, or review Playwright visual regression tests for browser-facing .NET apps, including screenshot baselines, Pixelmatch thresholds, deterministic rendering, and GitHub Actions artifacts. USE FOR: toHaveScreenshot, page.screenshot visual checks, Pixelmatch/pngjs comparison scripts, visual baseline updates, screenshot diff triage, or CI workflows for UI regression screenshots. DO NOT USE FOR: pure unit tests, accessibility audits, browser-debugging sessions, or frontend linting."
-compatibility: "Requires a browser-facing app or static site plus a Node-based Playwright test surface. Works best for .NET repos that already have package.json, a frontend test project, or a CI job capable of installing Playwright browsers."
 ---
 
 # Playwright Visual Testing
@@ -28,6 +27,8 @@ compatibility: "Requires a browser-facing app or static site plus a Node-based P
 
 - The August 2026 Playwright CI and visual-comparison docs still require browser dependencies to be installed explicitly in CI and warn that screenshot rendering varies by host OS, browser build, fonts, headless mode, and hardware. Generate and review baselines in the same environment used for comparison.
 - The CI guide recommends against caching browser binaries by default: restoring them often costs as much as downloading, and OS dependencies still need an explicit install. If a runner must cache browsers, key it by the exact Playwright version and keep dependency installation in the job.
+- Current CI examples use `actions/checkout@v6`, `actions/setup-node@v6`, and `actions/upload-artifact@v5`; use a full checkout only when `--only-changed` needs the pull-request base ref.
+- Keep Playwright parallel by default. Do not set `workers: 1` merely because CI or screenshots are involved. Isolate test data and browser contexts, enable `fullyParallel` when tests are independent, and shard large suites across CI jobs. Reduce concurrency only for the smallest tests that destructively change the same external state.
 - Playwright `v1.62.1` fixes TypeScript configuration resolution regressions, accessibility snapshots that dropped names or image-style actionable elements, and branded primitive arguments passed to `page.evaluate()`. Re-run config discovery, accessibility snapshots, and TypeScript compile checks before accepting new visual baselines.
 - Keep `--update-snapshots` as an intentional local review action. Pull-request CI should retain expected, actual, diff, trace, and report artifacts instead of silently accepting a new baseline.
 
@@ -64,7 +65,8 @@ flowchart TD
    - do not auto-create or auto-update baselines in pull-request CI
 5. Wire CI for repeatability:
    - use `npm ci`, then `npx playwright install --with-deps`, then the focused Playwright command
-   - set CI workers conservatively when screenshots are resource-sensitive
+   - preserve Playwright's parallel workers; use `fullyParallel` for isolated tests and CI sharding for large suites
+   - constrain only a narrow destructive shared-state collision, never the whole visual suite for generic stability
    - optionally run `npx playwright test --only-changed=origin/$GITHUB_BASE_REF` first on pull requests for faster feedback, but always follow it with the full suite because changed-test selection is heuristic
    - use the same OS, browser build, fonts, headless mode, and rendering environment that produced the committed baselines; an official Playwright container is useful when host drift keeps changing pixels
    - upload the Playwright HTML report and `test-results/`, or upload `screenshots/baseline`, `screenshots/actual`, and `screenshots/diff` for a custom Pixelmatch flow
@@ -96,4 +98,5 @@ flowchart TD
 - sharing one mutable browser context across tests
 - masking too much of the page and removing the regression signal
 - raising thresholds to hide animation, font, clock, or data nondeterminism
+- forcing one CI worker instead of fixing data/context isolation or sharding the suite
 - using a custom Pixelmatch script when Playwright's built-in screenshot assertion would give better trace, report, and snapshot integration

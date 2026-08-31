@@ -1,6 +1,7 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "category": "Testing",
+  "compatibility": "Requires a .NET solution or project with MSTest packages; respects the repo's AGENTS.md commands first.",
   "packages": [
     "MSTest",
     "MSTest.TestFramework",

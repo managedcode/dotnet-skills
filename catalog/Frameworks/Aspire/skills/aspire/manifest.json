@@ -1,5 +1,6 @@
 {
-  "version": "1.6.0",
+  "version": "1.6.1",
   "category": "Cloud",
+  "compatibility": "Best for current Aspire 13.5.x tooling with .NET 10 or a supported Node.js runtime for TypeScript AppHosts; use version-aware upgrade guidance for older 8.x or 9.x solutions.",
   "package_prefix": "Aspire"
 }

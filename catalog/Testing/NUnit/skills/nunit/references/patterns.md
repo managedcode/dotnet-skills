@@ -313,16 +313,24 @@ public class ParallelTestsWithinFixture
 }
 ```
 
-### Non-Parallelizable Tests
+### Destructive Shared-State Exception
+
+Keep fixtures and tests parallel by default. Mark only a test that destructively changes the same shared state as other tests and cannot be isolated:
 
 ```csharp
 [TestFixture]
-[NonParallelizable]
-public class SequentialTests
+public class DatabaseMaintenanceTests
 {
-    // Tests that must run sequentially (shared resource, etc.)
+    [Test]
+    [NonParallelizable]
+    public void ResetSharedSchema()
+    {
+        // Drops and recreates the shared schema.
+    }
 }
 ```
+
+A shared fixture, database client, or expensive host does not by itself justify fixture-wide serialization. Prefer unique mutable data per test and keep unrelated work parallel.
 
 ## Retry and Timeout Patterns
 
