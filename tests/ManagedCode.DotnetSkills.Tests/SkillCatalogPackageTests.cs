@@ -5,6 +5,44 @@ namespace ManagedCode.DotnetSkills.Tests;
 public sealed class SkillCatalogPackageTests
 {
     [Fact]
+    public void LoadFromDirectory_PreservesOpaqueUpstreamMetadata()
+    {
+        using var tempDirectory = new TemporaryDirectory();
+        var packageDirectory = Directory.CreateDirectory(Path.Combine(tempDirectory.Path, "catalog", "Testing", "Official-DotNet-Test"));
+        File.WriteAllText(Path.Combine(packageDirectory.FullName, "manifest.json"), """{"name":"Official-DotNet-Test","title":"Official .NET Test"}""");
+        var skillDirectory = Directory.CreateDirectory(Path.Combine(packageDirectory.FullName, "skills", "run-tests"));
+        File.WriteAllText(Path.Combine(skillDirectory.FullName, "manifest.json"), """{"version":"1.0.0","category":"Testing","compatibility":".NET SDK"}""");
+        var skillPath = Path.Combine(skillDirectory.FullName, "SKILL.md");
+        const string source = """
+            ---
+            name: run-tests
+            metadata:
+              portability: portable
+              binding-revision: "1"
+            # A comment does not end the metadata mapping.
+              name: must-not-override-name
+              category: must-not-become-catalog-metadata
+              nested:
+                flags:
+                  - optional-overlay
+            description: >-
+              Run repository-compatible tests.
+            license: MIT
+            ---
+            # Run tests
+            """;
+        File.WriteAllText(skillPath, source);
+
+        var catalog = SkillCatalogPackage.LoadFromDirectory(new DirectoryInfo(tempDirectory.Path), "test payload", "test");
+
+        var skill = Assert.Single(catalog.Skills);
+        Assert.Equal("run-tests", skill.Name);
+        Assert.Equal("Run repository-compatible tests.", skill.Description);
+        Assert.Equal("Testing", skill.Category);
+        Assert.Equal(source, File.ReadAllText(skillPath));
+    }
+
+    [Fact]
     public void LoadFromDirectory_ScansCatalogTree()
     {
         using var tempDirectory = new TemporaryDirectory();

@@ -687,6 +687,22 @@ internal static class CatalogScanner
             var key = line[..separatorIndex].Trim();
             var value = line[(separatorIndex + 1)..].Trim();
 
+            // Preserve opaque Agent Skills metadata in the payload without
+            // promoting nested keys into the catalog's own metadata fields.
+            if (string.Equals(key, "metadata", StringComparison.OrdinalIgnoreCase))
+            {
+                index++;
+                while (index < lines.Length
+                       && (string.IsNullOrWhiteSpace(lines[index])
+                           || char.IsWhiteSpace(lines[index][0])
+                           || lines[index].TrimStart().StartsWith("#", StringComparison.Ordinal)))
+                {
+                    index++;
+                }
+
+                continue;
+            }
+
             if (Regex.IsMatch(value, @"^[>|][+-]?$"))
             {
                 index++;

@@ -30,11 +30,12 @@ compatibility: "Requires current Microsoft Agent Framework packages and a .NET a
 
 ## Current Upstream Notes
 
+- [`.NET 1.20.0`](https://github.com/microsoft/agent-framework/releases/tag/dotnet-1.20.0) fixes Foundry-hosted workflow cancellation and duplicate AgentHost port binding, preserves Responses logprobs, and adds a timeout for background-agent wait-for-first-completion. Re-test cancellation, timeout, recovery, and streamed metadata with the selected provider.
+- Current AG-UI hosted web-search samples use Responses. Update the Cosmos connector name from `CommunityToolkit.VectorData.CosmosNoSql` to `CommunityToolkit.VectorData.AzureCosmosDB` when following the migrated sample. Retired OpenAI Assistants integration tests were removed; choose an active provider API for new work.
+
 - `dotnet-1.19.0` adds persisted routing and sessions, resilient/steerable hosted agents, AG-UI forwarding, and experimental agent hooks. It makes a breaking move to the MCP `2026-07-28` Tasks extension; update both peers and resume tests together.
-- `dotnet-1.18.0` adds concurrent tool invocation, usage aggregation, Cosmos history/vector examples, hosted storage, and session-scoped background-task release. Its breaking isolation rename is `AgentIsolationKeyProvider`.
-- `dotnet-1.16.0`-`1.17.0` stabilize Copilot agents, sessions, A2A forwarding, and declarative workflow failure paths. See the focused references for older Harness, hosting, and protocol changes.
 - Current AG-UI hosting uses `Microsoft.Agents.AI.Hosting.AGUI.AspNetCore` with `AddAGUIServer()` and `MapAGUIServer(...)`; the client uses `AGUI.Client`, and conversation state flows through `AgentSession`. Do not copy older `AddAGUI`/`MapAGUI` or `AgentThread` hosting examples into current applications.
-- The August 2026 documentation set is mirrored as `172` current markdown pages and now treats middleware, function tools and approvals, sessions, multimodal input, background responses, Azure Functions durable agents, AG-UI frontend and backend tools, MCP-hosted agents, observability, support, upgrades, and Semantic Kernel or AutoGen migration as first-class paths. Load the matching reference file before implementation and verify package maturity plus exact signatures against the linked official page; the expanded documentation does not make every provider or preview feature interchangeable.
+- The bundled August 2026 snapshot contains 172 pages. Start with the September review for current checkpoint and AG-UI guidance, then load only the relevant topic reference. Verify language and package maturity against the linked live page.
 
 ## Architecture
 
@@ -128,6 +129,8 @@ flowchart LR
 When a decision depends on exact wording, long-tail feature coverage, or a less-common integration, check the local official docs snapshot before relying on summaries.
 
 ## References
+
+- [September documentation review](references/september-2026-review.md) - Current provider, workflow, AG-UI, and release guidance; use before older snapshot examples
 
 - [official-docs-index.md](references/official-docs-index.md) - Complete current local snapshot map covering agents, concepts, get-started guides, hosting, integrations, journeys, migration, support, and workflows
 - [patterns.md](references/patterns.md) - Architecture routing, agent types, provider and session model selection, and durable-agent guidance

@@ -28,6 +28,8 @@ If a single agent with a small tool surface can solve the task, stay with an age
 | Shared state | Workflow-wide durable data | Avoids abusing agent state for process state |
 | Checkpoint | A saved execution snapshot | Enables recovery, resume, and rehydration |
 
+For graphs reconstructed between checkpoint and resume, keep each local agent `ChatClientAgentOptions.Id` and optional `Name` stable and unique. Recreate the same topology and executor IDs; request-derived IDs break checkpoint identity. See [September checkpoint guidance](september-2026-review.md#rebuild-checkpointed-workflows-with-stable-identities).
+
 ## Builder Selection
 
 Use `WorkflowBuilder` when:

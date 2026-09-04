@@ -45,6 +45,9 @@ compatibility: "Requires a .NET repository with frontend assets managed through 
 
 ## Current Upstream Notes
 
+- [Biome CLI `2.5.12`](https://github.com/biomejs/biome/releases/tag/%40biomejs/biome%402.5.12) fixes Astro expression parsing, nested JSX attribute sorting, Unicode stdin/stdout corruption, and repeated dependency scanning. Validate representative Astro/TSX files, Unicode input, and formatter idempotence before dropping workarounds.
+- `noFloatingPromises` now handles cyclic imports and awaited Promise aliases more accurately; awaiting an array of Promises still leaves its elements unhandled. Use `Promise.all` or an explicit awaited loop when appropriate. New Nursery rules remain opt-in, including `useFlatMathMinMax`, `useModernMathApis`, `noThisOutsideOfClass`, `noVueDeprecatedScopedSlots`, and `noBunModules`.
+
 - Biome CLI `2.5.11` includes the `2.5.8`-`2.5.10` rule and parser additions and adds Nursery rules for unsafe Astro `set:html` and undeclared CSS custom properties. Enable Nursery rules explicitly; do not treat a version update as permission to change the repository's lint policy.
 - The release fixes Astro shorthand anchors, implicit fragments, void elements, and full HTML handling through `--stdin-file-path`; Vue template/CSS binding false positives; GraphQL naming trivia; and several type-inference performance paths. Re-run the repository's existing `biome check` and formatter-idempotence tests before removing suppressions or accepting churn.
 - When `--stdin-file-path` is used, verify that the intended nested `biome.json` is selected and that ignored input produces the expected warning. Keep fixtures for Vue custom blocks, Svelte attachments, Tailwind class sorting, and non-ASCII diagnostic spans when those surfaces matter.

@@ -67,6 +67,20 @@ If production code is available, read it too -- this is critical for detecting t
 
 Check each test file against the anti-pattern catalog below. Report findings grouped by severity. The examples are .NET-centric but the patterns generalize — use the loaded language extension file to map each pattern to the framework you are auditing.
 
+Before drafting the report, make a private completeness ledger with one row for
+every test method and every class-level fixture/resource. Record its oracle (or
+absence), exception handling, state/time dependencies, and disposition. Do not
+publish until every row is either attached to a finding or explicitly judged
+sound. In particular:
+
+- `actual != oldValue` is a weak mutation oracle: it accepts every wrong new
+  value. Require the exact expected value.
+- Include unused or undisposed class-level resources; method-only scans miss
+  fields such as a static `HttpClient`.
+- When production code is supplied, note obvious untested contracts adjacent to
+  a finding, but do not perform exhaustive branch or mutation analysis. Route
+  that broader question to `test-gap-analysis`.
+
 #### Critical -- Tests that give false confidence
 
 | Anti-Pattern | What to Look For |
@@ -89,6 +103,7 @@ Check each test file against the anti-pattern catalog below. Report findings gro
 | **Over-mocking** | More mock setup lines than actual test logic. Verifying exact call sequences on mocks rather than outcomes. Mocking types the test owns. Per language: Moq/NSubstitute/FakeItEasy (.NET), `unittest.mock` / `pytest-mock` (Python), Jest auto-mocks / Sinon (JS/TS), Mockito/PowerMock (Java), gomock/testify mock (Go), RSpec mocks/mocha (Ruby), `mockall` (Rust), MockK (Kotlin), `Mock` cmdlet (Pester), gmock (C++). For a deep mock audit in .NET, use `exp-mock-usage-analysis`. |
 | **Implementation coupling** | Testing private methods via reflection (`MethodInfo.Invoke`, `getattr` in Python, `(thing as any)` in TS, `Field.setAccessible(true)` in Java, `Object#send` in Ruby, internal `pub(crate)` access in Rust). Asserting on internal state instead of observable behavior. Verifying exact method call counts on collaborators instead of business outcomes. |
 | **Broad exception assertions** | `Assert.ThrowsException<Exception>(...)` (.NET) / `pytest.raises(Exception)` / `expect(fn).toThrow(Error)` without a message matcher / `assertThrows(Exception.class, ...)` (Java) / `assert.Error(t, err)` without checking the kind / `expect { ... }.to raise_error` without class (RSpec) / `#[should_panic]` without `expected = "..."` / `Should -Throw` without `-ExpectedMessage` / `EXPECT_ANY_THROW` instead of `EXPECT_THROW(stmt, SpecificType)`. |
+| **Weak transformation oracle** | A normalization, casing, trimming, mapping, or conversion test supplies an input already in the expected form, so a no-op implementation passes even though the assertion may catch other defects. Use an input that must change and assert an independently derived expected value. A producer/consumer round trip is useful but does not replace an independent format assertion when both sides could share the same defect. |
 
 #### Medium -- Maintainability and clarity issues
 
@@ -114,14 +129,15 @@ Check each test file against the anti-pattern catalog below. Report findings gro
 
 Before reporting, re-check each finding against these severity rules:
 
-- **Critical/High**: Only for issues that cause tests to give false confidence or be unreliable. A test that always passes regardless of correctness is Critical. Flaky shared state is High. Missing-await on async assertions is Critical (silent pass).
+- **Critical/High**: Only for issues that cause tests to give false confidence or be unreliable. A test that always passes regardless of correctness is Critical. Shared mutable state is High when it is a latent isolation risk, but **Critical when the user reports actual order-dependent failures or the code proves one test requires another to run first**. Missing-await on async assertions is Critical (silent pass).
 - **Medium**: Only for issues that actively harm maintainability -- 5+ nearly-identical tests, truly meaningless names like `Test1` / `test` / `it1`.
 - **Low**: Cosmetic naming mismatches, minor style preferences, assertion messages that could be better. When in doubt, rate Low.
 - **Use the caller's severity vocabulary consistently.** If the caller asks for
-  Critical / Warning / Info, map reliability risks to Warning and
-  maintenance/cosmetic concerns to Info rather than silently collapsing every
-  item into Critical. Severity describes the demonstrated failure mode, not how
-  much prose a finding receives.
+  Critical / Warning / Info, map latent reliability risks to Warning and
+  maintenance/cosmetic concerns to Info. Keep a demonstrated false-confidence
+  or current order-dependency root cause Critical; do not downgrade it merely to
+  make every requested tier non-empty. Severity describes the demonstrated
+  failure mode, not how much prose a finding receives.
 - **Separate a systemic finding from its instances.** Coverage touching across a
   facade is one Critical systemic finding whose evidence lists every affected
   test. All assertion-free instances, including the last facade method, retain
@@ -164,9 +180,27 @@ IMPORTANT: If the tests are well-written, say so clearly up front. Do not inflat
    actual transformation, DTO fields, and promised identity/clone semantics.
    Never invent fields or require lossless round-tripping when production is
    intentionally lossy.
+   For every suspicious equality, write down the independently known oracle
+   before assigning a finding. If the assertion compares a transformed output
+   with non-trivial input, clone state, snapshot, mock verification, or a
+   framework-native assertion context, explain why it can fail before calling it
+   tautological or assertion-free. Conversely, when a transformation test uses
+   an already-normalized input, call out that the input cannot distinguish the
+   real transformation from a no-op and provide a changing input plus exact
+   expected output. For paired producer/consumer APIs, retain the round-trip test
+   and add one independent representation oracle rather than replacing valid
+   metamorphic evidence.
 3. **Make every Critical/High fix complete and specific.** Give the replacement assertion with the *exact expected value* (the computed discount, the exact CSV line, the full expected object), not a `// assert something here` placeholder.
-4. **Name the adjacent gaps the tests should also cover** — untested error paths, boundary values, and round-trip/culture-sensitivity risks in the same class. These are part of "what's wrong with my tests", and omitting them is the most common way this review loses to an unassisted one.
+4. **Name obvious adjacent gaps without widening into mutation analysis** —
+   when production code is supplied, note directly related untested throws,
+   null results, boundary values, and round-trip/culture-sensitivity risks in an
+   **Adjacent coverage gaps** section. Use `test-gap-analysis` for exhaustive
+   branch-by-branch behavioral gaps.
 5. **Keep the report internally consistent.** Summary counts must equal the enumerated findings. Publish a settled conclusion: do all reconsidering before you write, and never leave "wait, that's wrong" / "this should fail but doesn't" reasoning in the output.
+6. **Make non-findings decisive.** For a clean or mostly clean small suite, name
+   the suspicious constructs you cleared and the framework rule that makes each
+   valid. Do not bury a clean verdict under a generic checklist or speculative
+   improvements.
 
 Present findings in this structure:
 

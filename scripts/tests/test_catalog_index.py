@@ -16,6 +16,34 @@ SPEC.loader.exec_module(CATALOG_INDEX)
 
 
 class CatalogIndexTests(unittest.TestCase):
+    def test_parse_frontmatter_keeps_nested_metadata_opaque(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_root_value:
+            skill_path = Path(temp_root_value) / "SKILL.md"
+            source = """---
+name: run-tests
+metadata:
+  portability: portable
+  binding-revision: "1"
+# A comment does not end the metadata mapping.
+  name: must-not-override-name
+  category: must-not-become-catalog-metadata
+  nested:
+    flags:
+      - optional-overlay
+description: >-
+  Run repository-compatible tests.
+license: MIT
+---
+# Run tests
+"""
+            skill_path.write_text(source, encoding="utf-8")
+
+            metadata, body = CATALOG_INDEX.parse_frontmatter(skill_path)
+
+            self.assertEqual(source, skill_path.read_text(encoding="utf-8"))
+        self.assertEqual({"name": "run-tests", "description": "Run repository-compatible tests.", "license": "MIT"}, metadata)
+        self.assertEqual("# Run tests\n", body)
+
     def test_parse_frontmatter_allows_comments_after_folded_block(self) -> None:
         with tempfile.TemporaryDirectory() as temp_root_value:
             skill_path = Path(temp_root_value) / "SKILL.md"

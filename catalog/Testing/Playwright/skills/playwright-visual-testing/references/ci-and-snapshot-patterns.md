@@ -10,7 +10,7 @@ Sources reviewed:
 - Playwright CI setup: https://playwright.dev/docs/ci
 - Playwright GitHub Actions setup: https://playwright.dev/docs/ci-intro
 
-The official CI and visual-comparison pages were re-reviewed in August 2026. Their core operational contract is unchanged: install the exact browser/dependency set in CI, keep the rendering environment stable, and update snapshot baselines only through an explicit reviewed command. The current CI workflow examples use `actions/checkout@v6`, `actions/setup-node@v6`, and `actions/upload-artifact@v5`.
+The official CI and visual-comparison pages were re-reviewed in September 2026. Their core operational contract is unchanged: install the exact browser/dependency set in CI, keep the rendering environment stable, and update snapshot baselines only through an explicit reviewed command. The current CI workflow examples use `actions/checkout@v6`, `actions/setup-node@v6`, and `actions/upload-artifact@v5`.
 
 ## Preferred Built-In Snapshot Path
 
@@ -31,6 +31,8 @@ test('home page visual baseline', async ({ page }) => {
   });
 });
 ```
+
+PNG is the default baseline format. Current Playwright also supports lossless WebP by naming the snapshot `home-page.webp`. Keep the browser/project/OS-specific snapshot identity and review an intentional format migration; do not send WebP files through the PNG-only custom comparator below. Array path segments must stay inside the test file's snapshot directory.
 
 Project-level defaults keep threshold choices reviewable:
 

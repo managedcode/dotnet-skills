@@ -19,7 +19,7 @@ compatibility: "Requires Semantic Kernel 1.x packages (.NET 8+)."
 - [Plugins and Functions](https://learn.microsoft.com/en-us/semantic-kernel/concepts/plugins/)
 - [Agent Functions](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-functions)
 - [GitHub Repository](https://github.com/microsoft/semantic-kernel)
-- [Semantic Kernel .NET 1.80.0 release](https://github.com/microsoft/semantic-kernel/releases/tag/dotnet-1.80.0)
+- [Semantic Kernel .NET 1.80.1 release](https://github.com/microsoft/semantic-kernel/releases/tag/dotnet-1.80.1)
 - [Microsoft Agent Framework](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/)
 
 ### References
@@ -48,6 +48,8 @@ compatibility: "Requires Semantic Kernel 1.x packages (.NET 8+)."
 7. Re-test Cosmos DB vector-store queries, file and document plugins, OpenAPI server-variable URLs, and Ollama reasoning settings after upgrading to `1.79.0`. The release fixes the Cosmos vector-store path, rejects mixed-separator UNC paths, URL-encodes OpenAPI server variables, adds Ollama `Think`, and allows deterministic `TimePlugin` tests through `TimeProvider` injection.
 8. Treat the Prompty.Core `2.0.0-beta.3` update in `1.79.0` as a breaking dependency change. Re-run prompt-template tests and remove security workarounds that are no longer needed after the vulnerable transitive version is gone.
 9. In `1.80.0`, re-test OpenAPI plugin HTTP-client defaults and Gemini calls that restrict `FunctionChoiceBehavior` to a supplied function list. The migrated .NET MEVD providers are no longer owned by Semantic Kernel; follow their redirect guidance and keep vector-provider package references explicit during upgrades.
+
+For `1.80.1`, update migrated vector-provider references to the current CommunityToolkit.VectorData package names and re-run connector and OpenAPI plugin tests after the dependency refresh. The release removes retired OpenAI Assistants integration tests; do not interpret that removal as a working Assistants migration path. Use Responses or the current Agent Framework migration guidance for affected integrations.
 
 ## Kernel Setup
 

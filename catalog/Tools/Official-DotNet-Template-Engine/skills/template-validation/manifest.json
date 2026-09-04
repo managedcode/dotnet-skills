@@ -1,5 +1,5 @@
 {
-  "version": "0.1.3",
+  "version": "0.1.4",
   "category": "Core",
   "compatibility": "Requires a .NET repository using dotnet new templates or template authoring workflows."
 }

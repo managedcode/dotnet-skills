@@ -214,6 +214,8 @@ External upstream repositories are handled separately:
 Do not maintain a second manual plugin registry in local config.
 The importer auto-discovers upstream plugins from vendored `plugin.json` files and standard Claude plugin manifests at `.claude-plugin/plugin.json`. For official repositories that publish standalone skills without a plugin manifest, it also discovers canonical `.agents/skills/*/SKILL.md` entries and reads their release version from vendored package metadata. It uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides. Imported `SKILL.md`, `AGENT.md`, and supporting skill content should be copied verbatim from upstream rather than rewritten locally.
 
+Upstream Agent Skills may include a nested YAML `metadata` block. Both catalog scanners leave that block opaque and preserve it in the installed skill payload; its nested keys do not become catalog fields. Keep local version, category, compatibility, and package signals in the sibling manifest.
+
 For imported official upstream skills, keep the upstream skill or agent id unless there is a real compatibility reason to rename it.
 
 Do not add generated catalog tables to `README.md`. The browsable catalog is published at [skills.managed-code.com](https://skills.managed-code.com/).

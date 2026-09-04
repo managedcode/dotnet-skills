@@ -703,6 +703,16 @@ def parse_simple_yaml_mapping(path: Path, raw_frontmatter: str) -> dict[str, obj
         key = key.strip()
         value = raw_value.strip()
 
+        # Agent Skills metadata is opaque to the catalog. Preserve it in the
+        # source payload without promoting nested keys into catalog fields.
+        if key == "metadata":
+            index += 1
+            while index < len(lines) and (
+                not lines[index].strip() or lines[index][0].isspace() or lines[index].lstrip().startswith("#")
+            ):
+                index += 1
+            continue
+
         if re.fullmatch(r"[>|][+-]?", value):
             index += 1
             block_lines: list[str] = []

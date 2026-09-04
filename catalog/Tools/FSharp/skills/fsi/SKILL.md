@@ -60,7 +60,7 @@ On Windows, run scripts with `dotnet fsi scripts/check.fsx`.
 
 ## Current Upstream Notes
 
-- The August 2026 F# Interactive reference keeps `dotnet fsi` as the supported command-line entry point for interactive sessions and `.fsx` scripts; it does not turn hidden REPL state into a reproducible workflow.
+- The September 2026 F# Interactive reference keeps `dotnet fsi` as the supported command-line entry point for interactive sessions and `.fsx` scripts; it does not turn hidden REPL state into a reproducible workflow.
 - Use repeatable `.fsx` files with explicit `#r "nuget: ..."` and `#load` directives once an experiment affects a repository task; do not rely on hidden REPL state.
 
 ## Interactive Session Rules
@@ -136,6 +136,14 @@ let json = JsonConvert.SerializeObject(payload)
 
 printfn $"{json}"
 ```
+
+FSI does not use referenced package build targets during restore by default. Enable them only when a trusted package requires them; pin the version and test from a fresh process:
+
+```fsharp
+#r "nuget: FSharp.Data, 6.6.0, usepackagetargets=true"
+```
+
+Keep `usepackagetargets=false` or omit the option for ordinary references. This controls package restore behavior; it does not turn an `.fsx` script into a compiled project.
 
 Use `#i` only when an additional feed is required. Local feed paths must be absolute; construct them from `__SOURCE_DIRECTORY__` instead of committing personal paths.
 
