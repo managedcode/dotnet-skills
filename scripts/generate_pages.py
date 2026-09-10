@@ -56,6 +56,8 @@ LEGACY_DIRECT_REDIRECTS = {
     "skills/exp-dotnet-test-frameworks/": "skills/run-tests/",
     "skills/mcp-csharp-test/": "skills/mcp/",
     "skills/libvlc/libvlc-skill.md": "skills/libvlc/",
+    "agents/skills/code-testing-agent/unit-test-generation.prompt.md": "skills/code-testing-agent/",
+    "skills/code-testing-agent/unit-test-generation.prompt.md": "skills/code-testing-agent/",
 }
 
 PLACEHOLDERS = {
