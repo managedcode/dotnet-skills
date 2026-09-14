@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "category": "Metrics",
   "compatibility": "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
 }

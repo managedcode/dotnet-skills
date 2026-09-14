@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Improve non-passing dotnet-test scenarios (#1114)...
-      sha: ac8f41264bdd557e58924a3110eea8e0917dcf4d
+      commitTitle: Surface activation-only evaluation failures (#1163)...
+      sha: 24f7cfbd42ad7bf52bcd67372816b982c38c64c6
       tags:
-      - skill-validator-nightly-2-gac8f412
+      - skill-validator-nightly-1-g24f7cfb
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'chore: update biome config (#17901)'
-      sha: 09d7772a2f272b93942126d51ade74c438c9a770
+      commitTitle: '[ci] format'
+      sha: 88767f2e1c67b3bba25128a1bcb1278ed1484068
       tags:
-      - astro@7.3.1-2-g09d7772a2f
+      - '@astrojs/cloudflare@14.3.1-34-g88767f2e1c'
     path: astro
   path: upstreams
 kind: LockConfig

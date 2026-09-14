@@ -1,5 +1,5 @@
 {
-  "version": "0.2.19",
+  "version": "0.2.22",
   "category": "Testing",
   "compatibility": "Requires a .NET test project or solution.",
   "packages": [
