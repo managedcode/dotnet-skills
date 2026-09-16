@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Surface activation-only evaluation failures (#1163)...
-      sha: 24f7cfbd42ad7bf52bcd67372816b982c38c64c6
+      commitTitle: 'Merge pull request #873 from dotnet/add-dotnet-refactoring-skills...'
+      sha: 26323a52990d0cbfc838117109b40e115aac891f
       tags:
-      - skill-validator-nightly-1-g24f7cfb
+      - skill-validator-nightly-61-g26323a5
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: '[ci] format'
-      sha: 88767f2e1c67b3bba25128a1bcb1278ed1484068
+      commitTitle: 'feat(factory): adversary skills (#18006)'
+      sha: c2e6b0d7c7badff6f27cfb8d7dbe8bcaad64759f
       tags:
-      - '@astrojs/cloudflare@14.3.1-34-g88767f2e1c'
+      - '@astrojs/cloudflare@14.3.1-42-gc2e6b0d7c7'
     path: astro
   path: upstreams
 kind: LockConfig
