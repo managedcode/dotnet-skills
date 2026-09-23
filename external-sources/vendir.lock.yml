@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1184 from dotnet/dependabot/npm_and_yarn/eng/evaluation-tools/microsoft/vally-cli-0.16.0...'
-      sha: 8bbfe7a4d1c5c0cd42cd04e38031779c75f2dda3
+      commitTitle: Fix evaluation state label reconciliation (#1197)...
+      sha: 4ed5f7c121da8dd31af31a35cef05070948c6556
       tags:
-      - skill-validator-nightly-100-g8bbfe7a
+      - skill-validator-nightly-9-g4ed5f7c
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'chore(deps): update VS Code related dependencies (#18038)'
-      sha: 2acad3f566dc81eeee70269f414fff95d9750528
+      commitTitle: '[ci] release (#18035)'
+      sha: 790c6f720efd9de362e7a2b6319ac2d721062bda
       tags:
-      - '@astrojs/cloudflare@14.3.2-4-g2acad3f566'
+      - '@astrojs/cloudflare@14.3.3'
     path: astro
   path: upstreams
 kind: LockConfig
