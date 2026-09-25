@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Fix evaluation state label reconciliation (#1197)...
-      sha: 4ed5f7c121da8dd31af31a35cef05070948c6556
+      commitTitle: 'Merge pull request #1201 from dotnet/abhitejjohn-fix-claude-manifest-lsp-reference...'
+      sha: 668790f7aeba58a3ec9b151c1fe6a1642ba35cd7
       tags:
-      - skill-validator-nightly-9-g4ed5f7c
+      - skill-validator-nightly-8-g668790f
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: '[ci] release (#18035)'
-      sha: 790c6f720efd9de362e7a2b6319ac2d721062bda
+      commitTitle: Fix Astro 7 on StackBlitz by requiring rolldown 1.2.10 (#18114)...
+      sha: c17d9209bef385ea88b6fee36e91ad4e635f4a86
       tags:
-      - '@astrojs/cloudflare@14.3.3'
+      - astro@7.3.5-1-gc17d9209be
     path: astro
   path: upstreams
 kind: LockConfig
