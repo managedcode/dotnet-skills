@@ -1,6 +1,0 @@
-{
-  "version": "0.1.1",
-  "category": "Web",
-  "compatibility": "Requires an ASP.NET Core project or solution.",
-  "package_prefix": "Microsoft.AspNetCore"
-}
