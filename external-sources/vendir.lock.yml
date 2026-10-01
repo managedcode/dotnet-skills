@@ -2,21 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Remove weak dotnet-aspnetcore skills (#1210)...
-      sha: 8599a06757aabf411ae28e0559063342d70386ef
+      commitTitle: Add native runtime graders to agentic workflows (#1224)...
+      sha: 4be92ceb4e2d20e6b1fe9662a59b2fff0f4c5b4f
       tags:
-      - skill-validator-nightly-1-g8599a06
+      - skill-validator-nightly-28-g4be92ce
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Add .ts and .js to server environment optimizeDeps entries glob
-        (#18133)...
-      sha: faac481dc86efdd2e4987069a7298f2aea3f1c6c
+      commitTitle: Update dependency vscode-languageclient to v10 (#18173)...
+      sha: f637bd9a305541cc1c36b6933916cac86a7db46a
       tags:
-      - astro@7.3.5-26-gfaac481dc8
+      - astro@7.3.5-37-gf637bd9a30
     path: astro
   path: upstreams
 kind: LockConfig
