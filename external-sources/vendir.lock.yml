@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Add native runtime graders to agentic workflows (#1224)...
-      sha: 4be92ceb4e2d20e6b1fe9662a59b2fff0f4c5b4f
+      commitTitle: Add a consolidated MSBuild skill to the dotnet plugin (#1241)...
+      sha: 973cffbcdbae02557cc68ad0d41b8f20d60cfa03
       tags:
-      - skill-validator-nightly-28-g4be92ce
+      - skill-validator-nightly-1-g973cffb
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Update dependency vscode-languageclient to v10 (#18173)...
-      sha: f637bd9a305541cc1c36b6933916cac86a7db46a
+      commitTitle: Port Go's csrf protection (#15595)...
+      sha: 64e40396dc7e955986fd6d7bbd195f72556933d5
       tags:
-      - astro@7.3.5-37-gf637bd9a30
+      - astro@7.3.5-41-g64e40396dc
     path: astro
   path: upstreams
 kind: LockConfig
