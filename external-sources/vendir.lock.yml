@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Add a consolidated MSBuild skill to the dotnet plugin (#1241)...
-      sha: 973cffbcdbae02557cc68ad0d41b8f20d60cfa03
+      commitTitle: 'Merge pull request #1185 from dotnet/abhitejjohn-fix-csharp-refactoring-evals...'
+      sha: e87c5da26cbf0f8c701e91247c4817df0adc12f7
       tags:
-      - skill-validator-nightly-1-g973cffb
+      - skill-validator-nightly-14-ge87c5da
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Port Go's csrf protection (#15595)...
-      sha: 64e40396dc7e955986fd6d7bbd195f72556933d5
+      commitTitle: Update examples (#18204)...
+      sha: 4c1470a7f907fe678ef5e7dceaa972ca83d297da
       tags:
-      - astro@7.3.5-41-g64e40396dc
+      - astro@7.3.5-43-g4c1470a7f9
     path: astro
   path: upstreams
 kind: LockConfig
