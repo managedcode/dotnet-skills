@@ -13,36 +13,72 @@
     "compatibility": "Requires a .NET repository or solution."
   },
   "pluginOverrides": {
-    "dotnet-ai": {
+    "agentic-workflows": {
+      "type": "Tools",
+      "title": "Official .NET skills: GitHub Agentic Workflows",
+      "category": "Governance",
+      "compatibility": "Requires a GitHub repository using gh-aw and access to the github/gh-aw upstream prompts."
+    },
+    "authoring-github-workflows": {
+      "type": "Tools",
+      "title": "Official .NET skills: GitHub Actions authoring",
+      "category": "Governance",
+      "compatibility": "Requires a GitHub Actions repository and actionlint for local validation."
+    },
+    "create-custom-agent": {
+      "type": "Tools",
+      "title": "Official .NET skills: Custom agents",
       "category": "AI",
-      "compatibility": "Requires a .NET repository working with AI, ML, or MCP workloads.",
+      "compatibility": "Requires VS Code or GitHub Copilot custom-agent support."
+    },
+    "create-skill": {
+      "type": "Tools",
+      "title": "Official .NET skills: Skill authoring",
+      "category": "Governance",
+      "compatibility": "Requires a dotnet/skills checkout and its skill-validator and evaluation tooling."
+    },
+    "create-skill-test": {
+      "type": "Tools",
+      "title": "Official .NET skills: Skill evaluations",
+      "category": "Governance",
+      "compatibility": "Requires a dotnet/skills checkout and its skill-validator and evaluation tooling."
+    },
+    "dotnet": {
       "skillOverrides": {
-        "mcp-csharp-create": {
-          "exclude": true
-        },
-        "mcp-csharp-debug": {
-          "exclude": true
-        },
-        "mcp-csharp-publish": {
-          "exclude": true
-        },
-        "mcp-csharp-test": {
-          "exclude": true
+        "csharp-refactoring": {
+          "category": "Code Quality"
         }
       }
+    },
+    "dotnet-advanced": {
+      "skillOverrides": {
+        "vectorization": {
+          "category": "Metrics"
+        }
+      }
+    },
+    "dotnet-ai": {
+      "category": "AI",
+      "compatibility": "Requires a .NET repository working with AI, ML, or MCP workloads."
     },
     "dotnet-aspnetcore": {
       "type": "Frameworks",
       "package": "Official-DotNet-ASPNetCore",
       "title": "Official .NET skills: ASP.NET Core",
       "category": "Web",
-      "compatibility": "Requires an ASP.NET Core project or solution.",
+      "compatibility": "Requires an ASP.NET Core project or solution."
+    },
+    "dotnet-blazor": {
+      "type": "Frameworks",
+      "title": "Official .NET skills: Blazor",
+      "category": "Web",
+      "compatibility": "Requires a Blazor project or solution.",
+      "skillDefaults": {
+        "package_prefix": "Microsoft.AspNetCore.Components"
+      },
       "skillOverrides": {
-        "configuring-opentelemetry-dotnet": {
-          "package_prefix": "OpenTelemetry"
-        },
-        "minimal-api-file-upload": {
-          "package_prefix": "Microsoft.AspNetCore"
+        "use-igniteui-blazor": {
+          "package_prefix": "IgniteUI.Blazor"
         }
       }
     },
@@ -60,16 +96,19 @@
       "type": "Tools",
       "package": "Official-DotNet-Diagnostics",
       "category": "Metrics",
-      "compatibility": "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work."
+      "compatibility": "Requires a .NET repository, build artifacts, traces, dumps, or a runnable app for diagnostics work.",
+      "skillOverrides": {
+        "android-tombstone-symbolication": {
+          "category": "Cross-Platform UI"
+        },
+        "apple-crash-symbolication": {
+          "category": "Cross-Platform UI"
+        }
+      }
     },
     "dotnet-experimental": {
       "category": "Testing",
-      "compatibility": "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable.",
-      "skillOverrides": {
-        "exp-simd-vectorization": {
-          "category": "Core"
-        }
-      }
+      "compatibility": "Requires a .NET repository where experimental upstream dotnet/skills guidance is acceptable."
     },
     "dotnet-maui": {
       "type": "Frameworks",
@@ -103,6 +142,20 @@
             "coverlet.msbuild"
           ]
         },
+        "writing-mstest-tests": {
+          "package_prefix": "MSTest"
+        },
+        "migrate-static-to-wrapper": {
+          "category": "Migration"
+        }
+      }
+    },
+    "dotnet-test-migration": {
+      "type": "Testing",
+      "title": "Official .NET skills: Test migrations",
+      "category": "Migration",
+      "compatibility": "Requires a .NET test project being migrated between frameworks, framework versions, or test platforms.",
+      "skillOverrides": {
         "migrate-mstest-v1v2-to-v3": {
           "package_prefix": "MSTest"
         },
@@ -114,15 +167,27 @@
             "xunit",
             "xunit.v3"
           ]
-        },
-        "writing-mstest-tests": {
-          "package_prefix": "MSTest"
         }
       }
     },
     "dotnet-upgrade": {
-      "category": "Legacy",
+      "category": "Migration",
       "compatibility": "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
+    },
+    "dotnet-winforms": {
+      "type": "Frameworks",
+      "package": "Official-DotNet-WinForms",
+      "title": "Official .NET skills: Windows Forms",
+      "category": "Desktop",
+      "compatibility": "Requires a Windows Forms project; runtime and designer validation require Windows."
+    },
+    "improve-skill-quality": {
+      "type": "Tools",
+      "title": "Official .NET skills: Skill quality",
+      "category": "Governance",
+      "compatibility": "Requires a dotnet/skills checkout and its skill-validator and evaluation tooling."
     }
-  }
+  },
+  "docsRoot": "https://github.com/dotnet/skills/tree/main",
+  "standaloneVersionFile": "plugins/dotnet/plugin.json"
 }

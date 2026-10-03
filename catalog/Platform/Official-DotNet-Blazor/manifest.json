@@ -1,9 +1,0 @@
-{
-  "name": "dotnet-blazor",
-  "title": "Official .NET skills: dotnet-blazor",
-  "description": "Skills for Blazor development: component authoring, interactivity, and web application patterns.",
-  "links": {
-    "repository": "https://github.com/dotnet/skills",
-    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-blazor"
-  }
-}

@@ -16,6 +16,34 @@ SPEC.loader.exec_module(CATALOG_INDEX)
 
 
 class CatalogIndexTests(unittest.TestCase):
+    def test_official_skills_use_their_workflow_collections(self) -> None:
+        skills = {skill["name"]: skill for skill in CATALOG_INDEX.collect_skills()}
+        expected = {
+            "use-igniteui-blazor": ("Web", "Frameworks"),
+            "winforms-expert": ("Desktop & UI", "Frameworks"),
+            "csharp-refactoring": (".NET Quality", "Code Quality"),
+            "msbuild": ("MSBuild", "Build Pipelines"),
+            "android-tombstone-symbolication": ("Mobile & Device", "Crash Analysis"),
+            "apple-crash-symbolication": ("Mobile & Device", "Crash Analysis"),
+            "dump-collect": ("Diagnostics & Metrics", "Crash Analysis"),
+            "migrate-xunit-to-xunit-v3": ("Upgrades & Migration", "Testing migrations"),
+            "mtp-hot-reload": ("Testing", "Foundations"),
+            "test-gap-analysis": ("Testing Research", "Experimental"),
+            "create-skill": ("Governance & Delivery", "Tooling"),
+            "create-custom-agent": ("AI & Agents", "Tooling"),
+            "authoring-github-workflows": ("Governance & Delivery", "Delivery Workflow"),
+            "agentic-workflows": ("Governance & Delivery", "Delivery Workflow"),
+        }
+        for name, grouping in expected.items():
+            with self.subTest(skill=name):
+                self.assertEqual(grouping, (skills[name]["stack"], skills[name]["lane"]))
+        blazor = [skill for skill in skills.values() if skill["package"] == "Official-DotNet-Blazor"]
+        self.assertTrue(blazor)
+        for skill in blazor:
+            with self.subTest(blazor=skill["name"]):
+                self.assertEqual("Web", skill["category"])
+                self.assertEqual(("Web", "Frameworks"), (skill["stack"], skill["lane"]))
+
     def test_parse_frontmatter_keeps_nested_metadata_opaque(self) -> None:
         with tempfile.TemporaryDirectory() as temp_root_value:
             skill_path = Path(temp_root_value) / "SKILL.md"

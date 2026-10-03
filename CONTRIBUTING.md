@@ -212,7 +212,11 @@ External upstream repositories are handled separately:
 - `scripts/import_external_catalog_sources.py` performs the normalization step
 
 Do not maintain a second manual plugin registry in local config.
-The importer auto-discovers upstream plugins from vendored `plugin.json` files and standard Claude plugin manifests at `.claude-plugin/plugin.json`. For official repositories that publish standalone skills without a plugin manifest, it also discovers canonical `.agents/skills/*/SKILL.md` entries and reads their release version from vendored package metadata. It uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides. Imported `SKILL.md`, `AGENT.md`, and supporting skill content should be copied verbatim from upstream rather than rewritten locally.
+The importer auto-discovers upstream plugins from vendored `plugin.json` files and standard Claude plugin manifests at `.claude-plugin/plugin.json`, including repositories with a top-level `plugins/` directory. It also discovers canonical `.agents/skills/*/SKILL.md` and `.github/skills/*/SKILL.md` entries alongside plugins. Standalone versions come from vendored package metadata or the import config's `standaloneVersionFile`; the official .NET source uses its primary `plugins/dotnet/plugin.json` version. `docsRoot` builds package documentation links from each discovered source path, including standalone skill directories. It uses `external-sources/imports/*.json` only for local policy such as type, category, package naming, compatibility, and skill-level package trigger overrides. Imported `SKILL.md`, `AGENT.md`, and supporting skill content should be copied verbatim from upstream rather than rewritten locally.
+
+Keep the transport broad enough to include all real skill roots. New plugins and tasks must not need a manual registry entry; add overrides only when their classification or package signals need refinement. Keep upstream repository-maintenance prerequisites explicit in compatibility metadata. Test fixtures are not installable skills. Regression coverage verifies complete official-source coverage, byte-preserving copies, added plugins and tasks, changed guidance, and removal of retired skills and packages.
+
+The repository's `.gitattributes` preserves upstream snapshot and catalog payload line endings so Git does not rewrite imported bytes during checkout or staging.
 
 Upstream Agent Skills may include a nested YAML `metadata` block. Both catalog scanners leave that block opaque and preserve it in the installed skill payload; its nested keys do not become catalog fields. Keep local version, category, compatibility, and package signals in the sibling manifest.
 
@@ -521,14 +525,7 @@ python3 scripts/upstream_watch.py --sync-state-only
 
 ## Catalog Categories
 
-Valid categories are:
-
-- `Core`
-- `Web and Cloud`
-- `Desktop and Mobile`
-- `Data, Distributed, and AI`
-- `Legacy and Compatibility`
-- `Quality, Testing, and Tooling`
+Categories are read from sibling skill manifests and discovered by the catalog scanner. Reuse the appropriate existing category, such as `Core`, `Web`, `Desktop`, `Testing`, or `Migration`, instead of editing a hardcoded list. Categories describe individual skills; public Collections and lanes group them by workflow.
 
 ## Final Rule
 

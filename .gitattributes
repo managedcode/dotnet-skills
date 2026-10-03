@@ -1,0 +1,4 @@
+# Preserve upstream snapshots and catalog payloads without newline conversion.
+external-sources/upstreams/** -text
+catalog/**/skills/** -text
+catalog/**/agents/** -text

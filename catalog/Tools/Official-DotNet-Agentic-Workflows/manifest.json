@@ -1,0 +1,9 @@
+{
+  "name": "agentic-workflows",
+  "title": "Official .NET skills: GitHub Agentic Workflows",
+  "description": "Route gh-aw workflow design/create/debug/upgrade requests to the right prompts.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/.github/skills/agentic-workflows"
+  }
+}

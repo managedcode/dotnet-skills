@@ -19,7 +19,8 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "worker-services", "Background Workers", "Frameworks");
         AssertSkill(catalog, "maui", "Mobile & Device", "Frameworks");
         AssertSkill(catalog, "dotnet-maui-doctor", "Mobile & Device", "Tooling");
-        AssertSkill(catalog, "android-tombstone-symbolication", "Diagnostics & Metrics", "Crash Analysis");
+        AssertSkill(catalog, "android-tombstone-symbolication", "Mobile & Device", "Crash Analysis");
+        AssertSkill(catalog, "apple-crash-symbolication", "Mobile & Device", "Crash Analysis");
         AssertSkill(catalog, "dump-collect", "Diagnostics & Metrics", "Crash Analysis");
         AssertSkill(catalog, "mixed-reality", "XR & Spatial", "Frameworks");
         AssertSkill(catalog, "uno-platform", "Desktop & UI", "Frameworks");
@@ -36,12 +37,31 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "cloc", "Diagnostics & Metrics", "Observability");
         AssertSkill(catalog, "complexity", ".NET Quality", "Code Quality");
         AssertSkill(catalog, "codeql", "Diagnostics & Metrics", "Static Analysis");
-        AssertSkill(catalog, "mtp-hot-reload", "Upgrades & Migration", "Testing migrations");
+        AssertSkill(catalog, "mtp-hot-reload", "Testing", "Foundations");
         AssertSkill(catalog, "migrate-xunit-to-xunit-v3", "Upgrades & Migration", "Testing migrations");
         AssertSkill(catalog, "legacy-aspnet", "Legacy", "Legacy frameworks");
         AssertSkill(catalog, "architecture", "Architecture", "Architecture");
         AssertSkill(catalog, "mcaf", "Governance & Delivery", "Governance");
         AssertSkill(catalog, "code-review", "Governance & Delivery", "Review");
+        AssertSkill(catalog, "use-igniteui-blazor", "Web", "Frameworks");
+        AssertSkill(catalog, "winforms-expert", "Desktop & UI", "Frameworks");
+        AssertSkill(catalog, "csharp-refactoring", ".NET Quality", "Code Quality");
+        AssertSkill(catalog, "msbuild", "MSBuild", "Build Pipelines");
+        AssertSkill(catalog, "create-custom-agent", "AI & Agents", "Tooling");
+        AssertSkill(catalog, "create-skill", "Governance & Delivery", "Tooling");
+        AssertSkill(catalog, "create-skill-test", "Governance & Delivery", "Tooling");
+        AssertSkill(catalog, "improve-skill-quality", "Governance & Delivery", "Tooling");
+        AssertSkill(catalog, "authoring-github-workflows", "Governance & Delivery", "Delivery Workflow");
+        AssertSkill(catalog, "agentic-workflows", "Governance & Delivery", "Delivery Workflow");
+
+        var blazorSkills = catalog.Skills.Where(skill => skill.Package == "Official-DotNet-Blazor").ToArray();
+        Assert.NotEmpty(blazorSkills);
+        Assert.All(blazorSkills, skill =>
+        {
+            Assert.Equal("Web", skill.Category);
+            Assert.Equal("Web", skill.Stack);
+            Assert.Equal("Frameworks", skill.Lane);
+        });
         Assert.Equal(
             ["mcaf"],
             catalog.Skills
@@ -92,6 +112,7 @@ public sealed class CatalogOrganizationTests
 
         Assert.True(CatalogOrganization.IsPrimaryBundle(dotnetQuality));
         Assert.Equal("Upgrades & Migration", testingMigrations.Stack);
+        Assert.DoesNotContain(testingMigrations.Skills, skill => skill == "mtp-hot-reload");
         Assert.DoesNotContain(catalog.Packages, package => string.Equals(package.Name, "mcaf", StringComparison.Ordinal));
         var orleans = catalog.Packages.Single(package => string.Equals(package.Name, "orleans", StringComparison.Ordinal));
         Assert.DoesNotContain(orleans.Skills, skill => string.Equals(skill, "worker-services", StringComparison.OrdinalIgnoreCase));

@@ -513,6 +513,8 @@ The upstream automation exists so the skill catalog stays current without requir
 
 - Nightly skill refresh is deterministic source synchronization: fetch configured upstream repositories and copy their known skill/agent trees through vendir and the importer. Do not add LLM rewriting, AI-provider credentials, or model-selection gates to this workflow. Release and documentation watches are change signals, not instructions to generate replacement skill text.
 
+- Import every canonical skill from the official `dotnet/skills` repository, including Blazor, all other plugin skills, and repository-maintenance skills. Discover new plugins and skills automatically and refresh them nightly. Keep official task-specific skills even when a broader repo-authored skill covers the same framework; this source is an explicit exception to the preference for one broad canonical skill. Exclude evaluation fixtures and test-only skill trees.
+
 - Run the complete upstream refresh every night before the 04:00 UTC release: check all configured watches, refresh affected skills and vendir imports, create or update a pull request only for real catalog changes, validate the exact proposed commit, and merge automatically only after successful checks.
 - Report refresh or validation failures in a deduplicated GitHub issue with a link to the failed run. Leave unresolved upstream work pending for retry; never mark a failed refresh as handled. Create issues only when automation fails or something breaks, never merely because upstream changed.
 - Keep unchanged nights quiet: watch-state changes alone must not create a catalog PR or release.

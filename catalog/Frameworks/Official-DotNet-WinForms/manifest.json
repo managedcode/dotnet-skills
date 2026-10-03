@@ -1,0 +1,9 @@
+{
+  "name": "dotnet-winforms",
+  "title": "Official .NET skills: Windows Forms",
+  "description": "Skills for Windows Forms development: project setup, UI design, data binding, accessibility, and modern .NET practices.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/plugins/dotnet-winforms"
+  }
+}

@@ -1,5 +1,5 @@
 {
   "version": "0.1.1",
-  "category": "Legacy",
+  "category": "Migration",
   "compatibility": "Requires a .NET repository being migrated across framework, SDK, or compatibility changes."
 }

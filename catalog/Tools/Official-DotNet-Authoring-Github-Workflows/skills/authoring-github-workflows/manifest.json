@@ -1,0 +1,5 @@
+{
+  "version": "0.2.4",
+  "category": "Governance",
+  "compatibility": "Requires a GitHub Actions repository and actionlint for local validation."
+}

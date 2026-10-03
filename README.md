@@ -289,15 +289,17 @@ External upstream repositories live in the dedicated [`external-sources/`](exter
 - `external-sources/vendir.yml` and `external-sources/vendir.lock.yml` handle fetch-and-pin only.
 - `external-sources/upstreams/` holds the checked-in vendored snapshots.
 - `external-sources/imports/*.json` is overrides-only local policy for type, category, package naming, compatibility, and skill-level package trigger metadata.
-- `scripts/import_external_catalog_sources.py` auto-discovers upstream plugins from vendored `plugin.json` and `.claude-plugin/plugin.json` files plus standalone official skills from canonical `.agents/skills/*/SKILL.md` trees, applies the local overrides, and normalizes the result into `catalog/<type>/<package>/`.
+- `scripts/import_external_catalog_sources.py` auto-discovers upstream plugins from vendored `plugin.json` and `.claude-plugin/plugin.json` files plus canonical `.agents/skills/*/SKILL.md` and `.github/skills/*/SKILL.md` trees alongside those plugins, applies the local overrides, and normalizes the result into `catalog/<type>/<package>/`.
 - Imported upstream `SKILL.md`, `AGENT.md`, and supporting skill content is copied verbatim; local-only metadata stays in sibling `manifest.json` files instead of being injected into upstream markdown.
 
 Official imports may keep their upstream skill ids instead of being renamed to match local repo-authored conventions.
 
+The official `dotnet/skills` source includes every plugin skill, including Blazor and Windows Forms, plus its repository-maintenance skills. New plugins and skills are discovered during the nightly sync without a manual allowlist. Blazor belongs to `Web`, Windows Forms to `Desktop & UI`, mobile crash analysis to `Mobile & Device`, and testing migrations to `Upgrades & Migration`. Repository-maintenance skills carry their upstream checkout and tooling requirements in sibling manifests; evaluation fixtures are outside the import surface.
+
 ```mermaid
 flowchart LR
   A["external-sources/vendir.yml"] --> B["external-sources/upstreams/<repo>/"]
-  B --> C["plugin or canonical skill auto-discovery"]
+  B --> C["plugin and canonical skill auto-discovery"]
   D["external-sources/imports/*.json (overrides only)"] --> C
   C --> E["scripts/import_external_catalog_sources.py"]
   E --> F["catalog/<type>/<package>/"]

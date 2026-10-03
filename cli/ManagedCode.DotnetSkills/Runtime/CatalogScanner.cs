@@ -160,7 +160,6 @@ internal static class CatalogScanner
                 "migrate-xunit-to-xunit-v3",
                 "migrate-mstest-v1v2-to-v3",
                 "migrate-mstest-v3-to-v4",
-                "mtp-hot-reload",
             ]),
         new(
             "runtime-upgrades",

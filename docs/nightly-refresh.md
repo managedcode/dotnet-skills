@@ -14,7 +14,15 @@ NuGet tools and GitHub Pages. Scheduled start times may be delayed by GitHub.
 - `external-sources/vendir.lock.yml` records the resolved commits.
 - `external-sources/imports/*.json` contains catalog placement and import overrides.
 - The importer discovers `plugin.json`, `.claude-plugin/plugin.json`, and
-  `.agents/skills/*/SKILL.md` source layouts. It copies upstream Markdown verbatim.
+  top-level `plugins/` layouts together with `.agents/skills/*/SKILL.md` and
+  `.github/skills/*/SKILL.md`. It copies upstream Markdown and supporting files verbatim.
+- The official `dotnet/skills` transport includes all plugin skills and both
+  canonical repository-maintenance skill roots. New plugins and tasks are picked
+  up automatically; fixture skills under `eng/` and tests are not imported.
+- `standaloneVersionFile` selects the primary upstream plugin version for
+  repository-maintenance skills. `docsRoot` preserves their actual upstream
+  documentation paths. Their checkout and evaluation-tool prerequisites remain
+  explicit in sibling compatibility metadata.
 - All configured import repositories are synced every night, even if their
   watched release or documentation page has not changed.
 - Release/documentation watches are change signals. A source must have an actual
@@ -42,8 +50,9 @@ assets and Pages build use the same source commit.
 ```mermaid
 flowchart TD
   Night[00:17 UTC] --> Watch[Check configured watches]
-  Watch --> Copy[vendir sync and canonical importer]
-  Copy --> Changed{Catalog changed?}
+  Watch --> Copy[vendir sync: plugins and canonical skill roots]
+  Copy --> Import[Auto-discover and copy skills and agents]
+  Import --> Changed{Catalog changed?}
   Changed -->|No| State[Save successful watch baseline]
   Changed -->|Yes| PR[Create or update catalog PR]
   PR --> Check[Validate exact commit]
@@ -52,6 +61,7 @@ flowchart TD
   Merge --> Release[04:00 UTC catalog, NuGet and Pages release]
   Watch -->|Failure| Issue[Failure issue for maintainer]
   Copy -->|Failure| Issue
+  Import -->|Failure| Issue
   Check -->|Failure| Issue
   Merge -->|Refused or failed| Issue
 ```

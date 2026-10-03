@@ -1,0 +1,9 @@
+{
+  "name": "create-custom-agent",
+  "title": "Official .NET skills: Custom agents",
+  "description": "Creates VS Code custom agent files (.agent.md) for specialized AI personas with tools, instructions, and handoffs. Use when scaffolding new custom agents, configuring agent workflows, or setting up agent-to-agent handoffs.",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/.agents/skills/create-custom-agent"
+  }
+}

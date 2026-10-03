@@ -1,0 +1,5 @@
+{
+  "version": "0.2.4",
+  "category": "Governance",
+  "compatibility": "Requires a GitHub repository using gh-aw and access to the github/gh-aw upstream prompts."
+}

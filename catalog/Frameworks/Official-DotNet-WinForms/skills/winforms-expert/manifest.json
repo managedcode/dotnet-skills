@@ -1,0 +1,5 @@
+{
+  "version": "0.1.0",
+  "category": "Desktop",
+  "compatibility": "Requires a Windows Forms project; runtime and designer validation require Windows."
+}

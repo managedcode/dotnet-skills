@@ -7,7 +7,10 @@ directories:
         git:
           url: https://github.com/dotnet/skills
           ref: origin/main
-        newRootPath: plugins
+        includePaths:
+          - plugins/**/*
+          - .agents/skills/**/*
+          - .github/skills/**/*
       - path: webgpu-claude-skill
         git:
           url: https://github.com/dgreenheck/webgpu-claude-skill

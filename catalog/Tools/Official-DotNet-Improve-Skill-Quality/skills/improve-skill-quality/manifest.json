@@ -1,0 +1,5 @@
+{
+  "version": "0.2.4",
+  "category": "Governance",
+  "compatibility": "Requires a dotnet/skills checkout and its skill-validator and evaluation tooling."
+}

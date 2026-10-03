@@ -174,7 +174,6 @@ CURATED_BUNDLES = [
             "migrate-xunit-to-xunit-v3",
             "migrate-mstest-v1v2-to-v3",
             "migrate-mstest-v3-to-v4",
-            "mtp-hot-reload",
         ],
     },
     {
@@ -341,7 +340,7 @@ def resolve_stack_order(skills: list[dict[str, object]]) -> list[str]:
 
 
 def classify_skill(skill_type: str, package: str, category: str, name: str) -> tuple[str, str]:
-    if is_governance_skill(package, name):
+    if is_governance_skill(package, category, name):
         return "Governance & Delivery", resolve_governance_lane(package, name)
 
     if is_migration_skill(package, name):
@@ -395,7 +394,7 @@ def classify_skill(skill_type: str, package: str, category: str, name: str) -> t
     if is_dotnet_quality_skill(package, category):
         return ".NET Quality", "Code Quality"
 
-    if is_msbuild_skill(package):
+    if is_msbuild_skill(package, name):
         return "MSBuild", "Build Pipelines"
 
     if is_nuget_publishing_skill(package, name):
@@ -410,8 +409,8 @@ def classify_skill(skill_type: str, package: str, category: str, name: str) -> t
     return ".NET Foundations", resolve_dotnet_lane(skill_type, package, category, name)
 
 
-def is_governance_skill(package: str, name: str) -> bool:
-    return package in GOVERNANCE_PACKAGES or name == "code-review"
+def is_governance_skill(package: str, category: str, name: str) -> bool:
+    return package in GOVERNANCE_PACKAGES or category.lower() == "governance" or name == "code-review"
 
 
 def is_migration_skill(package: str, name: str) -> bool:
@@ -421,7 +420,6 @@ def is_migration_skill(package: str, name: str) -> bool:
         or name in {"aot-compat", "dotnet-aot-compat"}
         or "migrate-" in lowered
         or "migration" in lowered
-        or name == "mtp-hot-reload"
     )
 
 
@@ -439,7 +437,12 @@ def is_testing_skill(skill_type: str, category: str) -> bool:
 
 def is_testing_research_skill(package: str, category: str, name: str) -> bool:
     return (
-        name == "code-testing-agent"
+        name in {
+            "assertion-quality", "code-testing-agent", "exp-assertion-quality",
+            "exp-mock-usage-analysis", "exp-test-gap-analysis", "exp-test-maintainability",
+            "exp-test-smell-detection", "exp-test-tagging", "mock-usage-analysis",
+            "test-gap-analysis", "test-maintainability", "test-smell-detection", "test-tagging",
+        }
         or package == "Stryker"
         or (package == "Official-DotNet-Experimental" and category.lower() == "testing")
     )
@@ -454,7 +457,10 @@ def is_ai_skill(package: str, category: str) -> bool:
 
 
 def is_mobile_device_skill(package: str, name: str) -> bool:
-    return package in MOBILE_DEVICE_PACKAGES
+    return package in MOBILE_DEVICE_PACKAGES or (
+        package == "Official-DotNet-Diagnostics"
+        and name in {"android-tombstone-symbolication", "apple-crash-symbolication"}
+    )
 
 
 def is_xr_spatial_skill(package: str) -> bool:
@@ -508,8 +514,8 @@ def is_dotnet_quality_skill(package: str, category: str) -> bool:
     return package in DOTNET_QUALITY_PACKAGES or category.lower() == "code quality"
 
 
-def is_msbuild_skill(package: str) -> bool:
-    return package in MSBUILD_PACKAGES
+def is_msbuild_skill(package: str, name: str) -> bool:
+    return package in MSBUILD_PACKAGES or name == "msbuild"
 
 
 def is_nuget_publishing_skill(package: str, name: str) -> bool:
@@ -547,6 +553,8 @@ def resolve_framework_lane(skill_type: str) -> str:
 
 def resolve_mobile_device_lane(skill_type: str, package: str, name: str) -> str:
     lowered = name.lower()
+    if package == "Official-DotNet-Diagnostics":
+        return "Crash Analysis"
     if "doctor" in lowered:
         return "Tooling"
     return resolve_entity_lane(skill_type)
@@ -606,8 +614,10 @@ def resolve_governance_lane(package: str, name: str) -> str:
     lowered = name.lower()
     if name == "code-review":
         return "Review"
-    if any(token in lowered for token in ("delivery", "devex", "ui-ux", "ml-ai")):
+    if any(token in lowered for token in ("delivery", "devex", "ui-ux", "ml-ai", "github-workflows", "agentic-workflows")):
         return "Delivery Workflow"
+    if name in {"create-skill", "create-skill-test", "improve-skill-quality"}:
+        return "Tooling"
     return "Governance"
 
 

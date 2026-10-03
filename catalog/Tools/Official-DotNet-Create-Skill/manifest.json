@@ -1,0 +1,9 @@
+{
+  "name": "create-skill",
+  "title": "Official .NET skills: Skill authoring",
+  "description": "Scaffolds new agent skills for the dotnet/skills repository. Use when creating a new skill, generating SKILL.md files, writing a skill description that the runtime will actually route to, or setting up skill directory structures. Handles frontmatter generation, section templates, and validation guidance. Do not use for fixing a skill that already fails its evaluation (use improve-skill-quality) or for writing eval.yaml (use create-skill-test).",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/.agents/skills/create-skill"
+  }
+}

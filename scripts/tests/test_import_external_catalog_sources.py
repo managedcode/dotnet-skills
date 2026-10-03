@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -18,6 +19,25 @@ SPEC.loader.exec_module(IMPORTER)
 
 
 class ImportExternalCatalogSourcesTests(unittest.TestCase):
+    def source_config(self) -> dict:
+        return {
+            "id": "dotnet-skills",
+            "repository": "https://github.com/dotnet/skills",
+            "sourceRoot": "upstreams/dotnet-skills",
+            "docsBase": "https://github.com/dotnet/skills/tree/main/plugins",
+            "docsRoot": "https://github.com/dotnet/skills/tree/main",
+            "standaloneVersionFile": "plugins/dotnet/plugin.json",
+            "titlePrefix": "Official .NET skills",
+            "managedPackagePrefix": "Official-DotNet",
+            "replaceSkillConflicts": True,
+            "pluginDefaults": {
+                "type": "Platform", "category": "Core", "compatibility": "Requires .NET.",
+            },
+            "pluginOverrides": {
+                "dotnet-blazor": {"type": "Frameworks", "category": "Web"},
+            },
+        }
+
     def write_json(self, path: Path, payload: dict) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -68,6 +88,119 @@ class ImportExternalCatalogSourcesTests(unittest.TestCase):
         self.assertEqual(metadata["description"], "Parse source files and tests. Emit JSON output.")
         self.assertEqual(metadata["disable-model-invocation"], "true")
         self.assertIn("# Find Untested Sources", body)
+
+    def test_parse_frontmatter_keeps_nested_metadata_opaque(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "SKILL.md"
+            source = """---
+name: real-skill
+metadata:
+  name: must-not-override-name
+  category: must-not-become-catalog-metadata
+  nested:
+    flags:
+      - portable
+description: A portable skill.
+---
+# Real skill
+"""
+            path.write_text(source)
+            metadata, _ = IMPORTER.parse_markdown_frontmatter(path)
+            self.assertEqual({"name": "real-skill", "description": "A portable skill."}, metadata)
+            self.assertEqual(source, path.read_text())
+
+    def test_combined_source_automatically_discovers_refreshes_and_removes_entries(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            external = root / "external-sources"
+            source = external / "upstreams" / "dotnet-skills"
+            config_path = external / "imports" / "dotnet-skills.json"
+            config = self.source_config()
+            for plugin in ("dotnet", "dotnet-blazor"):
+                directory = source / "plugins" / plugin
+                self.write_json(directory / "plugin.json", {
+                    "name": plugin, "version": "1.2.3", "skills": ["./skills/"],
+                })
+                self.write_skill(directory, f"{plugin}-first", "First skill")
+            for host, skill in ((".agents", "create-skill"), (".github", "agentic-workflows")):
+                self.write_skill(source / host, skill, "Standalone skill")
+            self.write_skill(source / "eng" / "fixtures", "sample-skill", "Fixture only")
+            reference = source / "plugins" / "dotnet-blazor" / "skills" / "dotnet-blazor-first" / "references" / "usage.md"
+            reference.parent.mkdir()
+            reference.write_bytes(b"# Original upstream reference\r\n")
+
+            with (
+                patch.object(IMPORTER, "ROOT", root),
+                patch.object(IMPORTER, "CATALOG_ROOT", root / "catalog"),
+                patch.object(IMPORTER, "EXTERNAL_SOURCES_ROOT", external),
+            ):
+                first = IMPORTER.import_source(config_path, config)
+                self.assertEqual(4, first["skills"])
+                blazor = root / "catalog" / "Frameworks" / "Official-DotNet-Blazor"
+                standalone = root / "catalog" / "Platform" / "Official-DotNet-Create-Skill"
+                self.assertEqual(reference.read_bytes(), (blazor / "skills" / "dotnet-blazor-first" / "references" / "usage.md").read_bytes())
+                self.assertEqual("1.2.3", IMPORTER.load_json(standalone / "skills" / "create-skill" / "manifest.json")["version"])
+                self.assertEqual(config["docsRoot"] + "/.agents/skills/create-skill", IMPORTER.load_json(standalone / "manifest.json")["links"]["docs"])
+                self.assertEqual(config["docsRoot"] + "/plugins/dotnet-blazor", IMPORTER.load_json(blazor / "manifest.json")["links"]["docs"])
+
+                # Neither a new plugin nor a new task needs a local registry entry.
+                new_plugin = source / "plugins" / "dotnet-future"
+                self.write_json(new_plugin / "plugin.json", {
+                    "name": "dotnet-future", "version": "2.0.0", "skills": "./skills/",
+                })
+                self.write_skill(new_plugin, "future-skill", "New plugin skill")
+                self.write_skill(source / "plugins" / "dotnet-blazor", "new-blazor-task", "New Blazor task")
+                second = IMPORTER.import_source(config_path, config)
+                self.assertEqual(6, second["skills"])
+                self.assertTrue((root / "catalog" / "Platform" / "Official-DotNet-Future" / "skills" / "future-skill" / "SKILL.md").is_file())
+                self.assertEqual("Web", IMPORTER.load_json(blazor / "skills" / "new-blazor-task" / "manifest.json")["category"])
+
+                # Updates must copy even when an upstream plugin version stays the same.
+                self.write_skill(source / "plugins" / "dotnet-blazor", "dotnet-blazor-first", "Updated guidance")
+                reference.write_bytes(b"# Updated upstream reference\n")
+                shutil.rmtree(new_plugin)
+                shutil.rmtree(source / ".agents" / "skills" / "create-skill")
+                third = IMPORTER.import_source(config_path, config)
+                self.assertEqual(4, third["skills"])
+                self.assertFalse((root / "catalog" / "Platform" / "Official-DotNet-Future").exists())
+                self.assertFalse(standalone.exists())
+                self.assertEqual(reference.read_bytes(), (blazor / "skills" / "dotnet-blazor-first" / "references" / "usage.md").read_bytes())
+                upstream_skill = reference.parents[1] / "SKILL.md"
+                self.assertEqual(upstream_skill.read_bytes(), (blazor / "skills" / "dotnet-blazor-first" / "SKILL.md").read_bytes())
+                self.assertFalse(list((root / "catalog").rglob("sample-skill")))
+
+    def test_standalone_version_rejects_missing_or_placeholder_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with self.assertRaisesRegex(ValueError, "does not exist"):
+                IMPORTER.discover_repository_version(root, "plugin.json")
+            for invalid in (None, "", "0.0.0"):
+                self.write_json(root / "plugin.json", {"version": invalid})
+                with self.subTest(version=invalid), self.assertRaisesRegex(ValueError, "non-placeholder"):
+                    IMPORTER.discover_repository_version(root, "plugin.json")
+
+    def test_official_catalog_covers_every_real_upstream_skill_verbatim(self) -> None:
+        source = REPO_ROOT / "external-sources" / "upstreams" / "dotnet-skills"
+        upstream_paths = [
+            *source.glob("plugins/*/skills/**/SKILL.md"),
+            *source.glob(".agents/skills/*/SKILL.md"),
+            *source.glob(".github/skills/*/SKILL.md"),
+        ]
+        expected = {IMPORTER.parse_markdown_frontmatter(path)[0]["name"]: path for path in upstream_paths}
+        imported_paths = list((REPO_ROOT / "catalog").glob("*/Official-DotNet*/skills/*/SKILL.md"))
+        actual = {IMPORTER.parse_markdown_frontmatter(path)[0]["name"]: path for path in imported_paths}
+        self.assertTrue(expected)
+        self.assertEqual(len(upstream_paths), len(expected), "Duplicate upstream skill names")
+        self.assertEqual(len(imported_paths), len(actual), "Duplicate imported skill names")
+        self.assertEqual(set(expected), set(actual))
+        for name, upstream in expected.items():
+            with self.subTest(skill=name):
+                self.assertEqual(upstream.read_bytes(), actual[name].read_bytes())
+                for support_file in upstream.parent.rglob("*"):
+                    if support_file.is_file() and support_file.name != "manifest.json":
+                        imported_file = actual[name].parent / support_file.relative_to(upstream.parent)
+                        self.assertTrue(imported_file.is_file(), str(imported_file.relative_to(REPO_ROOT)))
+                        self.assertEqual(support_file.read_bytes(), imported_file.read_bytes())
 
     def test_import_source_skips_excluded_skill_overrides(self) -> None:
         with tempfile.TemporaryDirectory() as temp_root_value:

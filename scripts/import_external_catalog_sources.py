@@ -76,6 +76,14 @@ def parse_simple_yaml_mapping(path: Path, raw_frontmatter: str) -> dict:
         key = key.strip()
         value = raw_value.strip()
 
+        if key == "metadata":
+            index += 1
+            while index < len(lines) and (
+                not lines[index].strip() or lines[index][0].isspace() or lines[index].lstrip().startswith("#")
+            ):
+                index += 1
+            continue
+
         if re.fullmatch(r"[>|][+-]?", value):
             index += 1
             block_lines: list[str] = []
@@ -182,7 +190,16 @@ def resolve_source_root(source_root_value: str) -> Path:
     return EXTERNAL_SOURCES_ROOT / source_root_value
 
 
-def discover_repository_version(source_root: Path) -> str:
+def discover_repository_version(source_root: Path, version_file: str | None = None) -> str:
+    if version_file is not None:
+        version_path = source_root / version_file
+        if not version_path.is_file():
+            raise ValueError(f"Standalone skill version file does not exist: {version_path}")
+        version = load_json(version_path).get("version")
+        if not isinstance(version, str) or not version.strip() or version.strip() == "0.0.0":
+            raise ValueError(f"{version_path} must define a non-placeholder version for standalone skills")
+        return version.strip()
+
     package_paths = [
         source_root / "packages" / source_root.name / "package.json",
         source_root / "package.json",
@@ -195,9 +212,9 @@ def discover_repository_version(source_root: Path) -> str:
             continue
         seen.add(package_path)
 
-        version = normalize_text(load_json(package_path).get("version"))
-        if version and version != "0.0.0":
-            return version
+        version = load_json(package_path).get("version")
+        if isinstance(version, str) and version.strip() and version.strip() != "0.0.0":
+            return version.strip()
 
     raise ValueError(
         f"No non-placeholder package version was found for standalone skills under {source_root}. "
@@ -205,13 +222,18 @@ def discover_repository_version(source_root: Path) -> str:
     )
 
 
-def discover_standalone_skill_plugins(source_root: Path) -> dict[str, tuple[Path, dict]]:
-    skills_root = source_root / ".agents" / "skills"
-    skill_manifest_paths = sorted(skills_root.glob("*/SKILL.md"))
+def discover_standalone_skill_plugins(
+    source_root: Path, version_file: str | None = None,
+) -> dict[str, tuple[Path, dict]]:
+    skill_manifest_paths = sorted(
+        path
+        for host_root in (".agents", ".github")
+        for path in (source_root / host_root / "skills").glob("*/SKILL.md")
+    )
     if not skill_manifest_paths:
         return {}
 
-    version = discover_repository_version(source_root)
+    version = discover_repository_version(source_root, version_file)
     plugins: dict[str, tuple[Path, dict]] = {}
     for skill_manifest_path in skill_manifest_paths:
         skill_dir = skill_manifest_path.parent
@@ -236,12 +258,16 @@ def discover_standalone_skill_plugins(source_root: Path) -> dict[str, tuple[Path
     return plugins
 
 
-def discover_upstream_plugins(source_root: Path) -> dict[str, tuple[Path, dict]]:
+def discover_upstream_plugins(
+    source_root: Path, standalone_version_file: str | None = None,
+) -> dict[str, tuple[Path, dict]]:
     plugins: dict[str, tuple[Path, dict]] = {}
 
     plugin_manifest_paths = {
         *source_root.glob("*/plugin.json"),
         *source_root.glob("*/.claude-plugin/plugin.json"),
+        *(source_root / "plugins").glob("*/plugin.json"),
+        *(source_root / "plugins").glob("*/.claude-plugin/plugin.json"),
     }
     for candidate in (source_root / "plugin.json", source_root / ".claude-plugin" / "plugin.json"):
         if candidate.is_file():
@@ -267,12 +293,14 @@ def discover_upstream_plugins(source_root: Path) -> dict[str, tuple[Path, dict]]
 
         plugins[plugin_name] = (plugin_dir, plugin_manifest)
 
-    if not plugins:
-        plugins = discover_standalone_skill_plugins(source_root)
+    for name, standalone in discover_standalone_skill_plugins(source_root, standalone_version_file).items():
+        if name in plugins:
+            raise ValueError(f"Standalone skill {name!r} conflicts with an upstream plugin name")
+        plugins[name] = standalone
 
     if not plugins:
         raise ValueError(
-            f"No upstream plugin.json files or canonical .agents/skills entries were found under {source_root}"
+            f"No upstream plugins or canonical .agents/skills or .github/skills entries were found under {source_root}"
         )
 
     return plugins
@@ -421,6 +449,9 @@ def validate_config(config_path: Path, config: dict) -> None:
     validate_scalar_string(config_path, "docsBase", config.get("docsBase"))
     validate_scalar_string(config_path, "managedPackagePrefix", config.get("managedPackagePrefix"))
     validate_scalar_string(config_path, "titlePrefix", config.get("titlePrefix"))
+    for field_name in ("standaloneVersionFile", "docsRoot"):
+        if field_name in config:
+            validate_scalar_string(config_path, field_name, config[field_name])
 
     plugin_root = resolve_source_root(source_root_value)
     if not plugin_root.is_dir():
@@ -434,7 +465,7 @@ def validate_config(config_path: Path, config: dict) -> None:
     if not isinstance(overrides, dict):
         raise ValueError(f"{config_path} field pluginOverrides must be an object")
 
-    plugins = discover_upstream_plugins(plugin_root)
+    plugins = discover_upstream_plugins(plugin_root, config.get("standaloneVersionFile"))
     unknown_override_names = sorted(set(overrides) - set(plugins))
     if unknown_override_names:
         raise ValueError(
@@ -568,7 +599,7 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
     docs_base = str(config["docsBase"]).rstrip("/")
     repository = str(config["repository"]).rstrip("/")
     managed_prefix = str(config["managedPackagePrefix"])
-    plugins = discover_upstream_plugins(plugin_root)
+    plugins = discover_upstream_plugins(plugin_root, config.get("standaloneVersionFile"))
     resolved_policies = {plugin_name: resolve_plugin_policy(config_path, config, plugin_name) for plugin_name in plugins}
 
     target_package_dirs = {
@@ -581,7 +612,7 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
 
     if config.get("replaceSkillConflicts", False):
         managed_names = {
-            path.parent.name
+            path.name
             for path in CATALOG_ROOT.glob("*/*")
             if path.is_dir() and path.name.startswith(managed_prefix)
         }
@@ -604,13 +635,17 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
         try:
             (temp_package_dir / "skills").mkdir(parents=True, exist_ok=True)
 
+            docs_url = f"{docs_base}/{plugin_name}"
+            if config.get("docsRoot"):
+                docs_url = f"{str(config['docsRoot']).rstrip('/')}/{plugin_dir.relative_to(plugin_root).as_posix()}"
+
             package_manifest = {
                 "name": plugin_name,
                 "title": plugin_policy["title"],
                 "description": normalize_text(plugin_manifest.get("description", "")),
                 "links": {
                     "repository": repository,
-                    "docs": f"{docs_base}/{plugin_name}",
+                    "docs": docs_url,
                 },
             }
             (temp_package_dir / "manifest.json").write_text(json.dumps(package_manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

@@ -1,0 +1,9 @@
+{
+  "name": "improve-skill-quality",
+  "title": "Official .NET skills: Skill quality",
+  "description": "Diagnoses and fixes skills in the dotnet/skills repository that lose to their own baseline, fail to activate, time out, or return \"no credible improvement\". Use when an evaluation verdict is a regression or underpowered, when a skill regressed after a change, when /evaluate reports no results, or when deciding whether a weak skill should be strengthened or retired. Do not use for scaffolding a brand-new skill (use create-skill) or a brand-new eval (use create-skill-test).",
+  "links": {
+    "repository": "https://github.com/dotnet/skills",
+    "docs": "https://github.com/dotnet/skills/tree/main/.agents/skills/improve-skill-quality"
+  }
+}

@@ -176,7 +176,7 @@ internal static class CatalogOrganization
 
     public static CatalogSkillGrouping Classify(string type, string package, string category, string name)
     {
-        if (IsGovernanceSkill(package, name))
+        if (IsGovernanceSkill(package, category, name))
         {
             return new("Governance & Delivery", ResolveGovernanceLane(package, name));
         }
@@ -266,7 +266,7 @@ internal static class CatalogOrganization
             return new(".NET Quality", "Code Quality");
         }
 
-        if (IsMsBuildSkill(package))
+        if (IsMsBuildSkill(package, name))
         {
             return new("MSBuild", "Build Pipelines");
         }
@@ -353,9 +353,10 @@ internal static class CatalogOrganization
         return package.Kind;
     }
 
-    private static bool IsGovernanceSkill(string package, string name)
+    private static bool IsGovernanceSkill(string package, string category, string name)
     {
         return GovernancePackages.Contains(package)
+            || string.Equals(category, "Governance", StringComparison.OrdinalIgnoreCase)
             || string.Equals(name, "code-review", StringComparison.OrdinalIgnoreCase);
     }
 
@@ -365,8 +366,7 @@ internal static class CatalogOrganization
             || string.Equals(name, "aot-compat", StringComparison.OrdinalIgnoreCase)
             || string.Equals(name, "dotnet-aot-compat", StringComparison.OrdinalIgnoreCase)
             || name.Contains("migrate-", StringComparison.OrdinalIgnoreCase)
-            || name.Contains("migration", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(name, "mtp-hot-reload", StringComparison.OrdinalIgnoreCase);
+            || name.Contains("migration", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsLegacySkill(string package, string category)
@@ -409,7 +409,10 @@ internal static class CatalogOrganization
 
     private static bool IsMobileDeviceSkill(string package, string name)
     {
-        return MobileDevicePackages.Contains(package);
+        return MobileDevicePackages.Contains(package)
+            || string.Equals(package, "Official-DotNet-Diagnostics", StringComparison.OrdinalIgnoreCase)
+               && (string.Equals(name, "android-tombstone-symbolication", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(name, "apple-crash-symbolication", StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool IsXrSpatialSkill(string package)
@@ -466,9 +469,10 @@ internal static class CatalogOrganization
                    || package.Contains("Win", StringComparison.OrdinalIgnoreCase));
     }
 
-    private static bool IsMsBuildSkill(string package)
+    private static bool IsMsBuildSkill(string package, string name)
     {
-        return MsBuildPackages.Contains(package);
+        return MsBuildPackages.Contains(package)
+            || string.Equals(name, "msbuild", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsNuGetPublishingSkill(string package, string name)
@@ -542,6 +546,11 @@ internal static class CatalogOrganization
 
     private static string ResolveMobileDeviceLane(string type, string package, string name)
     {
+        if (string.Equals(package, "Official-DotNet-Diagnostics", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Crash Analysis";
+        }
+
         if (name.Contains("doctor", StringComparison.OrdinalIgnoreCase))
         {
             return "Tooling";
@@ -662,9 +671,16 @@ internal static class CatalogOrganization
         if (name.Contains("delivery", StringComparison.OrdinalIgnoreCase)
             || name.Contains("devex", StringComparison.OrdinalIgnoreCase)
             || name.Contains("ui-ux", StringComparison.OrdinalIgnoreCase)
-            || name.Contains("ml-ai", StringComparison.OrdinalIgnoreCase))
+            || name.Contains("ml-ai", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("github-workflows", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("agentic-workflows", StringComparison.OrdinalIgnoreCase))
         {
             return "Delivery Workflow";
+        }
+
+        if (name is "create-skill" or "create-skill-test" or "improve-skill-quality")
+        {
+            return "Tooling";
         }
 
         return "Governance";

@@ -130,7 +130,9 @@ public sealed class SkillInstallerTests
 
         Assert.Contains(selected, skill => skill.Name == "maui");
         Assert.Contains(selected, skill => skill.Name == "dotnet-maui-doctor");
-        Assert.DoesNotContain(selected, skill => skill.Name == "android-tombstone-symbolication");
+        Assert.Contains(selected, skill => skill.Name == "android-tombstone-symbolication");
+        Assert.Contains(selected, skill => skill.Name == "apple-crash-symbolication");
+        Assert.DoesNotContain(selected, skill => skill.Name == "dump-collect");
         Assert.DoesNotContain(selected, skill => skill.Name == "mixed-reality");
         Assert.DoesNotContain(selected, skill => skill.Name == "winforms");
         Assert.DoesNotContain(selected, skill => skill.Name == "wpf");
