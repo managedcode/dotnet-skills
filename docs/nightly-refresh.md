@@ -35,6 +35,9 @@ GitHub operations use the workflow's `GITHUB_TOKEN`.
 
 `catalog-check.yml` runs Python regression tests, locked vendir/import verification,
 catalog and agent validation, Waza, .NET build, tests, pack and install smoke tests.
+Waza owns catalog skill-quality checks and reports repo-owned findings in one
+maintenance issue. The legacy token-dependent Tessl Review workflow has been
+disabled in GitHub Actions, and its `skill-review.yml` definition has been removed.
 Locked verification preserves the committed lock metadata while checking its
 exact source commits. The merge job checks that both PR head and base still match
 the validated revision. It does not bypass repository protection.
