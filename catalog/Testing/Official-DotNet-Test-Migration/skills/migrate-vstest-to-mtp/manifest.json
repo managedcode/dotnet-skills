@@ -1,5 +1,5 @@
 {
-  "version": "0.1.9",
+  "version": "0.1.10",
   "category": "Migration",
   "compatibility": "Requires a .NET test project being migrated between frameworks, framework versions, or test platforms."
 }
