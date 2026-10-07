@@ -2,21 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1194 from dotnet/bot/weekly-version-sync...'
-      sha: c7cc6617da6c6cadc4ebe7b06926a02caa108e82
+      commitTitle: 'Merge pull request #1240 from dotnet/abhitejjohn-eval-authoring-quality-bar...'
+      sha: 8d670fa76aaac45b336d8ded05a7601785fb2121
       tags:
-      - skill-validator-nightly-23-gc7cc6617
+      - skill-validator-nightly-10-g8d670fa7
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Skip dev toolbar source annotations when compiling in Vite test
-        mode (#18162) (#18242)...
-      sha: c5275e3d5a688a7d246c9576b594870675b70e37
+      commitTitle: 'fix(assets): return requested format from Sharp transform (#18222)...'
+      sha: fcf6ed6d4915eed6c18a20658b73372d074c4832
       tags:
-      - astro@7.3.5-67-gc5275e3d5a
+      - '@astrojs/cloudflare@14.3.4-7-gfcf6ed6d49'
     path: astro
   path: upstreams
 kind: LockConfig
