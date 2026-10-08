@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1240 from dotnet/abhitejjohn-eval-authoring-quality-bar...'
-      sha: 8d670fa76aaac45b336d8ded05a7601785fb2121
+      commitTitle: Teach test generation to use report-safe case names (#1275)...
+      sha: a660de83c2f9cad071a5d568f7d77041ccd07059
       tags:
-      - skill-validator-nightly-10-g8d670fa7
+      - skill-validator-nightly-3-ga660de83
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'fix(assets): return requested format from Sharp transform (#18222)...'
-      sha: fcf6ed6d4915eed6c18a20658b73372d074c4832
+      commitTitle: 'fix(astro): provide Astro.cache when rendering error pages (#18293)...'
+      sha: 28e74103fe3d999a56ae3404b5fe67a1ad6d8013
       tags:
-      - '@astrojs/cloudflare@14.3.4-7-gfcf6ed6d49'
+      - '@astrojs/language-server@2.17.2-2-g28e74103fe'
     path: astro
   path: upstreams
 kind: LockConfig
