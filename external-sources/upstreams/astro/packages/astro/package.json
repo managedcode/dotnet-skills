@@ -1,6 +1,6 @@
 {
   "name": "astro",
-  "version": "7.3.7",
+  "version": "7.3.8",
   "description": "Astro is a modern site builder with web best practices, performance, and DX front-of-mind.",
   "type": "module",
   "author": "withastro",
@@ -142,7 +142,6 @@
     "diff": "^9.0.0",
     "dset": "^3.1.4",
     "es-module-lexer": "^3.0.2",
-    "esbuild": "^0.28.0",
     "find-proc": "0.2.0",
     "flattie": "^1.1.1",
     "fontace": "~0.4.1",
