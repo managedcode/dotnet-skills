@@ -1,7 +1,7 @@
 {
   "name": "create-skill-test",
   "title": "Official .NET skills: Skill evaluations",
-  "description": "Scaffolds eval.yaml evaluation specs for agent skills in the dotnet/skills repository. Use when creating skill tests, writing evaluation stimuli, defining graders and rubrics, sizing an eval for statistical power, or setting up test fixture files. Handles the Vally eval.yaml schema, fixture organization, and overfitting avoidance. Do not use for running or debugging existing evals (use improve-skill-quality) nor for skills authoring (use create-skill).",
+  "description": "Scaffolds eval.yaml evaluation specs for skills, custom agents, and redistributable gh-aw workflow packages in the dotnet/skills repository. Use when creating skill or workflow-package tests, writing evaluation stimuli, defining graders and rubrics, sizing an eval for statistical power, or setting up test fixture files. Handles the Vally eval.yaml schema, fixture organization, and overfitting avoidance. Do not use for running or debugging existing evals (use improve-skill-quality) nor for skills authoring (use create-skill).",
   "links": {
     "repository": "https://github.com/dotnet/skills",
     "docs": "https://github.com/dotnet/skills/tree/main/.agents/skills/create-skill-test"
