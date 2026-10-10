@@ -19,6 +19,8 @@ class CatalogIndexTests(unittest.TestCase):
     def test_official_skills_use_their_workflow_collections(self) -> None:
         skills = {skill["name"]: skill for skill in CATALOG_INDEX.collect_skills()}
         expected = {
+            "avalonia": ("Desktop & UI", "Frameworks"),
+            "roslynk": (".NET Quality", "Code Quality"),
             "use-igniteui-blazor": ("Web", "Frameworks"),
             "winforms-expert": ("Desktop & UI", "Frameworks"),
             "csharp-refactoring": (".NET Quality", "Code Quality"),

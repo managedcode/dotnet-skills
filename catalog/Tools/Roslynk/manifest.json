@@ -1,0 +1,9 @@
+{
+  "name": "roslynk",
+  "title": "Roslynk",
+  "description": "How to use the Roslynk MCP tools (mcp__roslynk__*) effectively for .NET work. Use this whenever a Roslynk server is connected and the task touches *.cs, *.cshtml or *.razor files in a solution — checking for compile errors or warnings, finding a symbol's definition, references, callers, or implementations, renaming symbols, applying code fixes or refactorings, finding dead code, or editing those files — even if the user never says \"Roslynk\". Consult it before reaching for grep, file reads, hand-written edits, or `dotnet build` on such files: Roslynk's semantic tools are faster and more correct for all of those jobs.",
+  "links": {
+    "repository": "https://github.com/mrpmorris/Roslynk",
+    "docs": "https://github.com/mrpmorris/Roslynk/tree/master/skills/roslynk"
+  }
+}

@@ -4,6 +4,57 @@ namespace ManagedCode.DotnetSkills.Tests;
 
 public sealed class ProjectSkillRecommenderTests
 {
+    [Theory]
+    [InlineData("Avalonia")]
+    [InlineData("Avalonia.Desktop")]
+    [InlineData("Avalonia.Controls")]
+    [InlineData("Avalonia.Themes.Fluent")]
+    public void Analyze_AvaloniaPackage_SelectsOneAutoInstallableSkill(string packageId)
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        File.WriteAllText(Path.Combine(projectDirectory.Path, "App.csproj"),
+            $"""
+            <Project Sdk="Microsoft.NET.Sdk">
+              <PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+              <ItemGroup><PackageReference Include="{packageId}" Version="12.0.0" /></ItemGroup>
+            </Project>
+            """);
+
+        var catalog = TestCatalog.Load();
+        var scan = new ProjectSkillRecommender(catalog).Analyze(projectDirectory.Path);
+        var recommendation = Assert.Single(scan.Recommendations, item => item.Skill.Name == "avalonia");
+        Assert.Equal(RecommendationConfidence.High, recommendation.Confidence);
+        Assert.True(recommendation.IsAutoInstallCandidate);
+
+        using var targetDirectory = new TemporaryDirectory();
+        var layout = SkillInstallTarget.Resolve(targetDirectory.Path, AgentPlatform.Agents, InstallScope.Project, projectDirectory: null);
+        var selected = scan.Recommendations.Where(item => item.IsAutoInstallCandidate).Select(item => item.Skill).ToArray();
+        new SkillInstaller(catalog).Install(selected, layout, force: false);
+        Assert.True(File.Exists(Path.Combine(targetDirectory.Path, "avalonia", "SKILL.md")));
+        Assert.True(File.Exists(Path.Combine(targetDirectory.Path, "avalonia", "references", "official-docs-index.md")));
+    }
+
+    [Fact]
+    public void Analyze_MultipleAvaloniaPackages_DeduplicatesAndIgnoresUnrelatedNames()
+    {
+        using var projectDirectory = new TemporaryDirectory();
+        var project = Path.Combine(projectDirectory.Path, "App.csproj");
+        File.WriteAllText(project,
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup>
+                <PackageReference Include="Avalonia" Version="11.3.12" />
+                <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+              </ItemGroup>
+            </Project>
+            """);
+        var recommender = new ProjectSkillRecommender(TestCatalog.Load());
+        Assert.Single(recommender.Analyze(projectDirectory.Path).Recommendations, item => item.Skill.Name == "avalonia");
+
+        File.WriteAllText(project, "<Project><ItemGroup><PackageReference Include=\"AvaloniaUnrelated\" /></ItemGroup></Project>");
+        Assert.DoesNotContain(recommender.Analyze(projectDirectory.Path).Recommendations, item => item.Skill.Name == "avalonia");
+    }
+
     [Fact]
     public void Analyze_DetectsFrameworkAndPackageSignals()
     {

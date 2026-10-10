@@ -275,6 +275,7 @@ DOTNET_QUALITY_PACKAGES = {
     "Quality-CI",
     "ReSharper-CLT",
     "Roslynator",
+    "Roslynk",
     "StyleCop-Analyzers",
 }
 MSBUILD_PACKAGES = {"Official-DotNet-MSBuild"}

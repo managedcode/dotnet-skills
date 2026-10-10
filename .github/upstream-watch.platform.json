@@ -43,6 +43,18 @@
       "skills": [
         "winui"
       ]
+    },
+    {
+      "source": "https://github.com/AvaloniaUI/Avalonia",
+      "skills": [
+        "avalonia"
+      ]
+    },
+    {
+      "source": "https://github.com/mrpmorris/Roslynk",
+      "skills": [
+        "roslynk"
+      ]
     }
   ],
   "documentation": [
@@ -99,6 +111,22 @@
       "source": "https://learn.microsoft.com/dotnet/desktop/winforms/overview/",
       "skills": [
         "winforms"
+      ]
+    },
+    {
+      "id": "roslynk-master-head",
+      "source": "https://api.github.com/repos/mrpmorris/Roslynk/commits/master",
+      "name": "Roslynk master branch",
+      "skills": [
+        "roslynk"
+      ]
+    },
+    {
+      "id": "avalonia-guidance-head",
+      "source": "https://api.github.com/repos/AvaloniaUI/avalonia-docs/commits/main",
+      "name": "Avalonia official documentation branch",
+      "skills": [
+        "avalonia"
       ]
     }
   ]

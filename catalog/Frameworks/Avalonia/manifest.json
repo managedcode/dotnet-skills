@@ -1,0 +1,10 @@
+{
+  "name": "Avalonia",
+  "title": "Avalonia",
+  "description": "Cross-platform .NET desktop applications with XAML, compiled bindings, and MVVM.",
+  "links": {
+    "repository": "https://github.com/AvaloniaUI/Avalonia",
+    "docs": "https://docs.avaloniaui.net/docs/welcome",
+    "nuget": "https://www.nuget.org/packages/Avalonia"
+  }
+}

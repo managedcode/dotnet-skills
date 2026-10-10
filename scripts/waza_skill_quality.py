@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -84,11 +85,33 @@ def rel(path: Path) -> str:
 
 
 def run_check(waza: str, skill_dir: Path) -> dict[str, Any]:
-    report = run_json([waza, "check", rel(skill_dir), "--format", "json"], cwd=ROOT)
-    skills = report.get("skills", [])
-    if len(skills) != 1:
-        raise RuntimeError(f"Expected one Waza check result for {skill_dir}, got {len(skills)}")
-    return skills[0]
+    # External HEAD checks can fail transiently on shared CI egress. Recheck
+    # reported failures instead of suppressing hosts or weakening the gate.
+    for attempt in range(3):
+        try:
+            report = run_json([waza, "check", rel(skill_dir), "--format", "json"], cwd=ROOT)
+        except RuntimeError as exc:
+            # Imported Markdown must remain verbatim. A parser incompatibility
+            # is an upstream finding, not grounds to abort all owned checks.
+            if not is_imported_skill_path(rel(skill_dir / "SKILL.md")) or "parsing frontmatter" not in str(exc):
+                raise
+            detail = str(exc).split("stderr:\n", 1)[-1].strip()[:2000]
+            return {
+                "name": skill_dir.name,
+                "specCompliance": [{
+                    "name": "spec-frontmatter", "passed": False,
+                    "summary": f"Upstream frontmatter could not be parsed by Waza: {detail}",
+                }],
+            }
+        skills = report.get("skills", [])
+        if len(skills) != 1:
+            raise RuntimeError(f"Expected one Waza check result for {skill_dir}, got {len(skills)}")
+        check = skills[0]
+        dead = (check.get("links") or {}).get("deadURLs") or []
+        if not any(is_actionable_dead_url(item) for item in dead) or attempt == 2:
+            return check
+        time.sleep(attempt + 1)
+    raise AssertionError("Unreachable Waza retry state")
 
 
 @functools.cache
@@ -177,7 +200,11 @@ def collect_issues(check: dict[str, Any], profile: dict[str, Any] | None) -> lis
         dead = [dead_url for dead_url in links.get("deadURLs") or [] if is_actionable_dead_url(dead_url)]
         orphaned = links.get("orphanedFiles") or []
         if dead:
-            issues.append({"code": "dead-links", "severity": "warning", "message": f"{len(dead)} dead external link(s)."})
+            details = "; ".join(
+                f"{item.get('target', 'unknown URL')} ({item.get('reason', 'unknown failure')})"
+                for item in dead
+            )
+            issues.append({"code": "dead-links", "severity": "warning", "message": f"{len(dead)} dead external link(s): {details}"})
         if orphaned:
             issues.append({"code": "orphaned-references", "severity": "warning", "message": f"{len(orphaned)} orphaned reference file(s)."})
 

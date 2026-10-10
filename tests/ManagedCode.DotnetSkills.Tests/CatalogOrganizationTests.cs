@@ -24,6 +24,8 @@ public sealed class CatalogOrganizationTests
         AssertSkill(catalog, "dump-collect", "Diagnostics & Metrics", "Crash Analysis");
         AssertSkill(catalog, "mixed-reality", "XR & Spatial", "Frameworks");
         AssertSkill(catalog, "uno-platform", "Desktop & UI", "Frameworks");
+        AssertSkill(catalog, "avalonia", "Desktop & UI", "Frameworks");
+        AssertSkill(catalog, "roslynk", ".NET Quality", "Code Quality");
         AssertSkill(catalog, "xunit", "Testing", "Frameworks");
         AssertSkill(catalog, "code-testing-agent", "Testing Research", "Automation");
         AssertSkill(catalog, "stryker", "Testing Research", "Mutation");

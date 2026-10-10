@@ -1,0 +1,27 @@
+{
+  "id": "roslynk",
+  "repository": "https://github.com/mrpmorris/Roslynk",
+  "sourceRoot": "upstreams/roslynk",
+  "docsBase": "https://github.com/mrpmorris/Roslynk/tree/master/skills",
+  "docsRoot": "https://github.com/mrpmorris/Roslynk/tree/master",
+  "standaloneVersion": "1.0.0",
+  "titlePrefix": "Roslynk skills",
+  "managedPackagePrefix": "Roslynk",
+  "pluginDefaults": {
+    "type": "Tools",
+    "category": "Quality",
+    "compatibility": "Requires a connected Roslynk MCP server and a .NET solution. Follow repository build and approval requirements."
+  },
+  "pluginOverrides": {
+    "roslynk": {
+      "package": "Roslynk",
+      "title": "Roslynk",
+      "skillDefaults": {
+        "packages": [
+          "Roslynk"
+        ]
+      }
+    }
+  },
+  "licenseFile": "LICENCE"
+}

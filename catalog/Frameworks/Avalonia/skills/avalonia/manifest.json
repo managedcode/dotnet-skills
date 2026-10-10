@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "category": "Desktop",
+  "packages": ["Avalonia", "Avalonia.Desktop", "Avalonia.Controls"],
+  "package_prefix": "Avalonia."
+}

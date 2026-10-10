@@ -169,6 +169,88 @@ description: A portable skill.
                 self.assertEqual(upstream_skill.read_bytes(), (blazor / "skills" / "dotnet-blazor-first" / "SKILL.md").read_bytes())
                 self.assertFalse(list((root / "catalog").rglob("sample-skill")))
 
+    def test_unversioned_root_skills_import_verbatim_and_refresh(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            external = root / "external-sources"
+            source = external / "upstreams" / "roslynk"
+            config_path = external / "imports" / "roslynk.json"
+            config = self.source_config()
+            config.update({
+                "id": "roslynk", "sourceRoot": "upstreams/roslynk",
+                "repository": "https://github.com/mrpmorris/Roslynk",
+                "docsRoot": "https://github.com/mrpmorris/Roslynk/tree/master",
+                "managedPackagePrefix": "Roslynk", "standaloneVersion": "1.0.0",
+                "licenseFile": "LICENCE", "pluginOverrides": {},
+            })
+            del config["standaloneVersionFile"]
+            self.write_skill(source, "roslynk", "Roslyn MCP tools")
+            skill_path = source / "skills" / "roslynk" / "SKILL.md"
+            reference = skill_path.parent / "references" / "tools.md"
+            reference.parent.mkdir()
+            reference.write_bytes(b"# Upstream tool contracts\r\n")
+            license_path = source / "LICENCE"
+            license_path.write_bytes(b"MIT license\nCopyright upstream author\n")
+            self.write_skill(source / "fixtures", "not-a-skill", "Fixture only")
+            with (
+                patch.object(IMPORTER, "ROOT", root),
+                patch.object(IMPORTER, "CATALOG_ROOT", root / "catalog"),
+                patch.object(IMPORTER, "EXTERNAL_SOURCES_ROOT", external),
+            ):
+                IMPORTER.validate_config(config_path, config)
+                first = IMPORTER.import_source(config_path, config)
+                self.assertEqual(1, first["skills"])
+                installed = root / "catalog" / "Platform" / "Roslynk" / "skills" / "roslynk"
+                self.assertEqual(skill_path.read_bytes(), (installed / "SKILL.md").read_bytes())
+                self.assertEqual(reference.read_bytes(), (installed / "references" / "tools.md").read_bytes())
+                self.assertEqual(license_path.read_bytes(), (installed / "LICENCE").read_bytes())
+                version = IMPORTER.load_json(installed / "manifest.json")["version"]
+                self.assertRegex(version, r"^1\.0\.0\+source\.[0-9a-f]{16}$")
+                IMPORTER.import_source(config_path, config)
+                self.assertEqual(version, IMPORTER.load_json(installed / "manifest.json")["version"])
+                self.assertFalse(list((root / "catalog").rglob("not-a-skill")))
+                reference.write_bytes(b"# Changed upstream guidance\n")
+                IMPORTER.import_source(config_path, config)
+                self.assertEqual(reference.read_bytes(), (installed / "references" / "tools.md").read_bytes())
+                self.assertNotEqual(version, IMPORTER.load_json(installed / "manifest.json")["version"])
+
+    def test_root_plugin_skills_are_not_imported_twice_as_standalone(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "real-plugin"
+            self.write_json(source / "plugin.json", {
+                "name": "real-plugin", "version": "1.2.3", "skills": ["./skills/"],
+            })
+            self.write_skill(source, "real-skill", "Plugin skill")
+            plugins = IMPORTER.discover_upstream_plugins(source)
+            self.assertEqual({"real-plugin"}, set(plugins))
+            self.assertEqual(source, plugins["real-plugin"][0])
+
+    def test_explicit_standalone_version_rejects_invalid_or_ambiguous_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            for invalid in (7, "", "0.0.0", "latest"):
+                with self.subTest(version=invalid), self.assertRaisesRegex(ValueError, "semantic version"):
+                    IMPORTER.discover_repository_version(source, version_override=invalid)
+            with self.assertRaisesRegex(ValueError, "only one"):
+                IMPORTER.discover_repository_version(source, "package.json", "1.0.0")
+
+    def test_upstream_license_must_exist_within_source_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            external = root / "external-sources"
+            source = external / "upstreams" / "dotnet-skills"
+            source.mkdir(parents=True)
+            config = self.source_config()
+            config_path = external / "imports" / "dotnet-skills.json"
+            with patch.object(IMPORTER, "EXTERNAL_SOURCES_ROOT", external):
+                for invalid in ("../LICENCE", "/outside/LICENCE"):
+                    config["licenseFile"] = invalid
+                    with self.subTest(path=invalid), self.assertRaisesRegex(ValueError, "stay within"):
+                        IMPORTER.validate_config(config_path, config)
+                config["licenseFile"] = "LICENCE"
+                with self.assertRaisesRegex(ValueError, "missing upstream license"):
+                    IMPORTER.validate_config(config_path, config)
+
     def test_standalone_version_rejects_missing_or_placeholder_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

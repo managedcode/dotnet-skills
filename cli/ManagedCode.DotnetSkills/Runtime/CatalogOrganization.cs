@@ -82,6 +82,7 @@ internal static class CatalogOrganization
         "Quality-CI",
         "ReSharper-CLT",
         "Roslynator",
+        "Roslynk",
         "StyleCop-Analyzers",
     };
 

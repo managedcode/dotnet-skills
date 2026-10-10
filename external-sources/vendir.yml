@@ -22,3 +22,11 @@ directories:
         includePaths:
           - .agents/skills/astro-developer/**/*
           - packages/astro/package.json
+      - path: roslynk
+        git:
+          url: https://github.com/mrpmorris/Roslynk
+          ref: origin/master
+        includePaths:
+          - skills/roslynk/**/*
+          - LICENCE
+          - README.md

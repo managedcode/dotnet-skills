@@ -4,6 +4,37 @@ namespace ManagedCode.DotnetSkills.Tests;
 
 public sealed class SkillCatalogPackageTests
 {
+    [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    public void LoadFromDirectory_AcceptsPortableLineEndingsWithoutChangingSource(string newline)
+    {
+        using var temporary = new TemporaryDirectory();
+        var package = Directory.CreateDirectory(Path.Combine(temporary.Path, "catalog", "Tools", "Portable"));
+        File.WriteAllText(Path.Combine(package.FullName, "manifest.json"), """{"name":"Portable","title":"Portable"}""");
+        var skillDirectory = Directory.CreateDirectory(Path.Combine(package.FullName, "skills", "portable"));
+        File.WriteAllText(Path.Combine(skillDirectory.FullName, "manifest.json"), """{"version":"1.0.0","category":"Quality","compatibility":".NET"}""");
+        var source = "---\nname: portable\ndescription: Portable skill\n---\n# Portable\n".ReplaceLineEndings(newline);
+        var path = Path.Combine(skillDirectory.FullName, "SKILL.md");
+        File.WriteAllText(path, source);
+        var bytes = File.ReadAllBytes(path);
+        var agentDirectory = Directory.CreateDirectory(Path.Combine(package.FullName, "agents", "portable-agent"));
+        var agentSource = "---\nname: portable-agent\ndescription: Portable agent\nskills:\n  - portable\n---\n# Portable agent\n".ReplaceLineEndings(newline);
+        var agentPath = Path.Combine(agentDirectory.FullName, "AGENT.md");
+        File.WriteAllText(agentPath, agentSource);
+        var agentBytes = File.ReadAllBytes(agentPath);
+
+        var skill = Assert.Single(SkillCatalogPackage.LoadFromDirectory(new DirectoryInfo(temporary.Path), "test", "test").Skills);
+
+        Assert.Equal("portable", skill.Name);
+        Assert.Equal("Portable skill", skill.Description);
+        Assert.Equal(bytes, File.ReadAllBytes(path));
+        var agent = Assert.Single(AgentCatalogPackage.LoadFromDirectory(new DirectoryInfo(temporary.Path), "test").Agents);
+        Assert.Equal("portable-agent", agent.Name);
+        Assert.Equal(["portable"], agent.Skills);
+        Assert.Equal(agentBytes, File.ReadAllBytes(agentPath));
+    }
+
     [Fact]
     public void LoadFromDirectory_PreservesOpaqueUpstreamMetadata()
     {

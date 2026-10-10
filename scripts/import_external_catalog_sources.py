@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -190,7 +191,18 @@ def resolve_source_root(source_root_value: str) -> Path:
     return EXTERNAL_SOURCES_ROOT / source_root_value
 
 
-def discover_repository_version(source_root: Path, version_file: str | None = None) -> str:
+def discover_repository_version(
+    source_root: Path, version_file: str | None = None, version_override: str | None = None,
+) -> str:
+    if version_override is not None:
+        if version_file is not None:
+            raise ValueError("Use only one of standaloneVersion and standaloneVersionFile")
+        if not isinstance(version_override, str) or not re.fullmatch(
+            r"[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?", version_override.strip(),
+        ) or version_override.strip() == "0.0.0":
+            raise ValueError("standaloneVersion must define a non-placeholder semantic version")
+        return version_override.strip()
+
     if version_file is not None:
         version_path = source_root / version_file
         if not version_path.is_file():
@@ -223,17 +235,19 @@ def discover_repository_version(source_root: Path, version_file: str | None = No
 
 
 def discover_standalone_skill_plugins(
-    source_root: Path, version_file: str | None = None,
+    source_root: Path, version_file: str | None = None, version_override: str | None = None,
+    *, include_root_skills: bool = True,
 ) -> dict[str, tuple[Path, dict]]:
+    skill_roots = [source_root / host / "skills" for host in (".agents", ".github")]
+    if include_root_skills:
+        skill_roots.append(source_root / "skills")
     skill_manifest_paths = sorted(
-        path
-        for host_root in (".agents", ".github")
-        for path in (source_root / host_root / "skills").glob("*/SKILL.md")
+        path for skill_root in skill_roots for path in skill_root.glob("*/SKILL.md")
     )
     if not skill_manifest_paths:
         return {}
 
-    version = discover_repository_version(source_root, version_file)
+    version = discover_repository_version(source_root, version_file, version_override)
     plugins: dict[str, tuple[Path, dict]] = {}
     for skill_manifest_path in skill_manifest_paths:
         skill_dir = skill_manifest_path.parent
@@ -259,7 +273,7 @@ def discover_standalone_skill_plugins(
 
 
 def discover_upstream_plugins(
-    source_root: Path, standalone_version_file: str | None = None,
+    source_root: Path, standalone_version_file: str | None = None, standalone_version: str | None = None,
 ) -> dict[str, tuple[Path, dict]]:
     plugins: dict[str, tuple[Path, dict]] = {}
 
@@ -293,14 +307,16 @@ def discover_upstream_plugins(
 
         plugins[plugin_name] = (plugin_dir, plugin_manifest)
 
-    for name, standalone in discover_standalone_skill_plugins(source_root, standalone_version_file).items():
+    for name, standalone in discover_standalone_skill_plugins(
+        source_root, standalone_version_file, standalone_version, include_root_skills=not plugins,
+    ).items():
         if name in plugins:
             raise ValueError(f"Standalone skill {name!r} conflicts with an upstream plugin name")
         plugins[name] = standalone
 
     if not plugins:
         raise ValueError(
-            f"No upstream plugins or canonical .agents/skills or .github/skills entries were found under {source_root}"
+            f"No upstream plugins or canonical standalone skill entries were found under {source_root}"
         )
 
     return plugins
@@ -449,13 +465,21 @@ def validate_config(config_path: Path, config: dict) -> None:
     validate_scalar_string(config_path, "docsBase", config.get("docsBase"))
     validate_scalar_string(config_path, "managedPackagePrefix", config.get("managedPackagePrefix"))
     validate_scalar_string(config_path, "titlePrefix", config.get("titlePrefix"))
-    for field_name in ("standaloneVersionFile", "docsRoot"):
+    for field_name in ("standaloneVersionFile", "standaloneVersion", "docsRoot"):
         if field_name in config:
             validate_scalar_string(config_path, field_name, config[field_name])
 
     plugin_root = resolve_source_root(source_root_value)
     if not plugin_root.is_dir():
         raise ValueError(f"{config_path} points to a missing vendored source root: {plugin_root}")
+
+    if "licenseFile" in config:
+        license_value = validate_scalar_string(config_path, "licenseFile", config["licenseFile"])
+        license_path = Path(license_value)
+        if license_path.is_absolute() or ".." in license_path.parts:
+            raise ValueError(f"{config_path} licenseFile must stay within the vendored source root")
+        if not (plugin_root / license_path).is_file():
+            raise ValueError(f"{config_path} points to a missing upstream license: {license_value}")
 
     validate_plugin_defaults(config_path, config.get("pluginDefaults", {}))
 
@@ -465,7 +489,7 @@ def validate_config(config_path: Path, config: dict) -> None:
     if not isinstance(overrides, dict):
         raise ValueError(f"{config_path} field pluginOverrides must be an object")
 
-    plugins = discover_upstream_plugins(plugin_root, config.get("standaloneVersionFile"))
+    plugins = discover_upstream_plugins(plugin_root, config.get("standaloneVersionFile"), config.get("standaloneVersion"))
     unknown_override_names = sorted(set(overrides) - set(plugins))
     if unknown_override_names:
         raise ValueError(
@@ -529,6 +553,16 @@ def validate_skill_manifest(manifest_path: Path, manifest: dict[str, object]) ->
     package_prefix = manifest.get("package_prefix")
     if package_prefix is not None and (not isinstance(package_prefix, str) or not package_prefix.strip()):
         raise ValueError(f"{manifest_path} field package_prefix must be a non-empty string")
+
+
+def content_guidance_version(base_version: str, skill_dir: Path) -> str:
+    fingerprint = hashlib.sha256()
+    for path in sorted(item for item in skill_dir.rglob("*") if item.is_file()):
+        relative = path.relative_to(skill_dir).as_posix().encode("utf-8")
+        content = path.read_bytes()
+        fingerprint.update(len(relative).to_bytes(8, "big") + relative)
+        fingerprint.update(len(content).to_bytes(8, "big") + content)
+    return f"{base_version.split('+', 1)[0]}+source.{fingerprint.hexdigest()[:16]}"
 
 
 def collect_existing_entries(kind: str, excluded_package_dirs: set[Path]) -> dict[str, list[Path]]:
@@ -599,7 +633,7 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
     docs_base = str(config["docsBase"]).rstrip("/")
     repository = str(config["repository"]).rstrip("/")
     managed_prefix = str(config["managedPackagePrefix"])
-    plugins = discover_upstream_plugins(plugin_root, config.get("standaloneVersionFile"))
+    plugins = discover_upstream_plugins(plugin_root, config.get("standaloneVersionFile"), config.get("standaloneVersion"))
     resolved_policies = {plugin_name: resolve_plugin_policy(config_path, config, plugin_name) for plugin_name in plugins}
 
     target_package_dirs = {
@@ -674,10 +708,15 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
                 copy_directory_contents(upstream_skill_dir, local_skill_dir, skip_names={"SKILL.md"})
 
                 manifest = resolve_skill_manifest(plugin_policy, skill_name, normalize_text(plugin_manifest["version"]))
+                if config.get("standaloneVersion"):
+                    manifest["version"] = content_guidance_version(str(manifest["version"]), upstream_skill_dir)
                 validate_skill_manifest(local_skill_dir / "manifest.json", manifest)
                 (local_skill_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
                 shutil.copy2(upstream_skill_md, local_skill_dir / "SKILL.md")
+                if config.get("licenseFile"):
+                    license_path = plugin_root / str(config["licenseFile"])
+                    shutil.copy2(license_path, local_skill_dir / license_path.name)
 
                 imported_skill_count += 1
 

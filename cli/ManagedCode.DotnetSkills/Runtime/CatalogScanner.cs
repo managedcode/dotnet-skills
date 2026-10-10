@@ -612,7 +612,7 @@ internal static class CatalogScanner
 
     private static (Dictionary<string, string> Metadata, string Body) ParseFrontmatter(FileInfo path)
     {
-        var text = File.ReadAllText(path.FullName);
+        var text = File.ReadAllText(path.FullName).ReplaceLineEndings("\n");
         if (!text.StartsWith("---\n", StringComparison.Ordinal))
         {
             throw new InvalidOperationException($"{path.FullName} is missing YAML frontmatter");
@@ -645,7 +645,7 @@ internal static class CatalogScanner
 
     private static (Dictionary<string, object> Metadata, string Body) ParseFrontmatterWithLists(FileInfo path)
     {
-        var text = File.ReadAllText(path.FullName);
+        var text = File.ReadAllText(path.FullName).ReplaceLineEndings("\n");
         if (!text.StartsWith("---\n", StringComparison.Ordinal))
         {
             throw new InvalidOperationException($"{path.FullName} is missing YAML frontmatter");
