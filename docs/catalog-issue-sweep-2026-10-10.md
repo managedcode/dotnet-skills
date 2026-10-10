@@ -12,7 +12,7 @@ Finish the existing Roslynk vendir import, resolve Avalonia support (#1584), and
 - [x] Reduce Orleans entrypoint weight using focused references; verify and repair Graphify and StyleCop source links.
 - [x] Run Python regressions, importer/catalog/agent/watch validation, Waza, format, Release build, .NET tests, and Release pack.
 - [x] Commit with issue-closing references, push, validate GitHub checks, and exercise nightly refresh.
-- [ ] Publish and verify catalog assets, all NuGet tools, Pages, and installed skill contents; confirm issues closed.
+- [x] Publish and verify catalog assets, all NuGet tools, Pages, and installed skill contents; confirm issues closed.
 
 ## Validation order
 
@@ -35,7 +35,7 @@ Avalonia 11 and 12 use different documentation and APIs; route by installed majo
 ## Local evidence
 
 - Python regressions: 56 passed, including a public package-prefix rendering regression.
-- Release build: zero warnings and errors; a temporary `-m:1` build recovery followed a local MSBuild worker crash. Tests retained their normal parallel execution.
+- Release build: zero warnings and errors. The final full rebuild used `--no-incremental` with normal build parallelism outside the sandbox. An earlier temporary `-m:1` recovery followed a sandbox MSBuild worker failure; tests retained their normal parallel execution.
 - .NET regressions: 1153 passed, zero skipped or failed.
 - Format verification: clean.
 - Waza: 194 checked, zero repo-owned warnings; 98 imported findings remain report-only, including upstream Roslynk frontmatter syntax.
@@ -46,4 +46,15 @@ Avalonia 11 and 12 use different documentation and APIs; route by installed majo
 
 The first published Pages check exposed `Avalonia..*` because display code appended a separator to an already delimited matching prefix. Keep `Avalonia.` in metadata so auto-install does not match unrelated package ids; normalize only the display suffix across site cards, package search, structured data, and CLI package/detail cards. A separate local CLI UX pass checked consistency of the package signals and preserved the existing rich console hierarchy and escaped labels; Claude is unavailable in this environment.
 
-PR Checks and the nightly refresh completed successfully for the implementation commit. Both issues closed through commit references. All 208 live watch sources were reachable; 36 transient Microsoft Learn HTTP 429 responses succeeded on a focused retry without changing the watch baseline. The follow-up patch must pass the final solution Release lane and a second public release before delivery is complete.
+PR Checks and the nightly refresh completed successfully for the implementation commit. Both issues closed through commit references. All 208 live watch sources were reachable; 36 transient Microsoft Learn HTTP 429 responses succeeded on a focused retry without changing the watch baseline. The follow-up patch passed the final solution Release lane and a second public release.
+
+## Public delivery evidence
+
+- [Final Release workflow](https://github.com/managedcode/dotnet-skills/actions/runs/38036708361): release, Pages build, deployment, and report succeeded.
+- [Final PR Checks](https://github.com/managedcode/dotnet-skills/actions/runs/38036706677): catalog, Waza, and all three tool smoke checks succeeded. Waza checked 194 skills with zero repo-owned findings; 98 imported findings remain report-only.
+- [Nightly refresh](https://github.com/managedcode/dotnet-skills/actions/runs/38035898283): succeeded with no content changes, no unnecessary PR, and watch-state promotion completed.
+- [Catalog release 2026.10.10.1](https://github.com/managedcode/dotnet-skills/releases/tag/catalog-v2026.10.10.1): tag and release point to implementation commit `8013ba8884cae7432fe552f5533a12e2aa203e84`; manifest and catalog ZIP are published.
+- NuGet `dotnet-skills`, `dotnet-agents`, and `agents` version `0.1.253`: installed through the standard public V3 feed with an isolated package cache after indexing completed. Both bundled and GitHub-release catalogs installed Roslynk and Avalonia; Avalonia auto-install and Roslynk source/license byte fidelity passed.
+- [Roslynk](https://skills.managed-code.com/skills/roslynk/) and [Avalonia](https://skills.managed-code.com/skills/avalonia/) are live. Avalonia renders the correct `Avalonia.*` package signal.
+- The existing local `dotnet-skills` tool was updated from the fresh Release package to `0.1.253` and its runtime version was verified.
+- [#1584](https://github.com/managedcode/dotnet-skills/issues/1584) and [#1574](https://github.com/managedcode/dotnet-skills/issues/1574) are closed; the repository has zero open issues at delivery.
