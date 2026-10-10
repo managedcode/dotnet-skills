@@ -786,7 +786,7 @@ def render_nuget_sidebar(skill: dict) -> str:
         return ""
     items = []
     if prefix:
-        items.append(f'<span class="chip nuget-chip nuget-prefix">{escape_html(prefix)}.*</span>')
+        items.append(f'<span class="chip nuget-chip nuget-prefix">{escape_html(prefix.rstrip("."))}.*</span>')
     for pkg in packages:
         items.append(f'<span class="chip nuget-chip">{escape_html(pkg)}</span>')
     return f"""
@@ -811,7 +811,7 @@ def render_nuget_signal_list(skill: dict, package_limit: int | None = None) -> s
         return ""
     pills = []
     if prefix:
-        pills.append(f'<span class="chip nuget-chip nuget-prefix">{escape_html(prefix)}.*</span>')
+        pills.append(f'<span class="chip nuget-chip nuget-prefix">{escape_html(prefix.rstrip("."))}.*</span>')
     visible_packages = packages if package_limit is None else packages[:package_limit]
     for pkg in visible_packages:
         pills.append(f'<span class="chip nuget-chip">{escape_html(pkg)}</span>')
@@ -1899,7 +1899,7 @@ def build_nuget_package_index(skills: list[dict]) -> list[dict]:
         prefix = skill.get("package_prefix", "")
         if prefix:
             entries.append({
-                "nuget_id": f"{prefix}.*",
+                "nuget_id": f"{prefix.rstrip('.')}.*",
                 "kind": "prefix",
                 "skill": skill,
             })
@@ -1922,7 +1922,7 @@ def render_packages_index_page(skills: list[dict], root_prefix: str) -> tuple[st
     ]
     skills_with_packages.sort(
         key=lambda skill: (
-            (skill.get("packages") or [f"{skill.get('package_prefix', '')}.*"])[0].lower(),
+            (skill.get("packages") or [f"{skill.get('package_prefix', '').rstrip('.')}.*"])[0].lower(),
             skill["title"].lower(),
         )
     )
@@ -2312,7 +2312,7 @@ def build_skill_json_ld(site_url: str, skill: dict, breadcrumbs: list[tuple[str,
         package_terms.append(
             {
                 "@type": "DefinedTerm",
-                "name": f"{skill['package_prefix']}.*",
+                "name": f"{skill['package_prefix'].rstrip('.')}.*",
                 "inDefinedTermSet": "NuGet package prefixes",
             }
         )

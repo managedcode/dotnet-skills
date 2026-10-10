@@ -2186,7 +2186,7 @@ internal sealed partial class InteractiveConsoleApp
 
             if (!string.IsNullOrWhiteSpace(skill.PackagePrefix))
             {
-                signals.Add(new PackageSignalView($"{skill.PackagePrefix}.*", "Prefix", skill));
+                signals.Add(new PackageSignalView($"{skill.PackagePrefix.TrimEnd('.')}.*", "Prefix", skill));
             }
         }
 
@@ -3173,7 +3173,7 @@ internal sealed partial class InteractiveConsoleApp
                 "NuGet surface",
                 "green3",
                 skill.Packages.Count == 0 ? "[dim]no concrete packages declared[/]" : $"[dim]packages[/] {Escape(string.Join(", ", skill.Packages.Take(4)))}",
-                string.IsNullOrWhiteSpace(skill.PackagePrefix) ? "[dim]no package prefix[/]" : $"[dim]prefix[/] {Escape($"{skill.PackagePrefix}.*")}"),
+                string.IsNullOrWhiteSpace(skill.PackagePrefix) ? "[dim]no package prefix[/]" : $"[dim]prefix[/] {Escape($"{skill.PackagePrefix.TrimEnd('.')}.*")}"),
             BuildRichDetailCard(
                 "Upstream links",
                 "deepskyblue1",

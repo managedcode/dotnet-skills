@@ -11,7 +11,7 @@ Finish the existing Roslynk vendir import, resolve Avalonia support (#1584), and
 - [x] Add regression coverage for collection placement and package-driven recommendation/automatic installation.
 - [x] Reduce Orleans entrypoint weight using focused references; verify and repair Graphify and StyleCop source links.
 - [x] Run Python regressions, importer/catalog/agent/watch validation, Waza, format, Release build, .NET tests, and Release pack.
-- [ ] Commit with issue-closing references, push, validate GitHub checks, and exercise nightly refresh.
+- [x] Commit with issue-closing references, push, validate GitHub checks, and exercise nightly refresh.
 - [ ] Publish and verify catalog assets, all NuGet tools, Pages, and installed skill contents; confirm issues closed.
 
 ## Validation order
@@ -34,10 +34,16 @@ Avalonia 11 and 12 use different documentation and APIs; route by installed majo
 
 ## Local evidence
 
-- Python regressions: 55 passed.
+- Python regressions: 56 passed, including a public package-prefix rendering regression.
 - Release build: zero warnings and errors; a temporary `-m:1` build recovery followed a local MSBuild worker crash. Tests retained their normal parallel execution.
 - .NET regressions: 1153 passed, zero skipped or failed.
 - Format verification: clean.
 - Waza: 194 checked, zero repo-owned warnings; 98 imported findings remain report-only, including upstream Roslynk frontmatter syntax.
 - Release pack: all three tools produced; existing NU5111/NU5123 warnings concern bundled upstream scripts and long reference paths.
 - Roslynk skill/reference files and MIT license are byte-identical to the pinned source.
+
+## Publication follow-up and local CLI UX review
+
+The first published Pages check exposed `Avalonia..*` because display code appended a separator to an already delimited matching prefix. Keep `Avalonia.` in metadata so auto-install does not match unrelated package ids; normalize only the display suffix across site cards, package search, structured data, and CLI package/detail cards. A separate local CLI UX pass checked consistency of the package signals and preserved the existing rich console hierarchy and escaped labels; Claude is unavailable in this environment.
+
+PR Checks and the nightly refresh completed successfully for the implementation commit. Both issues closed through commit references. All 208 live watch sources were reachable; 36 transient Microsoft Learn HTTP 429 responses succeeded on a focused retry without changing the watch baseline. The follow-up patch must pass the final solution Release lane and a second public release before delivery is complete.
