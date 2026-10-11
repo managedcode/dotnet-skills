@@ -1,0 +1,10 @@
+{
+  "name": "NuGetPackageManager",
+  "title": "NuGet Package Manager",
+  "description": "Review and update NuGet package families with the shared ManagedCode CLI and VS Code engine.",
+  "links": {
+    "repository": "https://github.com/managedcode/NuGetPackageManager",
+    "docs": "https://github.com/managedcode/NuGetPackageManager/blob/main/docs/Development/Setup.md",
+    "nuget": "https://www.nuget.org/packages/nuget-manager"
+  }
+}

@@ -196,6 +196,8 @@ Package manifests also carry package-scope metadata:
 - `links.docs` for the primary documentation URL when known
 - `links.nuget` for the representative NuGet package URL when known
 
+Keep the original project repository in `links.repository`, distinct from the catalog source. Public skill pages also expose project repository URLs explicitly referenced in `SKILL.md` and Markdown files under `references/`, including imported upstream content. Reference-only repositories are deduplicated by repository identity; their Markdown stays unchanged.
+
 Nearest sibling skill or agent manifests carry entity-specific metadata:
 
 - `skills/<skill>/manifest.json` for `version`, `category`, `packages`, or `package_prefix`

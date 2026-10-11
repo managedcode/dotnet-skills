@@ -560,6 +560,37 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def referenced_repositories(skill_dir: Path) -> list[str]:
+    """Expose explicit project URLs in skill Markdown without modifying upstream content."""
+    repositories: dict[str, str] = {}
+    documents = [skill_dir / "SKILL.md", *sorted((skill_dir / "references").rglob("*.md"))]
+    for document in documents:
+        for match in re.finditer(r'https?://[^\s<>\[\]()\x60"\x27]+', read_text(document)):
+            parsed = urlparse(html.unescape(match.group(0)).rstrip(".,;:!?"))
+            host = (parsed.hostname or "").lower()
+            parts = parsed.path.strip("/").split("/")
+            if host == "raw.githubusercontent.com":
+                host = "github.com"
+            if host not in {"github.com", "gitlab.com", "bitbucket.org", "codeberg.org"} or len(parts) < 2:
+                continue
+            if host == "github.com" and parts[0].lower() in {
+                "topics", "orgs", "organizations", "users", "settings", "login", "search", "marketplace", "features", "sponsors",
+            }:
+                continue
+            if host == "gitlab.com":
+                if "-" in parts:
+                    parts = parts[:parts.index("-")]
+            else:
+                parts = parts[:2]
+            if len(parts) < 2 or any(not re.fullmatch(r"[\w.-]+", part) for part in parts):
+                continue
+            parts[-1] = parts[-1].removesuffix(".git")
+            repository = f"https://{host}/{'/'.join(parts)}"
+            if repository.lower() != GITHUB_REPOSITORY_URL.lower():
+                repositories.setdefault(repository.lower(), repository)
+    return list(repositories.values())
+
+
 def load_skill_documents(skills: list[dict], site_url: str) -> list[dict]:
     """Enrich skills with content extracted from their markdown source."""
     enriched: list[dict] = []
@@ -586,6 +617,7 @@ def load_skill_documents(skills: list[dict], site_url: str) -> list[dict]:
                 "source_url": source_url,
                 "source_file": f"{skill['path']}/SKILL.md",
                 "repository_url": str(skill.get("links", {}).get("repository", "")),
+                "referenced_repositories": referenced_repositories(skill_path.parent),
                 "docs_url": str(skill.get("links", {}).get("docs", "")),
                 "nuget_url": str(skill.get("links", {}).get("nuget", "")),
                 "sections": sections,
@@ -749,7 +781,7 @@ def render_external_pill_links(links: list[tuple[str, str]]) -> str:
 
 
 def build_upstream_links(item: dict) -> list[tuple[str, str]]:
-    """Build ordered upstream link tuples from manifest metadata."""
+    """Keep manifest links first, then expose deduplicated explicit repository references."""
     links = item.get("links", {})
     if not isinstance(links, dict):
         return []
@@ -761,6 +793,12 @@ def build_upstream_links(item: dict) -> list[tuple[str, str]]:
         ordered_links.append(("Docs", str(links["docs"])))
     if links.get("nuget"):
         ordered_links.append(("NuGet", str(links["nuget"])))
+    seen = {url.rstrip("/").removesuffix(".git").lower() for _, url in ordered_links}
+    for repository in item.get("referenced_repositories", []):
+        identity = repository.rstrip("/").removesuffix(".git").lower()
+        if identity not in seen:
+            ordered_links.append((f"Repository: {urlparse(repository).path.strip('/')}", repository))
+            seen.add(identity)
     return ordered_links
 
 
@@ -846,6 +884,11 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
     )
     nuget_pills = render_nuget_pills(skill)
     token_count = int(skill.get("tokenCount", 0))
+    repository_url = skill.get("repository_url", "")
+    repository_link = (
+        f'<a class="card-inline-link card-source-link" href="{escape_html(repository_url)}" target="_blank" rel="noopener noreferrer">Project repository ↗</a>'
+        if repository_url else ""
+    )
     return f"""
       <article class="directory-card skill-card {type_class} is-clickable js-filter-card" data-collection="{escape_html(skill['stack'])}" data-type="{escape_html(skill_type)}" data-filtertext="{escape_html(filter_text)}" data-card-href="{escape_html(detail_href)}" tabindex="0" role="link" aria-label="Open {escape_html(skill['title'])} skill">
         <div class="card-head">
@@ -862,6 +905,7 @@ def render_skill_card(skill: dict, root_prefix: str, quick_view: bool = True) ->
         <p class="card-summary">{escape_html(summary)}</p>
         {nuget_pills}
         <div class="card-footer">
+          {'<div class="card-actions-inline card-project-links">' + repository_link + '</div>' if repository_link else ''}
           <div class="card-cmd-row">
             <code class="card-cmd">{escape_html(install_command)}</code>
             <button type="button" class="card-copy-btn" data-copy="{escape_html(install_command)}" aria-label="Copy command">
@@ -1483,6 +1527,7 @@ def build_skill_payload(skills: list[dict], root_prefix: str) -> list[dict]:
             "repositoryUrl": skill.get("repository_url", ""),
             "docsUrl": skill.get("docs_url", ""),
             "nugetUrl": skill.get("nuget_url", ""),
+            "upstreamLinks": [{"label": label, "url": url} for label, url in build_upstream_links(skill)],
             "tokenCount": skill.get("tokenCount", 0),
             "installCommand": f"dotnet skills install {skill['short_name']}",
         }
@@ -1628,7 +1673,7 @@ def render_skill_detail_page(skill: dict, related_skills: list[dict], related_ag
           </div>
 
           {render_nuget_sidebar(skill)}
-          {render_upstream_sidebar(skill, "Package links")}
+          {render_upstream_sidebar(skill, "Project & reference links")}
 
           <div class="sidebar-card">
             <div class="detail-card-label">Explore next</div>

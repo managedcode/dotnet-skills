@@ -452,6 +452,13 @@
 
 .card-actions-inline .button { min-width: 0; }
 
+.card-project-links { margin-bottom: 8px; }
+.card-project-links .card-source-link {
+  font-size: 12px !important;
+  color: var(--ink-2) !important;
+  opacity: 1;
+}
+
 .card-source-link {
   font-size: 11px !important;
   font-weight: 400 !important;

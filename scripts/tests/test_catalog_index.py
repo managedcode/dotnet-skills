@@ -25,6 +25,7 @@ class CatalogIndexTests(unittest.TestCase):
             "winforms-expert": ("Desktop & UI", "Frameworks"),
             "csharp-refactoring": (".NET Quality", "Code Quality"),
             "msbuild": ("MSBuild", "Build Pipelines"),
+            "nuget-package-manager": ("NuGet & Publishing", "Package Management"),
             "android-tombstone-symbolication": ("Mobile & Device", "Crash Analysis"),
             "apple-crash-symbolication": ("Mobile & Device", "Crash Analysis"),
             "dump-collect": ("Diagnostics & Metrics", "Crash Analysis"),

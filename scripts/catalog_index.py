@@ -520,7 +520,7 @@ def is_msbuild_skill(package: str, name: str) -> bool:
 
 
 def is_nuget_publishing_skill(package: str, name: str) -> bool:
-    return package == "Official-DotNet-NuGet" or name == "nuget-trusted-publishing"
+    return package == "Official-DotNet-NuGet" or name in {"nuget-trusted-publishing", "nuget-package-manager"}
 
 
 def is_template_skill(package: str) -> bool:

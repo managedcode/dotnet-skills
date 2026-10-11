@@ -1,6 +1,10 @@
 {
   "github_releases": [
     {
+      "source": "https://github.com/managedcode/NuGetPackageManager",
+      "skills": ["nuget-package-manager"]
+    },
+    {
       "source": "https://github.com/managedcode/Storage",
       "skills": [
         "managedcode-storage"

@@ -244,6 +244,19 @@
       document.getElementById("skill-modal-command").textContent = skill.installCommand;
       sourceLink.href = skill.sourceUrl;
       pageLink.href = skill.detailUrl;
+      const upstreamCard = document.getElementById("skill-modal-upstream");
+      const upstreamLinks = document.getElementById("skill-modal-upstream-links");
+      upstreamLinks.replaceChildren();
+      for (const { label, url } of skill.upstreamLinks || []) {
+        const link = document.createElement("a");
+        link.className = "pill-link";
+        link.textContent = label;
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        upstreamLinks.append(link);
+      }
+      upstreamCard.hidden = upstreamLinks.childElementCount === 0;
 
       overlay.hidden = false;
       overlay.setAttribute("aria-hidden", "false");
