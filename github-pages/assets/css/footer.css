@@ -39,3 +39,6 @@
   font-size: 11px;
   color: var(--ink-3);
 }
+
+.footer-bottom a { text-decoration: underline; text-underline-offset: 3px; }
+.footer-bottom a:hover { color: var(--ink); }

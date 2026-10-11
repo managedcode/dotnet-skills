@@ -402,6 +402,11 @@ internal static class CatalogScanner
         }
 
         var category = manifest.Category.Trim();
+        if (manifest.PackageEcosystem is not ("nuget" or "npm"))
+        {
+            throw new InvalidOperationException($"{manifestPath.FullName} field package_ecosystem must be nuget or npm");
+        }
+
         if (manifest.Packages.Any(package => string.IsNullOrWhiteSpace(package)))
         {
             throw new InvalidOperationException($"{manifestPath.FullName} field packages must be a list of non-empty strings");
@@ -928,6 +933,9 @@ internal sealed class EntityManifest
 
     [JsonPropertyName("package_prefix")]
     public string PackagePrefix { get; init; } = string.Empty;
+
+    [JsonPropertyName("package_ecosystem")]
+    public string PackageEcosystem { get; init; } = "nuget";
 
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? AdditionalData { get; init; }

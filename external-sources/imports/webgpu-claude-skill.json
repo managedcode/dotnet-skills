@@ -17,6 +17,7 @@
       "package": "ThreeJS-WebGPU-TSL",
       "title": "WebGPU Three.js with TSL",
       "skillDefaults": {
+        "package_ecosystem": "npm",
         "packages": [
           "three"
         ]

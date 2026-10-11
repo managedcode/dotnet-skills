@@ -892,7 +892,7 @@ def _read_skill_manifest_metadata(manifest_path: Path | None, entity_manifest: d
     if not manifest_path or not entity_manifest:
         raise ValueError(f"{expected_manifest_path} is required and must define `version` and `category`")
 
-    allowed = {"version", "category", "compatibility", "packages", "package_prefix"}
+    allowed = {"version", "category", "compatibility", "packages", "package_prefix", "package_ecosystem"}
     unknown = sorted(set(entity_manifest) - allowed)
     if unknown:
         raise ValueError(f"{manifest_path} has unsupported keys: {', '.join(unknown)}")
@@ -914,6 +914,12 @@ def _read_skill_manifest_metadata(manifest_path: Path | None, entity_manifest: d
         if not isinstance(compatibility, str) or not compatibility.strip():
             raise ValueError(f"{manifest_path} field `compatibility` must be a non-empty string")
         result["compatibility"] = compatibility.strip()
+
+    if "package_ecosystem" in entity_manifest:
+        ecosystem = entity_manifest["package_ecosystem"]
+        if ecosystem not in ("nuget", "npm"):
+            raise ValueError(f"{manifest_path} field `package_ecosystem` must be nuget or npm")
+        result["package_ecosystem"] = ecosystem
 
     if "packages" in entity_manifest:
         packages = entity_manifest["packages"]
@@ -1090,13 +1096,24 @@ def collect_skills(include_token_counts: bool = False) -> list[dict[str, object]
 
                 if package_links:
                     skill_entry["links"] = package_links
-                for key in ("packages", "package_prefix"):
+                for key in ("packages", "package_prefix", "package_ecosystem"):
                     if key in skill_manifest_metadata:
                         skill_entry[key] = skill_manifest_metadata[key]
                 skills.append(skill_entry)
 
     ensure_unique_entries(skills, "skill")
     return skills
+
+
+def catalog_statistics(skills: list[dict]) -> dict[str, int]:
+    """Count installable skills and distinct explicit NuGet ids, excluding family prefixes."""
+    nuget_packages = {
+        package.casefold()
+        for skill in skills
+        if skill.get("package_ecosystem", "nuget") == "nuget"
+        for package in skill.get("packages", [])
+    }
+    return {"skills": len(skills), "nuget_packages": len(nuget_packages)}
 
 
 def collect_agents() -> list[dict[str, object]]:

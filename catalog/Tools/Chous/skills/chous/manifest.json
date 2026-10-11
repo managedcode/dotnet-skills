@@ -1,6 +1,7 @@
 {
   "version": "1.0.0",
   "category": "Code Quality",
+  "package_ecosystem": "npm",
   "packages": [
     "Chous"
   ]

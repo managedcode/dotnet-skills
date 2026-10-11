@@ -123,7 +123,9 @@
 
   function initListingFilters() {
     const input = document.getElementById("search-input");
-    const cards = Array.from(document.querySelectorAll(".js-filter-card"));
+    const homeResults = document.getElementById("home-search-results");
+    const homeCount = document.getElementById("home-search-count");
+    const cards = Array.from((homeResults || document).querySelectorAll(".js-filter-card"));
     const tabs = Array.from(document.querySelectorAll(".filter-tab"));
     const emptyState = document.getElementById("listing-empty");
     const configuredListPath = pageData.querySyncPath || "";
@@ -170,6 +172,11 @@
         emptyState.classList.toggle("is-hidden", visibleCount !== 0);
       }
 
+      if (homeResults) {
+        homeResults.hidden = !query;
+        homeCount.textContent = query ? `${visibleCount} ${visibleCount === 1 ? "skill" : "skills"} found` : "";
+      }
+
       const nextParams = new URLSearchParams(window.location.search);
       if (query) {
         nextParams.set("q", query);
@@ -198,6 +205,16 @@
 
     if (input) {
       input.addEventListener("input", applyFilters);
+    }
+
+    if (homeResults) {
+      input.closest("form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        applyFilters();
+        if (!homeResults.hidden) {
+          homeResults.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
     }
 
     applyFilters();

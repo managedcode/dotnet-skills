@@ -2,14 +2,16 @@
 
 [![NuGet](https://img.shields.io/nuget/v/dotnet-skills?logo=nuget&label=nuget)](https://www.nuget.org/packages/dotnet-skills)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-browse-blue)](https://skills.managed-code.com/skills/)
+[![Skills](https://img.shields.io/badge/skills-196-blue)](https://skills.managed-code.com/skills/)
 [![.NET](https://img.shields.io/badge/.NET-10+-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 
 **Stop explaining .NET to your AI. Start building.**
 
 We've all been there: asking Claude to use Entity Framework, only to get EF6 patterns in a .NET 8 project. Explaining to Copilot that Blazor Server and Blazor WebAssembly aren't the same thing. Watching Codex generate `Startup.cs` for a Minimal API project.
 
-This catalog fixes that. A growing catalog covering the entire .NET ecosystem—from ASP.NET Core to Orleans, from MAUI to Semantic Kernel. Install them once, and your AI agent actually knows modern .NET.
+<!-- BEGIN CATALOG SUMMARY -->
+This catalog fixes that. **196 skills make dotnet-skills one of the largest .NET-focused skill collections for AI coding assistants**, with explicit mappings for **54 NuGet packages**. It covers the ecosystem—from ASP.NET Core to Orleans, from MAUI to Semantic Kernel. Install them once, and your AI agent actually knows modern .NET.
+<!-- END CATALOG SUMMARY -->
 
 **[Browse the complete catalog on skills.managed-code.com →](https://skills.managed-code.com/skills/)**
 

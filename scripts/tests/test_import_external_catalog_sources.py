@@ -19,6 +19,18 @@ SPEC.loader.exec_module(IMPORTER)
 
 
 class ImportExternalCatalogSourcesTests(unittest.TestCase):
+    def test_npm_ecosystem_survives_import_defaults_and_overrides(self) -> None:
+        policy = {
+            "category": "Web",
+            "compatibility": "Requires Node.js.",
+            "skillDefaults": {"packages": ["three"], "package_ecosystem": "npm"},
+            "skillOverrides": {"example": {"packages": ["Example.Library"], "package_ecosystem": "nuget"}},
+        }
+        default = IMPORTER.resolve_skill_manifest(policy, "webgpu", "1.0.0")
+        override = IMPORTER.resolve_skill_manifest(policy, "example", "1.0.0")
+        self.assertEqual("npm", default["package_ecosystem"])
+        self.assertEqual("nuget", override["package_ecosystem"])
+
     def source_config(self) -> dict:
         return {
             "id": "dotnet-skills",

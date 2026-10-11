@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     outputs:
-      source_sha: ${{ steps.changes.outputs.source_sha }}
+      source_sha: ${{ steps.readme.outputs.source_sha }}
       should_release: ${{ steps.changes.outputs.has_new_commits }}
       previous_tag: ${{ steps.changes.outputs.latest_tag }}
       catalog_version: ${{ steps.version.outputs.version }}
@@ -122,6 +122,28 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Verify catalog statistics and site automation
+        if: steps.changes.outputs.has_new_commits == 'true'
+        run: python3 -m unittest scripts.tests.test_generate_catalog scripts.tests.test_generate_pages
+
+      - name: Refresh and commit README catalog statistics
+        if: steps.changes.outputs.has_new_commits == 'true'
+        id: readme
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_catalog.py --update-readme
+
+          if ! git diff --quiet -- README.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "docs: refresh catalog statistics"
+            git push origin HEAD:main
+          fi
+
+          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Validate catalog version
         if: steps.changes.outputs.has_new_commits == 'true'
@@ -218,7 +240,7 @@ jobs:
             --tag "${{ steps.version.outputs.tag }}" \
             --catalog-version "${{ steps.version.outputs.version }}" \
             --package-version "${{ steps.package_version.outputs.package_version }}" \
-            --target-commit "${{ steps.changes.outputs.source_sha }}" \
+            --target-commit "${{ steps.readme.outputs.source_sha }}" \
             --output artifacts/release/release-notes.md \
             "${previous_args[@]}"
 
@@ -319,7 +341,7 @@ jobs:
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release edit "$tag" --title "$title" --notes-file artifacts/release/release-notes.md
           else
-            gh release create "$tag" --title "$title" --notes-file artifacts/release/release-notes.md --target "${{ steps.changes.outputs.source_sha }}" --draft
+            gh release create "$tag" --title "$title" --notes-file artifacts/release/release-notes.md --target "${{ steps.readme.outputs.source_sha }}" --draft
           fi
 
           gh release upload "$tag" artifacts/catalog-release/dotnet-skills-manifest.json artifacts/catalog-release/dotnet-skills-catalog.zip --clobber

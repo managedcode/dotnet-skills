@@ -226,6 +226,8 @@ For imported official upstream skills, keep the upstream skill or agent id unles
 
 Do not add generated catalog tables to `README.md`. The browsable catalog is published at [skills.managed-code.com](https://skills.managed-code.com/).
 
+The README Skills badge and bounded `CATALOG SUMMARY` block are generated with `python3 scripts/generate_catalog.py --update-readme`. The nightly release refreshes and commits these counts before building and packing the tools, then publishes the same commit to the site. The landing page computes the same statistics from the scanned catalog. NuGet package counts deduplicate explicit package ids case-insensitively; family prefixes do not represent a finite package count. Mark npm-only skill package signals with `"package_ecosystem": "npm"` in the sibling skill manifest and any upstream import override so they are excluded from NuGet statistics and the NuGet directory.
+
 Instead:
 
 1. Edit package metadata in the package `manifest.json`, and edit trigger metadata in the nearest sibling `skills/<skill>/manifest.json` or `agents/<agent>/manifest.json`

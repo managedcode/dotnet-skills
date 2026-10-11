@@ -2,6 +2,7 @@
   "version": "1.0.0",
   "category": "Web",
   "compatibility": "Requires a JavaScript or TypeScript project using Three.js WebGPU and TSL.",
+  "package_ecosystem": "npm",
   "packages": [
     "three"
   ]

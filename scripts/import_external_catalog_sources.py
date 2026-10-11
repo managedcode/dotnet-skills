@@ -15,7 +15,7 @@ EXTERNAL_SOURCES_ROOT = ROOT / "external-sources"
 CONFIG_ROOT = EXTERNAL_SOURCES_ROOT / "imports"
 
 ALLOWED_TYPES = {"Frameworks", "Libraries", "Tools", "Testing", "Platform"}
-ALLOWED_SKILL_MANIFEST_KEYS = {"version", "category", "compatibility", "packages", "package_prefix"}
+ALLOWED_SKILL_MANIFEST_KEYS = {"version", "category", "compatibility", "packages", "package_prefix", "package_ecosystem"}
 ALLOWED_SKILL_OVERRIDE_KEYS = ALLOWED_SKILL_MANIFEST_KEYS | {"exclude"}
 ALLOWED_PLUGIN_DEFAULT_KEYS = {"type", "category", "compatibility"}
 ALLOWED_PLUGIN_OVERRIDE_KEYS = {
@@ -512,14 +512,14 @@ def resolve_skill_manifest(plugin_policy: dict, skill_name: str, plugin_version:
 
     skill_defaults = plugin_policy.get("skillDefaults", {})
     if isinstance(skill_defaults, dict):
-        for key in ("packages", "package_prefix"):
+        for key in ("packages", "package_prefix", "package_ecosystem"):
             if key in skill_defaults:
                 manifest[key] = skill_defaults[key]
 
     skill_overrides = plugin_policy.get("skillOverrides", {})
     if isinstance(skill_overrides, dict) and isinstance(skill_overrides.get(skill_name), dict):
         override = skill_overrides[skill_name]
-        for key in ("version", "category", "compatibility", "packages", "package_prefix"):
+        for key in ("version", "category", "compatibility", "packages", "package_prefix", "package_ecosystem"):
             if key in override:
                 manifest[key] = override[key]
     return manifest
@@ -546,6 +546,8 @@ def validate_skill_manifest(manifest_path: Path, manifest: dict[str, object]) ->
         raise ValueError(f"{manifest_path} field compatibility must be a non-empty string")
 
     packages = manifest.get("packages")
+    if "package_ecosystem" in manifest and manifest["package_ecosystem"] not in ("nuget", "npm"):
+        raise ValueError(f"{manifest_path} field package_ecosystem must be nuget or npm")
     if packages is not None:
         if not isinstance(packages, list) or any(not isinstance(item, str) or not item.strip() for item in packages):
             raise ValueError(f"{manifest_path} field packages must be a list of non-empty strings")

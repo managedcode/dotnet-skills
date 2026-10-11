@@ -5,6 +5,30 @@ namespace ManagedCode.DotnetSkills.Tests;
 public sealed class SkillCatalogPackageTests
 {
     [Theory]
+    [InlineData("nuget", true)]
+    [InlineData("npm", true)]
+    [InlineData("unknown", false)]
+    public void LoadFromDirectory_ValidatesPackageEcosystem(string ecosystem, bool valid)
+    {
+        using var directory = new TemporaryDirectory();
+        var package = Directory.CreateDirectory(Path.Combine(directory.Path, "catalog", "Tools", "Example"));
+        File.WriteAllText(Path.Combine(package.FullName, "manifest.json"), """{"name":"Example","title":"Example"}""");
+        var skill = Directory.CreateDirectory(Path.Combine(package.FullName, "skills", "example"));
+        File.WriteAllText(Path.Combine(skill.FullName, "manifest.json"), $$"""{"version":"1.0.0","category":"Code Quality","package_ecosystem":"{{ecosystem}}","packages":["Example"]}""");
+        File.WriteAllText(Path.Combine(skill.FullName, "SKILL.md"), "---\nname: example\ndescription: Example skill\ncompatibility: .NET SDK\n---\n# Example\n");
+
+        if (valid)
+        {
+            Assert.Equal("example", Assert.Single(SkillCatalogPackage.LoadFromDirectory(new DirectoryInfo(directory.Path), "test", "test").Skills).Name);
+        }
+        else
+        {
+            var error = Assert.Throws<InvalidOperationException>(() => SkillCatalogPackage.LoadFromDirectory(new DirectoryInfo(directory.Path), "test", "test"));
+            Assert.Contains("package_ecosystem must be nuget or npm", error.Message, StringComparison.Ordinal);
+        }
+    }
+
+    [Theory]
     [InlineData("\n")]
     [InlineData("\r\n")]
     public void LoadFromDirectory_AcceptsPortableLineEndingsWithoutChangingSource(string newline)

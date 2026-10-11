@@ -158,6 +158,14 @@ body.page-home .page-hero .metric-grid { margin-top: 24px; }
 
 .hero-actions { margin-top: 20px; }
 
+.home-search { max-width: 640px; margin-top: 24px; }
+.home-search label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; }
+.home-search-row { display: flex; gap: 8px; }
+.home-search .search-input { min-width: 0; height: 44px; font-size: 14px; }
+.home-search .button { flex-shrink: 0; }
+.home-search-results { scroll-margin-top: 140px; }
+.home-search-results[hidden] { display: none; }
+
 /* ---- Metric cards ---- */
 
 .metric-grid {

@@ -389,7 +389,7 @@ Rules:
 Whenever you add, rename, split, merge, or remove a skill:
 
 1. For repo-authored entries, update `SKILL.md` frontmatter only for `name`, `description`, or `compatibility`, and update the sibling `manifest.json` for `version`, `category`, `packages`, or `package_prefix`. For imported upstream entries, keep `SKILL.md` verbatim and put any local-only metadata in the sibling `manifest.json`.
-2. Do not add an exact skill count or a generated catalog table to README.
+2. Generate the README skill badge and project introduction statistics from the scanned catalog with `python3 scripts/generate_catalog.py --update-readme`. The nightly release must refresh and commit these statistics before build/pack, then publish the same commit to the site. Count distinct explicit NuGet package ids separately from npm signals and family prefixes. Do not add a generated catalog table to README.
 3. Update automation notes if watch coverage changes.
 4. Keep the README catalog call to action linked to `https://skills.managed-code.com/skills/`.
 
@@ -697,7 +697,7 @@ This repository should behave like a maintainable documentation-and-automation s
 - On dense directory pages such as `/skills/`, catalog cards must use a strict shared composition so the grid reads as deliberate: matching heights per row, stable title/summary/meta/action bands, and line clamping where needed instead of ragged card growth.
 - Directory cards that represent navigable resources such as categories should make the whole card feel interactive. Do not leave large dead zones where only a small nested button or heading opens the destination.
 - The public skills site should visually align with the main ManagedCode website rather than inventing a separate noisy catalog aesthetic. When redesigning the site, inspect live ManagedCode pages first and reuse their calmer premium typography, spacing, accent restraint, and overall tone.
-- Public README copy must avoid exact skill counts and embedded skill tables. Direct catalog browsing to `https://skills.managed-code.com/skills/`.
+- Public README copy must show the current scanned skill count while avoiding embedded skill tables. Direct catalog browsing to `https://skills.managed-code.com/skills/`.
 - Keep one canonical top Skills badge and one canonical intro line in README.
 - For internal `SKILL.md`, `AGENT.md`, and `references/` content, optimize first for model loading and token economy. Human clickability or decorative Markdown formatting is secondary unless it materially improves maintenance.
 
@@ -715,7 +715,7 @@ This repository should behave like a maintainable documentation-and-automation s
 - Misleading public site wording that calls the supported platforms "AI agents" instead of showing them as platforms that use the skill catalog.
 - Bloated spacing on the public landing page, especially in Quick Start shells, step stacks, and sidebar cards.
 - Broken skill-card footers where category badges and install commands overlap, wrap awkwardly, or compete for the same horizontal space.
-- Exact skill counts in the public README hero badge or intro copy, where they go stale and create pointless merge churn.
+- Stale skill counts in the public README badge, intro copy, or project description.
 - Full generated catalog tables in README; the public site is the canonical browse surface.
 - Rewriting concise internal reference paths into verbose Markdown-link syntax when that does not help the model.
 

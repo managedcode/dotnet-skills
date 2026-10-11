@@ -14,7 +14,7 @@ import subprocess
 import sys
 from urllib.parse import urljoin, urlparse
 
-from catalog_index import build_bundles, collect_agents, collect_skills, resolve_stack_order
+from catalog_index import build_bundles, catalog_statistics, collect_agents, collect_skills, resolve_stack_order
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 README_PATH = REPO_ROOT / "README.md"
@@ -1453,6 +1453,7 @@ def render_home_page(
 ) -> tuple[str, dict]:
     """Render the root landing page."""
     total_tokens = sum(int(skill.get("tokenCount", 0)) for skill in skills)
+    stats = catalog_statistics(skills)
     hero = f"""
       <section class="page-hero">
         <div class="eyebrow-row">
@@ -1466,8 +1467,15 @@ def render_home_page(
             data-nuget-package-id="dotnet-skills">NuGet tool</a>
           <span class="tag">{escape_html(release_tag)}</span>
         </div>
-        <h1 class="page-title">.NET skills with a calmer, <span class="accent">structured install flow</span></h1>
-        <p class="page-lead">Use collections to browse the taxonomy and bundles to run one-command grouped installs. Start from project-detected NuGet packages, a focused bundle, or the interactive control center without broad mixed-catalog noise.</p>
+        <h1 class="page-title">{len(skills)} skills for your <span class="accent">.NET coding assistant</span></h1>
+        <p class="page-lead">One of the largest .NET-focused skill collections for AI coding assistants, with {stats['skills']} skills and explicit mappings for {stats['nuget_packages']} NuGet packages. Browse by collection, install a focused bundle, or find the guidance your project needs.</p>
+        <form class="home-search" role="search" action="{root_prefix}skills/" method="get">
+          <label for="search-input">Find a skill</label>
+          <div class="home-search-row">
+            <input class="search-input" id="search-input" name="q" type="search" placeholder="Search skills, NuGet packages, or topics" autocomplete="off" aria-controls="home-search-results">
+            <button class="button button-primary" type="submit">Search</button>
+          </div>
+        </form>
         <div class="hero-actions">
           {render_button("Browse bundles", f"{root_prefix}bundles/", "primary")}
           {render_button("Browse collections", f"{root_prefix}collections/", "ghost")}
@@ -1479,15 +1487,31 @@ def render_home_page(
           {render_metric_card(f"{total_tokens:,}", "Skill tokens")}
           {render_metric_card(str(len(agents)), "Agents")}
           {render_metric_card(str(len(category_infos)), "Collections")}
-          {render_metric_card("5", "Platforms")}
+          {render_metric_card(str(stats['nuget_packages']), "NuGet packages")}
         </div>
       </section>
     """
 
     featured_section = render_featured_section(skills[:6], agents[:3], category_infos, root_prefix, {skill["name"]: skill for skill in skills})
+    search_results = f"""
+      <section class="section-stack home-search-results" id="home-search-results" aria-labelledby="home-search-title" hidden>
+        <div class="section-header">
+          <div>
+            <h2 id="home-search-title">Search results</h2>
+            <p id="home-search-count" role="status"></p>
+          </div>
+          {render_panel_links([("All skills", f"{root_prefix}skills/")])}
+        </div>
+        <div class="directory-grid" id="listing-grid">
+          {' '.join(render_skill_card(skill, root_prefix) for skill in skills)}
+        </div>
+        {render_empty_state("No skills match this search. Try a framework, package, or topic.")}
+      </section>
+    """
 
     sections = [
         hero,
+        search_results,
         render_surface_distinction_section(root_prefix, len(category_infos), len(bundles)),
         render_quickstart_panel(),
         featured_section,
@@ -1940,6 +1964,8 @@ def build_nuget_package_index(skills: list[dict]) -> list[dict]:
     """Build an inverted index: NuGet package/prefix → skill."""
     entries: list[dict] = []
     for skill in skills:
+        if skill.get("package_ecosystem", "nuget") != "nuget":
+            continue
         packages = skill.get("packages", [])
         prefix = skill.get("package_prefix", "")
         if prefix:
@@ -1963,7 +1989,7 @@ def render_packages_index_page(skills: list[dict], root_prefix: str) -> tuple[st
     skills_with_packages = [
         skill
         for skill in skills
-        if skill.get("packages") or skill.get("package_prefix")
+        if skill.get("package_ecosystem", "nuget") == "nuget" and (skill.get("packages") or skill.get("package_prefix"))
     ]
     skills_with_packages.sort(
         key=lambda skill: (
@@ -2729,7 +2755,7 @@ def main() -> int:
     add_page(
         path="",
         title=".NET Skills for Modern Coding Platforms | dotnet-skills",
-        description="A shared .NET skill catalog for Claude Code, GitHub Copilot, Gemini, Codex, and Junie with NuGet package matching, bundles, collection pages, skill pages, and agents.",
+        description=f"One of the largest .NET-focused skill collections: {len(skills)} skills and {catalog_statistics(skills)['nuget_packages']} NuGet packages for Claude Code, GitHub Copilot, Gemini, Codex, and Junie.",
         keywords=["dotnet", ".NET skills", ".NET packages", "NuGet package matching", "Claude Code", "GitHub Copilot", "Gemini", "Codex", "Junie", "AI coding assistants", "skill catalog"],
         body_class="page-home",
         main_content=root_body,

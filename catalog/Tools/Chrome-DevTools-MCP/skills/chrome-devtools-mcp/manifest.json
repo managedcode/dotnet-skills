@@ -1,6 +1,7 @@
 {
   "version": "1.2.0",
   "category": "Web",
+  "package_ecosystem": "npm",
   "packages": [
     "chrome-devtools-mcp"
   ]
