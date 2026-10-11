@@ -6,6 +6,12 @@
       "skills": [
         "asynkron-profiler"
       ]
+    },
+    {
+      "source": "https://github.com/pedrosakuma/dotnet-diagnostics",
+      "skills": [
+        "diagnostics-mcp"
+      ]
     }
   ],
   "documentation": [
@@ -17,6 +23,12 @@
         "pvanalyze"
       ],
       "notes": "Review the pvanalyze skill when the upstream README changes."
+    },
+    {
+      "source": "https://raw.githubusercontent.com/pedrosakuma/dotnet-diagnostics/main/docs/tool-reference.md",
+      "skills": [
+        "diagnostics-mcp"
+      ]
     }
   ]
 }

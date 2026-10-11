@@ -1,0 +1,10 @@
+{
+  "name": "DotNet-Diagnostics-MCP",
+  "title": ".NET Diagnostics MCP",
+  "description": "MCP-driven CPU, allocation, GC, and runtime profiling for .NET applications and test hosts.",
+  "links": {
+    "repository": "https://github.com/pedrosakuma/dotnet-diagnostics",
+    "docs": "https://github.com/pedrosakuma/dotnet-diagnostics/tree/main/docs",
+    "nuget": "https://www.nuget.org/packages/dotnet-diagnostics-mcp"
+  }
+}

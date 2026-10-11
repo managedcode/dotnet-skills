@@ -172,6 +172,8 @@ Collections are intentionally split so installs stay explicit instead of collaps
 - `Legacy`
 - `Upgrades & Migration`
 
+For MCP-driven runtime profiling, install [`diagnostics-mcp`](catalog/Tools/DotNet-Diagnostics-MCP/skills/diagnostics-mcp/) with `dotnet skills install diagnostics-mcp`. It covers `dotnet-diagnostics-mcp` setup, CPU/allocation/GC capture, and the prompt: "Profile all unit tests and identify bottlenecks in the code tested." It belongs to `Diagnostics & Metrics`, with test-host discovery and explicit profiling-coverage reporting.
+
 Catalog releases are published automatically in `.github/workflows/publish-catalog.yml` at `04:00` UTC and include the `catalog-v*` release, GitHub Pages deployment, and NuGet publish for `dotnet-skills`, `dotnet-agents`, and `agents` in the same run. Automatic catalog versions use a numeric calendar-plus-daily-index format such as `2026.3.15.0`, where the first UTC-day release is `.0`, the second is `.1`, and so on. `dotnet-skills` reads the newest non-draft `catalog-v*` release by default, and `--catalog-version` is only for intentional pinning.
 
 Install whichever dedicated agent package you prefer:
