@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0+source.bea8cdeed7734c85",
+  "version": "1.0.0+source.f4e02012aaae4c30",
   "category": "Quality",
   "compatibility": "Requires a connected Roslynk MCP server and a .NET solution. Follow repository build and approval requirements.",
   "packages": [

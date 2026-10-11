@@ -240,21 +240,21 @@ The skill directory is watched, so a fresh copy is picked up without restarting 
 > - `find_definition`: Go to definition from a cursor position. Parameters: `solutionId`, `filePath`, `line`, `column` (1-based).
 > - `get_expression_info`: Compiler facts about the expression at a position: type and converted type, bound symbol and selected overload, nullability, constant value, implicit conversion, origin and doc summary; on a declared name, the declared symbol and its type. Parameters: `solutionId`, `filePath` (`.cs`/`.razor`/`.cshtml`), `line`, `column` (1-based).
 > - `get_symbol`: Identify a symbol and get its declaration. Parameters: `solutionId`, `symbolName` (fully-qualified).
-> - `get_symbol_body`: Read a symbol's complete source text, body included. Parameters: `solutionId`, `symbolName` (fully-qualified), `includeLeadingTrivia`.
+> - `get_symbol_body`: Read a symbol's source text, body included. Parameters: `solutionId`, `symbolName` (fully-qualified), `includeLeadingTrivia`, `startLine` (page a long declaration; the response reports `truncated=Y`/`totalLines`/`nextStartLine`), `maxLines` (default 400), `part` (fetch one declaration of a partial type; oversized parts are listed with `omitted=Y` and line counts).
 > - `get_members`: List a type's members with their locations. Parameters: `solutionId`, `typeName`, `includeInherited`, `nameFilter`, `includeMethods`/`includeFields`/`includeProperties`/`includeEvents`/`includeNestedTypes`.
 > - `search_symbols`: Find symbols by partial name. Parameters: `solutionId`, `query`, `maxResults`.
-> - `multi_query`: Run several of the read-only queries above in one call, against a single snapshot of the solution. Parameters: `solutionId`, `operations` (each names a tool and carries that tool's own parameters), optional `expectSnapshot`. See the skill's multi_query section. For impact questions ("what uses X?", "what breaks if I change X?"), batch `find_references`, `get_callers`, `get_callees`, `find_implementations` and `get_type_hierarchy` in one call.
+> - `multi_query`: Run several of the read-only queries above in one call, against a single snapshot of the solution. Parameters: `solutionId`, `operations` (each names a tool and carries that tool's own parameters), optional `expectSnapshot`. The whole response stays within the server's response budget (80,000 characters by default); an over-budget slot is cut at a line boundary and marked `truncated=Y`, remaining slots return `error=Truncated` with `truncatedSlots=<n>`. See the skill's multi_query section. For impact questions ("what uses X?", "what breaks if I change X?"), batch `find_references`, `get_callers`, `get_callees`, `find_implementations` and `get_type_hierarchy` in one call.
 >
 > **Relationships:**
 > - `find_references`: Every usage of a symbol. Parameters: `solutionId`, `symbolName`, `maxResults`.
 > - `find_reads` / `find_writes`: Where a field, property or parameter is read or written, each location tagged `read`, `assign`, `compound`, `increment`, `ref`, `out` or `init`; `compound`, `increment` and `ref` appear in both. Parameters: `solutionId`, `symbolName` (a parameter is `Namespace.Type.Method:parameter`), `maxResults`.
-> - `get_callers`: Who calls a method, overloads resolved. Parameters: `solutionId`, `methodName`.
+> - `get_callers`: Who calls a member (method, constructor, operator, property, indexer or event), overloads resolved, including calls the compiler inserts (`foreach`/`await` plumbing, `using` disposal, operators, conversions). Parameters: `solutionId`, `methodName`.
 > - `get_callees`: What a member calls - the inverse of `get_callers`; methods, constructors, property/event accessors and operators, overload-exact, with referenced-assembly callees grouped per assembly. Parameters: `solutionId`, `memberName`, `excludeExternal`.
 > - `find_implementations`: Implementors/overrides of an interface, abstract or virtual member. Parameters: `solutionId`, `symbolName`.
 > - `get_type_hierarchy`: Base types, interfaces and derived types. Parameters: `solutionId`, `typeName`.
 >
 > **Diagnostics:**
-> - `get_diagnostics`: Compile check — this replaces `dotnet build`. Parameters: `solutionId`, `includeErrors`, `includeWarnings`, `includeInfo`, `includeHidden` (**all default false**), `includeAnalyzers`. The header always reports `errors=`/`warnings=`/`infos=`/`hidden=` counts; opt into detail only when they are non-zero. Costly per call (it compiles and analyzes everything the edits affect), so run it once after a task's edits, not after each one. Razor compiler (`RZ*`) errors are included, reported against the `.razor`/`.cshtml` file.
+> - `get_diagnostics`: Compile check — this replaces `dotnet build`. Parameters: `solutionId`, `includeErrors`, `includeWarnings`, `includeInfo`, `includeHidden` (**all default false**), `includeAnalyzers`, and optional filters `projectName`, `filePath`, `ids` (array of strings), `maxResults`, `summaryOnly`. The header always reports `errors=`/`warnings=`/`infos=`/`hidden=` counts — for the filtered set, with each active filter echoed as a `filter=` header — so an empty body with `filter=` lines means the filter matched nothing, not a clean solution; opt into detail only when they are non-zero. `maxResults` caps the listed entries with `count=`/`truncated=Y`; `summaryOnly=true` returns one line per id (count, one example location and message) instead. Filters apply after compilation, so a filtered call reuses the cached result. Costly per call (it compiles and analyzes everything the edits affect), so run it once after a task's edits, not after each one. Razor compiler (`RZ*`) errors are included, reported against the `.razor`/`.cshtml` file.
 >
 > **Code actions:**
 > - `get_code_actions`: List fixes and refactorings at a position. Parameters: `solutionId`, `documentPath`, `line`, `column`, `endLine`, `endColumn`.
@@ -273,7 +273,10 @@ The skill directory is watched, so a fresh copy is picked up without restarting 
 > - `find_dead_code`: Unreferenced members with a confidence and a reason — candidates, never verdicts; it deletes nothing. Parameters: `solutionId`, `scope` (FQN prefix; use it on large solutions), `includePublic`, `maxResults`.
 > - `find_dead_conditionals`: `#if` branches never compiled under any loaded configuration. Parameter: `solutionId`.
 >
-> **Conventions:** most tools take a fully-qualified `Namespace.Type.Member` name (no `global::`); a local
+> **Conventions:** most tools take a fully-qualified `Namespace.Type.Member` name (no `global::`); a generic
+> type may be written without its type parameters (`Namespace.Box`) when only one arity exists — several
+> arities are `error=Ambiguous` with one candidate per arity, and spellings like ``Namespace.Box`1`` or
+> `Namespace.Box<int>` resolve too; a local
 > function is named as a member of the method declaring it (`Namespace.Type.Method.local`, nesting further
 > for one inside another);
 > `find_definition`, `get_expression_info` and `get_code_actions` are position-based instead. Every tool that takes a
@@ -305,6 +308,8 @@ For a foreground daemon with visible logs:
 ```
 
 Listens on `http://localhost:6502`. Point your MCP client at that URL (streamable HTTP). Ctrl+C stops it.
+
+The response budget (the character cap every tool result is held under; default 80,000) is read once at startup from `Roslynk:MaxResponseChars` in `appsettings.json` or the `Roslynk__MaxResponseChars` environment variable. A shared daemon serves every client with one value — set the smallest cap your clients need, and restart the daemon to change it.
 
 ## Run (Windows)
 
