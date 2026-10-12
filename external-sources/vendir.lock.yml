@@ -2,10 +2,10 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1290 from dotnet/abhitejjohn-dotnet11-code-owner...'
-      sha: 1d40f95ed0f2cdedfa4c9b2614b7c2035a4323cb
+      commitTitle: 'Merge pull request #1284 from dotnet/abhitejjohn-skill-eval-follow-up...'
+      sha: 19bb55d785cd88ce47a1b43f9a21d0192c412dac
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-24-g19bb55d7
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
@@ -19,10 +19,10 @@ directories:
       - '@astrojs/markdoc@2.0.11-12-g9050e3819c'
     path: astro
   - git:
-      commitTitle: Fix flakey test
-      sha: 71a8d132dde2a820ad05cc25a2368a7985317d69
+      commitTitle: Remove YourKit credit
+      sha: 474cac03c49edfa5d0171c16746b9283621d2886
       tags:
-      - 2.1.0-16-g71a8d13
+      - 2.1.0-17-g474cac0
     path: roslynk
   path: upstreams
 kind: LockConfig
