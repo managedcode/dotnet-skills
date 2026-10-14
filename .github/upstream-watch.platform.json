@@ -114,9 +114,17 @@
       ]
     },
     {
+      "id": "roslynk-skill-guidance",
+      "source": "https://raw.githubusercontent.com/mrpmorris/Roslynk/master/skills/roslynk/SKILL.md",
+      "name": "Roslynk official skill",
+      "skills": [
+        "roslynk"
+      ]
+    },
+    {
       "id": "roslynk-master-head",
       "source": "https://api.github.com/repos/mrpmorris/Roslynk/commits/master",
-      "name": "Roslynk master branch",
+      "name": "Roslynk master branch commits",
       "skills": [
         "roslynk"
       ]

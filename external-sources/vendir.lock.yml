@@ -19,10 +19,10 @@ directories:
       - '@astrojs/vercel@11.0.14-17-gaf54bfaebf'
     path: astro
   - git:
-      commitTitle: 'Skills update (Fixes #99) (Fixes #100) (#102)'
-      sha: ff5e73400f66b0ea18199cc698f2ba5179c98cde
+      commitTitle: Fix file extensions
+      sha: b0a7cc512476e08ccd340e7d5a4dfd7d78a449d9
       tags:
-      - 2.1.0-20-gff5e734
+      - 2.2.0
     path: roslynk
   path: upstreams
 kind: LockConfig
