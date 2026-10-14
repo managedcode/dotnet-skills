@@ -2,27 +2,27 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'chore: refresh gh-aw pins and recompile workflows (#1303)...'
-      sha: b0bf1730479858941ae22bdf0b45e88cfa31bcc5
+      commitTitle: 'Merge pull request #1305 from dotnet/abhitejjohn-ef-eval-safeguards...'
+      sha: 9de888b8ce55da34e76a113bd7b2d463d6b3e1e6
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-8-g9de888b8
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Fail the build when a prerender error is swallowed by a custom
-        fetch handler (#18355)
-      sha: 59b9cc00726495bb45f5c4b000dbbb7b5a19d662
+      commitTitle: 'fix(content): propagate glob() loader rendering errors instead
+        of swallowing them (#18353)...'
+      sha: af54bfaebff9180cb96822c0da11737b4b26e65a
       tags:
-      - '@astrojs/vercel@11.0.14-11-g59b9cc0072'
+      - '@astrojs/vercel@11.0.14-17-gaf54bfaebf'
     path: astro
   - git:
-      commitTitle: 'multi_query improved paging (Fixes #96) (#98)'
-      sha: d59c7ba3d485da1202dc977f15d36a142d892db9
+      commitTitle: 'Skills update (Fixes #99) (Fixes #100) (#102)'
+      sha: ff5e73400f66b0ea18199cc698f2ba5179c98cde
       tags:
-      - 2.1.0-18-gd59c7ba
+      - 2.1.0-20-gff5e734
     path: roslynk
   path: upstreams
 kind: LockConfig
