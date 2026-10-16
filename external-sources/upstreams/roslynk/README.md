@@ -314,3 +314,23 @@ Foreground dev:
 ```powershell
 dotnet run --project Source/App/Morris.Roslynk.Mcp
 ```
+
+# Observing Roslynk
+1. Stop existing Roslynk daemon.
+
+2. Open PowerShell:
+```
+  dotnet tool install -g Aspire.Cli
+  dotnet tool install -g Roslynk
+  aspire dashboard run --allow-anonymous
+```
+3. CTRL Click Dashboard link in output to open it in your browser.
+4. Then click the `Traces` Icon in the page that opens.
+5. Leave PowerShell window open.
+6. Open second PowerShell window:
+```
+  Env: Otel Exporter Otlp Endpoint = "http://localhost:4317"
+  Env: Otel Exporter Otlp Protocol = "grpc"
+  roslynk
+```
+You will then see all the Roslynk traces in Aspire.
