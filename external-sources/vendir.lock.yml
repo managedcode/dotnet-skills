@@ -2,20 +2,20 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1305 from dotnet/abhitejjohn-ef-eval-safeguards...'
-      sha: 9de888b8ce55da34e76a113bd7b2d463d6b3e1e6
+      commitTitle: 'Merge pull request #1301 from kdinev/adjust-grid-css-path...'
+      sha: 10d85e25fb42d5f65c568d5e979a005ee69eecb3
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-11-g10d85e25
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: '[ci] release (#18354)'
-      sha: c2c43a99f4d50676456c137ff88359579f78bf5c
+      commitTitle: 'fix(node): log server listening when listening already fired (#18382)...'
+      sha: c75e89711a4935a0befea6f768842f6d6a9de2bb
       tags:
-      - '@astrojs/cloudflare@14.4.0'
+      - '@astrojs/cloudflare@14.4.0-10-gc75e89711a'
     path: astro
   - git:
       commitTitle: Update README with Roslynk observation steps...
