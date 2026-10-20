@@ -237,36 +237,36 @@ The skill directory is watched, so a fresh copy is picked up without restarting 
 > - `get_expression_info`: Compiler facts about the expression at a position: type and converted type, bound symbol and selected overload, nullability, constant value, implicit conversion, origin and doc summary; on a declared name, the declared symbol and its type. Parameters: `solutionId`, `filePath` (`.cs`/`.razor`/`.cshtml`), `line`, `column` (1-based).
 > - `get_symbol`: Identify a symbol and get its declaration. Parameters: `solutionId`, `symbolName` (fully-qualified).
 > - `get_symbol_body`: Read a symbol's source text, body included. Parameters: `solutionId`, `symbolName` (fully-qualified), `includeLeadingTrivia`, `startItem` (page a long declaration; the response reports `truncated=Y`/`count`/`nextStartItem`), `maxSize` (page size in characters; default the response budget), `part` (fetch one declaration of a partial type; oversized parts are listed with `omitted=Y` and line counts).
-> - `get_members`: List a type's members with their locations. Parameters: `solutionId`, `typeName`, `includeInherited`, `nameFilter`, `includeMethods`/`includeFields`/`includeProperties`/`includeEvents`/`includeNestedTypes`.
-> - `search_symbols`: Find symbols by partial name. Parameters: `solutionId`, `query`, `maxResults`.
+> - `get_members`: List a type's members with their locations. Parameters: `solutionId`, `symbolName`, `includeInherited`, `nameFilter`, `includeMethods`/`includeFields`/`includeProperties`/`includeEvents`/`includeNestedTypes`.
+> - `search_symbols`: Find symbols by partial name. Parameters: `solutionId`, `query`, `maxSize` (page size; paging reaches every match).
 > - `multi_query`: Run several of the read-only queries above in one call, against a single snapshot of the solution. Parameters: `solutionId`, `operations` (each names a tool and carries that tool's own parameters), optional `expectSnapshot`. The whole response stays within the server's response budget (80,000 characters by default): every operation runs, whole results are delivered smallest-first until the budget is filled (in request order), and the rest are named once in the header as `retry=<index>:<size>` (size = the result's cost as a ratio of the budget, rounded up to 0.1). Sizes ≥ 1.0 must be re-sent alone (they page); sizes summing to ≤ 1.0 fit one continuation batch together. See the skill's multi_query section. For impact questions ("what uses X?", "what breaks if I change X?"), batch `find_references`, `get_callers`, `get_callees`, `find_implementations` and `get_type_hierarchy` in one call.
 >
 > **Relationships:**
-> - `find_references`: Every usage of a symbol. Parameters: `solutionId`, `symbolName`, `maxResults` (omit for every reference; an oversized result pages with `startItem`).
-> - `find_reads` / `find_writes`: Where a field, property or parameter is read or written, each location tagged `read`, `assign`, `compound`, `increment`, `ref`, `out` or `init`; `compound`, `increment` and `ref` appear in both. Parameters: `solutionId`, `symbolName` (a parameter is `Namespace.Type.Method:parameter`), `maxResults`.
-> - `get_callers`: Who calls a member (method, constructor, operator, property, indexer or event), overloads resolved, including calls the compiler inserts (`foreach`/`await` plumbing, `using` disposal, operators, conversions). Parameters: `solutionId`, `methodName`.
-> - `get_callees`: What a member calls - the inverse of `get_callers`; methods, constructors, property/event accessors and operators, overload-exact, with referenced-assembly callees grouped per assembly. Parameters: `solutionId`, `memberName`, `excludeExternal`.
+> - `find_references`: Every usage of a symbol. Parameters: `solutionId`, `symbolName`, `startItem`/`maxSize` (an oversized result pages; nothing is dropped).
+> - `find_reads` / `find_writes`: Where a field, property or parameter is read or written, each location tagged `read`, `assign`, `compound`, `increment`, `ref`, `out` or `init`; `compound`, `increment` and `ref` appear in both. Parameters: `solutionId`, `symbolName` (a parameter is `Namespace.Type.Method:parameter`), `startItem`/`maxSize`.
+> - `get_callers`: Who calls a member (method, constructor, operator, property, indexer or event), overloads resolved, including calls the compiler inserts (`foreach`/`await` plumbing, `using` disposal, operators, conversions). Parameters: `solutionId`, `symbolName`.
+> - `get_callees`: What a member calls - the inverse of `get_callers`; methods, constructors, property/event accessors and operators, overload-exact, with referenced-assembly callees grouped per assembly. Parameters: `solutionId`, `symbolName`, `excludeExternal`.
 > - `find_implementations`: Implementors/overrides of an interface, abstract or virtual member. Parameters: `solutionId`, `symbolName`.
-> - `get_type_hierarchy`: Base types, interfaces and derived types. Parameters: `solutionId`, `typeName`.
+> - `get_type_hierarchy`: Base types, interfaces and derived types. Parameters: `solutionId`, `symbolName`.
 >
 > **Diagnostics:**
-> - `get_diagnostics`: Compile check — this replaces `dotnet build`. Parameters: `solutionId`, `includeErrors`, `includeWarnings`, `includeInfo`, `includeHidden` (**all default false**), `includeAnalyzers`, and optional filters `projectName`, `filePath`, `ids` (array of strings), `maxResults`, `summaryOnly`. The header always reports `errors=`/`warnings=`/`infos=`/`hidden=` counts — for the filtered set, with each active filter echoed as a `filter=` header — so an empty body with `filter=` lines means the filter matched nothing, not a clean solution; opt into detail only when they are non-zero. `maxResults` caps the listed entries with `count=`/`truncated=Y`; `summaryOnly=true` returns one line per id (count, one example location and message) instead. Filters apply after compilation, so a filtered call reuses the cached result. Costly per call (it compiles and analyzes everything the edits affect), so run it once after a task's edits, not after each one. Razor compiler (`RZ*`) errors are included, reported against the `.razor`/`.cshtml` file.
+> - `get_diagnostics`: Compile check — this replaces `dotnet build`. Parameters: `solutionId`, `includeErrors`, `includeWarnings`, `includeInfo`, `includeHidden` (**all default false**), `includeAnalyzers`, and optional filters `projectName`, `filePath`, `ids` (array of strings), `summaryOnly`. The header always reports `errors=`/`warnings=`/`infos=`/`hidden=` counts — for the filtered set, with each active filter echoed as a `filter=` header — so an empty body with `filter=` lines means the filter matched nothing, not a clean solution; opt into detail only when they are non-zero. `maxSize` caps the listed entries with `count=`/`truncated=Y`; `summaryOnly=true` returns one line per id (count, one example location and message) instead. Filters apply after compilation, so a filtered call reuses the cached result. Costly per call (it compiles and analyzes everything the edits affect), so run it once after a task's edits, not after each one. Razor compiler (`RZ*`) errors are included, reported against the `.razor`/`.cshtml` file.
 >
 > **Code actions:**
-> - `get_code_actions`: List fixes and refactorings at a position. Parameters: `solutionId`, `documentPath`, `line`, `column`, `endLine`, `endColumn`.
+> - `get_code_actions`: List fixes and refactorings at a position. Parameters: `solutionId`, `filePath`, `line`, `column`, `endLine`, `endColumn`.
 > - `apply_code_action`: Apply one by its opaque `actionId` (pass it back verbatim). Parameters: `solutionId`, `actionId`, `checkOnly`.
-> - `apply_code_fix`: Fix the diagnostic (compiler or analyzer, e.g. `CS0219` or `IDE0005`) at a position `get_diagnostics` reported, no round-trip. Parameters: `solutionId`, `documentPath`, `diagnosticId`, `line`, `column` (required), `checkOnly`. When the diagnostic has several fixes it writes nothing and returns `error=Conflict` with a `candidate` actionId per fix; apply the chosen one with `apply_code_action`.
+> - `apply_code_fix`: Fix the diagnostic (compiler or analyzer, e.g. `CS0219` or `IDE0005`) at a position `get_diagnostics` reported, no round-trip. Parameters: `solutionId`, `filePath`, `diagnosticId`, `line`, `column` (required), `checkOnly`. When the diagnostic has several fixes it writes nothing and returns `error=Conflict` with a `candidate` actionId per fix; apply the chosen one with `apply_code_action`.
 >
 > **Editing:**
 > - `apply_patch`: Edit text files with a git unified diff. Parameters: `solutionId`, `patch`, `baseVersions`, `checkOnly`. Hunks are content-anchored, not line-number-anchored — include enough context that each matches exactly one place. Paths are relative to the solution folder (a unique suffix also resolves); a missing file is `NotFound`, an ambiguous suffix `Ambiguous`.
-> - `rename_parameter`: Rename one parameter of a method, constructor or indexer overload with Roslyn: declaration, body, named arguments and `<paramref>` docs, cascading across the override/interface family. Parameters: `solutionId`, `methodId`, `parameterName`, `newName`, `checkOnly`.
+> - `rename_parameter`: Rename one parameter of a method, constructor or indexer overload with Roslyn: declaration, body, named arguments and `<paramref>` docs, cascading across the override/interface family. Parameters: `solutionId`, `symbolName` (the declaring member), `parameterName`, `newName`, `checkOnly`.
 > - `rename_symbol`: Compiler-correct rename across partial classes, every `#if` branch, every target framework, and `.razor`/`.cshtml`. Parameters: `solutionId`, `symbolName`, `newName`, `checkOnly`.
-> - `change_signature`: Append one optional parameter to an ordinary method and thread an argument into every call site. Parameters: `solutionId`, `methodId`, `parameterType`, `parameterName`, `defaultValue`, `callSiteArgument`, `checkOnly`.
-> - `extract_method`: Extract a selection of statements or an expression into a new method or local function with Roslyn's own Extract Method refactoring; writes nothing when Roslyn cannot extract it safely or the result would not compile. Parameters: `solutionId`, `documentPath`, `startLine`, `startColumn`, `endLine`, `endColumn`, `methodName`, `asLocalFunction`, `checkOnly`.
-> - `remove_unused_usings`: Strip unused `using` directives (CS8019), preserving surrounding trivia. Parameters: `solutionId`, `documentPath` (omit for the whole solution), `checkOnly`.
+> - `change_signature`: Append one optional parameter to an ordinary method and thread an argument into every call site. Parameters: `solutionId`, `symbolName` (the method), `parameterType`, `parameterName`, `defaultValue`, `callSiteArgument`, `checkOnly`.
+> - `extract_method`: Extract a selection of statements or an expression into a new method or local function with Roslyn's own Extract Method refactoring; writes nothing when Roslyn cannot extract it safely or the result would not compile. Parameters: `solutionId`, `filePath`, `line`, `column`, `endLine`, `endColumn`, `methodName`, `asLocalFunction`, `checkOnly`.
+> - `remove_unused_usings`: Strip unused `using` directives (CS8019), preserving surrounding trivia. Parameters: `solutionId`, `filePath` (omit for the whole solution), `checkOnly`.
 >
 > **Dead code:**
-> - `find_dead_code`: Unreferenced members with a confidence and a reason — candidates, never verdicts; it deletes nothing. Parameters: `solutionId`, `scope` (FQN prefix; use it on large solutions), `includePublic`, `maxResults`.
+> - `find_dead_code`: Unreferenced members with a confidence and a reason — candidates, never verdicts; it deletes nothing. Parameters: `solutionId`, `scope` (FQN prefix; use it on large solutions), `includePublic`, `maxSize` (scan cap).
 > - `find_dead_conditionals`: `#if` branches never compiled under any loaded configuration. Parameter: `solutionId`.
 >
 > **Conventions:** most tools take a fully-qualified `Namespace.Type.Member` name (no `global::`); a generic
@@ -276,12 +276,12 @@ The skill directory is watched, so a fresh copy is picked up without restarting 
 > function is named as a member of the method declaring it (`Namespace.Type.Method.local`, nesting further
 > for one inside another);
 > `find_definition`, `get_expression_info` and `get_code_actions` are position-based instead. Every tool that takes a
-> `documentPath`, and every write tool, works on `.razor` and `.cshtml` files as well as `.cs`: positions
+> `filePath`, and every write tool, works on `.razor` and `.cshtml` files as well as `.cs`: positions
 > are given in the Razor file, and edits are written back to it in its own indentation. Responses are a compact
 > `key=value` header block, a blank line, then a tab-indented outline; booleans are `Y`/`N`. Errors
 > are header-only: `error=Indexing` (retry), `Ambiguous`/`NotFound` (pick from the `candidate=`
 > lines), `Stale` (re-read and recompute), `Conflict` (re-run the discovery step). Watch for
-> `truncated=Y` and continue with `startItem` (or raise `maxResults`). Leave defaulted parameters alone unless you need the
+> `truncated=Y` and continue with `startItem` (or raise `maxSize`). Leave defaulted parameters alone unless you need the
 > non-default behaviour, and re-query rather than reusing an earlier response — the solution is
 > edited live.
 >

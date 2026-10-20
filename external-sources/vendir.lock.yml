@@ -2,26 +2,26 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1301 from kdinev/adjust-grid-css-path...'
-      sha: 10d85e25fb42d5f65c568d5e979a005ee69eecb3
+      commitTitle: 'Merge pull request #1330 from dotnet/copilot/fix-dotnet-pinvoke-examples...'
+      sha: 9386ed7c1148a7bef970aa0502371c982effa01c
       tags:
-      - skill-validator-nightly-11-g10d85e25
+      - skill-validator-nightly-4-g9386ed7c
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'fix(node): log server listening when listening already fired (#18382)...'
-      sha: c75e89711a4935a0befea6f768842f6d6a9de2bb
+      commitTitle: '[ci] release (#18405)'
+      sha: e990df87fb74b71a94b50fbc83a26a189391e300
       tags:
-      - '@astrojs/cloudflare@14.4.0-10-gc75e89711a'
+      - '@astrojs/check@0.9.11'
     path: astro
   - git:
-      commitTitle: Update README with Roslynk observation steps...
-      sha: 788735a12c91d8a603c5de50474b96a7424a2007
+      commitTitle: 'Ensure server instructions are correct (Fixes #120) (#125)'
+      sha: 4ec00df7da4b6c259a818076cf15161bebacf190
       tags:
-      - 2.2.0-1-g788735a
+      - 2.2.0-5-g4ec00df
     path: roslynk
   path: upstreams
 kind: LockConfig
