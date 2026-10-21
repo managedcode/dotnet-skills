@@ -222,13 +222,15 @@ The skill directory is watched, so a fresh copy is picked up without restarting 
 > `#if` branches and Razor, and it never matches names inside comments or strings.
 >
 > **Getting started:** call `open_solution` with the absolute path to the `.sln`/`.slnx`; the
-> `solutionId` it returns is the handle every other tool needs. It loads in the background — while
-> it does, other calls return `error=Indexing`; retry shortly or poll `get_solution_status`. Never
+> `solutionId` it returns is the handle every other tool needs. It waits for the load by default
+> (`noWait=true` pre-warms in the background); every solution tool waits server-side up to the
+> configured timeout, so you normally get the result rather than a retry prompt. Only if the timeout
+> elapses do calls return `error=Indexing` (with `projects=loaded/?`); retry shortly. Never
 > fall back to reading or editing files directly. Never call `reload_solution` on your own
 > initiative — a file watcher picks up edits automatically; suggest a reload instead.
 >
 > **Lifecycle:**
-> - `open_solution`: Load a solution. Parameters: `solutionPath` (absolute). Idempotent, cheap to repeat.
+> - `open_solution`: Load a solution. Parameters: `solutionPath` (absolute), `noWait` (return before the load finishes). Idempotent, cheap to repeat.
 > - `get_solution_status`: List every loaded solution and its progress, with the messages behind `loadDiagnostics` (skipped analyzers, failed project loads) indented under each Ready solution. A missing generator DLL names the project to build; once built, the next call picks it up without a reload. Optional parameter: `allLoadDiagnostics` (every message instead of the first 20 per solution).
 > - `reload_solution`: Force a from-disk re-evaluation. Parameter: `solutionId`. Only when the user explicitly asks.
 >
@@ -238,7 +240,7 @@ The skill directory is watched, so a fresh copy is picked up without restarting 
 > - `get_symbol`: Identify a symbol and get its declaration. Parameters: `solutionId`, `symbolName` (fully-qualified).
 > - `get_symbol_body`: Read a symbol's source text, body included. Parameters: `solutionId`, `symbolName` (fully-qualified), `includeLeadingTrivia`, `startItem` (page a long declaration; the response reports `truncated=Y`/`count`/`nextStartItem`), `maxSize` (page size in characters; default the response budget), `part` (fetch one declaration of a partial type; oversized parts are listed with `omitted=Y` and line counts).
 > - `get_members`: List a type's members with their locations. Parameters: `solutionId`, `symbolName`, `includeInherited`, `nameFilter`, `includeMethods`/`includeFields`/`includeProperties`/`includeEvents`/`includeNestedTypes`.
-> - `search_symbols`: Find symbols by partial name. Parameters: `solutionId`, `query`, `maxSize` (page size; paging reaches every match).
+> - `search_symbols`: Find symbols by partial name, or by a dotted container-qualified name (`Type.Member`, matched as a suffix of the containing type/namespace chain). Parameters: `solutionId`, `query`, `kinds` (optional JSON array of kind names such as `["Method"]`; a JSON-array string is also accepted), `maxSize` (page size; paging reaches every match).
 > - `multi_query`: Run several of the read-only queries above in one call, against a single snapshot of the solution. Parameters: `solutionId`, `operations` (each names a tool and carries that tool's own parameters), optional `expectSnapshot`. The whole response stays within the server's response budget (80,000 characters by default): every operation runs, whole results are delivered smallest-first until the budget is filled (in request order), and the rest are named once in the header as `retry=<index>:<size>` (size = the result's cost as a ratio of the budget, rounded up to 0.1). Sizes ≥ 1.0 must be re-sent alone (they page); sizes summing to ≤ 1.0 fit one continuation batch together. See the skill's multi_query section. For impact questions ("what uses X?", "what breaks if I change X?"), batch `find_references`, `get_callers`, `get_callees`, `find_implementations` and `get_type_hierarchy` in one call.
 >
 > **Relationships:**
@@ -306,6 +308,8 @@ For a foreground daemon with visible logs:
 Listens on `http://localhost:6502`. Point your MCP client at that URL (streamable HTTP). Ctrl+C stops it.
 
 The response budget (the character cap every tool result is held under; default 80,000) is read once at startup from `Roslynk:MaxResponseChars` in `appsettings.json` or the `Roslynk__MaxResponseChars` environment variable. A shared daemon serves every client with one value — set the smallest cap your clients need, and restart the daemon to change it.
+
+Solution-scoped tools wait server-side for an in-flight initial load for up to `Roslynk:LoadWaitSeconds` (default 30, or the `Roslynk__LoadWaitSeconds` environment variable) before returning `error=Indexing` with the live project count. Restart the daemon to change it.
 
 ## Run (Windows)
 

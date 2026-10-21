@@ -2,26 +2,28 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1330 from dotnet/copilot/fix-dotnet-pinvoke-examples...'
-      sha: 9386ed7c1148a7bef970aa0502371c982effa01c
+      commitTitle: 'Merge pull request #1309 from dotnet/abhitejjohn-finish-vally-018-migration...'
+      sha: c848e7fffab05c594f9b954c6f3beb373d108447
       tags:
-      - skill-validator-nightly-4-g9386ed7c
+      - skill-validator-nightly-16-gc848e7ff
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: '[ci] release (#18405)'
-      sha: e990df87fb74b71a94b50fbc83a26a189391e300
+      commitTitle: 'fix(astro): stop excluding node-fetch from server dep optimization
+        in workerd dev (#18438)...'
+      sha: 5e0eaa4415a9081efdaeb3d9af3717ce3226ad18
       tags:
-      - '@astrojs/check@0.9.11'
+      - '@astrojs/check@0.9.11-18-g5e0eaa4415'
     path: astro
   - git:
-      commitTitle: 'Ensure server instructions are correct (Fixes #120) (#125)'
-      sha: 4ec00df7da4b6c259a818076cf15161bebacf190
+      commitTitle: 'Report precise invalid-JSON and multi_query binding errors (Fixes
+        #108) (#135)...'
+      sha: 7be07af1124bbc85aeed0b8037b8e9442ce3f7d7
       tags:
-      - 2.2.0-5-g4ec00df
+      - 2.2.0-16-g7be07af
     path: roslynk
   path: upstreams
 kind: LockConfig
