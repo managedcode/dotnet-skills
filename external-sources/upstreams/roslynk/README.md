@@ -227,11 +227,12 @@ The skill directory is watched, so a fresh copy is picked up without restarting 
 > configured timeout, so you normally get the result rather than a retry prompt. Only if the timeout
 > elapses do calls return `error=Indexing` (with `projects=loaded/?`); retry shortly. Never
 > fall back to reading or editing files directly. Never call `reload_solution` on your own
-> initiative — a file watcher picks up edits automatically; suggest a reload instead.
+> initiative — a file watcher picks up edits automatically (unless `get_solution_status` lists a
+> `watchDiagnostic=` for that solution); suggest a reload instead.
 >
 > **Lifecycle:**
 > - `open_solution`: Load a solution. Parameters: `solutionPath` (absolute), `noWait` (return before the load finishes). Idempotent, cheap to repeat.
-> - `get_solution_status`: List every loaded solution and its progress, with the messages behind `loadDiagnostics` (skipped analyzers, failed project loads) indented under each Ready solution. A missing generator DLL names the project to build; once built, the next call picks it up without a reload. Optional parameter: `allLoadDiagnostics` (every message instead of the first 20 per solution).
+> - `get_solution_status`: List every loaded solution and its progress, with the messages behind `loadDiagnostics` (skipped analyzers, failed project loads) indented under each Ready solution. A missing generator DLL names the project to build; once built, the next call picks it up without a reload. Optional parameter: `allLoadDiagnostics` (every message instead of the first 20 per solution). Any solution whose file watcher failed in a way a reload would not fix (such as the Linux inotify watch limit) also lists `watchDiagnostic=` lines, capped the same way: until they clear, edits on disk may not reach it.
 > - `reload_solution`: Force a from-disk re-evaluation. Parameter: `solutionId`. Only when the user explicitly asks.
 >
 > **Navigation:**
@@ -307,9 +308,27 @@ For a foreground daemon with visible logs:
 
 Listens on `http://localhost:6502`. Point your MCP client at that URL (streamable HTTP). Ctrl+C stops it.
 
-The response budget (the character cap every tool result is held under; default 80,000) is read once at startup from `Roslynk:MaxResponseChars` in `appsettings.json` or the `Roslynk__MaxResponseChars` environment variable. A shared daemon serves every client with one value — set the smallest cap your clients need, and restart the daemon to change it.
+### Settings
 
-Solution-scoped tools wait server-side for an in-flight initial load for up to `Roslynk:LoadWaitSeconds` (default 30, or the `Roslynk__LoadWaitSeconds` environment variable) before returning `error=Indexing` with the live project count. Restart the daemon to change it.
+All `Roslynk:*` settings come from one typed object bound from the `Roslynk` section and read once at startup, so changing any of them requires a daemon restart. Settings are read from `appsettings.json` beside the tool executable. Nothing ships that file: `appsettings.json.example` ships instead, with every key present but commented out and a one-line explanation above it. No file at all — or an untouched copy — means the daemon runs on its code defaults:
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `Roslynk:Port` | 6502 | TCP port the local daemon listens on (loopback only). |
+| `Roslynk:MaxResponseChars` | 80,000 | Character cap every tool result is held under; a configured value below the 8,000 minimum is raised to it. |
+| `Roslynk:LoadWaitSeconds` | 30 | How long solution-scoped tools wait server-side for an in-flight initial load before returning `error=Indexing`; `0` means do not wait. |
+| `Roslynk:IdleEvictionMinutes` | 30 | Minutes a solution may sit unused before the daemon evicts it; 0 disables eviction. |
+| `Roslynk:EvictionCheckMinutes` | 5 | Minutes between idle-eviction sweeps; floored at 1. |
+
+To change a setting, copy or rename `appsettings.json.example` to `appsettings.json` beside the executable and uncomment what you need, then restart the daemon. The loader accepts JavaScript/C#-style comments, but VS Code flags them as errors in `.json` files unless you associate the file with JSONC in your settings:
+
+```json
+"files.associations": { "appsettings*.json": "jsonc" }
+```
+
+An `appsettings.json` beside the executable lives inside the tool's version directory (`~/.dotnet/tools/.store/roslynk/<version>/...`), so the next `dotnet tool update` extracts a fresh tool and silently loses your edit. For durable overrides use the equivalent environment variables, which the same configuration reads: `Roslynk__Port`, `Roslynk__MaxResponseChars`, `Roslynk__LoadWaitSeconds`, `Roslynk__IdleEvictionMinutes`, `Roslynk__EvictionCheckMinutes`.
+
+A shared daemon serves every client with one set of values — set the smallest response cap your clients need.
 
 ## Run (Windows)
 
