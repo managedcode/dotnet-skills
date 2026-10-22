@@ -2,28 +2,28 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1309 from dotnet/abhitejjohn-finish-vally-018-migration...'
-      sha: c848e7fffab05c594f9b954c6f3beb373d108447
+      commitTitle: 'Merge pull request #1337 from dotnet/abhitejjohn-skill-value-dashboard-ux...'
+      sha: fbada88709c854e3ea74fb1b34dd237dea13d413
       tags:
-      - skill-validator-nightly-16-gc848e7ff
+      - skill-validator-nightly-7-gfbada887
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'fix(astro): stop excluding node-fetch from server dep optimization
-        in workerd dev (#18438)...'
-      sha: 5e0eaa4415a9081efdaeb3d9af3717ce3226ad18
+      commitTitle: Fix DataCloneError when importing SVGs with parallelPrerender enabled
+        (#18476)...
+      sha: 8ea79a282e53b83c65f69c9013f5eeb5d97aadb1
       tags:
-      - '@astrojs/check@0.9.11-18-g5e0eaa4415'
+      - '@astrojs/check@0.9.12-2-g8ea79a282e'
     path: astro
   - git:
-      commitTitle: 'Report precise invalid-JSON and multi_query binding errors (Fixes
-        #108) (#135)...'
-      sha: 7be07af1124bbc85aeed0b8037b8e9442ce3f7d7
+      commitTitle: 'Ship a commented appsettings.json.example instead of appsettings.json
+        (Fixes #143) (#145)...'
+      sha: 1e2e338d39c085e401b59257e3600065faaefe8e
       tags:
-      - 2.2.0-16-g7be07af
+      - 2.2.0-23-g1e2e338
     path: roslynk
   path: upstreams
 kind: LockConfig
