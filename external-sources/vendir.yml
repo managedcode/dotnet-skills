@@ -3,6 +3,18 @@ kind: Config
 directories:
   - path: upstreams
     contents:
+      - path: blazingfastdotnet
+        git:
+          url: https://github.com/EgorBo/BlazingFastDotnet
+          ref: origin/main
+        includePaths:
+          - SKILL.md
+          - README.md
+          - references/**/*
+          - scripts/**/*
+          - assets/**/*
+          - LICENSE*
+          - LICENCE*
       - path: dotnet-skills
         git:
           url: https://github.com/dotnet/skills

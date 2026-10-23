@@ -136,6 +136,13 @@
       "skills": [
         "avalonia"
       ]
+    },
+    {
+      "id": "blazing-fast-dotnet-guidance",
+      "source": "https://raw.githubusercontent.com/EgorBo/BlazingFastDotnet/main/SKILL.md",
+      "skills": [
+        "blazing-fast-dotnet"
+      ]
     }
   ]
 }

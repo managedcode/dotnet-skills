@@ -1,0 +1,21 @@
+{
+  "id": "blazingfastdotnet",
+  "repository": "https://github.com/EgorBo/BlazingFastDotnet",
+  "sourceRoot": "upstreams/blazingfastdotnet",
+  "docsBase": "https://github.com/EgorBo/BlazingFastDotnet/blob/main",
+  "docsRoot": "https://github.com/EgorBo/BlazingFastDotnet",
+  "standaloneVersion": "1.0.0",
+  "titlePrefix": "Blazing Fast .NET",
+  "managedPackagePrefix": "BlazingFastDotnet",
+  "pluginDefaults": {
+    "type": "Tools",
+    "category": "Metrics",
+    "compatibility": "Targets .NET 10 and 11 performance tuning; validate runtime-specific advice with measurements. Some profiling workflows require Linux perf."
+  },
+  "pluginOverrides": {
+    "blazing-fast-dotnet": {
+      "package": "BlazingFastDotnet",
+      "title": "Blazing Fast .NET"
+    }
+  }
+}

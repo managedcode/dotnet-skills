@@ -207,4 +207,4 @@ Resolution: Choose one analyzer pack as the authority for each rule category.
 ## Sources
 
 - [StyleCop Analyzers Rules](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation)
-- [Rule Documentation Index](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/DOCUMENTATION.md)
+- [Rule Documentation Index](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation)

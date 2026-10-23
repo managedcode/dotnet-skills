@@ -2,7 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/dotnet-skills?logo=nuget&label=nuget)](https://www.nuget.org/packages/dotnet-skills)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-200-blue)](https://skills.managed-code.com/skills/)
+[![Skills](https://img.shields.io/badge/skills-201-blue)](https://skills.managed-code.com/skills/)
 [![.NET](https://img.shields.io/badge/.NET-10+-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 
 **Stop explaining .NET to your AI. Start building.**
@@ -10,7 +10,7 @@
 We've all been there: asking Claude to use Entity Framework, only to get EF6 patterns in a .NET 8 project. Explaining to Copilot that Blazor Server and Blazor WebAssembly aren't the same thing. Watching Codex generate `Startup.cs` for a Minimal API project.
 
 <!-- BEGIN CATALOG SUMMARY -->
-This catalog fixes that. **200 skills make dotnet-skills one of the largest .NET-focused skill collections for AI coding assistants**, with explicit mappings for **54 NuGet packages**. It covers the ecosystem—from ASP.NET Core to Orleans, from MAUI to Semantic Kernel. Install them once, and your AI agent actually knows modern .NET.
+This catalog fixes that. **201 skills make dotnet-skills one of the largest .NET-focused skill collections for AI coding assistants**, with explicit mappings for **54 NuGet packages**. It covers the ecosystem—from ASP.NET Core to Orleans, from MAUI to Semantic Kernel. Install them once, and your AI agent actually knows modern .NET.
 <!-- END CATALOG SUMMARY -->
 
 **[Browse the complete catalog on skills.managed-code.com →](https://skills.managed-code.com/skills/)**
@@ -293,12 +293,14 @@ External upstream repositories live in the dedicated [`external-sources/`](exter
 - `external-sources/vendir.yml` and `external-sources/vendir.lock.yml` handle fetch-and-pin only.
 - `external-sources/upstreams/` holds the checked-in vendored snapshots.
 - `external-sources/imports/*.json` is overrides-only local policy for type, category, package naming, compatibility, and skill-level package trigger metadata.
-- `scripts/import_external_catalog_sources.py` auto-discovers upstream plugins from vendored `plugin.json` and `.claude-plugin/plugin.json` files plus canonical `.agents/skills/*/SKILL.md` and `.github/skills/*/SKILL.md` trees alongside those plugins, or root `skills/*/SKILL.md` trees in standalone repositories, applies the local overrides, and normalizes the result into `catalog/<type>/<package>/`.
+- `scripts/import_external_catalog_sources.py` auto-discovers upstream plugins from vendored `plugin.json` and `.claude-plugin/plugin.json` files plus canonical `.agents/skills/*/SKILL.md` and `.github/skills/*/SKILL.md` trees alongside those plugins, or root `skills/*/SKILL.md` trees and a repository-root `SKILL.md` in standalone repositories, applies the local overrides, and normalizes the result into `catalog/<type>/<package>/`.
 - Imported upstream `SKILL.md`, `AGENT.md`, and supporting skill content is copied verbatim; local-only metadata stays in sibling `manifest.json` files instead of being injected into upstream markdown.
 
 Official imports may keep their upstream skill ids instead of being renamed to match local repo-authored conventions.
 
 Roslynk is imported verbatim from its [official skill tree](https://github.com/mrpmorris/Roslynk/tree/master/skills/roslynk), including its references and MIT license, and refreshed nightly. Watches track the skill's `SKILL.md`, upstream branch commits, and releases. Install it with `dotnet skills install roslynk`. Avalonia 11/12 guidance lives in `Desktop & UI`; `dotnet skills recommend` and `dotnet skills install --auto` detect Avalonia package signals. Install it directly with `dotnet skills install avalonia`. Both surfaces have upstream watches; the catalog, NuGet tools, and site are delivered together by the release workflow.
+
+Blazing Fast .NET is imported verbatim from [EgorBo/BlazingFastDotnet](https://github.com/EgorBo/BlazingFastDotnet), pinned through vendir and refreshed nightly. Install its performance-tuning guidance with `dotnet skills install blazing-fast-dotnet`; browse it under `Diagnostics & Metrics -> Performance`. Its upstream notes target measured tuning experiments for .NET 10 and 11.
 
 The official `dotnet/skills` source includes every plugin skill, including Blazor and Windows Forms, plus its repository-maintenance skills. New plugins and skills are discovered during the nightly sync without a manual allowlist. Blazor belongs to `Web`, Windows Forms to `Desktop & UI`, mobile crash analysis to `Mobile & Device`, and testing migrations to `Upgrades & Migration`. Repository-maintenance skills carry their upstream checkout and tooling requirements in sibling manifests; evaluation fixtures are outside the import surface.
 
@@ -407,6 +409,7 @@ This catalog builds on the work of many open-source projects and their authors:
 | [dotnet/skills](https://github.com/dotnet/skills) | Microsoft, .NET team | Official .NET skills repository vendir-imported into this catalog for upstream task-specific skills and agents |
 | [withastro/astro](https://github.com/withastro/astro) | Astro Technology Company | Official Astro `astro-developer` skill vendir-imported with pinned source and upstream-change tracking |
 | [webgpu-claude-skill](https://github.com/dgreenheck/webgpu-claude-skill) | Dan Greenheck | Three.js WebGPU and TSL skill vendir-imported with pinned source and upstream-change tracking |
+| [BlazingFastDotnet](https://github.com/EgorBo/BlazingFastDotnet) | Egor Bogatov | .NET performance tuning skill imported verbatim with pinned source and nightly refresh |
 | [Roslynk](https://github.com/mrpmorris/Roslynk) | Peter Morris | Roslyn MCP semantic-navigation and diagnostics skill imported verbatim with pinned source and upstream-change tracking |
 | [Agent Skills Standard](https://agentskills.io) | Anthropic | Open specification for portable agent skill packages |
 | [Claude Code](https://code.claude.com) | Anthropic | Subagent architecture that shaped our orchestration agent design |

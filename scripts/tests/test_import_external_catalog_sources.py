@@ -226,6 +226,73 @@ description: A portable skill.
                 self.assertEqual(reference.read_bytes(), (installed / "references" / "tools.md").read_bytes())
                 self.assertNotEqual(version, IMPORTER.load_json(installed / "manifest.json")["version"])
 
+    def test_repository_root_skill_import_is_verbatim_bounded_and_refreshable(self) -> None:
+        artifact_root = REPO_ROOT / "artifacts" / "importer-tests"
+        artifact_root.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=artifact_root) as temporary:
+            root = Path(temporary)
+            external = root / "external-sources"
+            source = external / "upstreams" / "root-skill"
+            source.mkdir(parents=True)
+            skill_path = source / "SKILL.md"
+            skill_path.write_bytes(
+                b"---\r\nname: root-skill\r\ndescription: Tune measured workloads.\r\n---\r\n"
+                b"# Performance\r\nRead references/runtime.md when tuning the runtime.\r\n"
+            )
+            support_files = {
+                "references/runtime.md": b"# Runtime guidance\r\nMeasure before tuning.\r\n",
+                "scripts/measure.sh": b"#!/bin/sh\nprintf 'measurement\\n'\n",
+                "assets/settings.json": b'{"enabled": true}\n',
+            }
+            for relative, content in support_files.items():
+                path = source / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
+            readme = source / "README.md"
+            readme.write_text("Repository introduction\n", encoding="utf-8")
+            (source / ".git").mkdir()
+            (source / ".git" / "config").write_text("Local checkout config\n", encoding="utf-8")
+            self.write_skill(source / "fixtures", "test-only", "Evaluation fixture")
+            config = self.source_config()
+            config.update({
+                "id": "root-skill", "sourceRoot": "upstreams/root-skill",
+                "repository": "https://github.com/example/root-skill",
+                "docsRoot": "https://github.com/example/root-skill",
+                "managedPackagePrefix": "Root", "standaloneVersion": "1.0.0",
+                "pluginOverrides": {},
+            })
+            del config["standaloneVersionFile"]
+            config_path = external / "imports" / "root-skill.json"
+            with (
+                patch.object(IMPORTER, "ROOT", root),
+                patch.object(IMPORTER, "CATALOG_ROOT", root / "catalog"),
+                patch.object(IMPORTER, "EXTERNAL_SOURCES_ROOT", external),
+            ):
+                IMPORTER.validate_config(config_path, config)
+                summary = IMPORTER.import_source(config_path, config)
+                self.assertEqual(1, summary["skills"])
+                package = root / "catalog" / "Platform" / "Root-Skill"
+                installed = package / "skills" / "root-skill"
+                self.assertEqual(skill_path.read_bytes(), (installed / "SKILL.md").read_bytes())
+                for relative, content in support_files.items():
+                    self.assertEqual(content, (installed / relative).read_bytes())
+                self.assertEqual(
+                    {"SKILL.md", "manifest.json", *support_files},
+                    {path.relative_to(installed).as_posix() for path in installed.rglob("*") if path.is_file()},
+                )
+                self.assertEqual(config["docsRoot"], IMPORTER.load_json(package / "manifest.json")["links"]["docs"])
+                version = IMPORTER.load_json(installed / "manifest.json")["version"]
+                self.assertRegex(version, r"^1\.0\.0\+source\.[0-9a-f]{16}$")
+                readme.write_text("Changed repository introduction\n", encoding="utf-8")
+                IMPORTER.import_source(config_path, config)
+                self.assertEqual(version, IMPORTER.load_json(installed / "manifest.json")["version"])
+                (source / "references" / "runtime.md").write_bytes(b"# Updated runtime guidance\n")
+                IMPORTER.import_source(config_path, config)
+                self.assertNotEqual(version, IMPORTER.load_json(installed / "manifest.json")["version"])
+                self.assertEqual(
+                    b"# Updated runtime guidance\n", (installed / "references" / "runtime.md").read_bytes(),
+                )
+
     def test_root_plugin_skills_are_not_imported_twice_as_standalone(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             source = Path(temporary) / "real-plugin"
@@ -233,6 +300,7 @@ description: A portable skill.
                 "name": "real-plugin", "version": "1.2.3", "skills": ["./skills/"],
             })
             self.write_skill(source, "real-skill", "Plugin skill")
+            (source / "SKILL.md").write_text("Repository notes, not a standalone skill.\n", encoding="utf-8")
             plugins = IMPORTER.discover_upstream_plugins(source)
             self.assertEqual({"real-plugin"}, set(plugins))
             self.assertEqual(source, plugins["real-plugin"][0])

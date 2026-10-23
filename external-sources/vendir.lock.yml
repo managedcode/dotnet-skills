@@ -25,5 +25,9 @@ directories:
       tags:
       - 2.2.0-23-g1e2e338
     path: roslynk
+  - git:
+      commitTitle: Fix contents link for knobs section...
+      sha: 3e19acf6233e9208ba2000a1cff6056a0411425b
+    path: blazingfastdotnet
   path: upstreams
 kind: LockConfig

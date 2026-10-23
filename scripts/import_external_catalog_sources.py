@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOG_ROOT = ROOT / "catalog"
 EXTERNAL_SOURCES_ROOT = ROOT / "external-sources"
 CONFIG_ROOT = EXTERNAL_SOURCES_ROOT / "imports"
+ROOT_SKILL_CONTENT_NAMES = {"SKILL.md", "references", "scripts", "assets"}
 
 ALLOWED_TYPES = {"Frameworks", "Libraries", "Tools", "Testing", "Platform"}
 ALLOWED_SKILL_MANIFEST_KEYS = {"version", "category", "compatibility", "packages", "package_prefix", "package_ecosystem"}
@@ -174,10 +175,12 @@ def remove_path(path: Path) -> None:
         path.unlink()
 
 
-def copy_directory_contents(source_dir: Path, destination_dir: Path, *, skip_names: set[str]) -> None:
+def copy_directory_contents(
+    source_dir: Path, destination_dir: Path, *, skip_names: set[str], include_names: set[str] | None = None,
+) -> None:
     destination_dir.mkdir(parents=True, exist_ok=True)
     for child in source_dir.iterdir():
-        if child.name in skip_names:
+        if child.name in skip_names or (include_names is not None and child.name not in include_names):
             continue
 
         target = destination_dir / child.name
@@ -244,6 +247,8 @@ def discover_standalone_skill_plugins(
     skill_manifest_paths = sorted(
         path for skill_root in skill_roots for path in skill_root.glob("*/SKILL.md")
     )
+    if include_root_skills and (source_root / "SKILL.md").is_file():
+        skill_manifest_paths.append(source_root / "SKILL.md")
     if not skill_manifest_paths:
         return {}
 
@@ -265,7 +270,7 @@ def discover_standalone_skill_plugins(
                 "name": skill_name,
                 "version": version,
                 "description": description,
-                "skills": ["."],
+                "skills": ["SKILL.md"],
             },
         )
 
@@ -557,9 +562,11 @@ def validate_skill_manifest(manifest_path: Path, manifest: dict[str, object]) ->
         raise ValueError(f"{manifest_path} field package_prefix must be a non-empty string")
 
 
-def content_guidance_version(base_version: str, skill_dir: Path) -> str:
+def content_guidance_version(base_version: str, skill_dir: Path, *, include_names: set[str] | None = None) -> str:
     fingerprint = hashlib.sha256()
     for path in sorted(item for item in skill_dir.rglob("*") if item.is_file()):
+        if include_names is not None and path.relative_to(skill_dir).parts[0] not in include_names:
+            continue
         relative = path.relative_to(skill_dir).as_posix().encode("utf-8")
         content = path.read_bytes()
         fingerprint.update(len(relative).to_bytes(8, "big") + relative)
@@ -673,7 +680,10 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
 
             docs_url = f"{docs_base}/{plugin_name}"
             if config.get("docsRoot"):
-                docs_url = f"{str(config['docsRoot']).rstrip('/')}/{plugin_dir.relative_to(plugin_root).as_posix()}"
+                relative_dir = plugin_dir.relative_to(plugin_root).as_posix()
+                docs_url = str(config["docsRoot"]).rstrip("/")
+                if relative_dir != ".":
+                    docs_url += f"/{relative_dir}"
 
             package_manifest = {
                 "name": plugin_name,
@@ -707,11 +717,16 @@ def import_source(config_path: Path, config: dict) -> dict[str, int]:
 
                 local_skill_dir = temp_package_dir / "skills" / skill_name
                 local_skill_dir.mkdir(parents=True, exist_ok=True)
-                copy_directory_contents(upstream_skill_dir, local_skill_dir, skip_names={"SKILL.md"})
+                include_names = ROOT_SKILL_CONTENT_NAMES if upstream_skill_dir == plugin_root else None
+                copy_directory_contents(
+                    upstream_skill_dir, local_skill_dir, skip_names={"SKILL.md"}, include_names=include_names,
+                )
 
                 manifest = resolve_skill_manifest(plugin_policy, skill_name, normalize_text(plugin_manifest["version"]))
                 if config.get("standaloneVersion"):
-                    manifest["version"] = content_guidance_version(str(manifest["version"]), upstream_skill_dir)
+                    manifest["version"] = content_guidance_version(
+                        str(manifest["version"]), upstream_skill_dir, include_names=include_names,
+                    )
                 validate_skill_manifest(local_skill_dir / "manifest.json", manifest)
                 (local_skill_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
