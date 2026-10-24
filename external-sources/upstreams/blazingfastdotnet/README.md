@@ -4,10 +4,12 @@ Tips & tricks to tune .NET 10.0 - 11.0 workloads for better performance (mostly 
 
 ## Usage
 
-I don't expect it to be useful as an always-on skill. It's rather something to consult on demand when you need to optimize a .NET workload, e.g.:
+I don't expect it to be useful as an always-on skill. It's rather something to consult on demand when you need to optimize a .NET workload, e.g. paste this into your coding agent:
 
 ```
-Hey, consult https://raw.githubusercontent.com/EgorBo/BlazingFastDotnet/main/SKILL.md to go brrrr
+Read https://raw.githubusercontent.com/EgorBo/BlazingFastDotnet/main/SKILL.md and use it to
+improve the performance of this app. Measure a baseline first, profile to find
+the actual bottleneck, apply one change at a time, and keep only changes with a measurable win.
 ```
 
 > [!NOTE]

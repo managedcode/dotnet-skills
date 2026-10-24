@@ -69,8 +69,13 @@ dotnet publish -c Release -r linux-arm64 -p:PublishAot=true -p:OptimizationPrefe
 # Profiling and Performance Analysis
 
 Start cheap and go deeper only when needed: counters (what kind of bottleneck?) → traces (where?) → `perf` and JIT disassembly.
+Install the tools with:
 
-Install the tools with `dotnet tool install -g dotnet-counters` / `dotnet tool install -g dotnet-trace`.
+```sh
+dotnet tool install -g dotnet-counters
+dotnet tool install -g dotnet-trace
+dotnet tool install -g dotnet-symbol
+```
 
 ## dotnet-counters
 
@@ -99,6 +104,8 @@ dotnet-trace report trace.nettrace topN -n 20           # top methods (exclusive
 dotnet-trace report trace.nettrace topN -n 20 --inclusive
 dotnet-trace convert trace.nettrace --format Speedscope # open in https://www.speedscope.app
 ```
+
+For more tips on using `dotnet-trace`, refer to https://raw.githubusercontent.com/dotnet/skills/refs/heads/main/plugins/dotnet-diag/skills/dotnet-trace-collect/SKILL.md skill.
 
 ## Low-level profiling with Linux `perf`
 
@@ -136,7 +143,9 @@ git clone --depth 1 --quiet https://github.com/brendangregg/FlameGraph || true
 perf script -i perfjit.data | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl > flamegraph.svg
 ```
 
-Now `perf.asm` contains the annotated assembly output for the hottest methods in your application. Keep in mind that sample attribution is imprecise ("skid"): the cost is often reported on an instruction shortly after the one that actually stalls (e.g. right after a slow load or division), so inspect the neighboring instructions too. 
+Now `perf.asm` contains the annotated assembly output for the hottest methods in your application. Keep in mind that sample attribution is imprecise ("skid"): the cost is often reported on an instruction shortly after the one that actually stalls (e.g. right after a slow load or division), so inspect the neighboring instructions too.
+
+In case of missing symbols you may need to use `dotnet-symbol` to download the necessary debug symbols for .dll/.dylib/.so.
 
 All other `perf`-related techniques (e.g. c2c, branch profiling, cache misses) can be applied similarly, depending on the performance aspects you want to analyze.
 
