@@ -2,32 +2,32 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #1337 from dotnet/abhitejjohn-skill-value-dashboard-ux...'
-      sha: fbada88709c854e3ea74fb1b34dd237dea13d413
+      commitTitle: Update README usage prompt and profiling tools...
+      sha: d061b46e47e56354787f31a9b59bc5ad3ca96435
+    path: blazingfastdotnet
+  - git:
+      commitTitle: 'Merge pull request #1338 from dotnet/dependabot/npm_and_yarn/tests/dotnet-test/agent.test-engineer/fixtures/typescript-vitest-cart/vite-8.3.4...'
+      sha: a6bf43ab61967c30919334986515163ab24d7635
       tags:
-      - skill-validator-nightly-7-gfbada887
+      - skill-validator-nightly
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Fix DataCloneError when importing SVGs with parallelPrerender enabled
-        (#18476)...
-      sha: 8ea79a282e53b83c65f69c9013f5eeb5d97aadb1
+      commitTitle: 'fix(astro): allow Node.js >=22.22.0 on StackBlitz WebContainers
+        (#18494)...'
+      sha: 5fe699c888d0423db75cac3f0939409d7eb28e37
       tags:
-      - '@astrojs/check@0.9.12-2-g8ea79a282e'
+      - '@astrojs/check@0.9.12-6-g5fe699c888'
     path: astro
   - git:
-      commitTitle: 'Ship a commented appsettings.json.example instead of appsettings.json
-        (Fixes #143) (#145)...'
-      sha: 1e2e338d39c085e401b59257e3600065faaefe8e
+      commitTitle: 'Preserve each file''s BOM in semantic write tools (Fixes #162)
+        (#161)...'
+      sha: dae11b148c3b79cd1c9b2cfb3067247df3a1e386
       tags:
-      - 2.2.0-23-g1e2e338
+      - 3.0.0-1-gdae11b1
     path: roslynk
-  - git:
-      commitTitle: Fix contents link for knobs section...
-      sha: 3e19acf6233e9208ba2000a1cff6056a0411425b
-    path: blazingfastdotnet
   path: upstreams
 kind: LockConfig
