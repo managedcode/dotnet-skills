@@ -19,6 +19,6 @@ the actual bottleneck, apply one change at a time, and keep only changes with a 
 
 - Anything that requires an `unsafe` context, under either the unsafe-v1 or the unsafe-v2 rules.
 - `ArrayPool<T>`: renting and returning buffers by hand is too error-prone, and I don't want to be responsible for the resulting use-after-return and double-return bugs.
-- Third-party dependencies: I'd like to minimize number of dependencies, currently it's limitted by:
+- Third-party dependencies: I'd like to minimize the number of dependencies. Currently, they are limited to:
   - [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
   - [FlameGraph](https://github.com/brendangregg/FlameGraph) (for `perf` flame graphs)

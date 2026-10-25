@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Update README usage prompt and profiling tools...
-      sha: d061b46e47e56354787f31a9b59bc5ad3ca96435
+      commitTitle: Fix grammar and typos in documentation...
+      sha: 9098c9afd643de42ed1db5ab5434e21702dd4db6
     path: blazingfastdotnet
   - git:
       commitTitle: 'Merge pull request #1338 from dotnet/dependabot/npm_and_yarn/tests/dotnet-test/agent.test-engineer/fixtures/typescript-vitest-cart/vite-8.3.4...'
@@ -23,11 +23,11 @@ directories:
       - '@astrojs/check@0.9.12-6-g5fe699c888'
     path: astro
   - git:
-      commitTitle: 'Preserve each file''s BOM in semantic write tools (Fixes #162)
-        (#161)...'
-      sha: dae11b148c3b79cd1c9b2cfb3067247df3a1e386
+      commitTitle: 'Guard read-only queries against a superseded snapshot (Fixes #165)
+        (#168)'
+      sha: b633239d0c506fbe6009fc6b621036f1b12d8041
       tags:
-      - 3.0.0-1-gdae11b1
+      - 3.0.0-4-gb633239
     path: roslynk
   path: upstreams
 kind: LockConfig
