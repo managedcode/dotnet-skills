@@ -1,0 +1,5 @@
+{
+  "version": "0.2.3",
+  "category": "Testing",
+  "compatibility": "Requires Node.js 24+, an initialized agent-qa project with a configured model provider, and a running web target or configured mobile device. Use for browser-facing .NET apps or mobile UI journeys; agent-qa runs through its CLI/MCP surface, not a NuGet test adapter."
+}

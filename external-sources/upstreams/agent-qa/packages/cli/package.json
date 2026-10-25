@@ -1,0 +1,126 @@
+{
+  "name": "agent-qa",
+  "version": "0.2.3",
+  "private": false,
+  "description": "The self-improving Agentic QA harness with Memory",
+  "keywords": [
+    "agent-qa",
+    "ai",
+    "ai-agent",
+    "ai-testing",
+    "agentic-testing",
+    "agentic-qa",
+    "testing",
+    "test-automation",
+    "qa-harness",
+    "e2e-testing",
+    "end-to-end-testing",
+    "automation",
+    "cli",
+    "javascript",
+    "typescript",
+    "web",
+    "mobile",
+    "browser-automation",
+    "natural-language-testing",
+    "self-improving",
+    "playwright",
+    "appium",
+    "webdriverio",
+    "qa",
+    "quality-assurance",
+    "self-healing-tests",
+    "mcp",
+    "fair-source",
+    "fsl"
+  ],
+  "license": "FSL-1.1-ALv2",
+  "homepage": "https://github.com/vostride/agent-qa#readme",
+  "bugs": {
+    "url": "https://github.com/vostride/agent-qa/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vostride/agent-qa.git",
+    "directory": "packages/cli"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "type": "module",
+  "bin": {
+    "agent-qa": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist",
+    "capability-catalog",
+    "skills",
+    "README.md",
+    "LICENSE.md",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "copy:skills": "node scripts/copy-skills.mjs",
+    "dev": "tsup --watch",
+    "prepack": "pnpm run copy:skills",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@inquirer/checkbox": "5.1.4",
+    "@inquirer/input": "5.0.12",
+    "@inquirer/password": "5.0.12",
+    "@inquirer/select": "5.1.4",
+    "@modelcontextprotocol/server": "2.3.1",
+    "@vostride/agent-qa-agent": "workspace:*",
+    "@vostride/agent-qa-agent-local": "workspace:*",
+    "@vostride/agent-qa-analytics": "workspace:*",
+    "@vostride/agent-qa-android": "workspace:*",
+    "@vostride/agent-qa-core": "workspace:*",
+    "@vostride/agent-qa-dashboard": "workspace:*",
+    "@vostride/agent-qa-dashboard-ui": "workspace:*",
+    "@vostride/agent-qa-eval": "workspace:*",
+    "@vostride/agent-qa-eval-local": "workspace:*",
+    "@vostride/agent-qa-ids": "workspace:*",
+    "@vostride/agent-qa-ios": "workspace:*",
+    "@vostride/agent-qa-knowledge-local": "workspace:*",
+    "@vostride/agent-qa-mcp": "workspace:*",
+    "@vostride/agent-qa-model": "workspace:*",
+    "@vostride/agent-qa-runner": "workspace:*",
+    "@vostride/agent-qa-runner-local": "workspace:*",
+    "@vostride/agent-qa-safety-local": "workspace:*",
+    "@vostride/agent-qa-schema": "workspace:*",
+    "@vostride/agent-qa-web": "workspace:*",
+    "ai": "6.0.174",
+    "commander": "14.0.3",
+    "picocolors": "1.1.1",
+    "playwright-core": "1.61.0",
+    "yaml": "2.8.4",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@inquirer/confirm": "6.0.12",
+    "@modelcontextprotocol/client": "2.3.1",
+    "@types/node": "~24.12.2",
+    "@vostride/agent-qa-arch": "workspace:*",
+    "@vostride/agent-qa-safety": "workspace:*",
+    "glob": "13.0.6",
+    "jiti": "2.6.1",
+    "tsup": "~8.5.1",
+    "typescript": "~6.0.3",
+    "vitest": "~4.1.5"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "agent-qa-debug-fix",
+  "title": "vostride: agent-qa-debug-fix",
+  "description": "Use after an agent-qa run has failed and you need to debug, patch, and verify the issue using MCP evidence, logs, artifacts, and local code changes instead of generated fix suggestions.",
+  "links": {
+    "repository": "https://github.com/vostride/agent-qa",
+    "docs": "https://github.com/vostride/agent-qa/tree/main/skills/agent-qa-debug-fix"
+  }
+}

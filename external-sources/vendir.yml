@@ -42,3 +42,12 @@ directories:
           - skills/roslynk/**/*
           - LICENCE
           - README.md
+      - path: agent-qa
+        git:
+          url: https://github.com/vostride/agent-qa
+          ref: origin/main
+        includePaths:
+          - skills/**/*
+          - packages/cli/package.json
+          - LICENSE.md
+          - NOTICE.md

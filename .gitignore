@@ -246,6 +246,9 @@ PublishScripts/
 # Vendir needs Astro's authoritative version to import its standalone skill.
 !external-sources/upstreams/astro/packages/astro/
 !external-sources/upstreams/astro/packages/astro/package.json
+# Vendir needs agent-qa's CLI version for its standalone skills.
+!external-sources/upstreams/agent-qa/packages/cli/
+!external-sources/upstreams/agent-qa/packages/cli/package.json
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/[Pp]ackages/repositories.config
 # NuGet v3's project.json files produces more ignorable files
