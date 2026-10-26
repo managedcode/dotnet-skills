@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Fix grammar and typos in documentation...
-      sha: 9098c9afd643de42ed1db5ab5434e21702dd4db6
+      commitTitle: Add SIMD example
+      sha: b2cb3ba4ee689e3e012a93d680d4de19335b8003
     path: blazingfastdotnet
   - git:
       commitTitle: 'Merge pull request #1338 from dotnet/dependabot/npm_and_yarn/tests/dotnet-test/agent.test-engineer/fixtures/typescript-vitest-cart/vite-8.3.4...'
@@ -16,11 +16,10 @@ directories:
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'fix(astro): allow Node.js >=22.22.0 on StackBlitz WebContainers
-        (#18494)...'
-      sha: 5fe699c888d0423db75cac3f0939409d7eb28e37
+      commitTitle: 'fix(assets): dedupe equivalent densities in image srcset (#18500)...'
+      sha: e5a3a1bdec268933f01a0da3fbeb4e38bdf455c9
       tags:
-      - '@astrojs/check@0.9.12-6-g5fe699c888'
+      - '@astrojs/check@0.9.12-7-ge5a3a1bdec'
     path: astro
   - git:
       commitTitle: 'Guard read-only queries against a superseded snapshot (Fixes #165)
