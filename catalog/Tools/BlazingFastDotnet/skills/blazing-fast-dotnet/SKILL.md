@@ -24,6 +24,7 @@ This skill focuses on optimizing .NET applications for maximum performance, prov
   - [Contention on shared state](#contention-on-shared-state)
     - [False sharing](#false-sharing)
   - [Safe vectorization (SIMD or SWAR)](#safe-vectorization-simd-or-swar)
+  - [Generic specialization via static abstract members](#generic-specialization-via-static-abstract-members)
 - [ASP.NET Core](#aspnet-core)
 - [Magic knobs to Tune .NET Performance](#magic-knobs-to-tune-net-performance)
 - [NativeAOT-specific tuning](#nativeaot-specific-tuning)
@@ -116,6 +117,8 @@ dotnet-symbol --symbols $PUBLISH_FOLDER/*.so
 
 All other `perf`-related techniques (e.g. c2c, branch profiling, cache misses) can be applied similarly, depending on the performance aspects you want to analyze.
 
+For simple functions, create a self-contained console application that calls the function in an infinite loop. For BenchmarkDotNet, use the in-process toolchain (`-i` or `[InProcess]`) with a long iteration duration and a very large iteration count so it is clear which process to attach `perf` to.
+
 ## Popular low-level problems
 
 - Cache contention and false sharing in multi-threaded code. Fix with per-thread data and padding (see [False sharing](#false-sharing)).
@@ -170,6 +173,10 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - Consider `Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping` for UTF-8 JSON-only responses ([documentation](https://learn.microsoft.com/dotnet/standard/serialization/system-text-json/character-encoding#serialize-all-characters)). Never embed its raw output in HTML or `<script>`; any custom encoder disables STJ's generated serialization fast path, so benchmark rather than assuming the gains add up.
 - For most bit/byte manipulations, prefer the built-in `BitOperations`, `BinaryPrimitives`, `BitConverter` or static numeric helpers such as `uint.Log2`, `uint.PopCount`, `uint.TrailingZeroCount`, etc.
 - Span/ReadOnlySpan have a lot of useful extension methods via `MemoryExtensions` such as `SequenceEqual`, `IndexOf`, `IndexOfAnyExcept`, `LastIndexOf`, `StartsWith`, `CommonPrefixLength`, and a lot more - prefer these APIs over manual loops or vectorization.
+- Don't pin benchmarks to a single core - doing so might significantly affect internal VM heuristics (e.g. tiered compilation timing).
+- `AggressiveOptimization` is usually a deoptimization.
+- Overusing `AggressiveInlining` may hurt performance (e.g. by exhausting the inliner's time budget or increasing the number of tracked local variables).
+- Don't put too much data into TLS (Thread-Local Storage) - excessive use can lead to increased memory usage and cache pressure, reducing overall performance (there can be a lot of threads, each with its own copy).
 
 ## Strings and globalization
 
@@ -316,6 +323,106 @@ static bool Equal(ReadOnlySpan<ushort> a, ReadOnlySpan<ushort> b)
 > This only illustrates the loop shape. For this exact task, just call `a.SequenceEqual(b)`.
 
 More info about vectorization and SIMD in .NET can be found in the [official documentation](https://learn.microsoft.com/en-us/dotnet/standard/simd). Also consider using [TensorPrimitives](https://learn.microsoft.com/dotnet/api/system.numerics.tensors.tensorprimitives).
+
+## Generic specialization via static abstract members
+
+Static abstract interface members let you specialize a generic method for values supplied by struct tags, without duplicating its source code. The JIT generates separate native versions of `Big<C42>` and `Big<C100>`. In optimized code, it can inline the small `Value` getters and fold expressions and branches that use `T.Value`. This works even when `Big<T>` itself is too large to inline; The tradeoff is increased native code size. `T.Value` is not a C# compile-time constant: constant folding depends on JIT optimizations and getter inlining.
+
+```cs
+using System.Runtime.CompilerServices;
+
+interface IConstant {
+    static abstract int Value { get; }
+}
+
+readonly struct C42 : IConstant {
+    public static int Value => 42;
+}
+
+readonly struct C100 : IConstant {
+    public static int Value => 100;
+}
+
+static class Example
+{
+    static int Big<T>(int x) where T : struct, IConstant
+    {
+        int arg = T.Value;
+
+        // The large body would go here.
+
+        return arg == 42 ? x * arg : x + arg;
+    }
+
+    static int Use42(int x) => Big<C42>(x);
+    static int Use100(int x) => Big<C100>(x);
+}
+```
+
+It is also handy for scenarios where you want to leverage different vector sizes or constants in a generic way, allowing the JIT to generate optimized code for each specialization without duplicating the method's source code. Example: summing an array using different vector widths with static abstract members.
+
+```cs
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
+
+int[] values = new int[1003];
+for (int i = 0; i < values.Length; i++) values[i] = i + 1;
+
+Console.WriteLine(Sum<Vector128<int>, Ops128>(values));
+Console.WriteLine(Sum<Vector256<int>, Ops256>(values));
+Console.WriteLine(Sum<Vector512<int>, Ops512>(values));
+
+[MethodImpl(MethodImplOptions.NoInlining)]
+static int Sum<V, TOps>(ReadOnlySpan<int> s)
+    where V : struct
+    where TOps : struct, IOps<V>
+{
+    V acc = default;
+    int count = TOps.Count;
+
+    while (s.Length >= count)
+    {
+        acc = TOps.Add(acc, TOps.Load(s));
+        s = s.Slice(count);
+    }
+
+    int sum = TOps.Sum(acc);
+    foreach (int x in s) sum = unchecked(sum + x);
+    return sum;
+}
+
+interface IOps<V> where V : struct
+{
+    static abstract int Count { get; }
+    static abstract V Load(ReadOnlySpan<int> s);
+    static abstract V Add(V a, V b);
+    static abstract int Sum(V v);
+}
+
+readonly struct Ops128 : IOps<Vector128<int>>
+{
+    public static int Count => Vector128<int>.Count;
+    public static Vector128<int> Load(ReadOnlySpan<int> s) => Vector128.Create(s);
+    public static Vector128<int> Add(Vector128<int> a, Vector128<int> b) => a + b;
+    public static int Sum(Vector128<int> v) => Vector128.Sum(v);
+}
+
+readonly struct Ops256 : IOps<Vector256<int>>
+{
+    public static int Count => Vector256<int>.Count;
+    public static Vector256<int> Load(ReadOnlySpan<int> s) => Vector256.Create(s);
+    public static Vector256<int> Add(Vector256<int> a, Vector256<int> b) => a + b;
+    public static int Sum(Vector256<int> v) => Vector256.Sum(v);
+}
+
+readonly struct Ops512 : IOps<Vector512<int>>
+{
+    public static int Count => Vector512<int>.Count;
+    public static Vector512<int> Load(ReadOnlySpan<int> s) => Vector512.Create(s);
+    public static Vector512<int> Add(Vector512<int> a, Vector512<int> b) => a + b;
+    public static int Sum(Vector512<int> v) => Vector512.Sum(v);
+}
+```
 
 # ASP.NET Core
 
