@@ -1635,15 +1635,13 @@ def select_agent_sections(agent: dict) -> list[tuple[str, str]]:
     return rendered
 
 
-def render_skill_bridge_cta() -> str:
-    """Render the reusable bridge CTA block to Managed Code pillar and services."""
-    return """
-          <section class="agent-bridge-cta">
-            <h2>Building AI agents on .NET?</h2>
-            <p>Managed Code builds production AI agents in C# and .NET.</p>
-            <div class="card-actions">
-              <a class="button button-ghost" href="https://managed-code.com/blog-post/building-ai-agents-with-csharp-dotnet" target="_blank" rel="noopener noreferrer">building AI agents with .NET</a>
-              <a class="button button-primary" href="https://managed-code.com/services/ai-agents" target="_blank" rel="noopener noreferrer">.NET AI agent development team</a>
+def render_skill_bridge_cta(from_skill: str = "") -> str:
+    """Render the ServicesBridge component at the footer/end of every skill page."""
+    skill_attr = f' data-from-skill="{escape_html(from_skill)}"' if from_skill else ""
+    return f"""
+          <section class="services-bridge" data-services-bridge{skill_attr}>
+            <div class="services-bridge__content">
+              <p class="services-bridge__text">These are the skills our senior team ships with. Want us to build your system? <a class="services-bridge__link" href="https://managed-code.com/services/ai-agents" target="_blank" rel="noopener noreferrer" data-cta="skills-bridge"{skill_attr}>Book a 15-min call.</a></p>
             </div>
           </section>
     """.strip()
@@ -1679,7 +1677,7 @@ def render_skill_detail_page(skill: dict, related_skills: list[dict], related_ag
           {sections_html}
           {'<section><h2>Related skills</h2><div class="directory-grid">' + related_skill_cards + '</div></section>' if related_skill_cards else ''}
           {'<section><h2>Related agents</h2><div class="directory-grid">' + related_agent_cards + '</div></section>' if related_agent_cards else ''}
-          {render_skill_bridge_cta()}
+          {render_skill_bridge_cta(skill.get("name", ""))}
         </div>
 
         <aside class="sidebar-stack">
@@ -1739,7 +1737,7 @@ def render_agent_detail_page(agent: dict, linked_skills: list[dict], root_prefix
               {skill_cards}
             </div>
           </section>
-          {render_skill_bridge_cta()}
+          {render_skill_bridge_cta(agent.get("name", ""))}
         </div>
 
         <aside class="sidebar-stack">
@@ -1935,7 +1933,7 @@ def render_bundle_detail_page(bundle: dict, root_prefix: str) -> str:
             <h2>What this bundle covers</h2>
             <p>{escape_html(bundle["description"])}</p>
           </section>
-          {render_skill_bridge_cta()}
+          {render_skill_bridge_cta(bundle.get("name", ""))}
         </div>
         <aside class="sidebar-stack">
           <div class="sidebar-card">
