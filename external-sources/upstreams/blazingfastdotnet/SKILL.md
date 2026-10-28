@@ -28,6 +28,7 @@ This skill focuses on optimizing .NET applications for maximum performance, prov
 - [ASP.NET Core](#aspnet-core)
 - [Magic knobs to Tune .NET Performance](#magic-knobs-to-tune-net-performance)
 - [NativeAOT-specific tuning](#nativeaot-specific-tuning)
+- [General notes](#general-notes)
 
 # Profiling and Performance Analysis
 
@@ -177,6 +178,7 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - `AggressiveOptimization` is usually a deoptimization.
 - Overusing `AggressiveInlining` may hurt performance (e.g. by exhausting the inliner's time budget or increasing the number of tracked local variables).
 - Don't put too much data into TLS (Thread-Local Storage) - excessive use can lead to increased memory usage and cache pressure, reducing overall performance (there can be a lot of threads, each with its own copy).
+- Consider calling `.AsSpan()` on `List<T>` or other collections that support it to avoid unnecessary overhead from bound and covariance checks, and to enable span-based algorithms directly on the collection's underlying memory.
 
 ## Strings and globalization
 
@@ -362,34 +364,44 @@ static class Example
 It is also handy for scenarios where you want to leverage different vector sizes or constants in a generic way, allowing the JIT to generate optimized code for each specialization without duplicating the method's source code. Example: summing an array using different vector widths with static abstract members.
 
 ```cs
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 
-int[] values = new int[1003];
-for (int i = 0; i < values.Length; i++) values[i] = i + 1;
-
-Console.WriteLine(Sum<Vector128<int>, Ops128>(values));
-Console.WriteLine(Sum<Vector256<int>, Ops256>(values));
-Console.WriteLine(Sum<Vector512<int>, Ops512>(values));
-
-[MethodImpl(MethodImplOptions.NoInlining)]
-static int Sum<V, TOps>(ReadOnlySpan<int> s)
-    where V : struct
-    where TOps : struct, IOps<V>
+class Program
 {
-    V acc = default;
-    int count = TOps.Count;
-
-    while (s.Length >= count)
+    static void Main()
     {
-        acc = TOps.Add(acc, TOps.Load(s));
-        s = s.Slice(count);
+        int[] values = new int[1003];
+
+        if (Vector128.IsHardwareAccelerated)
+            Console.WriteLine(Sum<Vector128<int>, Ops128>(values));
+        if (Vector256.IsHardwareAccelerated)
+            Console.WriteLine(Sum<Vector256<int>, Ops256>(values));
+        if (Vector512.IsHardwareAccelerated) 
+            Console.WriteLine(Sum<Vector512<int>, Ops512>(values));
     }
 
-    int sum = TOps.Sum(acc);
-    foreach (int x in s) sum = unchecked(sum + x);
-    return sum;
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    static int Sum<V, TOps>(ReadOnlySpan<int> s)
+        where V : struct
+        where TOps : struct, IOps<V>
+    {
+        V acc = default;
+        int count = TOps.Count;
+
+        while (s.Length >= count)
+        {
+            acc = TOps.Add(acc, TOps.Load(s));
+            s = s.Slice(count);
+        }
+
+        int sum = TOps.Sum(acc);
+        foreach (int x in s) sum = unchecked(sum + x);
+        return sum;
+    }
 }
+
 
 interface IOps<V> where V : struct
 {
@@ -437,6 +449,8 @@ Code-level advice for HTTP throughput benchmarks.
 > [!WARNING]
 > It is highly recommended to keep the default settings unless you have measured and understood the performance implications of changing them. 
 
+Most of these knobs are relevant only for server workloads or performance-critical scenarios. They're not applicable for general-purpose libraries.
+
 ⭐ - known to have a visible impact on performance (typically, in synthetic benchmarks).
 
 | Environment variable (CoreCLR Release, .NET 10.0+) | Default | Values to try | Purpose and trade-offs |
@@ -469,3 +483,7 @@ Recommended reading: Microsoft's [Optimizing AOT deployments](https://learn.micr
 ```sh
 dotnet publish -c Release -r linux-arm64 -p:PublishAot=true -p:OptimizationPreference=Speed -p:IlcInstructionSet=native
 ```
+
+# General notes
+
+- Consider filing a [dotnet/runtime](https://github.com/dotnet/runtime/issues) issue only for a clear, reproducible missed optimization in the JIT or libraries with meaningful measured impact. Check for duplicates, include a minimal repro and measurements, and obtain the user's approval before filing.

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0+source.e75a2a3c20be9bf1",
+  "version": "1.0.0+source.cfca27650e0d75d3",
   "category": "Metrics",
   "compatibility": "Targets .NET 10 and 11 performance tuning; validate runtime-specific advice with measurements. Some profiling workflows require Linux perf."
 }
