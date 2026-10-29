@@ -6,27 +6,26 @@ directories:
       sha: 02ed682fb675d2b247b24a58209147f765241d46
     path: blazingfastdotnet
   - git:
-      commitTitle: 'Merge pull request #1355 from dotnet/abhitejjohn-fix-health-workflow-url-validation...'
-      sha: 586f13f8d898a60583a3364f146a3b6f5a763164
+      commitTitle: 'Merge pull request #1364 from dotnet/dependabot/nuget/eng/skill-validator/src/microsoft-and-system-38d43a4916...'
+      sha: 95e7d0cb7994d47b5789baa68e13f7a2f348b956
       tags:
-      - skill-validator-nightly-16-g586f13f8
+      - skill-validator-nightly-9-g95e7d0cb
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Merge commit from fork
-      sha: 5e476365378e41aa2745d003b2383d02008d7b44
+      commitTitle: '[ci] release (#18540)'
+      sha: 883e672fd0beb575b14776bc842bdee84433e6af
       tags:
-      - '@astrojs/check@0.9.12-25-g5e47636537'
+      - astro@7.4.4
     path: astro
   - git:
-      commitTitle: 'Cache compiler arguments captured during the MSBuild load (Fixes
-        #170) (#171)...'
-      sha: bd87e3697b4d46520e428831787922e4c0ec3d3c
+      commitTitle: 'Add reproducible AI benchmark suite for Roslynk (Fixes #174) (#175)...'
+      sha: 456684af1d5a6b179c67153e041846af20e88ef5
       tags:
-      - 3.0.0-7-gbd87e36
+      - 3.0.0-8-g456684a
     path: roslynk
   path: upstreams
 kind: LockConfig
