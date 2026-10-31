@@ -1,0 +1,9 @@
+{
+  "name": "agent-qa-knowledge",
+  "title": "vostride: agent-qa-knowledge",
+  "description": "Use when asked what an agent-qa run did, why a step passed or failed, what a run's screenshots, console or network showed, what knowledge agent-qa learned or served, where a knowledge record came from, or which runs exist. Reads runs, evidence and knowledge through the agent-qa MCP tools or the agent-qa CLI with --json, never through .agent-qa files, SQLite or index files.",
+  "links": {
+    "repository": "https://github.com/vostride/agent-qa",
+    "docs": "https://github.com/vostride/agent-qa/tree/main/skills/agent-qa-knowledge"
+  }
+}

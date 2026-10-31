@@ -27,5 +27,11 @@ directories:
       tags:
       - 3.0.0-8-g456684a
     path: roslynk
+  - git:
+      commitTitle: 'release: agent-qa v0.2.3'
+      sha: 33cd7dbe52f77d661482977ed0437889d04fdf93
+      tags:
+      - v0.2.3
+    path: agent-qa
   path: upstreams
 kind: LockConfig
