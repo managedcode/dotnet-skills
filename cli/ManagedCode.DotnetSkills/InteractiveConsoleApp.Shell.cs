@@ -112,7 +112,6 @@ internal sealed partial class InteractiveConsoleApp
 
     // Keys (collection name, case-insensitive) of collections currently expanded in the grouped
     // Collections table. Empty = all collapsed (the default at-a-glance view).
-    private readonly HashSet<string> _expandedCollections = new(StringComparer.OrdinalIgnoreCase);
 
     // ===== Off-thread operation queue (installs/removes) — UI-thread-only access by construction =====
     private readonly Queue<Action> _operationQueue = new();
@@ -483,7 +482,6 @@ internal sealed partial class InteractiveConsoleApp
         if (_currentPage != action)
         {
             _searchFilter = string.Empty;
-            _expandedCollections.Clear();
             _collectionInstallArmed = false;
         }
         _activePanel = panel;
@@ -780,7 +778,24 @@ internal sealed partial class InteractiveConsoleApp
     /// turquoise title line directly above the same-colored column header read as a duplicate header.
     /// Use this for Skills/Bundles/Packages/Agents; the column row is the only header.
     /// </summary>
-    private static TableControlBuilder BuildStyledTableBorderless(Color accent) => Controls.Table()
+    private static TableControlBuilder BuildStyledTableBorderless(Color accent) =>
+        ApplyBorderlessStyle(Controls.Table(), accent);
+
+    /// <summary>
+    /// The borderless page-table style, as a TreeTable. TreeTableControl is a TableControl whose
+    /// rows nest, so every styling call below is the same one; only the builder type differs.
+    /// Use this for pages whose rows form a hierarchy, so the nesting is the control's rather
+    /// than something the page fakes with indent strings.
+    /// </summary>
+    private static TreeTableControlBuilder BuildStyledTreeTableBorderless(Color accent) =>
+        ApplyBorderlessStyle(Controls.TreeTable(), accent);
+
+    /// <summary>
+    /// The shared borderless style. Both table builders derive from TableControlBuilderBase, so
+    /// this runs once for Table and TreeTable alike and the two cannot drift apart.
+    /// </summary>
+    private static TBuilder ApplyBorderlessStyle<TBuilder>(TBuilder builder, Color accent)
+        where TBuilder : TableControlBuilderBase<TBuilder> => builder
         .WithSorting()
         .NoBorder()
         .WithBorderColor(accent)
@@ -802,7 +817,8 @@ internal sealed partial class InteractiveConsoleApp
     /// columns instead of clipping or showing an ASCII ellipsis. There's no builder method for
     /// this property, so we set it after Build. Call once per table right after the Build site.
     /// </summary>
-    private static TableControl ApplyStyledTableRuntime(TableControl table)
+    private static TTable ApplyStyledTableRuntime<TTable>(TTable table)
+        where TTable : TableControl
     {
         table.TruncationFade = true;
         return table;

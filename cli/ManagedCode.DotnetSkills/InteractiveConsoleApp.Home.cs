@@ -26,7 +26,6 @@ internal sealed partial class InteractiveConsoleApp
         if (_currentPage != null)
         {
             _searchFilter = string.Empty;
-            _expandedCollections.Clear();
             _collectionInstallArmed = false;
         }
         _activePanel = panel;
