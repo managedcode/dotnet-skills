@@ -2,30 +2,32 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Clarify README guidance for safety reviews...
-      sha: 02ed682fb675d2b247b24a58209147f765241d46
+      commitTitle: 'Merge pull request #2 from AndrewP-GH/docs/field-perf-tips...'
+      sha: f14fe335048708c9a45bd31e4b403174e92a02d8
     path: blazingfastdotnet
   - git:
       commitTitle: 'Merge pull request #1364 from dotnet/dependabot/nuget/eng/skill-validator/src/microsoft-and-system-38d43a4916...'
       sha: 95e7d0cb7994d47b5789baa68e13f7a2f348b956
       tags:
-      - skill-validator-nightly-9-g95e7d0cb
+      - skill-validator-nightly
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: '[ci] release (#18540)'
-      sha: 883e672fd0beb575b14776bc842bdee84433e6af
+      commitTitle: 'fix(env): preserve `$` in import.meta.env values when the env
+        object is inlined in build (#18559)...'
+      sha: 10dae2f31486cc0a6a04d1f3d7f5ab7fa8889b30
       tags:
-      - astro@7.4.4
+      - astro@7.4.4-5-g10dae2f314
     path: astro
   - git:
-      commitTitle: 'Add reproducible AI benchmark suite for Roslynk (Fixes #174) (#175)...'
-      sha: 456684af1d5a6b179c67153e041846af20e88ef5
+      commitTitle: 'Return whole declaration for a bodiless type in get_symbol (Fixes
+        #179) (#181)...'
+      sha: a05fc09c90d3fc847dfe43ec3eac0841f5b96e56
       tags:
-      - 3.0.0-8-g456684a
+      - 3.0.0-10-ga05fc09
     path: roslynk
   path: upstreams
 kind: LockConfig

@@ -160,7 +160,7 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - Use [`[LoggerMessage]`](https://learn.microsoft.com/dotnet/core/extensions/logging/source-generation) source-generated logging to avoid template parsing, boxing, and temporary allocations. Still guard expensive argument computation with `IsEnabled`.
 - Use [`[GeneratedRegex]`](https://learn.microsoft.com/dotnet/standard/base-types/regular-expression-source-generators) for compile-time-known patterns instead of runtime pattern compilation. Preserve options, culture, and match timeouts.
 - Prefer optimized bulk APIs over handwritten loops: `Span.CopyTo`, `Clear`, `Fill`, `SequenceEqual`, and `IndexOf` already have specialized implementations, including SIMD where appropriate.
-- Use RVA-backed spans `static ReadOnlySpan<T> RVA => new T[CNS]` for all kinds of immutable data (only primitives, e.g., `long`, `byte`, `char`) - the data will be embedded into metadata, and the JIT will be able to perform constant folding on it.
+- Use RVA-backed spans `static ReadOnlySpan<long> RVA => [1, 2, 3];` for immutable data (only primitives, e.g., `long`, `byte`, `char`) - the data will be embedded into metadata, and the JIT will be able to perform constant folding on it.
 - Prefer static lambdas and state-passing overloads in hot paths to avoid capturing closures.
 - Parse and format UTF-8 directly: numeric `TryParse(ReadOnlySpan<byte>, ...)` and `TryFormat(Span<byte>, ...)` avoid intermediate strings and UTF-8/UTF-16 transcoding. Preserve culture and formatting semantics.
 - Cache `SearchValues<char>` / `SearchValues<byte>` for repeated searches against fixed sets; use `SearchValues<string>` for multi-substring searches. Construction has a cost, so do not create these per call.
@@ -172,13 +172,16 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - Use `static readonly` flags for genuinely immutable process-wide configuration. Optimized JIT code can fold their values and eliminate disabled branches.
 - Cache fields in locals in hot loops (`var items = _items;`). The JIT often can't do it for you: calls and stores through references may modify the field, and the memory model restricts hoisting reads. Locals also enable bounds check elimination for arrays/spans.
 - Consider `Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping` for UTF-8 JSON-only responses ([documentation](https://learn.microsoft.com/dotnet/standard/serialization/system-text-json/character-encoding#serialize-all-characters)). Never embed its raw output in HTML or `<script>`; any custom encoder disables STJ's generated serialization fast path, so benchmark rather than assuming the gains add up.
+- Create `JsonSerializerOptions` once and reuse it (CA1869). A new instance with the same settings still pays a global cache lookup; one that also creates converter instances (`Converters = { new JsonStringEnumConverter() }`) misses that cache, since converters compare by reference, and rebuilds metadata for every type it touches on each call.
 - For most bit/byte manipulations, prefer the built-in `BitOperations`, `BinaryPrimitives`, `BitConverter` or static numeric helpers such as `uint.Log2`, `uint.PopCount`, `uint.TrailingZeroCount`, etc.
 - Span/ReadOnlySpan have a lot of useful extension methods via `MemoryExtensions` such as `SequenceEqual`, `IndexOf`, `IndexOfAnyExcept`, `LastIndexOf`, `StartsWith`, `CommonPrefixLength`, and a lot more - prefer these APIs over manual loops or vectorization.
 - Don't pin benchmarks to a single core - doing so might significantly affect internal VM heuristics (e.g. tiered compilation timing).
+- For BenchmarkDotNet methodology, see the [dotnet/runtime microbenchmark skill](https://github.com/dotnet/runtime/blob/main/.github/skills/microbenchmark/SKILL.md).
 - `AggressiveOptimization` is usually a deoptimization.
 - Overusing `AggressiveInlining` may hurt performance (e.g. by exhausting the inliner's time budget or increasing the number of tracked local variables).
+- Moving rarely taken paths (grow/resize, slow fallback) into a separate method marked with  `[MethodImpl(MethodImplOptions.NoInlining)]` may improve performance (as `List<T>.Add` does with `AddWithResize`), but it may also hinder escape analysis.
 - Don't put too much data into TLS (Thread-Local Storage) - excessive use can lead to increased memory usage and cache pressure, reducing overall performance (there can be a lot of threads, each with its own copy).
-- Consider calling `.AsSpan()` on `List<T>` or other collections that support it to avoid unnecessary overhead from bound and covariance checks, and to enable span-based algorithms directly on the collection's underlying memory.
+- Consider `CollectionsMarshal.AsSpan(list)` for `List<T>` (there is no `List<T>.AsSpan()`), or `.AsSpan()` on collections that support it, to avoid unnecessary overhead from bound and covariance checks, and to enable span-based algorithms directly on the collection's underlying memory. Don't add or remove list items while the span is in use.
 
 ## Strings and globalization
 
