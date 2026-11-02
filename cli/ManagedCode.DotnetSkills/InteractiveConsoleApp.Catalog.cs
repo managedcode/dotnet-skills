@@ -60,25 +60,46 @@ internal sealed partial class InteractiveConsoleApp
         // are columns instead of a single bracketed markup-salad row. Default sort matches the
         // legacy ListControl order: by collection rank then collection name then skill name,
         // already baked into the `available` ordering above.
-        var table = BuildStyledTableBorderless(AccentTurquoise)
-            .AddColumn("Collection")
-            .AddColumn("Lane")
+        // Collection and Lane were columns, which meant every row repeated the two values above
+        // it - 201 rows carrying 23 distinct collections. They are a hierarchy, so the tree
+        // holds them once and the Skill column gets the width back.
+        //
+        // Expanded by default, unlike Collections: this page exists to FIND one skill, and a
+        // skill hidden behind two closed levels is a skill the user cannot see. The grouping is
+        // here to remove repetition, not to hide rows.
+        var table = BuildStyledTreeTableBorderless(AccentTurquoise)
             .AddColumn("Skill")
             .AddColumn("Version", TextJustification.Right, width: 9)
             .AddColumn("Tokens", TextJustification.Right, width: 9);
         var builtTable = ApplyStyledTableRuntime(table.Build());
-        foreach (var skill in filtered)
+
+        foreach (var collectionGroup in filtered.GroupBy(skill => skill.Stack, StringComparer.Ordinal))
         {
-            builtTable.AddRow(new TableRow(
-                skill.Stack,
-                skill.Lane,
-                ToAlias(skill.Name),
-                skill.Version,
-                FormatTokenCount(skill.TokenCount))
+            var collectionSkills = collectionGroup.ToArray();
+            var collectionRow = builtTable.AddRootRow(
+                Escape(collectionGroup.Key),
+                string.Empty,
+                FormatTokenCount(collectionSkills.Sum(skill => skill.TokenCount)));
+
+            foreach (var laneGroup in collectionSkills.GroupBy(skill => skill.Lane, StringComparer.Ordinal))
             {
-                Tag = skill,
-            });
+                var laneSkills = laneGroup.ToArray();
+                var laneRow = collectionRow.AddChild(
+                    Escape(laneGroup.Key),
+                    string.Empty,
+                    FormatTokenCount(laneSkills.Sum(skill => skill.TokenCount)));
+
+                foreach (var skill in laneSkills)
+                {
+                    var skillRow = laneRow.AddChild(
+                        Escape(ToAlias(skill.Name)),
+                        Escape(skill.Version),
+                        FormatTokenCount(skill.TokenCount));
+                    skillRow.Tag = skill;
+                }
+            }
         }
+
         // Use SelectedRow.Tag to recover the skill — the display index changes when the user
         // re-sorts via column header click, so indexing into `filtered` would be wrong.
         builtTable.RowActivated += (_, _) =>
@@ -91,8 +112,19 @@ internal sealed partial class InteractiveConsoleApp
         panel.AddControl(builtTable);
     }
 
-    private void ShowSkillDetailModal(ConsoleWindowSystem ws, ScrollablePanelControl owner, SkillEntry skill)
+    /// <param name="onChanged">
+    /// What to rebuild after an install. Defaults to the skill browser; pages that show skills in
+    /// another shape (the Project scan, say) pass their own rebuild so the modal can be reused
+    /// without leaving the caller's page stale.
+    /// </param>
+    private void ShowSkillDetailModal(
+        ConsoleWindowSystem ws,
+        ScrollablePanelControl owner,
+        SkillEntry skill,
+        Action? onChanged = null)
     {
+        var refresh = onChanged ?? (() => BuildSkillBrowserPage(ws, owner));
+
         // Fold the one-line summary into the top of the scrolling markdown document so the modal
         // reads as one cohesive skill page (summary lead-in, then the full SKILL.md) rather than
         // three stacked blocks. The identity strip stays pinned above.
@@ -122,7 +154,7 @@ internal sealed partial class InteractiveConsoleApp
                             Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
                         else
                             Toast($"{ToAlias(skill.Name)}: {summary.InstalledCount} written, {summary.SkippedExisting.Count} skipped", NotificationSeverity.Success);
-                        BuildSkillBrowserPage(ws, owner);
+                        refresh();
                     });
             }
         ),
@@ -138,7 +170,7 @@ internal sealed partial class InteractiveConsoleApp
                             Toast($"Install failed for {ToAlias(skill.Name)}", NotificationSeverity.Danger);
                         else
                             Toast($"{ToAlias(skill.Name)}: reinstalled ({summary.InstalledCount} written)", NotificationSeverity.Success);
-                        BuildSkillBrowserPage(ws, owner);
+                        refresh();
                     });
             }
         ));
@@ -196,82 +228,53 @@ internal sealed partial class InteractiveConsoleApp
         return sb.ToString();
     }
 
-    // Rebuilds the grouped table's visible rows from _expandedCollections. Collapsed collection =>
-    // one band row; expanded => band row + each lane's sub-header row + that lane's skill rows.
-    // Restores the selection by tag identity (NOT index) because the row count changes on every toggle.
-    private void RebuildCollectionRows(TableControl table, IReadOnlyList<CollectionCatalogView> views)
+    // Builds the collection -> lane -> skill hierarchy as real nested rows.
+    //
+    // This used to be a flat TableControl: every toggle cleared the rows and re-added them with
+    // "    " / "      " indent literals and a hand-drawn caret, and the selection had to be
+    // restored by tag identity because every row index moved. TreeTableControl holds the nesting
+    // itself, so expansion is the control's business: the rows are built once, the caret and the
+    // guide are drawn by the control, and the selection survives a toggle because the rows do.
+    private void BuildCollectionRows(TreeTableControl table, IReadOnlyList<CollectionCatalogView> views)
     {
-        // Capture what is selected so we can re-select the equivalent row after the rebuild.
-        var prior = table.SelectedRow?.Tag as CollectionRowTag;
-
         table.ClearRows();
 
         int maxCollectionTokens = views.Count == 0 ? 0 : views.Max(v => v.TokenCount);
 
         foreach (var view in views)
         {
-            bool expanded = _expandedCollections.Contains(view.Collection);
-            string caret = expanded ? "▾" : "▸";
-
-            var bandRow = new TableRow(
-                $"{caret} {Escape(view.Collection)}",
+            var bandRow = table.AddRootRow(
+                Escape(view.Collection),
                 $"{view.InstalledCount}/{view.SkillCount}",
                 WeightBarMarkup(view.TokenCount, maxCollectionTokens),
-                FormatTokenCount(view.TokenCount))
-            {
-                Tag = new CollectionRowTag(CollectionRowKind.Collection, view),
-                BackgroundColor = CollectionBandBackground,
-            };
-            table.AddRow(bandRow);
-
-            if (!expanded) continue;
+                FormatTokenCount(view.TokenCount));
+            bandRow.Tag = new CollectionRowTag(CollectionRowKind.Collection, view);
+            bandRow.BackgroundColor = CollectionBandBackground;
 
             foreach (var lane in view.Lanes)
             {
-                var laneRow = new TableRow(
-                    $"    {Escape(lane.Lane)}",
+                var laneRow = bandRow.AddChild(
+                    Escape(lane.Lane),
                     $"{lane.InstalledCount}/{lane.Skills.Count}",
-                    string.Empty, // lanes are grouping headers — no bar
-                    FormatTokenCount(lane.TokenCount))
-                {
-                    Tag = new CollectionRowTag(CollectionRowKind.Lane, view, lane),
-                    ForegroundColor = AccentGrey,
-                };
-                table.AddRow(laneRow);
+                    string.Empty, // lanes are grouping headers - no bar
+                    FormatTokenCount(lane.TokenCount));
+                laneRow.Tag = new CollectionRowTag(CollectionRowKind.Lane, view, lane);
 
                 foreach (var skill in lane.Skills)
                 {
-                    var skillRow = new TableRow(
-                        $"      {Escape(ToAlias(skill.Name))}",
-                        "·",
-                        string.Empty, // bars are a collection-level comparison only; exact Tokens are shown
-                        FormatTokenCount(skill.TokenCount))
-                    {
-                        Tag = new CollectionRowTag(CollectionRowKind.Skill, view, lane, skill),
-                    };
-                    table.AddRow(skillRow);
+                    var skillRow = laneRow.AddChild(
+                        Escape(ToAlias(skill.Name)),
+                        "\u00b7",
+                        string.Empty, // bars are a collection-level comparison only
+                        FormatTokenCount(skill.TokenCount));
+                    skillRow.Tag = new CollectionRowTag(CollectionRowKind.Skill, view, lane, skill);
                 }
             }
         }
 
-        RestoreCollectionSelection(table, prior);
-    }
-
-    // Re-selects the row matching the previously-selected tag after a rebuild. Collection bands match
-    // by collection name; skills match by collection+skill name; lanes by collection+lane name.
-    private static void RestoreCollectionSelection(TableControl table, CollectionRowTag? prior)
-    {
-        if (prior is null) return;
-        var rows = table.Rows;
-        for (int i = 0; i < rows.Count; i++)
-        {
-            if (rows[i].Tag is not CollectionRowTag tag) continue;
-            bool match = tag.Kind == prior.Kind
-                && string.Equals(tag.Collection.Collection, prior.Collection.Collection, System.StringComparison.OrdinalIgnoreCase)
-                && string.Equals(tag.Lane?.Lane, prior.Lane?.Lane, System.StringComparison.OrdinalIgnoreCase)
-                && string.Equals(tag.Skill?.Name, prior.Skill?.Name, System.StringComparison.OrdinalIgnoreCase);
-            if (match) { table.SelectedRowIndex = i; return; }
-        }
+        // Collections start closed, as they did when the page tracked expansion itself: the
+        // page is a browser, and 201 skills opened at once is a wall rather than a catalog.
+        table.CollapseAll();
     }
 
     private void BuildCollectionsPage(ConsoleWindowSystem ws, ScrollablePanelControl panel)
@@ -306,49 +309,25 @@ internal sealed partial class InteractiveConsoleApp
 
         // Single borderless grouped table — Collection bands collapse/expand to reveal Lane sub-headers
         // and Skill rows. Matches the Phase-1 grammar of every other page (no splitter, no nested frame).
-        var table = ApplyStyledTableRuntime(BuildStyledTableBorderless(AccentDeepSkyBlue)
+        var table = ApplyStyledTableRuntime(BuildStyledTreeTableBorderless(AccentDeepSkyBlue)
             .AddColumn("Name")
             .AddColumn("Installed", TextJustification.Right, width: 9)
             .AddColumn("Weight", TextJustification.Left, width: CollectionBarCellWidth)
             .AddColumn("Tokens", TextJustification.Right, width: 9)
             .Build());
 
-        void ToggleCollection(CollectionCatalogView collection)
-        {
-            if (!_expandedCollections.Remove(collection.Collection))
-                _expandedCollections.Add(collection.Collection);
-            RebuildCollectionRows(table, filtered);
-        }
-
-        // Keyboard Enter / double-click on a row: bands toggle, skills open detail, lanes do nothing.
+        // Keyboard Enter / double-click: skills open detail. Collection and lane rows expand and
+        // collapse themselves - the control owns that now, so there is no toggle to write, no
+        // expansion set to keep, and no rebuild that would move the selection.
         table.RowActivated += (_, _) =>
         {
             if (table.SelectedRow?.Tag is not CollectionRowTag tag) return;
-            switch (tag.Kind)
-            {
-                case CollectionRowKind.Collection:
-                    ToggleCollection(tag.Collection);
-                    break;
-                case CollectionRowKind.Skill:
-                    if (tag.Skill is not null) ShowSkillDetailModal(ws, panel, tag.Skill);
-                    break;
-                case CollectionRowKind.Lane:
-                    break; // lanes are non-interactive sub-headers
-            }
-        };
-
-        // Single-click on the caret glyph (the first cell of the Name column) toggles a collection band.
-        // MouseClick fires AFTER the table has already selected the clicked row, so SelectedRow is the
-        // clicked band; we only need to confirm the click landed on the arrow (table-relative X 0..1).
-        table.MouseClick += (_, args) =>
-        {
-            if (args.Position.X > 1) return; // only the caret column, not the whole band
-            if (table.SelectedRow?.Tag is CollectionRowTag tag && tag.Kind == CollectionRowKind.Collection)
-                ToggleCollection(tag.Collection);
+            if (tag.Kind == CollectionRowKind.Skill && tag.Skill is not null)
+                ShowSkillDetailModal(ws, panel, tag.Skill);
         };
 
         panel.AddControl(table);
-        RebuildCollectionRows(table, filtered);
+        BuildCollectionRows(table, filtered);
 
         // Resolves the collection the install action targets = the collection owning the highlighted
         // row (band, lane, or skill), falling back to the first when nothing is selected.
@@ -399,7 +378,7 @@ internal sealed partial class InteractiveConsoleApp
         // when the event fires, which would leave the caption one row behind.
         //
         // The update is deferred via EnqueueOnUIThread: this handler fires synchronously from inside
-        // input dispatch (mouse click → RebuildCollectionRows → SetSelectedRow → this event). Mutating
+        // input dispatch (mouse click → the control's own expand → SetSelectedRow → this event). Mutating
         // the button + repainting from here re-enters the renderer while the window content lock is held
         // and deadlocks the UI thread (watchdog stall: "blocked in Click / TableControl",
         // Window.EnsureContentReady → Monitor.Enter — do NOT call ws.ForceRender here). Running the

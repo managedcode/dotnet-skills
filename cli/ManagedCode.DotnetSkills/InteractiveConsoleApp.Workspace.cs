@@ -147,6 +147,13 @@ internal sealed partial class InteractiveConsoleApp
 
         // Real sortable TableControl — columns can be sorted by clicking the header. Per-row
         // foreground color flags outdated rows yellow without needing markup escaping per cell.
+        // Deliberately a FLAT table, not a TreeTable, even though Collection and Lane repeat the
+        // same way the Skills page's did. This page's purpose is batch operations: checkbox mode
+        // plus GetCheckedRows() drives install, update and remove. In a tree the collection and
+        // lane rows are checkable too, and they carry no InstalledSkillRecord - a user who checks
+        // a collection expecting its skills would select nothing. Grouping would cost more than
+        // the repetition it removes.
+        //
         // Titleless: the identity strip above already names "installed skills", and a same-accent
         // title line directly over the same-accent column header read as a duplicate header row
         // (matches Skills/Bundles/Packages/Agents). Checkbox mode adds a leading check cell;
@@ -419,6 +426,23 @@ internal sealed partial class InteractiveConsoleApp
             .ToArray();
         var installable = newSkills.Concat(outdatedSkills).ToArray();
 
+        // Stale auto-managed skills: ones this tool installed from a NuGet signal that has since
+        // disappeared from the project. The CLI reconciles them with `install --auto --prune`;
+        // without this the shell can only ever add, so a project that drops a dependency keeps
+        // its skill forever and the user has to leave the TUI to clean up.
+        var autoSync = new ProjectSkillAutoSyncService(skillCatalog);
+        IReadOnlyList<SkillEntry> stale = Array.Empty<SkillEntry>();
+        try
+        {
+            stale = autoSync
+                .BuildPlan(Session.ProjectDirectory, ResolveSkillLayout(), installer, prune: true)
+                .SkillsToRemove;
+        }
+        catch (InvalidOperationException)
+        {
+            // No scannable project here: nothing to reconcile, and the page still works.
+        }
+
         var projectToolbar = BuildPageToolbar(
             ($"Install all recommended ({installable.Length})", installable.Length > 0, () =>
             {
@@ -442,15 +466,36 @@ internal sealed partial class InteractiveConsoleApp
                     });
             }
         ),
+            ($"Prune stale ({stale.Count})", stale.Count > 0, () =>
+            {
+                var skillLayout = ResolveSkillLayout();
+                ConfirmDangerModal(
+                    ws,
+                    "Prune stale skills",
+                    $"{stale.Count} skill(s) were auto-installed from project signals that are no longer present. Removing them does not touch anything you installed yourself.",
+                    "Prune",
+                    () => RunOperationQueued(
+                        $"Pruning {stale.Count} stale skill(s)",
+                        work: () => new SkillInstaller(skillCatalog).Remove(stale, skillLayout),
+                        onComplete: summary =>
+                        {
+                            Toast(
+                                summary is null ? "Prune failed" : $"Pruned {stale.Count} stale skill(s)",
+                                summary is null ? NotificationSeverity.Danger : NotificationSeverity.Success);
+                            BuildProjectPage(ws, panel);
+                        }),
+                    affectedItems: stale.Select(skill => ToAlias(skill.Name)).ToArray());
+            }
+        ),
             ("Browse installed", true, () => NavigateTo(HomeAction.ManageInstalled)));
         if (projectToolbar is not null) panel.AddControl(projectToolbar);
 
         // Confidence cell renders as the same ●●● marker as the legacy list so the visual
         // grammar is preserved; the column itself is sortable, and the default sort
         // (Confidence desc) is applied via the row insertion order.
-        var table = BuildStyledTableBorderless("Recommended skills (Enter to install)", AccentDeepSkyBlue)
+        var table = BuildStyledTableBorderless("Recommended skills (Enter for details)", AccentDeepSkyBlue)
             .AddColumn("Confidence", TextJustification.Center, width: 12)
-            .AddColumn("Status", width: 12)
+            .AddColumn("Status", width: 18)
             .AddColumn("Skill")
             .AddColumn("Reasons");
         var builtTable = ApplyStyledTableRuntime(table.Build());
@@ -466,6 +511,10 @@ internal sealed partial class InteractiveConsoleApp
             };
             installedByName.TryGetValue(recommendation.Skill.Name, out var record);
             var status = record is null ? "[deepskyblue1]new[/]" : record.IsCurrent ? "[green]installed[/]" : "[yellow]update[/]";
+            // `install --auto` installs only the auto-install candidates, a narrower set than
+            // everything listed here. Marking them lets the page answer "what would --auto do?"
+            // without the user leaving for the CLI to find out.
+            if (recommendation.IsAutoInstallCandidate) status += " [grey50]auto[/]";
             builtTable.AddRow(new TableRow(
                 marker,
                 status,
@@ -475,23 +524,16 @@ internal sealed partial class InteractiveConsoleApp
                 Tag = recommendation,
             });
         }
+        // Activation opens the skill, it does not install it. Every other table in the app
+        // treats Enter and double-click as "show me more", so a page where the same gesture
+        // writes to disk punishes the habit the rest of the app teaches. The install lives on
+        // the modal's own button, one deliberate press away, and bulk install stays in the
+        // page toolbar above.
         builtTable.RowActivated += (_, _) =>
         {
             if (builtTable.SelectedRow?.Tag is ProjectSkillRecommendation recommendation)
             {
-                // Outdated recommendations need force=true: SkillInstaller.Install skips
-                // existing skill directories unless forced, so an "update" entry would
-                // otherwise be reported as skipped and stay outdated.
-                var isOutdated = installedByName.TryGetValue(recommendation.Skill.Name, out var existing) && !existing.IsCurrent;
-                var layout = ResolveSkillLayout();
-                RunOperationQueued(
-                    $"Installing {ToAlias(recommendation.Skill.Name)}",
-                    work: () => new SkillInstaller(skillCatalog).Install(new[] { recommendation.Skill }, layout, force: isOutdated),
-                    onComplete: summary2 =>
-                    {
-                        ToastResult(summary2, $"Install failed for {ToAlias(recommendation.Skill.Name)}", summary2 is null ? string.Empty : $"{ToAlias(recommendation.Skill.Name)}: {summary2.InstalledCount} written, {summary2.SkippedExisting.Count} skipped");
-                        BuildProjectPage(ws, panel);
-                    });
+                ShowSkillDetailModal(ws, panel, recommendation.Skill, onChanged: () => BuildProjectPage(ws, panel));
             }
         };
         panel.AddControl(builtTable);
@@ -780,32 +822,5 @@ internal sealed partial class InteractiveConsoleApp
     // -------------------------------------------------------------------------
     // About
     // -------------------------------------------------------------------------
-
-    private void BuildAboutPage(ScrollablePanelControl panel)
-    {
-        panel.ClearContents();
-        // About is a static metadata page — keep the original PropertyPanel because the
-        // information IS the page (no list/table follows). Identity-strip the title row only.
-        panel.AddControl(BuildPropertyPanel("about", AccentDeepSkyBlue,
-            ("tool", $"{Escape(ToolIdentity.DisplayCommand)}"),
-            ("package", Escape(ToolIdentity.PackageId)),
-            ("version", Escape(ToolVersionInfo.CurrentVersion)),
-            ("build", ToolVersionInfo.IsDevelopmentBuild ? "[grey50]local development[/]" : "[green]published[/]"),
-            ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
-            ("skills", skillCatalog.Skills.Count.ToString()),
-            ("agents", agentCatalog.Agents.Count.ToString())));
-
-        AddInfoBlock(panel, "surface map",
-            "[grey]Home[/] [grey50]session, catalog telemetry, update notice[/]",
-            "[grey]Skills / Installed[/] [grey50]browse, install, update, remove catalog skills[/]",
-            "[grey]Collections / Bundles / Packages[/] [grey50]install grouped surfaces[/]",
-            "[grey]Agents[/] [grey50]install orchestration agents into shared or platform directories[/]",
-            "[grey]Project[/] [grey50]scan .NET and browser UI signals and install recommended skills[/]",
-            "[grey]Analysis[/] [grey50]collection sizes, heaviest skills, package signals[/]");
-
-        AddInfoBlock(panel, "notes",
-            "[grey50]This is the SharpConsoleUI command center. Run with redirected stdin/stdout to get the classic prompt shell instead.[/]",
-            "[grey50]CLI sub-commands (list, install, recommend, …) are unchanged — see[/] [green]dotnet skills help[/][grey50].[/]");
-    }
 
 }
