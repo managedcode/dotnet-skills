@@ -71,6 +71,94 @@ internal sealed partial class InteractiveConsoleApp
     // (25,32,52)->(7,7,13)) to feel floated rather than blended into the page.
     private static readonly ColorGradient ElevatedModalGradient =
         ColorGradient.FromColors(new Color(58, 70, 104), new Color(34, 42, 66));
+
+    /// <summary>
+    /// The flat background the modal's frame paints on. The border renderer uses the window's
+    /// flat colour rather than its gradient, so without this the frame is a band of theme
+    /// default around a blue-tinted body. The gradient's own midpoint makes the border read as
+    /// the edge of the dialog rather than a ring around it.
+    /// </summary>
+    private static readonly Color ModalSurface = new(46, 56, 85);
+
+    /// <summary>Title and frame text on the modal surface: bright enough to read on it.</summary>
+    private static readonly Color ModalForeground = new(222, 232, 248);
+
+    /// <summary>
+    /// Puts a dialog's buttons at the right edge, the way cxagent's DialogLook.Footer does.
+    /// </summary>
+    /// <remarks>
+    /// A grid, not toolbar alignment: ToolbarControl packs its items left and sizes to them, and
+    /// the dock layout that places it ignores HorizontalAlignment, so neither can move the
+    /// buttons. A star column beside the toolbar absorbs the free width instead, and the toolbar
+    /// keeps sizing to its buttons. A stretching item INSIDE the toolbar does not work - it
+    /// competes with the buttons and pushes them off the end.
+    /// </remarks>
+    /// <summary>The divider that separates a dialog's content from its buttons.</summary>
+    private static RuleControl DialogFooterRule()
+    {
+        var rule = Controls.RuleBuilder()
+            .WithColor(new Color(70, 88, 116))
+            .WithBorderStyle(BorderStyle.Single)
+            .Build();
+        rule.StickyPosition = StickyPosition.Bottom;
+        return rule;
+    }
+
+    private static GridControl RightAlignedButtonRow(IWindowControl toolbar)
+    {
+        var row = new GridControl
+        {
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Margin = new Margin(ModalBodyPadding, 0, 0, 0),
+            StickyPosition = StickyPosition.Bottom,
+            BackgroundColor = ModalFooterBackground,
+        };
+        row.ColumnDefinitions.Add(GridLength.Star(1));
+        row.ColumnDefinitions.Add(GridLength.Auto());
+        row.RowDefinitions.Add(GridLength.Auto());
+        row.Place(toolbar, 0, 1);
+        return row;
+    }
+
+    /// <summary>
+    /// The footer's own surface, a shade lifted off the gradient's bottom end (34,42,66) where
+    /// the row sits. Enough to read as a ledge the buttons rest on rather than text floating at
+    /// the edge of the dialog, and close enough to ModalSurface that the frame agrees with it.
+    /// </summary>
+    private static readonly Color ModalFooterBackground = new(49, 61, 96);
+
+    /// <summary>Breathing room between the modal's frame and its content, in cells.</summary>
+    private const int ModalBodyPadding = 1;
+
+    /// <summary>Raised a shade off the modal's gradient, so a button reads as sitting on it.</summary>
+    private static readonly Color ModalButtonBackground = new(68, 83, 122);
+
+    /// <summary>Brighter still when focused, so the cursor is obvious without a colour change.</summary>
+    private static readonly Color ModalButtonFocusedBackground = new(96, 118, 170);
+
+    /// <summary>A toolbar button tinted for the modal surface rather than the default flat one.</summary>
+    private static ButtonControl StyledModalButton(string label, EventHandler<ButtonControl> onClick)
+    {
+        var button = Controls.Button(label).OnClick(onClick).Build();
+        button.BackgroundColor = ModalButtonBackground;
+        button.FocusedBackgroundColor = ModalButtonFocusedBackground;
+        return button;
+    }
+
+    /// <summary>
+    /// Markdown styled for the modal surface rather than for a black terminal. The built-in
+    /// default paints code on a neutral near-grey (38,40,46), which reads as a hole punched in
+    /// the blue-tinted gradient above; these are the same hues a shade darker, so a code block
+    /// sits ON the dialog instead of on top of it.
+    /// </summary>
+    private static readonly MarkdownStyle ModalMarkdownStyle = MarkdownStyle.Default with
+    {
+        CodeBackground = new Color(28, 35, 56),
+        CodeForeground = new Color(198, 214, 240),
+        QuoteColor = new Color(150, 170, 205),
+        BorderColor = new Color(78, 94, 130),
+        LinkColor = new Color(130, 180, 255),
+    };
     // Softer warm yellow for "outdated" row foreground — the saturated AccentYellow used to
     // double as both the chart-severity yellow and the row-attention yellow, which made the
     // Project confidence trio fight the Installed table for the user's eye. Desaturated so the
@@ -270,8 +358,10 @@ internal sealed partial class InteractiveConsoleApp
             .Movable(false)
             .Resizable(false)
             .HideTitleButtons()
-            .WithBorderStyle(BorderStyle.Rounded)
-            .WithBorderColor(new Color(70, 88, 116))
+            // Frameless, not None: None keeps a 1-cell invisible frame, this reclaims it. The
+            // shell is maximised and never dragged or resized by hand, so the frame's only job
+            // was to cost two columns and two rows.
+            .WithBorderStyle(BorderStyle.Frameless)
             .WithBackgroundGradient(backgroundGradient, GradientDirection.Vertical)
             .WithAsyncWindowThread(ClockLoopAsync)
             .OnKeyPressed((_, e) => HandleGlobalKey(e))
@@ -501,7 +591,12 @@ internal sealed partial class InteractiveConsoleApp
             case HomeAction.RemoveAll: BuildRemoveAllPage(ws, panel); break;
             case HomeAction.UpdateAll: BuildUpdateAllPage(ws, panel); break;
             case HomeAction.Workspace: BuildSettingsPage(ws, panel); break;
-            case HomeAction.About: BuildAboutPage(panel); break;
+            // Home absorbed About, so the rail has no About item any more. Select Home itself
+            // rather than recursing through NavigateTo, whose no-match fallback lands back here.
+            case HomeAction.About:
+                if (_nav is not null) _nav.SelectedIndex = 0;
+                else BuildHomePage(ws, panel);
+                break;
             default:
                 panel.ClearContents();
                 AddEmptyState(panel, "Not available in this surface.");
@@ -730,6 +825,7 @@ internal sealed partial class InteractiveConsoleApp
             // Left margin so the markdown body isn't flush against the panel edge.
             Margin = new Margin(1, 0, 0, 0),
         };
+        content.MarkdownStyle = ModalMarkdownStyle;
         content.SetMarkdown(heading + markdown);
 
         var scroller = new ScrollablePanelControl
@@ -837,6 +933,7 @@ internal sealed partial class InteractiveConsoleApp
         if (entries is null || entries.Length == 0) return null;
         var builder = Controls.Toolbar()
             .WithSpacing(1)
+            .WithAboveLine(true)
             .WithBelowLine(true);
         foreach (var (label, enabled, onClick) in entries)
         {
@@ -899,6 +996,9 @@ internal sealed partial class InteractiveConsoleApp
         var height = Math.Clamp(SafeConsole(() => Console.WindowHeight, 32) - 6, 14, 34);
 
         var body = Controls.ScrollablePanel().Build();
+        // A cell of breathing room inside the frame: without it the content sits flush against
+        // the rounded border, which reads as cramped at every width.
+        body.Margin = new Margin(ModalBodyPadding, ModalBodyPadding, ModalBodyPadding, 0);
         foreach (var c in contents)
         {
             body.AddControl(c);
@@ -925,19 +1025,20 @@ internal sealed partial class InteractiveConsoleApp
 
         var toolbar = Controls.Toolbar()
             .WithSpacing(2)
-            .WithAlignment(HorizontalAlignment.Center);
+            .WithAlignment(HorizontalAlignment.Right);
         foreach (var (label, onClick) in buttons)
         {
             var captured = onClick;
-            toolbar.AddButton(label, (_, _) => { Close(); captured(); });
+            toolbar.AddButton(StyledModalButton(label, (_, _) => { Close(); captured(); }));
         }
-        toolbar.AddButton("Close", (_, _) => Close());
+        toolbar.AddButton(StyledModalButton("Close", (_, _) => Close()));
 
         modal = new WindowBuilder(ws)
             .WithTitle(title)
             .WithSize(width, height)
             .Centered()
             .AsModal()
+            .WithColors(ModalForeground, ModalSurface)
             .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
             .Minimizable(false)
             .Maximizable(false)
@@ -953,7 +1054,7 @@ internal sealed partial class InteractiveConsoleApp
             })
             .AddControl(body)
             .AddControl(toolbarRule)
-            .AddControl(toolbar.StickyBottom().Build())
+            .AddControl(RightAlignedButtonRow(toolbar.Build()))
             .BuildAndShow();
     }
 
@@ -997,7 +1098,7 @@ internal sealed partial class InteractiveConsoleApp
 
         var toolbar = Controls.Toolbar()
             .WithSpacing(2)
-            .WithAlignment(HorizontalAlignment.Center);
+            .WithAlignment(HorizontalAlignment.Right);
         toolbar.AddButton(confirmLabel, (_, _) => Close(onConfirm));
         toolbar.AddButton("Cancel", (_, _) => Close(onCancel));
 
@@ -1011,7 +1112,10 @@ internal sealed partial class InteractiveConsoleApp
             .WithSize(width, 8)
             .Centered()
             .AsModal()
-            .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
+            .WithColors(ModalForeground, ModalSurface)
+            // Solid, not a gradient: this dialog is eight rows tall and four of them are frame
+            // and buttons, so a vertical gradient has too little height to read as one. The flat
+            // surface the frame already uses is the honest version of the same colour.
             .Minimizable(false)
             .Maximizable(false)
             .WithBorderStyle(BorderStyle.Rounded)
@@ -1024,8 +1128,15 @@ internal sealed partial class InteractiveConsoleApp
                     e.Handled = true;
                 }
             })
-            .AddControl(new MarkupControl(new List<string> { string.Empty, "  " + bodyMarkup }))
-            .AddControl(toolbar.StickyBottom().Build())
+            // Transparent, so the window's gradient shows through. A control painting its own
+            // background erases the gradient the renderer filled in behind it, which on a
+            // gradient dialog reads as a flat block sitting on the text.
+            .AddControl(new MarkupControl(new List<string> { string.Empty, "  " + bodyMarkup })
+            {
+                BackgroundColor = Color.Transparent,
+            })
+            .AddControl(DialogFooterRule())
+            .AddControl(RightAlignedButtonRow(toolbar.Build()))
             .BuildAndShow();
     }
 
@@ -1099,7 +1210,7 @@ internal sealed partial class InteractiveConsoleApp
 
         var toolbar = Controls.Toolbar()
             .WithSpacing(2)
-            .WithAlignment(HorizontalAlignment.Center)
+            .WithAlignment(HorizontalAlignment.Right)
             .AddButton(cancelButton)
             .AddButton(confirmButton);
 
@@ -1125,7 +1236,7 @@ internal sealed partial class InteractiveConsoleApp
             })
             .AddControl(body)
             .AddControl(toolbarRule)
-            .AddControl(toolbar.StickyBottom().Build())
+            .AddControl(RightAlignedButtonRow(toolbar.Build()))
             .BuildAndShow();
 
         // Default focus on Cancel (safe — a reflexive Enter cancels rather than destroys).
@@ -1165,7 +1276,7 @@ internal sealed partial class InteractiveConsoleApp
             }
         });
 
-        var toolbar = Controls.Toolbar().WithSpacing(2).WithAlignment(HorizontalAlignment.Center);
+        var toolbar = Controls.Toolbar().WithSpacing(2).WithAlignment(HorizontalAlignment.Right);
         toolbar.AddButton("Cancel", (_, _) => Close());
 
         modal = new WindowBuilder(ws)
@@ -1173,6 +1284,7 @@ internal sealed partial class InteractiveConsoleApp
             .WithSize(Math.Clamp(values.Length == 0 ? 40 : values.Max(v => v.ToString().Length) + 24, 40, 70), Math.Min(values.Length + 8, 18))
             .Centered()
             .AsModal()
+            .WithColors(ModalForeground, ModalSurface)
             .WithBackgroundGradient(ElevatedModalGradient, GradientDirection.Vertical)
             .Minimizable(false)
             .Maximizable(false)
@@ -1187,7 +1299,8 @@ internal sealed partial class InteractiveConsoleApp
                 }
             })
             .AddControl(list.Build())
-            .AddControl(toolbar.StickyBottom().Build())
+            .AddControl(DialogFooterRule())
+            .AddControl(RightAlignedButtonRow(toolbar.Build()))
             .BuildAndShow();
     }
 

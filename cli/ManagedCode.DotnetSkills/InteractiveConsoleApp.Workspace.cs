@@ -823,31 +823,4 @@ internal sealed partial class InteractiveConsoleApp
     // About
     // -------------------------------------------------------------------------
 
-    private void BuildAboutPage(ScrollablePanelControl panel)
-    {
-        panel.ClearContents();
-        // About is a static metadata page — keep the original PropertyPanel because the
-        // information IS the page (no list/table follows). Identity-strip the title row only.
-        panel.AddControl(BuildPropertyPanel("about", AccentDeepSkyBlue,
-            ("tool", $"{Escape(ToolIdentity.DisplayCommand)}"),
-            ("package", Escape(ToolIdentity.PackageId)),
-            ("version", Escape(ToolVersionInfo.CurrentVersion)),
-            ("build", ToolVersionInfo.IsDevelopmentBuild ? "[grey50]local development[/]" : "[green]published[/]"),
-            ("catalog", $"{Escape(skillCatalog.SourceLabel)} [grey50]({Escape(skillCatalog.CatalogVersion)})[/]"),
-            ("skills", skillCatalog.Skills.Count.ToString()),
-            ("agents", agentCatalog.Agents.Count.ToString())));
-
-        AddInfoBlock(panel, "surface map",
-            "[grey]Home[/] [grey50]session, catalog telemetry, update notice[/]",
-            "[grey]Skills / Installed[/] [grey50]browse, install, update, remove catalog skills[/]",
-            "[grey]Collections / Bundles / Packages[/] [grey50]install grouped surfaces[/]",
-            "[grey]Agents[/] [grey50]install orchestration agents into shared or platform directories[/]",
-            "[grey]Project[/] [grey50]scan .NET and browser UI signals and install recommended skills[/]",
-            "[grey]Analysis[/] [grey50]collection sizes, heaviest skills, package signals[/]");
-
-        AddInfoBlock(panel, "notes",
-            "[grey50]This is the SharpConsoleUI command center. Run with redirected stdin/stdout to get the classic prompt shell instead.[/]",
-            "[grey50]CLI sub-commands (list, install, recommend, …) are unchanged — see[/] [green]dotnet skills help[/][grey50].[/]");
-    }
-
 }

@@ -88,7 +88,6 @@ internal sealed partial class InteractiveConsoleApp
                     Escape(laneGroup.Key),
                     string.Empty,
                     FormatTokenCount(laneSkills.Sum(skill => skill.TokenCount)));
-                laneRow.ForegroundColor = AccentGrey;
 
                 foreach (var skill in laneSkills)
                 {
@@ -260,7 +259,6 @@ internal sealed partial class InteractiveConsoleApp
                     string.Empty, // lanes are grouping headers - no bar
                     FormatTokenCount(lane.TokenCount));
                 laneRow.Tag = new CollectionRowTag(CollectionRowKind.Lane, view, lane);
-                laneRow.ForegroundColor = AccentGrey;
 
                 foreach (var skill in lane.Skills)
                 {
