@@ -6,21 +6,21 @@ directories:
       sha: f14fe335048708c9a45bd31e4b403174e92a02d8
     path: blazingfastdotnet
   - git:
-      commitTitle: 'Merge pull request #1364 from dotnet/dependabot/nuget/eng/skill-validator/src/microsoft-and-system-38d43a4916...'
-      sha: 95e7d0cb7994d47b5789baa68e13f7a2f348b956
+      commitTitle: 'Merge pull request #1351 from dotnet/abhitejjohn-weekly-eval-insights...'
+      sha: 281e39451fb4487b4828d62fcb51ca853589a185
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-17-g281e3945
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Exit with code 1 when @astrojs/check or typescript packages are
-        missing (#18589)...
-      sha: 402c0fae01d251c97298c255804008ff566802f9
+      commitTitle: ClientRouter no longer flashes the top of the page on full reload
+        when scrolled down (#18570)...
+      sha: e71c038f31194280b44515bf53cf449a5313baf9
       tags:
-      - '@astrojs/cloudflare@14.4.4-6-g402c0fae01'
+      - '@astrojs/cloudflare@14.4.4-12-ge71c038f31'
     path: astro
   - git:
       commitTitle: 'Return whole declaration for a bodiless type in get_symbol (Fixes
