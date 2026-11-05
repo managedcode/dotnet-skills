@@ -6,28 +6,26 @@ directories:
       sha: f14fe335048708c9a45bd31e4b403174e92a02d8
     path: blazingfastdotnet
   - git:
-      commitTitle: 'Merge pull request #1351 from dotnet/abhitejjohn-weekly-eval-insights...'
-      sha: 281e39451fb4487b4828d62fcb51ca853589a185
+      commitTitle: Add dotnet breaking changes skill (#1191)...
+      sha: 9837da685079d576feb27f9dd4f87631d3d94107
       tags:
-      - skill-validator-nightly-17-g281e3945
+      - skill-validator-nightly-18-g9837da68
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: ClientRouter no longer flashes the top of the page on full reload
-        when scrolled down (#18570)...
-      sha: e71c038f31194280b44515bf53cf449a5313baf9
+      commitTitle: Update dependency undici to v8 [SECURITY] (#18519)
+      sha: ff1e2fb2f908d637e6b60a293c26db552c88f562
       tags:
-      - '@astrojs/cloudflare@14.4.4-12-ge71c038f31'
+      - '@astrojs/cloudflare@14.4.4-19-gff1e2fb2f9'
     path: astro
   - git:
-      commitTitle: 'Return whole declaration for a bodiless type in get_symbol (Fixes
-        #179) (#181)...'
-      sha: a05fc09c90d3fc847dfe43ec3eac0841f5b96e56
+      commitTitle: 'Reduce test times (Fixes #160) (#184)...'
+      sha: c957312fa3f7d7eed4b14977cb4bdb6b623fb38b
       tags:
-      - 3.0.0-10-ga05fc09
+      - 3.0.0-11-gc957312
     path: roslynk
   path: upstreams
 kind: LockConfig
