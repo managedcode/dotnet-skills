@@ -71,6 +71,15 @@
       "skills": [
         "chous"
       ]
+    },
+    {
+      "source": "https://github.com/vostride/agent-qa",
+      "skills": [
+        "agent-qa-authoring",
+        "agent-qa-debug-fix",
+        "agent-qa-knowledge",
+        "agent-qa-result-triage"
+      ]
     }
   ],
   "documentation": [

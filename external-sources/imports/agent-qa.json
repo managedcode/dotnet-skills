@@ -1,0 +1,34 @@
+{
+  "id": "agent-qa",
+  "repository": "https://github.com/vostride/agent-qa",
+  "sourceRoot": "upstreams/agent-qa",
+  "docsBase": "https://github.com/vostride/agent-qa/tree/main/skills",
+  "docsRoot": "https://github.com/vostride/agent-qa/tree/main",
+  "standaloneVersionFile": "packages/cli/package.json",
+  "titlePrefix": "vostride",
+  "managedPackagePrefix": "agent-qa",
+  "pluginDefaults": {
+    "type": "Testing",
+    "category": "Testing",
+    "compatibility": "Requires Node.js 24+, an initialized agent-qa project with a configured model provider, and a running web target or configured mobile device. Use for browser-facing .NET apps or mobile UI journeys; agent-qa runs through its CLI/MCP surface, not a NuGet test adapter."
+  },
+  "licenseFile": "LICENSE.md",
+  "pluginOverrides": {
+    "agent-qa-authoring": {
+      "package": "agent-qa-authoring",
+      "title": "vostride: agent-qa-authoring"
+    },
+    "agent-qa-debug-fix": {
+      "package": "agent-qa-debug-fix",
+      "title": "vostride: agent-qa-debug-fix"
+    },
+    "agent-qa-knowledge": {
+      "package": "agent-qa-knowledge",
+      "title": "vostride: agent-qa-knowledge"
+    },
+    "agent-qa-result-triage": {
+      "package": "agent-qa-result-triage",
+      "title": "vostride: agent-qa-result-triage"
+    }
+  }
+}

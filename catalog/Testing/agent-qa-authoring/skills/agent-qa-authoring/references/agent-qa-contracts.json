@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "ids": {
+    "instruction": "Never mint or hand-write an ID. IDs are minted host-side where the entity is written; read the id back off the entity card `agent_qa_get_entity` returns.",
+    "contracts": [
+      { "type": "test", "prefix": "t", "prefixWithSeparator": "t_", "words": 10 },
+      { "type": "suite", "prefix": "s", "prefixWithSeparator": "s_", "words": 10 },
+      { "type": "hook", "prefix": "h", "prefixWithSeparator": "h_", "words": 10 },
+      { "type": "observation", "prefix": "obs", "prefixWithSeparator": "obs_", "words": 10 },
+      { "type": "run", "prefix": "r", "prefixWithSeparator": "r_", "words": 10 }
+    ]
+  },
+  "config": {
+    "rootKeys": [
+      "workspace",
+      "services",
+      "knowledge",
+      "registry",
+      "use",
+      "plugins",
+      "analytics",
+      "allowProduction",
+      "eval"
+    ],
+    "mcpFields": ["enabled", "transport", "host", "port", "path"]
+  },
+  "test": {
+    "requiredKeys": ["test-id", "name", "target", "steps"],
+    "optionalKeys": ["context", "use", "meta", "setup", "teardown"]
+  },
+  "suite": {
+    "requiredKeys": ["name", "target", "tests"],
+    "optionalKeys": ["suite-id", "context", "setup", "teardown", "use"],
+    "testEntryKeys": ["test", "id"]
+  },
+  "hooks": {
+    "rootKeys": ["hooks"],
+    "hookKeys": ["id", "name", "runtime", "file", "deps", "packageFile", "timeout", "network"]
+  },
+  "secrets": {
+    "source": "workspace.secretsFile",
+    "marker": "[secret:<name>]",
+    "template": "{{secret:<name>}}",
+    "advice": "Only the values in workspace.secretsFile are masked, and nothing else is. The one exception: the dashboard's model connection check keeps the key or header value it is testing out of the provider's error message. Use temporary, limited test credentials."
+  }
+}
