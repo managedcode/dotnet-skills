@@ -2,32 +2,30 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Fix grammar and typos in documentation...
-      sha: 9098c9afd643de42ed1db5ab5434e21702dd4db6
+      commitTitle: 'Merge pull request #2 from AndrewP-GH/docs/field-perf-tips...'
+      sha: f14fe335048708c9a45bd31e4b403174e92a02d8
     path: blazingfastdotnet
   - git:
-      commitTitle: 'Merge pull request #1338 from dotnet/dependabot/npm_and_yarn/tests/dotnet-test/agent.test-engineer/fixtures/typescript-vitest-cart/vite-8.3.4...'
-      sha: a6bf43ab61967c30919334986515163ab24d7635
+      commitTitle: 'Merge pull request #1372 from dotnet/abhitejjohn-repair-main-ci-drift...'
+      sha: d63a2a78358c7641821b62c5e7a6d36598f6ca79
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-56-gd63a2a78
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: 'fix(astro): allow Node.js >=22.22.0 on StackBlitz WebContainers
-        (#18494)...'
-      sha: 5fe699c888d0423db75cac3f0939409d7eb28e37
+      commitTitle: '[ci] release (#18637)'
+      sha: cd30ae26e00232cad5ae0ad485d0f7c1c257ab8c
       tags:
-      - '@astrojs/check@0.9.12-6-g5fe699c888'
+      - '@astrojs/cloudflare@14.4.6'
     path: astro
   - git:
-      commitTitle: 'Guard read-only queries against a superseded snapshot (Fixes #165)
-        (#168)'
-      sha: b633239d0c506fbe6009fc6b621036f1b12d8041
+      commitTitle: 'Output fewer OTEL traces (Fixes #182) (#185)...'
+      sha: fc9a0b1d3d480e508371b53de4cb884681a5196d
       tags:
-      - 3.0.0-4-gb633239
+      - 3.0.0-12-gfc9a0b1
     path: roslynk
   - git:
       commitTitle: 'release: agent-qa v0.2.3'

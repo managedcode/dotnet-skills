@@ -107,3 +107,39 @@
 }
 
 .credits-block + .credits-block { margin-top: 10px; }
+
+
+/* ---- Services Bridge ---- */
+
+.services-bridge {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  box-shadow: var(--shadow-xs);
+  margin-top: 16px;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.services-bridge__content {
+  display: flex;
+  align-items: center;
+}
+
+.services-bridge__text {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.services-bridge__link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.services-bridge__link:hover {
+  color: var(--accent-hover);
+}

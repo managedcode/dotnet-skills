@@ -24,9 +24,11 @@ This skill focuses on optimizing .NET applications for maximum performance, prov
   - [Contention on shared state](#contention-on-shared-state)
     - [False sharing](#false-sharing)
   - [Safe vectorization (SIMD or SWAR)](#safe-vectorization-simd-or-swar)
+  - [Generic specialization via static abstract members](#generic-specialization-via-static-abstract-members)
 - [ASP.NET Core](#aspnet-core)
 - [Magic knobs to Tune .NET Performance](#magic-knobs-to-tune-net-performance)
 - [NativeAOT-specific tuning](#nativeaot-specific-tuning)
+- [General notes](#general-notes)
 
 # Profiling and Performance Analysis
 
@@ -116,6 +118,8 @@ dotnet-symbol --symbols $PUBLISH_FOLDER/*.so
 
 All other `perf`-related techniques (e.g. c2c, branch profiling, cache misses) can be applied similarly, depending on the performance aspects you want to analyze.
 
+For simple functions, create a self-contained console application that calls the function in an infinite loop. For BenchmarkDotNet, use the in-process toolchain (`-i` or `[InProcess]`) with a long iteration duration and a very large iteration count so it is clear which process to attach `perf` to.
+
 ## Popular low-level problems
 
 - Cache contention and false sharing in multi-threaded code. Fix with per-thread data and padding (see [False sharing](#false-sharing)).
@@ -156,7 +160,7 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - Use [`[LoggerMessage]`](https://learn.microsoft.com/dotnet/core/extensions/logging/source-generation) source-generated logging to avoid template parsing, boxing, and temporary allocations. Still guard expensive argument computation with `IsEnabled`.
 - Use [`[GeneratedRegex]`](https://learn.microsoft.com/dotnet/standard/base-types/regular-expression-source-generators) for compile-time-known patterns instead of runtime pattern compilation. Preserve options, culture, and match timeouts.
 - Prefer optimized bulk APIs over handwritten loops: `Span.CopyTo`, `Clear`, `Fill`, `SequenceEqual`, and `IndexOf` already have specialized implementations, including SIMD where appropriate.
-- Use RVA-backed spans `static ReadOnlySpan<T> RVA => new T[CNS]` for all kinds of immutable data (only primitives, e.g., `long`, `byte`, `char`) - the data will be embedded into metadata, and the JIT will be able to perform constant folding on it.
+- Use RVA-backed spans `static ReadOnlySpan<long> RVA => [1, 2, 3];` for immutable data (only primitives, e.g., `long`, `byte`, `char`) - the data will be embedded into metadata, and the JIT will be able to perform constant folding on it.
 - Prefer static lambdas and state-passing overloads in hot paths to avoid capturing closures.
 - Parse and format UTF-8 directly: numeric `TryParse(ReadOnlySpan<byte>, ...)` and `TryFormat(Span<byte>, ...)` avoid intermediate strings and UTF-8/UTF-16 transcoding. Preserve culture and formatting semantics.
 - Cache `SearchValues<char>` / `SearchValues<byte>` for repeated searches against fixed sets; use `SearchValues<string>` for multi-substring searches. Construction has a cost, so do not create these per call.
@@ -168,8 +172,16 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - Use `static readonly` flags for genuinely immutable process-wide configuration. Optimized JIT code can fold their values and eliminate disabled branches.
 - Cache fields in locals in hot loops (`var items = _items;`). The JIT often can't do it for you: calls and stores through references may modify the field, and the memory model restricts hoisting reads. Locals also enable bounds check elimination for arrays/spans.
 - Consider `Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping` for UTF-8 JSON-only responses ([documentation](https://learn.microsoft.com/dotnet/standard/serialization/system-text-json/character-encoding#serialize-all-characters)). Never embed its raw output in HTML or `<script>`; any custom encoder disables STJ's generated serialization fast path, so benchmark rather than assuming the gains add up.
+- Create `JsonSerializerOptions` once and reuse it (CA1869). A new instance with the same settings still pays a global cache lookup; one that also creates converter instances (`Converters = { new JsonStringEnumConverter() }`) misses that cache, since converters compare by reference, and rebuilds metadata for every type it touches on each call.
 - For most bit/byte manipulations, prefer the built-in `BitOperations`, `BinaryPrimitives`, `BitConverter` or static numeric helpers such as `uint.Log2`, `uint.PopCount`, `uint.TrailingZeroCount`, etc.
 - Span/ReadOnlySpan have a lot of useful extension methods via `MemoryExtensions` such as `SequenceEqual`, `IndexOf`, `IndexOfAnyExcept`, `LastIndexOf`, `StartsWith`, `CommonPrefixLength`, and a lot more - prefer these APIs over manual loops or vectorization.
+- Don't pin benchmarks to a single core - doing so might significantly affect internal VM heuristics (e.g. tiered compilation timing).
+- For BenchmarkDotNet methodology, see the [dotnet/runtime microbenchmark skill](https://github.com/dotnet/runtime/blob/main/.github/skills/microbenchmark/SKILL.md).
+- `AggressiveOptimization` is usually a deoptimization.
+- Overusing `AggressiveInlining` may hurt performance (e.g. by exhausting the inliner's time budget or increasing the number of tracked local variables).
+- Moving rarely taken paths (grow/resize, slow fallback) into a separate method marked with  `[MethodImpl(MethodImplOptions.NoInlining)]` may improve performance (as `List<T>.Add` does with `AddWithResize`), but it may also hinder escape analysis.
+- Don't put too much data into TLS (Thread-Local Storage) - excessive use can lead to increased memory usage and cache pressure, reducing overall performance (there can be a lot of threads, each with its own copy).
+- Consider `CollectionsMarshal.AsSpan(list)` for `List<T>` (there is no `List<T>.AsSpan()`), or `.AsSpan()` on collections that support it, to avoid unnecessary overhead from bound and covariance checks, and to enable span-based algorithms directly on the collection's underlying memory. Don't add or remove list items while the span is in use.
 
 ## Strings and globalization
 
@@ -317,6 +329,116 @@ static bool Equal(ReadOnlySpan<ushort> a, ReadOnlySpan<ushort> b)
 
 More info about vectorization and SIMD in .NET can be found in the [official documentation](https://learn.microsoft.com/en-us/dotnet/standard/simd). Also consider using [TensorPrimitives](https://learn.microsoft.com/dotnet/api/system.numerics.tensors.tensorprimitives).
 
+## Generic specialization via static abstract members
+
+Static abstract interface members let you specialize a generic method for values supplied by struct tags, without duplicating its source code. The JIT generates separate native versions of `Big<C42>` and `Big<C100>`. In optimized code, it can inline the small `Value` getters and fold expressions and branches that use `T.Value`. This works even when `Big<T>` itself is too large to inline; The tradeoff is increased native code size. `T.Value` is not a C# compile-time constant: constant folding depends on JIT optimizations and getter inlining.
+
+```cs
+using System.Runtime.CompilerServices;
+
+interface IConstant {
+    static abstract int Value { get; }
+}
+
+readonly struct C42 : IConstant {
+    public static int Value => 42;
+}
+
+readonly struct C100 : IConstant {
+    public static int Value => 100;
+}
+
+static class Example
+{
+    static int Big<T>(int x) where T : struct, IConstant
+    {
+        int arg = T.Value;
+
+        // The large body would go here.
+
+        return arg == 42 ? x * arg : x + arg;
+    }
+
+    static int Use42(int x) => Big<C42>(x);
+    static int Use100(int x) => Big<C100>(x);
+}
+```
+
+It is also handy for scenarios where you want to leverage different vector sizes or constants in a generic way, allowing the JIT to generate optimized code for each specialization without duplicating the method's source code. Example: summing an array using different vector widths with static abstract members.
+
+```cs
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
+
+class Program
+{
+    static void Main()
+    {
+        int[] values = new int[1003];
+
+        if (Vector128.IsHardwareAccelerated)
+            Console.WriteLine(Sum<Vector128<int>, Ops128>(values));
+        if (Vector256.IsHardwareAccelerated)
+            Console.WriteLine(Sum<Vector256<int>, Ops256>(values));
+        if (Vector512.IsHardwareAccelerated) 
+            Console.WriteLine(Sum<Vector512<int>, Ops512>(values));
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    static int Sum<V, TOps>(ReadOnlySpan<int> s)
+        where V : struct
+        where TOps : struct, IOps<V>
+    {
+        V acc = default;
+        int count = TOps.Count;
+
+        while (s.Length >= count)
+        {
+            acc = TOps.Add(acc, TOps.Load(s));
+            s = s.Slice(count);
+        }
+
+        int sum = TOps.Sum(acc);
+        foreach (int x in s) sum = unchecked(sum + x);
+        return sum;
+    }
+}
+
+
+interface IOps<V> where V : struct
+{
+    static abstract int Count { get; }
+    static abstract V Load(ReadOnlySpan<int> s);
+    static abstract V Add(V a, V b);
+    static abstract int Sum(V v);
+}
+
+readonly struct Ops128 : IOps<Vector128<int>>
+{
+    public static int Count => Vector128<int>.Count;
+    public static Vector128<int> Load(ReadOnlySpan<int> s) => Vector128.Create(s);
+    public static Vector128<int> Add(Vector128<int> a, Vector128<int> b) => a + b;
+    public static int Sum(Vector128<int> v) => Vector128.Sum(v);
+}
+
+readonly struct Ops256 : IOps<Vector256<int>>
+{
+    public static int Count => Vector256<int>.Count;
+    public static Vector256<int> Load(ReadOnlySpan<int> s) => Vector256.Create(s);
+    public static Vector256<int> Add(Vector256<int> a, Vector256<int> b) => a + b;
+    public static int Sum(Vector256<int> v) => Vector256.Sum(v);
+}
+
+readonly struct Ops512 : IOps<Vector512<int>>
+{
+    public static int Count => Vector512<int>.Count;
+    public static Vector512<int> Load(ReadOnlySpan<int> s) => Vector512.Create(s);
+    public static Vector512<int> Add(Vector512<int> a, Vector512<int> b) => a + b;
+    public static int Sum(Vector512<int> v) => Vector512.Sum(v);
+}
+```
+
 # ASP.NET Core
 
 Code-level advice for HTTP throughput benchmarks.
@@ -329,6 +451,8 @@ Code-level advice for HTTP throughput benchmarks.
 
 > [!WARNING]
 > It is highly recommended to keep the default settings unless you have measured and understood the performance implications of changing them. 
+
+Most of these knobs are relevant only for server workloads or performance-critical scenarios. They're not applicable for general-purpose libraries.
 
 ⭐ - known to have a visible impact on performance (typically, in synthetic benchmarks).
 
@@ -362,3 +486,7 @@ Recommended reading: Microsoft's [Optimizing AOT deployments](https://learn.micr
 ```sh
 dotnet publish -c Release -r linux-arm64 -p:PublishAot=true -p:OptimizationPreference=Speed -p:IlcInstructionSet=native
 ```
+
+# General notes
+
+- Consider filing a [dotnet/runtime](https://github.com/dotnet/runtime/issues) issue only for a clear, reproducible missed optimization in the JIT or libraries with meaningful measured impact. Check for duplicates, include a minimal repro and measurements, and obtain the user's approval before filing.

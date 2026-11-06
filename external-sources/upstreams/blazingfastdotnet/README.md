@@ -15,6 +15,20 @@ the actual bottleneck, apply one change at a time, and keep only changes with a 
 > [!NOTE]
 > This is not an official Microsoft guide or documentation. Use at your own discretion and always measure performance changes.
 
+## Bonus prompt: inspecting a library for safety issues
+
+In order to inspect a library for safety issues / code quality, consider the following prompt:
+
+```
+Inspect the current codebase for issues listed in https://raw.githubusercontent.com/dotnet/docs/refs/heads/main/docs/standard/unsafe-code/best-practices.md
+
+Do not attempt to make minimal reproductions or fixes. Focus on identifying potential safety and code quality issues.
+Report two groups: 1) correctness issues, 2) anti-patterns
+```
+
+The link points to a raw Markdown version of [this article](https://learn.microsoft.com/en-us/dotnet/standard/unsafe-code/best-practices).
+The `Do not attempt to make minimal reproductions` instruction is intended to prevent the model from creating a repro and triggering cybersecurity safeguards.
+
 ## Not welcome in this doc
 
 - Anything that requires an `unsafe` context, under either the unsafe-v1 or the unsafe-v2 rules.
