@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "category": "Testing",
   "compatibility": "Requires a .NET test project or solution.",
   "package_prefix": "MSTest"
