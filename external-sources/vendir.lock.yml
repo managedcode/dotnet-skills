@@ -6,26 +6,26 @@ directories:
       sha: f14fe335048708c9a45bd31e4b403174e92a02d8
     path: blazingfastdotnet
   - git:
-      commitTitle: Add dotnet breaking changes skill (#1191)...
-      sha: 9837da685079d576feb27f9dd4f87631d3d94107
+      commitTitle: 'Merge pull request #1372 from dotnet/abhitejjohn-repair-main-ci-drift...'
+      sha: d63a2a78358c7641821b62c5e7a6d36598f6ca79
       tags:
-      - skill-validator-nightly-18-g9837da68
+      - skill-validator-nightly-56-gd63a2a78
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Update dependency undici to v8 [SECURITY] (#18519)
-      sha: ff1e2fb2f908d637e6b60a293c26db552c88f562
+      commitTitle: '[ci] release (#18637)'
+      sha: cd30ae26e00232cad5ae0ad485d0f7c1c257ab8c
       tags:
-      - '@astrojs/cloudflare@14.4.4-19-gff1e2fb2f9'
+      - '@astrojs/cloudflare@14.4.6'
     path: astro
   - git:
-      commitTitle: 'Reduce test times (Fixes #160) (#184)...'
-      sha: c957312fa3f7d7eed4b14977cb4bdb6b623fb38b
+      commitTitle: 'Output fewer OTEL traces (Fixes #182) (#185)...'
+      sha: fc9a0b1d3d480e508371b53de4cb884681a5196d
       tags:
-      - 3.0.0-11-gc957312
+      - 3.0.0-12-gfc9a0b1
     path: roslynk
   path: upstreams
 kind: LockConfig
