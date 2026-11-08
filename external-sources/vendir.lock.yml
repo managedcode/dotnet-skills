@@ -2,14 +2,14 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'Merge pull request #2 from AndrewP-GH/docs/field-perf-tips...'
-      sha: f14fe335048708c9a45bd31e4b403174e92a02d8
+      commitTitle: Add performance guidance...
+      sha: 4db7538af8cfac1e97d4d6ccfb7fdea2086b0274
     path: blazingfastdotnet
   - git:
       commitTitle: Add find-repeated-build-work skill to dotnet-msbuild (#1311)
       sha: 96c3d68dad2855e3ab5178aa1a262789d86a1466
       tags:
-      - skill-validator-nightly-2-g96c3d68d
+      - skill-validator-nightly
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...

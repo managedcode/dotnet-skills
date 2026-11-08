@@ -182,6 +182,7 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - Moving rarely taken paths (grow/resize, slow fallback) into a separate method marked with  `[MethodImpl(MethodImplOptions.NoInlining)]` may improve performance (as `List<T>.Add` does with `AddWithResize`), but it may also hinder escape analysis.
 - Don't put too much data into TLS (Thread-Local Storage) - excessive use can lead to increased memory usage and cache pressure, reducing overall performance (there can be a lot of threads, each with its own copy).
 - Consider `CollectionsMarshal.AsSpan(list)` for `List<T>` (there is no `List<T>.AsSpan()`), or `.AsSpan()` on collections that support it, to avoid unnecessary overhead from bound and covariance checks, and to enable span-based algorithms directly on the collection's underlying memory. Don't add or remove list items while the span is in use.
+- Prefer XXH3 via Microsoft's `System.IO.Hashing.XxHash3` for fast fingerprinting of large blobs. Use `XxHash128` when 128-bit fingerprints are needed. For exact deduplication, verify matches byte for byte. Use cryptographic hashes when security requires them. NOTE: Be careful with data that may contain garbage or uninitialized bytes (e.g. arrays of structs with padding).
 
 ## Strings and globalization
 
@@ -469,6 +470,8 @@ Most of these knobs are relevant only for server workloads or performance-critic
 | `DOTNET_TC_CallCountingDelayMs` | `100` ms; longer on a single processor | `0` | Only for short-lived console tools where JIT warmup takes too long: remove the tiering delay while retaining the normal call-count threshold. Can increase compilation work early in execution. |
 | `DOTNET_TieredCompilation` | `1` | `0` | Alternative for short-lived console tools where JIT warmup takes too long: disable tiering and JIT optimized code on first use. Removes tiered warmup but disables dynamic PGO and can increase initial JIT cost. |
 
+Using NativeAOT or disabling tiered compilation via `DOTNET_TC_CallCountingDelayMs=0`/`DOTNET_TieredPGO=0`/`DOTNET_TieredCompilation=0` may significantly improve performance for short-lived console tools or benchmarks that measure the entire process rather than just steady-state execution.
+
 # NativeAOT-specific tuning
 
 Recommended reading: Microsoft's [Optimizing AOT deployments](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/optimizing) article, plus the runtime's [CPU instruction-set tuning guide](https://github.com/dotnet/runtime/blob/9da219572c1/src/coreclr/nativeaot/docs/optimizing.md). The latter describes implementation-specific options that can change between SDK versions.
@@ -490,3 +493,5 @@ dotnet publish -c Release -r linux-arm64 -p:PublishAot=true -p:OptimizationPrefe
 # General notes
 
 - Consider filing a [dotnet/runtime](https://github.com/dotnet/runtime/issues) issue only for a clear, reproducible missed optimization in the JIT or libraries with meaningful measured impact. Check for duplicates, include a minimal repro and measurements, and obtain the user's approval before filing.
+- Compare equivalent execution plans before blaming the language. Consider pairwise comparisons, stronger filtering, and verification requirements before tuning code generation.
+- Don't draw conclusions about workloads from tiny synthetic benchmark results.
