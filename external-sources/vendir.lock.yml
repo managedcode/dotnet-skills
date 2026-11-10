@@ -16,11 +16,11 @@ directories:
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Add astro-vscode changeset to publish organize-imports fix to the
-        VS Code Marketplace (#18649)...
-      sha: 39ede5f061297fdda7af945aa8e576f625ab5152
+      commitTitle: Log mid-stream page errors through the configured logger instead
+        of console.error (#18688)...
+      sha: 1999c842f8c9e2cd577207550359941f6a2e5691
       tags:
-      - '@astrojs/cloudflare@14.4.6-7-g39ede5f061'
+      - '@astrojs/react@7.1.5-9-g1999c842f8'
     path: astro
   - git:
       commitTitle: 'Make the code-action analyzer budget configurable and raise it
