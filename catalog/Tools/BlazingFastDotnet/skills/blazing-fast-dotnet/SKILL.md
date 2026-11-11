@@ -21,11 +21,17 @@ This skill focuses on optimizing .NET applications for maximum performance, prov
 - [Best practices for high-performance C# code](#best-practices-for-high-performance-c-code)
   - [Quick tips](#quick-tips)
   - [Strings and globalization](#strings-and-globalization)
+  - [Thread pool starvation](#thread-pool-starvation)
   - [Contention on shared state](#contention-on-shared-state)
     - [False sharing](#false-sharing)
   - [Safe vectorization (SIMD or SWAR)](#safe-vectorization-simd-or-swar)
   - [Generic specialization via static abstract members](#generic-specialization-via-static-abstract-members)
 - [ASP.NET Core](#aspnet-core)
+  - [Hosting and logging](#hosting-and-logging)
+  - [JSON and response writing](#json-and-response-writing)
+  - [Routing and middleware](#routing-and-middleware)
+  - [Kestrel socket transport](#kestrel-socket-transport)
+  - [Beyond benchmarks](#beyond-benchmarks)
 - [Magic knobs to Tune .NET Performance](#magic-knobs-to-tune-net-performance)
 - [NativeAOT-specific tuning](#nativeaot-specific-tuning)
 - [General notes](#general-notes)
@@ -38,6 +44,7 @@ Install the tools with:
 ```sh
 dotnet tool install -g dotnet-counters
 dotnet tool install -g dotnet-trace
+dotnet tool install -g dotnet-stack
 dotnet tool install -g dotnet-symbol
 ```
 
@@ -51,7 +58,15 @@ dotnet-counters monitor -p <pid> --counters System.Runtime,Microsoft.AspNetCore.
 dotnet-counters collect -p <pid> --format csv -o counters.csv      # save for post-processing
 ```
 
-See the `System.Runtime` [built-in metrics](https://learn.microsoft.com/dotnet/core/diagnostics/built-in-metrics-runtime) (.NET 9+) for what each counter means.
+See the `System.Runtime` [built-in metrics](https://learn.microsoft.com/dotnet/core/diagnostics/built-in-metrics-runtime) (.NET 9+) for what each counter means. Typical readings:
+
+| Symptom | Counters | Next step |
+| --- | --- | --- |
+| Low CPU, rising latency | `dotnet.thread_pool.queue.length` grows, `dotnet.thread_pool.thread.count` keeps creeping up | [Thread pool starvation](#thread-pool-starvation) |
+| Throughput doesn't scale with cores | `dotnet.monitor.lock_contentions` rate | `dotnet-trace --clrevents contention`, [Contention on shared state](#contention-on-shared-state) |
+| High CPU, much of it in GC | `dotnet.gc.pause.time`, `dotnet.gc.collections` (gen2 share), `dotnet.gc.heap.total_allocated` rate | [Allocations and GC](#allocations-and-gc) |
+| Unexplained slow requests | `dotnet.exceptions` rate | `dotnet-trace --clrevents exception` |
+| Numbers still drifting | `dotnet.jit.compiled_methods` still growing | Not at steady state yet: warm up longer |
 
 ## dotnet-trace
 
@@ -61,6 +76,7 @@ See the `System.Runtime` [built-in metrics](https://learn.microsoft.com/dotnet/c
 dotnet-trace collect -p <pid> --duration 00:00:00:10    # default profiles: dotnet-common + dotnet-sampled-thread-time
 dotnet-trace collect -p <pid> --profile gc-verbose      # GCs + sampled allocations: which types/stacks allocate
 dotnet-trace collect -p <pid> --clrevents contention    # lock contention events with stacks
+dotnet-trace collect -p <pid> --providers Microsoft-Windows-DotNETRuntime:0x80000000000:4  # .NET 10+: randomized allocation sampling, cheaper than gc-verbose
 dotnet-trace collect -- ./MyApp arg1                    # trace from startup
 dotnet-trace list-profiles
 
@@ -68,6 +84,8 @@ dotnet-trace report trace.nettrace topN -n 20           # top methods (exclusive
 dotnet-trace report trace.nettrace topN -n 20 --inclusive
 dotnet-trace convert trace.nettrace --format Speedscope # open in https://www.speedscope.app
 ```
+
+On Linux with kernel 6.4+ and root, `dotnet-trace collect-linux` (.NET 10+) records native, kernel and managed frames in one trace without the `perf` setup below.
 
 For more tips on using `dotnet-trace`, refer to the [dotnet-trace collection skill](https://raw.githubusercontent.com/dotnet/skills/refs/heads/main/plugins/dotnet-diag/skills/dotnet-trace-collect/SKILL.md).
 
@@ -83,6 +101,8 @@ DOTNET_PerfMapStubGranularity=3
 DOTNET_JitFramed=1
 DOTNET_EnableWriteXorExecute=0
 ```
+
+`DOTNET_PerfMapEnabled` has an overhead of its own: set it for the profiling run only, not for the runs you take throughput numbers from.
 
 What to profile depends on the scenario. Typically it's steady-state performance, so wait until the process is properly warmed up (e.g. 1 minute), then attach and collect traces:
 
@@ -148,6 +168,7 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - A method is compiled several times as it tiers up. Judge the last version: header `; Tier1 code` (or `; Tier1-OSR code` / `; FullOpts code`), ideally with `; optimized using Dynamic PGO`. `; Tier0 code` and `; Instrumented Tier0 code` are unoptimized.
 - BCL methods precompiled with ReadyToRun show up only once they get hot and are re-jitted at Tier1.
 - NativeAOT: pass the same options to ILC, e.g. `<IlcArg Include="--codegenopt:JitDisasm=Test" />` and `<IlcArg Include="--codegenopt:JitStdOutFile=jit.txt" />`.
+- Inlining decisions: `DOTNET_JitPrintInlinedMethods` needs a Checked JIT. On the Release runtime, collect the `MethodJitInliningSucceeded`/`MethodJitInliningFailed` events (with the reason) via `dotnet-trace collect --providers Microsoft-Windows-DotNETRuntime:0x1000:5`.
 
 # Best practices for high-performance C# code
 
@@ -183,6 +204,11 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - Don't put too much data into TLS (Thread-Local Storage) - excessive use can lead to increased memory usage and cache pressure, reducing overall performance (there can be a lot of threads, each with its own copy).
 - Consider `CollectionsMarshal.AsSpan(list)` for `List<T>` (there is no `List<T>.AsSpan()`), or `.AsSpan()` on collections that support it, to avoid unnecessary overhead from bound and covariance checks, and to enable span-based algorithms directly on the collection's underlying memory. Don't add or remove list items while the span is in use.
 - Prefer XXH3 via Microsoft's `System.IO.Hashing.XxHash3` for fast fingerprinting of large blobs. Use `XxHash128` when 128-bit fingerprints are needed. For exact deduplication, verify matches byte for byte. Use cryptographic hashes when security requires them. NOTE: Be careful with data that may contain garbage or uninitialized bytes (e.g. arrays of structs with padding).
+- Split without allocating: `foreach (Range r in span.Split(','))` (.NET 9+) or `span.Split(destinationRanges, ',')`, instead of `string.Split` plus `Substring`.
+- Use `System.Threading.Lock` (.NET 9+) rather than `object` for new `lock` targets.
+- For tiny loop bodies, `Parallel.For` pays a delegate call per element. Iterate ranges instead: `Parallel.ForEach(Partitioner.Create(0, n), range => { for (int i = range.Item1; i < range.Item2; i++) ... })`.
+- `Console.Out` flushes after every write. For heavy output, write through one buffered `Stream`/`StreamWriter` over `Console.OpenStandardOutput()` and flush once at the end.
+- To read a large file from several threads, use `File.OpenHandle` + `RandomAccess.Read(handle, buffer, fileOffset)`: offset-based, thread-safe, no shared position and no `FileStream` buffering layer.
 
 ## Strings and globalization
 
@@ -193,6 +219,17 @@ DOTNET_JitDisasmOnlyOptimized=1    # show only Tier-1/FullOpts code
 - `Dictionary<string, T>` / `HashSet<string>` use fast non-randomized hashing only with the default comparer, `StringComparer.Ordinal` or `StringComparer.OrdinalIgnoreCase` (falling back to randomized hashing only on heavy collisions). Any other comparer loses it.
 - Stay in UTF-8 when input and output are UTF-8: search, parse and format `ReadOnlySpan<byte>` directly (`u8` literals, `SearchValues<byte>`, `TryParse`/`TryFormat` on bytes, `Utf8.TryWrite`) and convert to `string` only when needed.
 - If the app needs no culture data, `<InvariantGlobalization>true</InvariantGlobalization>` removes the ICU dependency (faster startup, less memory) and makes culture-sensitive string operations ordinal. This changes behavior, so verify the output.
+
+## Thread pool starvation
+
+Symptoms: low CPU and rising latency while `dotnet.thread_pool.queue.length` grows and `dotnet.thread_pool.thread.count` creeps up (beyond the minimum, the pool adds threads slowly). The cause is pool threads blocked instead of running work: sync-over-async (`.Result`, `.Wait()`, `GetAwaiter().GetResult()`), synchronous I/O, or locks held across slow operations.
+
+```sh
+dotnet-stack report -p <pid>   # all managed stacks: many threads parked in the same Wait/GetResult frame is the culprit
+dotnet-trace collect -p <pid> --providers Microsoft-Windows-DotNETRuntime:0x40000000000:5  # .NET 9+: wait events with stacks
+```
+
+The fix is to make the blocked path async end to end; wrapping it in `Task.Run` only moves the blocked thread. As a stopgap, raise the minimum worker count with `ThreadPool.SetMinThreads` or `DOTNET_ThreadPool_ForceMinWorkerThreads` (see the knobs table).
 
 ## Contention on shared state
 
@@ -328,7 +365,7 @@ static bool Equal(ReadOnlySpan<ushort> a, ReadOnlySpan<ushort> b)
 > [!TIP]
 > This only illustrates the loop shape. For this exact task, just call `a.SequenceEqual(b)`.
 
-More info about vectorization and SIMD in .NET can be found in the [official documentation](https://learn.microsoft.com/en-us/dotnet/standard/simd). Also consider using [TensorPrimitives](https://learn.microsoft.com/dotnet/api/system.numerics.tensors.tensorprimitives).
+More info about vectorization and SIMD in .NET can be found in the [official documentation](https://learn.microsoft.com/en-us/dotnet/standard/simd). Also consider using [TensorPrimitives](https://learn.microsoft.com/dotnet/api/system.numerics.tensors.tensorprimitives). The [dotnet/runtime vectorization skill](https://github.com/dotnet/runtime/blob/main/.github/skills/vectorization/SKILL.md) has authoring and testing checklists (remainder handling, running with `DOTNET_EnableAVX2=0` / `DOTNET_EnableHWIntrinsic=0` to cover every path); the `unsafe` load/store variants it mentions are out of scope here.
 
 ## Generic specialization via static abstract members
 
@@ -442,11 +479,44 @@ readonly struct Ops512 : IOps<Vector512<int>>
 
 # ASP.NET Core
 
-Code-level advice for HTTP throughput benchmarks.
+Code-level advice for HTTP throughput benchmarks. To run the TechEmpower apps against a locally built runtime, see the [dotnet/runtime aspnet-benchmark skill](https://github.com/dotnet/runtime/blob/main/.github/skills/aspnet-benchmark/SKILL.md).
 
-- Start from `WebApplication.CreateSlimBuilder(args)` (or `CreateEmptyBuilder` + `builder.WebHost.UseKestrelCore()`) and add only what's needed. Every middleware component (HTTPS redirection, auth, CORS, response compression, static files, developer exception page) costs something per request.
-- Logging: without an `appsettings.json` that raises `Microsoft.AspNetCore` to `Warning`, the default level is `Information` and the host logs every request to the console - a massive bottleneck. Call `builder.Logging.ClearProviders()` or raise the level.
+## Hosting and logging
+
+- Start from `WebApplication.CreateSlimBuilder(args)` (or `CreateEmptyBuilder` + `builder.WebHost.UseKestrelCore()`) and add only what's needed. Every middleware component (HTTPS redirection, auth, CORS, response compression, static files, developer exception page) costs something per request. The slim builder drops HTTPS configuration, HTTP/3, regex route constraints, IIS integration and hosting startup assemblies, but still reads `appsettings.json` and still adds a console logger.
+- Logging: without an `appsettings.json` that raises `Microsoft.AspNetCore` to `Warning`, the default level is `Information` and the host logs every request to the console - a massive bottleneck. Raising the level removes the log writes, but while any provider is registered the host still creates an `Activity` and a logging scope per request; `builder.Logging.ClearProviders()` removes those too.
+- Measure in the `Production` environment. `Development` turns on DI `ValidateScopes`/`ValidateOnBuild`, and `dotnet run` picks it up from `launchSettings.json`: run the published output, or `dotnet run -c Release --no-launch-profile`.
+
+## JSON and response writing
+
 - JSON: register source-generated metadata with `builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonContext.Default));`. For hand-written responses, serialize with a reused `Utf8JsonWriter` (`writer.Reset(response.BodyWriter)`) instead of allocating one per request.
+- Make response DTOs `sealed` (or structs). A minimal API handler returning a sealed `T` gets a direct serialization path chosen once when the endpoint is built; for a non-sealed class the framework calls `GetType()` on every response and falls back to serializing as `object` when the runtime type differs.
+- On the hottest endpoints return `T` itself. `TypedResults.Ok(value)` and `Results.Json(value)` do a type-info lookup and a `GetType()` check per call even for sealed types.
+- `WriteAsJsonAsync` never sets `Content-Length`, and Kestrel only fills it in for empty bodies, so HTTP/1.1 responses go out chunked. When the exact size is known up front, set `Response.ContentLength` (a mismatch is an error).
+- Static payloads: keep a pre-encoded `static readonly byte[]`, set `ContentLength`, write once. `Results.Text(utf8Span, ...)` copies the span into a new array on each call; the result object is immutable, so create it once in a static field. Don't pass `statusCode` to it on hot paths: that resolves `ILoggerFactory` and creates a logger per request.
+- Set headers through the typed properties (`response.Headers.ContentType = ...`, analyzer ASP0015): on Kestrel they are direct field writes, while the string indexer goes through a name lookup.
+
+## Routing and middleware
+
+- A handler that is a plain `RequestDelegate` (`app.MapGet("/x", (HttpContext ctx) => ...)` returning `Task`) bypasses parameter binding and the generated request delegate entirely. If such a lambda returns `Task<T>`, the value is silently discarded (analyzer ASP0016).
+- Inline middleware: use `app.Use(async (context, next) => { ...; await next(context); })`. The `next()` form (`Func<Task>`) allocates a closure per request.
+- Prefer convention-based middleware classes (constructed once) over `IMiddleware`, which is resolved from DI and released on every request.
+- `.ShortCircuit()` on an endpoint (or `app.MapShortCircuit(404, "favicon.ico")`) runs it inside the routing middleware and skips the rest of the pipeline. It throws if the endpoint has auth, CORS or antiforgery metadata.
+- Avoid `IHttpContextAccessor` in hot services: once registered (ASP.NET Core Identity does it for you), an `AsyncLocal` is set on every request. Pass `HttpContext` explicitly.
+
+## Kestrel socket transport
+
+Configure with `builder.WebHost.UseSockets(o => ...)`:
+
+- `WaitForDataBeforeAllocatingBuffer = false` trades memory per idle connection for throughput.
+- `IOQueueCount` sets the number of I/O queues that socket continuations are scheduled on (default is based on the processor count); `0` schedules them directly on the thread pool.
+
+## Beyond benchmarks
+
+- Output caching (`AddOutputCache`, `.CacheOutput()`): the default policy caches only unauthenticated `GET`/`HEAD` 200 responses without `Set-Cookie`.
+- Serve static files with `MapStaticAssets` rather than `UseStaticFiles`: precompressed variants and ETags are computed at build time.
+- Response compression is CPU per request and is off for HTTPS by default; prefer precompressed assets or the reverse proxy.
+- `-p:EnableRequestDelegateGenerator=true` moves minimal API handler codegen from startup to build time (startup win; on by default with `PublishAot` or `PublishTrimmed`).
 
 # Magic knobs to Tune .NET Performance
 
@@ -457,9 +527,12 @@ Most of these knobs are relevant only for server workloads or performance-critic
 
 ⭐ - known to have a visible impact on performance (typically, in synthetic benchmarks).
 
+> [!NOTE]
+> Numeric `DOTNET_*` values are parsed as **hexadecimal** unless a row says otherwise: `DOTNET_GCHeapCount=16` means 22. Most knobs also have a `runtimeconfig.json`/MSBuild form that takes decimal values (`System.GC.HeapCount`, `System.Threading.ThreadPool.MinThreads`, `<ServerGarbageCollector>`, `<TieredPGO>`). All of them are read once at startup.
+
 | Environment variable (CoreCLR Release, .NET 10.0+) | Default | Values to try | Purpose and trade-offs |
 | --- | --- | --- | --- |
-| ⭐`DOTNET_SYSTEM_NET_SOCKETS_INLINE_COMPLETIONS` | `0` | `1` | Run I/O continuations directly on poller threads instead of dispatching them to workers - beneficial for workloads with many small requests. ⚠️ Blocking or lengthy continuations can stall I/O ⚠️ |
+| ⭐`DOTNET_SYSTEM_NET_SOCKETS_INLINE_COMPLETIONS` | `0` | `1` | Run I/O continuations directly on poller threads instead of dispatching them to workers - beneficial for workloads with many small requests. ⚠️ Blocking or lengthy continuations can stall I/O ⚠️ Kestrel still dispatches application code to the thread pool unless its `SocketTransportOptions.UnsafePreferInlineScheduling` is also set, which then runs request handlers on the I/O threads. |
 | ⭐`DOTNET_ThreadPool_UnfairSemaphoreSpinLimit` | `70` in .NET 10.0; `1024` in current .NET 11.0 | `0`, `0x400`, `0xC00` | Trade worker wake latency against CPU spent spinning. `0` might be useful as a mitigation for high CPU usage (especially on arm64) at the cost of throughput. Large values might improve synthetic benchmark performance. |
 | ⭐`DOTNET_GCDynamicAdaptationMode` | `1` | `0` | Disable DATAS for server GC. Can improve throughput at the expense of memory; compare against tuning DATAS (e.g. `DOTNET_GCDGen0GrowthPercent`) rather than disabling it. |
 | ⭐`DOTNET_HillClimbing_Disable` | `0` | `1` | Disable ThreadPool hill climbing (improves time to steady state). |
@@ -467,6 +540,9 @@ Most of these knobs are relevant only for server workloads or performance-critic
 | `DOTNET_gcServer` | varies by environment | `1` | Typically enabled by default for server workloads. Might improve the performance of desktop/console tools. |
 | `DOTNET_GCDTargetTCP` | Effective target `2%` (configuration `0`) | `1` | Lower DATAS's target throughput-cost percentage. Encourages more heaps when GC cost exceeds the target. Only relevant with DATAS enabled. |
 | `DOTNET_GCDGen0GrowthPercent` | Effective multiplier `100%` (configuration `0`) | `0xC8` | Scale DATAS's gen0 budget multiplier to 200% of its default. Trades memory for potentially fewer collections. Only relevant with DATAS enabled. |
+| `DOTNET_GCHeapAffinitizeMask`, `DOTNET_GCNoAffinitize` | GC threads affinitized to all cores | A core mask, or `1` | Keep server GC threads on a subset of cores, or let them float, when the process doesn't own the whole machine. |
+| `DOTNET_MaxVectorTBitWidth` | Automatic (`Vector<T>` is at most 256-bit) | `512` | Allow 512-bit `Vector<T>`. Decimal. |
+| `DOTNET_ThreadPool_ForceMinWorkerThreads` | Processor count | e.g. `0x40` | Minimum worker threads created without delay. A stopgap for [thread pool starvation](#thread-pool-starvation) or bursty blocking work. |
 | `DOTNET_TC_CallCountingDelayMs` | `100` ms; longer on a single processor | `0` | Only for short-lived console tools where JIT warmup takes too long: remove the tiering delay while retaining the normal call-count threshold. Can increase compilation work early in execution. |
 | `DOTNET_TieredCompilation` | `1` | `0` | Alternative for short-lived console tools where JIT warmup takes too long: disable tiering and JIT optimized code on first use. Removes tiered warmup but disables dynamic PGO and can increase initial JIT cost. |
 
@@ -481,9 +557,11 @@ Recommended reading: Microsoft's [Optimizing AOT deployments](https://learn.micr
 
 | MSBuild setting | Purpose and trade-offs |
 | --- | --- |
-| `-p:OptimizationPreference=Speed` | Optimize for execution time (`--Ot`) instead of the default size/speed balance. A good throughput experiment, but can increase executable size and instruction-cache pressure. |
+| `-p:OptimizationPreference=Speed` | Optimize for execution time (`--Ot`) instead of the default size/speed balance. A good throughput experiment, but can increase executable size and instruction-cache pressure. Also applies the framework's static PGO data (`IlcPgoOptimize`). |
 | `-p:OptimizationPreference=Size` | Optimize for executable size (`--Os`). Useful when distribution size or memory footprint matters more than peak throughput; measure the speed trade-off. |
 | `-p:IlcInstructionSet=native` | Target instruction sets supported by the build machine's CPU. Useful for local benchmarks or homogeneous deployments; no cross-architecture compilation support, and the executable may not run on older CPUs. Use an explicit instruction-set baseline for heterogeneous deployments. |
+| `-p:IlcInstructionSet=x86-64-v3` | The x64 equivalent: raise the baseline to AVX2-class CPUs (`x86-64-v4` adds AVX-512). The executable refuses to start on older CPUs. |
+| `-p:IlcMaxVectorTBitWidth=512` | Widen `Vector<T>` (needs a matching instruction set). The compile-time counterpart of `DOTNET_MaxVectorTBitWidth`. |
 | `-p:IlcInstructionSet=armv8.1-a` | If `IlcInstructionSet=native` is not acceptable for you, consider explicitly raising the baseline from ARMv8.0-A to ARMv8.1-A to include LSE (crucial for atomics-heavy workloads). |
 
 ```sh

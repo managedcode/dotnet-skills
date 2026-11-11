@@ -1,5 +1,5 @@
 {
-  "version": "7.4.8",
+  "version": "7.4.10",
   "category": "Web",
   "compatibility": "Requires the withastro/astro monorepo."
 }
