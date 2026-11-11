@@ -1,0 +1,9 @@
+{
+  "name": "agent-qa-result-triage",
+  "title": "vostride: agent-qa-result-triage",
+  "description": "Use when investigating failed agent-qa runs, inspecting artifacts, classifying failures, or comparing recent runs. Prefer agent-qa MCP run/artifact tools and produce evidence-backed triage.",
+  "links": {
+    "repository": "https://github.com/vostride/agent-qa",
+    "docs": "https://github.com/vostride/agent-qa/tree/main/skills/agent-qa-result-triage"
+  }
+}
