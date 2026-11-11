@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Add performance guidance...
-      sha: 4db7538af8cfac1e97d4d6ccfb7fdea2086b0274
+      commitTitle: a couple of improvements
+      sha: 9e31a42c2bef8e82d8c7f66c69676bd66eae50ff
     path: blazingfastdotnet
   - git:
       commitTitle: Add find-repeated-build-work skill to dotnet-msbuild (#1311)
@@ -16,18 +16,18 @@ directories:
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Log mid-stream page errors through the configured logger instead
-        of console.error (#18688)...
-      sha: 1999c842f8c9e2cd577207550359941f6a2e5691
+      commitTitle: Fix MDX optimize emptying nested script/style and mis-casing SVG
+        attributes (#18698)...
+      sha: d13beeb66c753f03cbdbf4509cf2c527c816f1a4
       tags:
-      - '@astrojs/react@7.1.5-9-g1999c842f8'
+      - '@astrojs/cloudflare@14.4.7-2-gd13beeb66c'
     path: astro
   - git:
-      commitTitle: 'Make the code-action analyzer budget configurable and raise it
-        for tests (Fixes #190) (#195)'
-      sha: 8e147947b93b00b0674858a32a698338b397945b
+      commitTitle: 'Store Diagnostics cache in a SolutionSnapshot with Roslyn Solution
+        (Fixes #202) (#204)...'
+      sha: 65360b9af5d8cfe9c24a974a020df2a5019ee6e5
       tags:
-      - 3.0.0-17-g8e14794
+      - 3.0.0-18-g65360b9
     path: roslynk
   path: upstreams
 kind: LockConfig
