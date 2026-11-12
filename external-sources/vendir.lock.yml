@@ -6,21 +6,20 @@ directories:
       sha: 9e31a42c2bef8e82d8c7f66c69676bd66eae50ff
     path: blazingfastdotnet
   - git:
-      commitTitle: Add find-repeated-build-work skill to dotnet-msbuild (#1311)
-      sha: 96c3d68dad2855e3ab5178aa1a262789d86a1466
+      commitTitle: 'Merge pull request #1386 from dotnet/fix/dashboard-eval-links...'
+      sha: afae8fae4c6159a5fb4542c0f87e75b7d1e0f622
       tags:
-      - skill-validator-nightly
+      - skill-validator-nightly-2-gafae8fae
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: Fix MDX optimize emptying nested script/style and mis-casing SVG
-        attributes (#18698)...
-      sha: d13beeb66c753f03cbdbf4509cf2c527c816f1a4
+      commitTitle: '[ci] release (#18699)'
+      sha: d68e4f6340409a201df7c5f77d5d322abfe6c377
       tags:
-      - '@astrojs/cloudflare@14.4.7-2-gd13beeb66c'
+      - '@astrojs/markdown-remark@7.3.8'
     path: astro
   - git:
       commitTitle: 'Store Diagnostics cache in a SolutionSnapshot with Roslyn Solution
