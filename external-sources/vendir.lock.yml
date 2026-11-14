@@ -6,27 +6,26 @@ directories:
       sha: 9e31a42c2bef8e82d8c7f66c69676bd66eae50ff
     path: blazingfastdotnet
   - git:
-      commitTitle: 'Merge pull request #1386 from dotnet/fix/dashboard-eval-links...'
-      sha: afae8fae4c6159a5fb4542c0f87e75b7d1e0f622
+      commitTitle: 'Merge pull request #1304 from dotnet/abhitejjohn-infra-eval-pr-guidance...'
+      sha: 2877c712edc20643b72f64e2983b168e6661d607
       tags:
-      - skill-validator-nightly-2-gafae8fae
+      - skill-validator-nightly
     path: dotnet-skills
   - git:
       commitTitle: Add Cursor rules that reference the existing skill docs...
       sha: af2319bd01bb7cc881267a9ef42cafdaf5e9029d
     path: webgpu-claude-skill
   - git:
-      commitTitle: '[ci] release (#18699)'
-      sha: d68e4f6340409a201df7c5f77d5d322abfe6c377
+      commitTitle: '[ci] release (#18714)'
+      sha: 5b7c3275cf2f4aa0d1685495f943cb19039a2e83
       tags:
-      - '@astrojs/markdown-remark@7.3.8'
+      - '@astrojs/cloudflare@14.4.8'
     path: astro
   - git:
-      commitTitle: 'Store Diagnostics cache in a SolutionSnapshot with Roslyn Solution
-        (Fixes #202) (#204)...'
-      sha: 65360b9af5d8cfe9c24a974a020df2a5019ee6e5
+      commitTitle: Improve formatting of OTEL installation steps...
+      sha: bae2eecb4ab7e587b5bdd5e9ceca93527938f1f9
       tags:
-      - 3.0.0-18-g65360b9
+      - 3.0.0-20-gbae2eec
     path: roslynk
   path: upstreams
 kind: LockConfig

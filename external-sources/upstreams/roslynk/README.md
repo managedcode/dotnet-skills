@@ -36,6 +36,22 @@ First install the global .NET tool from NuGet (no clone, no build needed):
 dotnet tool install roslynk -g
 ```
 
+### OTEL
+Roslynk runs in the background. You may observe its logging/OTEL like so...
+
+1. Open a PowerShell prompt
+```bash
+dotnet tool install -g Aspire.Cli
+aspire dashboard run --allow-anonymous
+```
+2. Open another PowerShell prompt
+```bash
+dotnet tool install roslynk -g
+$env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
+$env:OTEL_EXPORTER_OTLP_PROTOCOL = "grpc"
+roslynk
+```
+
 ### Claude Desktop
 
 ```bash
